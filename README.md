@@ -3,7 +3,7 @@
 
   
 
-Welcome to the Online-Store project! We specialize in selling customized Felt boots.
+Welcome to the Online-Store project! We are dedicated to developing a website for a business that sell customized felt boots, helping them to showcase their products online.
 
   
 
