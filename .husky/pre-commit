@@ -1,1 +1,1 @@
-npm lint:script-check
+npm run lint:script-check

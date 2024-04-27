@@ -7,9 +7,10 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "format": "prettier --write \"src/**/*.ts\"",
     "lint:script-check": "eslint src",
     "prepare": "husky",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
