@@ -45,7 +45,7 @@ The purpose of this project is to provide an online platform for customers to pu
 
 ```
 
-- npm test
+npm test
 
 ```
 
@@ -53,7 +53,7 @@ The purpose of this project is to provide an online platform for customers to pu
 
 ```
 
-- npm run format
+npm run format
 
 ```
 
@@ -61,7 +61,7 @@ The purpose of this project is to provide an online platform for customers to pu
 
 ```
 
-- npm run lint:script-check
+npm run lint:script-check
 
 ```
 
