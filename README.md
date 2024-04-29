@@ -1,23 +1,12 @@
-
 # Online-Store 🛍️
 
-  
-
-Welcome to the Online-Store project! We are dedicated to developing a website for a business that sell customized felt boots, helping them to showcase their products online.
-
-  
+Welcome to the Online-Store project! We are dedicated to developing a website for a business that sell designed felt boots, helping them to showcase their products online.
 
 ## Purpose
 
-  
-
-The purpose of this project is to provide an online platform for customers to purchase customized Felt boots. We aim to create a seamless shopping experience using modern(or not so) web technologies.
-
-  
+The purpose of this project is to provide an online platform for customers to purchase unique felt boots. We aim to create a seamless shopping experience using modern (or not so) web technologies.
 
 ## Technology Stack
-
-  
 
 - Vanilla JavaScript :computer:
 
@@ -33,11 +22,7 @@ The purpose of this project is to provide an online platform for customers to pu
 
 - Vite (as bundler) :file_folder:
 
-  
-
 ## Scripts
-
-  
 
 ### Running Tests
 
@@ -81,17 +66,11 @@ npm run build
 
 ```
 
-  
-
 ## Getting Started
-
-  
 
 ### Prerequisites
 
 Ensure you have Node.js installed on your machine.
-
-  
 
 ### Installation
 
