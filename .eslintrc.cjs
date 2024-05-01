@@ -29,6 +29,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'error',
+    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
   },
-  ignorePatterns: ['.eslintrc.cjs', 'vite.config.js'],
+  ignorePatterns: ['.eslintrc.cjs', 'vite.config.js', '.env'],
 };
