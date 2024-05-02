@@ -102,7 +102,7 @@ export class ApiService {
   ): Promise<T | undefined> {
     let url = this.basePath + path;
     const requestOptions = {
-      method: 'GET',
+      method: 'DELETE',
       headers: {
         Authorization: `Bearer ${this.token}`,
       },
