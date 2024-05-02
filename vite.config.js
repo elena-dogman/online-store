@@ -1,14 +1,12 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 export default defineConfig({
-  // plugins: [eslint()],
   base: '/',
   build: {
     minify: false,
-    sourcemap: true, // enable production source maps
+    sourcemap: true,
     rollupOptions: {
       input: {
-        // eslint-disable-next-line no-undef
         index: resolve(__dirname, 'index.html'),
       },
       output: {
@@ -19,6 +17,6 @@ export default defineConfig({
     },
   },
   css: {
-    devSourcemap: true, // enable CSS source maps during development
+    devSourcemap: true,
   },
 });
