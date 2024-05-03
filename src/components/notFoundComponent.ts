@@ -18,6 +18,8 @@ export function createNotFoundPage(): HTMLElement {
   };
   const image = createElement(imageParams);
 
+  const contentContainer = createElement({ tag: 'div', classNames: ['not-found-content'] });
+
   const headingParams: ElementParams<'h1'> = {
     tag: 'h1',
     classNames: ['not-found-title'],
@@ -28,7 +30,7 @@ export function createNotFoundPage(): HTMLElement {
   const descriptionParams: ElementParams<'p'> = {
     tag: 'p',
     classNames: ['not-found-description'],
-    textContent: 'Looks like big foot has broken the link',
+    textContent: 'Looks like big foot has broken the link.',
   };
   const description = createElement(descriptionParams);
 
@@ -39,15 +41,17 @@ export function createNotFoundPage(): HTMLElement {
   const buttonParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['back-home-button'],
-    textContent: 'Go Home',
+    textContent: 'Back to homepage',
     callbacks: [backHomeCallback],
   };
   const backButton = createElement(buttonParams);
 
+  addInnerComponent(contentContainer, heading);
+  addInnerComponent(contentContainer, description);
+  addInnerComponent(contentContainer, backButton);
+
   addInnerComponent(container, image);
-  addInnerComponent(container, heading);
-  addInnerComponent(container, description);
-  addInnerComponent(container, backButton);
+  addInnerComponent(container, contentContainer);
 
   return container;
 }

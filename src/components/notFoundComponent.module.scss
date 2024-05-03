@@ -1,0 +1,52 @@
+.not-found-container {
+  display: flex;
+  align-items: stretch;
+  min-height: 100vh;
+}
+
+.not-found-image {
+  flex: 1;
+  height: 100vh;
+}
+
+.not-found-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: $font-family-base;
+  color: $not-found-base-color;
+  gap: 30px;
+}
+
+.not-found-title,
+.not-found-description {
+  margin: 0 0 20px 0;
+}
+
+.not-found-title {
+  font-size: $font-size-big-heading;
+  font-weight: 700;
+}
+
+.not-found-description {
+  font-size: $font-size-large-text;
+}
+
+.back-home-button {
+  padding: 10px 20px;
+  max-width: 200px;
+  cursor: pointer;
+  background-color: $not-found-base-color;
+  color: $text-color-contrast;
+  border: none;
+  border-radius: 20px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+.back-home-button:hover {
+  box-shadow: $button-hover-box-shadow;
+}
+}
