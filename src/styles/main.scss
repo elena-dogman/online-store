@@ -6,6 +6,16 @@
   padding: 0;
   margin: 0;
 }
+html,
+body,
+#app{
+  height: 100%;
+}
+#app{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 html {
   scroll-behavior: smooth;
   width: 100%;
@@ -14,3 +24,4 @@ html {
 body {
   font-size: 16rem;
 }
+ 
