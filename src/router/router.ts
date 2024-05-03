@@ -1,4 +1,5 @@
-import { notFoundPage } from '../pages/NotFoundPage';
+import { createMainPage } from '../pages/MainPage/MainPage';
+import { notFoundPage } from '../pages/NotFoundPage/NotFoundPage';
 
 type RouteHandler = () => HTMLElement;
 type Routes = Record<string, RouteHandler>;
@@ -38,7 +39,7 @@ function createRouter(routes: Routes): Router {
 }
 
 const routes = {
-  // '/': mainPage,
+  '/': createMainPage,
   // '/login': loginPage,
   // '/register': registrationPage,
   '/404': notFoundPage,

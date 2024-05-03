@@ -1,4 +1,4 @@
-import { createElement, addInnerComponent, EventCallback, ElementParams } from '../utils/baseComponent';
+import { createElement, addInnerComponent, EventCallback, ElementParams } from '../../utils/baseComponent';
 
 export function createNotFoundPage(): HTMLElement {
   const containerParams: ElementParams<'div'> = {
