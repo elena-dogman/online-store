@@ -2,9 +2,15 @@
 $text-color-base: rgb(0, 0, 0);
 $text-color-contrast: rgb(255, 255, 255);
 $text-color-accent: rgb(62, 193, 243);
+$not-found-base-color: rgb(86, 111, 167);
 
 // fonts
 $font-family-base: "Poppins", sans-serif;
 $font-size-base: 16rem;
-$font-size-form-heading: 32rem;
 $font-size-button-text: 20rem;
+$font-size-large-text: 24rem;
+$font-size-form-heading: 32rem;
+$font-size-big-heading: 64rem;
+
+//effects
+$button-hover-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
