@@ -1,7 +1,7 @@
 @import './variables.scss';
 @import '../components/notFoundComponent/notFoundComponent.module.scss';
 @import '../components/header/header.module.scss';
-
+@import '../pages/AuthPage/authpage.scss';
 * {
   box-sizing: border-box;
   padding: 0;
@@ -9,10 +9,10 @@
 }
 html,
 body,
-#app{
+#app {
   height: 100%;
 }
-#app{
+#app {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -25,4 +25,3 @@ html {
 body {
   font-size: 16rem;
 }
-
