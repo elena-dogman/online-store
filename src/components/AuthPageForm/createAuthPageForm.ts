@@ -72,21 +72,21 @@ export function createAuthForm(): HTMLElement[] {
   const authFormFooterHref = createElement(authFormFooterSpanParams);
   addInnerComponent(authFormFooter, authFormFooterHref);
 
-  const authFormUsernameContainerParams: ElementParams<'div'> = {
+  const authFormEmailContainerParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['username_container'],
+    classNames: ['email_container'],
   };
   const authFormPasswordContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['password_container'],
   };
-  const usernameIconParams: ElementParams<'img'> = {
+  const emailIconParams: ElementParams<'img'> = {
     tag: 'img',
     attributes: {
-      src: '/assets/authpage/user.png',
-      alt: 'Username icon',
+      src: '/assets/authpage/mail.png',
+      alt: 'email icon',
     },
-    classNames: ['username_icon'],
+    classNames: ['email_icon'],
   };
   const passwordIconParams: ElementParams<'img'> = {
     tag: 'img',
@@ -96,24 +96,24 @@ export function createAuthForm(): HTMLElement[] {
     },
     classNames: ['password_icon'],
   };
-  const usernameIcon = createElement(usernameIconParams);
+  const emailIcon = createElement(emailIconParams);
   const passwordIcon = createElement(passwordIconParams);
-  const [usernameLabel, usernameInput] = createInput('username', 'name');
+  const [emailLabel, emailInput] = createInput('email', 'email');
   const [passwordLabel, passwordInput] = createInput('password', 'password');
-  const usernameContainer = createElement(authFormUsernameContainerParams);
+  const emailContainer = createElement(authFormEmailContainerParams);
   const passwordContainer = createElement(authFormPasswordContainerParams);
   const submitButton = createElement(submitButtonParams);
-  addInnerComponent(usernameContainer, usernameLabel);
-  addInnerComponent(usernameContainer, usernameInput);
-  addInnerComponent(usernameContainer, usernameIcon);
+  addInnerComponent(emailContainer, emailLabel);
+  addInnerComponent(emailContainer, emailInput);
+  addInnerComponent(emailContainer, emailIcon);
   addInnerComponent(passwordContainer, passwordLabel);
   addInnerComponent(passwordContainer, passwordInput);
   addInnerComponent(passwordContainer, passwordIcon);
   addInnerComponent(authForm, authFormHeader);
-  addInnerComponent(authForm, usernameContainer);
+  addInnerComponent(authForm, emailContainer);
   addInnerComponent(authForm, passwordContainer);
   addInnerComponent(authForm, submitButton);
   addInnerComponent(authForm, authFormFooter);
 
-  return [authForm, usernameInput, passwordInput];
+  return [authForm, emailInput, passwordInput];
 }
