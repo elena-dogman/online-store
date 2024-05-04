@@ -1,16 +1,15 @@
-import { createElement, ElementParams } from '../../utils/baseComponent';
+import { addInnerComponent, createElement, ElementParams } from '../../utils/baseComponent';
 import { createHeader } from '../../components/header/header';
 
 export function createMainPage(): HTMLElement {
-  const containerParams: ElementParams<'div'> = {
+  const pageContainerParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['main-page-wrapper'],
+    classNames: ['main-page-container'],
   };
+  const container = createElement(pageContainerParams);
 
-  const container = createElement(containerParams);
   const header = createHeader();
-
-  container.appendChild(header);
+  addInnerComponent(container, header);
 
   return container;
 }

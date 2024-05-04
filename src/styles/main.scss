@@ -1,5 +1,6 @@
 @import './variables.scss';
 @import '../components/notFoundComponent/notFoundComponent.module.scss';
+@import '../components/header/header.module.scss';
 
 * {
   box-sizing: border-box;
@@ -24,4 +25,4 @@ html {
 body {
   font-size: 16rem;
 }
- 
+
