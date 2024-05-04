@@ -1,24 +1,81 @@
 .header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 10px 20px;
+  font-family: $font-family-base;
 }
 
-.logo {
+.header__logo-link,
+.header__nav-link,
+.header__icon,
+.header__auth-button {
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.header__nav-links,
+.header__icons,
+.header__auth-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.header__nav-link,
+.header__nav-link:visited {
+  color: $text-color-base;
+}
+
+.header__right-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.header__icons {
+margin-right: 10px;
+}
+
+.header__icon img {
+  width: 24px;
+  height: auto;
+}
+
+.header__logo {
   font-family: $font-family-logo;
   font-size: $font-size-large-text;
-  font-weight: bold;
   color: $text-color-base;
   cursor: pointer;
 }
 
-.logo-link {
+.header__logo-link {
   text-decoration: none;
 }
 
+.header__auth-button {
+  padding: 10px 15px;
+  border-radius: 5px;
+}
+
+.login-button {
+border: $button-border;
+color: $text-color-base;
+}
+
+.register-button {
+  background-color: $text-color-accent;
+  color: $text-color-contrast;
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .logo-link:hover {
+  .header__logo-link:hover,
+  .header__nav-link:hover,
+  .header__icon:hover {
   transform: scale(1.1);
   transition: transform 0.3s ease;
+  }
+
+  .header__auth-button:hover {
+box-shadow: $button-hover-box-shadow;
   }
 }
