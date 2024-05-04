@@ -4,7 +4,7 @@ import { createHeader } from '../../components/header/header';
 export function createMainPage(): HTMLElement {
   const pageContainerParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['main-page-container'],
+    classNames: ['main-page-wrapper'],
   };
   const container = createElement(pageContainerParams);
 
