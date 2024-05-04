@@ -1,0 +1,87 @@
+@import '../../styles/variables.scss';
+.auth_section {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  font-family: $font-family-base;
+}
+
+.auth_section-background_image {
+  box-shadow: 0 6px 4px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+  width: 80%;
+  user-select: none;
+  height: auto;
+  z-index: -1;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.auth_form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 20px;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.9);
+  box-sizing: border-box;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  align-items: center;
+  justify-content: space-around;
+}
+.auth_form_header {
+  font-size: $font-size-large-text;
+}
+.form-input {
+  all: unset;
+  border-bottom: 1px solid $text-color-base;
+  width: 100%;
+}
+.form_label {
+}
+.email_container,
+.password_container {
+  position: relative;
+  width: 80%;
+}
+.email_icon,
+.password_icon {
+  width: 20px;
+  position: absolute;
+  top: 0px;
+  right: 20px;
+}
+.submit_button {
+  all: unset;
+  background-color: $text-color-base;
+  color: $text-color-contrast;
+  text-align: center;
+  width: 400px;
+  height: 65px;
+  font-size: $font-size-button-text;
+  border-radius: 20px;
+  &:hover {
+    box-shadow: $button-hover-box-shadow;
+  }
+}
+.auth_form_footer {
+  font-size: 12rem;
+}
+.auth_form_footer_link-to-registration {
+  color: #000;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
