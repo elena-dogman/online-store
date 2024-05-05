@@ -24,6 +24,9 @@ export class ApiService {
     this.projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
     this.token = '';
     this.basePath = `https://${this.region}.commercetools.com/${this.projectKey}/`;
+    this.POST = this.POST.bind(this);
+    this.GET = this.GET.bind(this);
+    this.DELETE = this.DELETE.bind(this);
   }
 
   async init(): Promise<void> {
@@ -55,6 +58,7 @@ export class ApiService {
     params?: Record<string, string>,
   ): Promise<T | undefined> {
     let url = this.basePath + path;
+
     const requestOptions = {
       method: 'GET',
       headers: {
@@ -79,6 +83,7 @@ export class ApiService {
     body: Record<string, string>,
   ): Promise<T | undefined> {
     const url = this.basePath + path;
+    console.log(this.basePath);
     const requestOptions = {
       method: 'POST',
       headers: {

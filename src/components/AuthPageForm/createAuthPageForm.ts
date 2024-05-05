@@ -47,7 +47,11 @@ export function createAuthForm(): HTMLElement[] {
     classNames: ['submit_button'],
   };
   const authForm = createElement(formContainerParams);
-
+  authForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(authForm as HTMLFormElement);
+    console.log(JSON.stringify(formData));
+  });
   const authFormHeaderParams: ElementParams<'h2'> = {
     tag: 'h2',
     textContent: 'Sign in & choose your best felt boots!',

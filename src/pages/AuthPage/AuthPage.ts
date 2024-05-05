@@ -5,6 +5,7 @@ import {
   addInnerComponent,
 } from '../../utils/baseComponent';
 import { createHeader } from '../../components/header/header';
+import { authService } from '../../api/authService';
 export function createAuthPage(): HTMLElement {
   const authSectionContainerParams: ElementParams<'section'> = {
     tag: 'section',
@@ -15,7 +16,7 @@ export function createAuthPage(): HTMLElement {
     tag: 'img',
     classNames: ['auth_section-background_image'],
     attributes: {
-      src: '/assets/witcher_felt_boots_auth_page_2.jpg',
+      src: '/assets/authpage/witcher_felt_boots_auth_page_2.jpg',
       alt: 'Beautiful Felt Boots',
     },
   };
@@ -32,6 +33,17 @@ export function createAuthPage(): HTMLElement {
   //     'input', //validateInput)
   //   );
   //
+
+  authForm[0].addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(authForm[0] as HTMLFormElement);
+    const formDataObject: Record<string, string> = {};
+    for (const [key, value] of formData.entries()) {
+      formDataObject[key] = value as string;
+    }
+    console.log(Object(formDataObject));
+    authService(formDataObject);
+  });
   authSectionContainer.prepend(header);
   addInnerComponent(authSectionContainer, authFormBgImage);
   addInnerComponent(authSectionContainer, authForm[0]);
