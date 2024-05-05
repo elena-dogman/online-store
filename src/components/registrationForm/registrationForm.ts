@@ -73,6 +73,7 @@ export const birthDay = baseComponent.createElement({
     type: 'text',
     required: '',
     'data-validation-type': 'birthday',
+    maxLength: '2',
   },
 });
 export const birthMonth = baseComponent.createElement({
@@ -82,6 +83,7 @@ export const birthMonth = baseComponent.createElement({
     type: 'text',
     required: '',
     'data-validation-type': 'birthday',
+    maxLength: '2',
   },
 });
 export const birthYear = baseComponent.createElement({
@@ -91,6 +93,7 @@ export const birthYear = baseComponent.createElement({
     type: 'text',
     required: '',
     'data-validation-type': 'birthday',
+    maxLength: '4',
   },
 });
 
@@ -181,12 +184,12 @@ export function createForm(): void {
   containerForBirth.append(birthDayCheckButton);
   authSideForm.append(adress);
   authSideForm.append(authFormButton);
-  adress.append(adressLabelStreet);
-  adressLabelStreet.append(adressInputStreet);
-  adress.append(adressLabelCity);
-  adressLabelCity.append(adressInputCity);
-  adress.append(adressLabelPost);
-  adressLabelPost.append(adressInputPost);
   adress.append(adressLabelCountry);
   adressLabelCountry.append(adressInputCountry);
+  adress.append(adressLabelPost);
+  adressLabelPost.append(adressInputPost);
+  adress.append(adressLabelCity);
+  adressLabelCity.append(adressInputCity);
+  adress.append(adressLabelStreet);
+  adressLabelStreet.append(adressInputStreet);
 }

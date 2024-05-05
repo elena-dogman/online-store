@@ -1,5 +1,5 @@
 import * as regFormComponents from '../components/registrationForm/registrationForm';
-import { checkUpperCaseLowerCase } from './others';
+import { calculateAge, checkUpperCaseLowerCase } from './others';
 const birtdayCheckBtn = regFormComponents.birthDayCheckButton;
 const name = regFormComponents.regFormInputName;
 const lastName = regFormComponents.regFormInputLastName;
@@ -104,9 +104,6 @@ function dayValidation(this: HTMLInputElement): number {
   if (!parseInt(value)) {
     console.log('input must be number');
   }
-  if (value.length >= 3) {
-    console.log('input must be shorter then 2');
-  }
   if (parseInt(value) > 31) {
     console.log('you must chose day');
   }
@@ -116,9 +113,6 @@ function monthValidation(this: HTMLInputElement): number {
   const value = this.value.trim();
   if (!parseInt(value)) {
     console.log('input must be number');
-  }
-  if (value.length >= 3) {
-    console.log('input must be shorter then 2');
   }
   if (parseInt(value) > 12) {
     console.log('you must chose month');
@@ -141,17 +135,21 @@ export function checkNumber(): void {
     birthMonth instanceof HTMLInputElement &&
     birthDay instanceof HTMLInputElement
   ) {
-    // if (+birthYear.value && +birthMonth.value && +birthDay.value) {
-    // if (+birthMonth.value <= 12) {
-    const age = new Date(+birthYear.value, +birthMonth.value, +birthDay.value);
-    console.log(age);
-    if (!isNaN(age.getTime())) {
-      console.log(age);
-      // calculateAge(age);
+    if (+birthYear.value && +birthMonth.value && +birthDay.value) {
+      if (
+        +birthMonth.value <= 12 &&
+        +birthDay.value <= 31 &&
+        +birthYear.value <= 2024 &&
+        +birthYear.value >= 1970
+      ) {
+        const age = new Date(
+          +birthYear.value,
+          +birthMonth.value,
+          +birthDay.value,
+        );
+        calculateAge(age);
+      }
     }
-
-    // }
-    // }
   }
 }
 birthDay.addEventListener('input', dayValidation);
