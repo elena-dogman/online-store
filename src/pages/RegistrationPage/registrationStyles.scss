@@ -1,12 +1,12 @@
 @import '..//../styles/variables.scss';
-.wrapper__registration{
-    display: flex;
-    justify-content: center;
-    height: 100%;
-    font-family: $font-family-base;
+.wrapper__registration {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  font-family: $font-family-base;
 }
-.registration__img-side{
-    width: 60%;
+.registration__img-side {
+  width: 60%;
   background-image: url('..//../assets/registration-img.jpg');
   background-position: center;
   background-size: cover;
@@ -15,119 +15,120 @@
   flex-direction: column;
   justify-content: space-around;
   padding: 0 55px;
-  color:white
+  color: white;
 }
-.container__registration{
-    height: 100%;
+.container__registration {
+  height: 100%;
 }
-.adress__countrys-list{
-    background: white;
-    color: black;
-    width: 255px;
-    height: 20px;
-    transition: all 0.5s ease;
-    border-radius: 10px;
-    padding-left: 10px;
-    border: 1px solid ;
-    box-shadow: $button-hover-box-shadow;
+.adress__countries-list {
+  background: white;
+  color: black;
+  width: 255px;
+  height: 20px;
+  transition: all 0.5s ease;
+  border-radius: 10px;
+  padding-left: 10px;
+  border: 1px solid;
 }
-.--expanded{
-    height: 300px;
-    border-radius: 10px;
-    overflow: auto;
+.--expanded {
+  height: 300px;
+  border-radius: 10px;
+  overflow: auto;
 }
-.adress__countrys-item{
-    color: black;
-    padding:3px 0 0 10px;
-    border-bottom: 1px solid white;
+.adress__countries-item {
+  color: black;
+  padding: 3px 0 0 10px;
+  border-bottom: 1px solid white;
 }
-.img-side__title{
-    font-size: 40rem;
+.img-side__title {
+  font-size: 40rem;
 }
-.img-side__description{
-    font-size: 32rem;
-    min-width: 30%;
-    max-width: 45%;
+.img-side__description {
+  padding: 10px;
+  font-size: 20rem;
+  min-width: 30%;
+  max-width: 45%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
-.reg-form__adress{
-    display: flex;
-    flex-direction: column;
-    padding: 0 0 0 50px;
+.reg-form__adress {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 0 50px;
 }
-.img-side__creator{
-    font-size: 16rem;
-}
-
-.reg__label{
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
-.auth-side__title{
-    text-align: center;
-}
-.registration__auth-side{
-    width: 40%;
-    display: flex;
-    flex-direction: column;
-    padding: 0 50px 0 100px;
-    justify-content: space-around;
-}
-.auth-side__reg-form{
-    display: flex;
-    flex-direction: column;
-}
-.reg-input{
-    border: none;
-    border-bottom: 1px solid black;
-    margin-bottom:30px ;
-}
-.reg-input:focus{
-    color: black;
-    border-bottom:1px solid #86b7fe;
-    outline: 0; 
-    padding: 0 0 1px 5px
-}
-.sign-in__button{
-    color: $text-color-accent;
-    background: none;
-    border: none;
-}
-.auth-side__sign-in{
-    display: flex;
-    justify-content: center;
-}
-.sign-in__text{
-    padding-right: 30px;
-}
-.reg-form__button{
-    background-color: black;
-    color: white;
-    font-size: 20rem;
-    padding: 18px 0;
-    border-radius:20px ;
+.img-side__creator {
+  font-size: 16rem;
 }
 
-.reg-form__birhday-container{
-    display: flex;
-    gap:20px;
-    margin-bottom:20px ;
+.reg__label {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.auth-side__title {
+  text-align: center;
+}
+.registration__auth-side {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  padding: 0 50px 0 100px;
+  justify-content: space-around;
+}
+.auth-side__reg-form {
+  display: flex;
+  flex-direction: column;
+}
+.reg-input {
+  border: none;
+  border-bottom: 1px solid black;
+  margin-bottom: 30px;
+}
+.reg-input:focus {
+  color: black;
+  border-bottom: 1px solid #86b7fe;
+  outline: 0;
+  padding: 0 0 1px 5px;
+}
+.sign-in__button {
+  color: $text-color-accent;
+  background: none;
+  border: none;
+}
+.auth-side__sign-in {
+  display: flex;
+  justify-content: center;
+}
+.sign-in__text {
+  padding-right: 30px;
+}
+.reg-form__button {
+  background-color: black;
+  color: white;
+  font-size: 20rem;
+  padding: 18px 0;
+  border-radius: 20px;
 }
 
-.birthday-input{
-    width: 50px;
-    margin: 0;
-    text-align: center;
+.reg-form__birhday-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
 }
-.error{
-    position: absolute;
-    bottom: 5px;
-    color: red;
+
+.birthday-input {
+  width: 50px;
+  margin: 0;
+  text-align: center;
 }
-.bithday__check-btn{
-    color: white;
-    background-color: black;
-    font-size: 20rem;
-    padding: 0 10px;
-    border-radius: 10px;
+.error {
+  position: absolute;
+  bottom: 5px;
+  color: red;
+}
+.bithday__check-btn {
+  color: white;
+  background-color: black;
+  font-size: 20rem;
+  padding: 0 10px;
+  border-radius: 10px;
 }

@@ -2,6 +2,7 @@ import * as baseComponent from '../../utils/baseComponent';
 import { validateInput } from '../../utils/validations/validation';
 import * as validationFunc from '../../utils/validations/validatinsComponents';
 import { addCounties } from './countryList';
+
 export const authSideForm = baseComponent.createElement({
   tag: 'form',
   classNames: ['auth-side__reg-form'],
@@ -164,6 +165,7 @@ export const authFormButton = baseComponent.createElement({
   attributes: { disabled: '', type: 'button' },
   textContent: 'Create Account',
 });
+
 export function createForm(): void {
   authSideForm.append(regFormLabelName);
   regFormLabelName.append(regFormInputName);
