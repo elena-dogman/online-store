@@ -17,6 +17,7 @@ function createInput(
       type: type,
       name: id,
       'data-validation-type': validationType,
+      required: '',
     },
     classNames: ['form-input'],
   };
@@ -43,15 +44,12 @@ export function createAuthForm(): HTMLElement[] {
     textContent: 'Sign In',
     attributes: {
       type: 'submit',
+      // disabled: '',
     },
     classNames: ['submit_button'],
   };
   const authForm = createElement(formContainerParams);
-  authForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const formData = new FormData(authForm as HTMLFormElement);
-    console.log(JSON.stringify(formData));
-  });
+
   const authFormHeaderParams: ElementParams<'h2'> = {
     tag: 'h2',
     textContent: 'Sign in & choose your best felt boots!',
@@ -96,14 +94,19 @@ export function createAuthForm(): HTMLElement[] {
     tag: 'img',
     attributes: {
       src: '/assets/authpage/hide.png',
-      alt: 'Switch to make your password visible',
+      alt: 'make your password visible/hide',
+      title: 'Click to make your password visible',
     },
     classNames: ['password_icon'],
   };
   const emailIcon = createElement(emailIconParams);
   const passwordIcon = createElement(passwordIconParams);
   const [emailLabel, emailInput] = createInput('email', 'email');
-  const [passwordLabel, passwordInput] = createInput('password', 'password');
+  const [passwordLabel, passwordInput] = createInput(
+    'password',
+    'password',
+    'password',
+  );
   const emailContainer = createElement(authFormEmailContainerParams);
   const passwordContainer = createElement(authFormPasswordContainerParams);
   const submitButton = createElement(submitButtonParams);
@@ -119,5 +122,5 @@ export function createAuthForm(): HTMLElement[] {
   addInnerComponent(authForm, submitButton);
   addInnerComponent(authForm, authFormFooter);
 
-  return [authForm, emailInput, passwordInput];
+  return [authForm, emailInput, passwordInput, passwordIcon, submitButton];
 }

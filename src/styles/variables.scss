@@ -6,8 +6,8 @@ $not-found-base-color: rgb(86, 111, 167);
 $not-active-color: rgb(151, 148, 148);
 
 // fonts
-$font-family-base: "Poppins", sans-serif;
-$font-family-logo: "Oxygen", sans-serif;
+$font-family-base: 'Poppins', sans-serif;
+$font-family-logo: 'Oxygen', sans-serif;
 $font-size-base: 16rem;
 $font-size-button-text: 20rem;
 $font-size-large-text: 24rem;
@@ -16,6 +16,7 @@ $font-size-big-heading: 64rem;
 
 //effects
 $button-hover-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+$button-disabled-background: gray;
 
 //other
-$button-border: 1px solid #bbb5b5
+$button-border: 1px solid #bbb5b5;

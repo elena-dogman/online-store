@@ -72,8 +72,12 @@
   height: 65px;
   font-size: $font-size-button-text;
   border-radius: 20px;
-  &:hover {
+  border: $button-border;
+  &:hover:not(:disabled) {
     box-shadow: $button-hover-box-shadow;
+  }
+  &:disabled {
+    background-color: $button-disabled-background;
   }
 }
 .auth_form_footer {

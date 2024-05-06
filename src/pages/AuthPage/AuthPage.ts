@@ -23,29 +23,60 @@ export function createAuthPage(): HTMLElement {
 
   const header = createHeader();
   const authFormBgImage = createElement(imageParams);
-  const authForm = createAuthForm();
-
+  const authFormArray = createAuthForm();
+  const authForm = authFormArray[0];
+  const emailInput = authFormArray[1];
+  const passwordInput = authFormArray[2];
+  const passwordInputIcon = authFormArray[3];
+  const submitButton = authFormArray[4];
   // here will be validation after function of validation is ready (Lenya is in progress)
-  //   authForm[1].addEventListener(
-  //     'input', //validateInput)
-  //   );
-  //   authForm[2].addEventListener(
-  //     'input', //validateInput)
-  //   );
+  // let validatedEmail = false;
+  // let validatedPassword = false;
+  // emailInput.addEventListener('input', (event) => {
+  //   validatedEmail = validateInput(event);
+  //   if (validatedEmail && validatedPassword) {
+  //     submitButton.removeAttribute('disabled');
+  //   } else {
+  //     submitButton.setAttribute('disabled');
+  //   }
+  // });
+  // passwordInput.addEventListener('input', (event) => {
+  //   validatedPassword = validateInput(event);
+  //   if (validatedEmail && validatedPassword) {
+  //     submitButton.removeAttribute('disabled');
+  //   } else {
+  //     submitButton.setAttribute('disabled');
+  //   }
+  // });
   //
 
-  authForm[0].addEventListener('submit', async (event) => {
+  passwordInputIcon.addEventListener('click', (event) => {
     event.preventDefault();
-    const formData = new FormData(authForm[0] as HTMLFormElement);
+    if (passwordInput.getAttribute('type') === 'password') {
+      passwordInput.setAttribute('type', 'text');
+      passwordInputIcon.setAttribute('src', '/assets/authpage/show.png');
+      passwordInputIcon.setAttribute('title', 'Click to hide your password');
+    } else {
+      passwordInput.setAttribute('type', 'password');
+      passwordInputIcon.setAttribute('src', '/assets/authpage/hide.png');
+      passwordInputIcon.setAttribute(
+        'title',
+        'Click to make your password visible',
+      );
+    }
+  });
+  authForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(authForm as HTMLFormElement);
     const formDataObject: Record<string, string> = {};
     for (const [key, value] of formData.entries()) {
       formDataObject[key] = value as string;
     }
-    console.log(Object(formDataObject));
+
     authService(formDataObject);
   });
   authSectionContainer.prepend(header);
   addInnerComponent(authSectionContainer, authFormBgImage);
-  addInnerComponent(authSectionContainer, authForm[0]);
+  addInnerComponent(authSectionContainer, authForm);
   return authSectionContainer;
 }
