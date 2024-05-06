@@ -1,7 +1,7 @@
 import { createMainPage } from '../pages/MainPage/MainPage';
 import { notFoundPage } from '../pages/NotFoundPage/NotFoundPage';
 import { createAuthPage } from '../pages/AuthPage/AuthPage';
-
+import { buildRegistrationPage } from '../pages/RegistrationPage/registrationPage';
 type RouteHandler = () => HTMLElement;
 type Routes = Record<string, RouteHandler>;
 
@@ -42,7 +42,7 @@ function createRouter(routes: Routes): Router {
 const routes = {
   '/': createMainPage,
   '/login': createAuthPage,
-  // '/register': registrationPage,
+  '/register': buildRegistrationPage,
   '/404': notFoundPage,
 };
 
