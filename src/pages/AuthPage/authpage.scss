@@ -73,6 +73,7 @@
   font-size: $font-size-button-text;
   border-radius: 20px;
   border: $button-border;
+  cursor: pointer;
   &:hover:not(:disabled) {
     box-shadow: $button-hover-box-shadow;
   }

@@ -44,7 +44,7 @@ export function createAuthForm(): HTMLElement[] {
     textContent: 'Sign In',
     attributes: {
       type: 'submit',
-      // disabled: '',
+      disabled: '',
     },
     classNames: ['submit_button'],
   };

@@ -6,6 +6,7 @@ import {
 } from '../../utils/baseComponent';
 import { createHeader } from '../../components/header/header';
 import { authService } from '../../api/authService';
+import { validateInput } from '../../utils/validations/validation';
 export function createAuthPage(): HTMLElement {
   const authSectionContainerParams: ElementParams<'section'> = {
     tag: 'section',
@@ -25,30 +26,29 @@ export function createAuthPage(): HTMLElement {
   const authFormBgImage = createElement(imageParams);
   const authFormArray = createAuthForm();
   const authForm = authFormArray[0];
-  // const emailInput = authFormArray[1];
+  const emailInput = authFormArray[1];
   const passwordInput = authFormArray[2];
   const passwordInputIcon = authFormArray[3];
-  // const submitButton = authFormArray[4];
-  // here will be validation after function of validation is ready (Lenya is in progress)
-  // let validatedEmail = false;
-  // let validatedPassword = false;
-  // emailInput.addEventListener('input', (event) => {
-  //   validatedEmail = validateInput(emailInput);
-  //   if (validatedEmail && validatedPassword) {
-  //     submitButton.removeAttribute('disabled');
-  //   } else {
-  //     submitButton.setAttribute('disabled');
-  //   }
-  // });
-  // passwordInput.addEventListener('input', (passwordInput) => {
-  //   validatedPassword = validateInput(event);
-  //   if (validatedEmail && validatedPassword) {
-  //     submitButton.removeAttribute('disabled');
-  //   } else {
-  //     submitButton.setAttribute('disabled');
-  //   }
-  // });
-  //
+  const submitButton = authFormArray[4];
+
+  let validatedEmail = false;
+  let validatedPassword = false;
+  emailInput.addEventListener('input', () => {
+    validatedEmail = validateInput.call(emailInput as HTMLInputElement);
+    if (validatedEmail && validatedPassword) {
+      submitButton.removeAttribute('disabled');
+    } else {
+      submitButton.setAttribute('disabled', 'true');
+    }
+  });
+  passwordInput.addEventListener('input', () => {
+    validatedPassword = validateInput.call(passwordInput as HTMLInputElement);
+    if (validatedEmail && validatedPassword) {
+      submitButton.removeAttribute('disabled');
+    } else {
+      submitButton.setAttribute('disabled', 'true');
+    }
+  });
 
   passwordInputIcon.addEventListener('click', (event) => {
     event.preventDefault();
