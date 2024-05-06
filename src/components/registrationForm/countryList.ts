@@ -12,7 +12,7 @@ export function addCounties(this: HTMLElement): void {
   countrys.forEach((e) => {
     const countrysItem = baseComponent.createElement({
       tag: 'div',
-      classNames: ['adress__countrys-item'],
+      classNames: ['address__countries-item'],
     });
     countrysItem.textContent = e;
     this.append(countrysItem);

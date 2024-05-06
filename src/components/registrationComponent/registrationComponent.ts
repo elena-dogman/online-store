@@ -21,7 +21,7 @@ export function createRegistrationComponent() : HTMLElement {
   const imageSideTitle = baseComponent.createElement({
     tag: 'h2',
     classNames: ['img-side__title'],
-    textContent: 'valenky store',
+    textContent: 'valenki store',
   });
 
   const imageSideDescription = baseComponent.createElement({

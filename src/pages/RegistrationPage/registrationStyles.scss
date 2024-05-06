@@ -29,7 +29,6 @@
   border-radius: 10px;
   padding-left: 10px;
   border: 1px solid;
-  box-shadow: $button-hover-box-shadow;
 }
 .--expanded {
   height: 300px;
@@ -45,9 +44,11 @@
   font-size: 40rem;
 }
 .img-side__description {
-  font-size: 32rem;
+  padding: 10px;
+  font-size: 20rem;
   min-width: 30%;
   max-width: 45%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 .reg-form__adress {
   display: flex;
