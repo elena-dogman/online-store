@@ -11,7 +11,7 @@ export const regFormLabelName = baseComponent.createElement({
 export const regFormInputName = baseComponent.createElement({
   tag: 'input',
   classNames: ['reg-form__name-input', 'reg-input'],
-  attributes: { type: 'text', required: '', 'data-validation-type': 'name' },
+  attributes: { type: 'text', 'data-validation-type': 'name' },
 });
 export const regFormLabelLastName = baseComponent.createElement({
   tag: 'label',
@@ -23,7 +23,7 @@ export const regFormInputLastName = baseComponent.createElement({
   classNames: ['reg-form__last-name-input', 'reg-input'],
   attributes: {
     type: 'text',
-    required: '',
+
     'data-validation-type': 'name',
   },
 });
@@ -37,7 +37,7 @@ export const regFormInputMail = baseComponent.createElement({
   classNames: ['reg-form__mail-input', 'reg-input'],
   attributes: {
     type: 'email',
-    required: '',
+
     'data-validation-type': 'email',
   },
 });
@@ -51,7 +51,6 @@ export const regFormInputPassword = baseComponent.createElement({
   classNames: ['reg-form__password-input', 'reg-input'],
   attributes: {
     type: 'password',
-    required: '',
     'data-validation-type': 'password',
   },
 });
@@ -71,8 +70,6 @@ export const birthDay = baseComponent.createElement({
   classNames: ['birthday__day', 'reg-input', 'birthday-input'],
   attributes: {
     type: 'text',
-    required: '',
-    'data-validation-type': 'birthday',
     maxLength: '2',
   },
 });
@@ -81,8 +78,7 @@ export const birthMonth = baseComponent.createElement({
   classNames: ['birthday__month', 'reg-input', 'birthday-input'],
   attributes: {
     type: 'text',
-    required: '',
-    'data-validation-type': 'birthday',
+
     maxLength: '2',
   },
 });
@@ -91,8 +87,6 @@ export const birthYear = baseComponent.createElement({
   classNames: ['birthday__year', 'reg-input', 'birthday-input'],
   attributes: {
     type: 'text',
-    required: '',
-    'data-validation-type': 'birthday',
     maxLength: '4',
   },
 });
@@ -101,6 +95,7 @@ export const birthDayCheckButton = baseComponent.createElement({
   tag: 'button',
   classNames: ['bithday__check-btn', 'button'],
   textContent: 'Check',
+  attributes: { type: 'button' },
 });
 
 const adress = baseComponent.createElement({
@@ -117,7 +112,8 @@ export const adressInputStreet = baseComponent.createElement({
   classNames: ['adress__street-input', 'reg-input'],
   attributes: {
     type: 'text',
-    required: '',
+    disabled: '',
+    'data-validation-type': 'street',
   },
 });
 export const adressLabelCity = baseComponent.createElement({
@@ -125,12 +121,13 @@ export const adressLabelCity = baseComponent.createElement({
   classNames: ['adress__city-label', 'reg__label'],
   textContent: 'City',
 });
-const adressInputCity = baseComponent.createElement({
+export const adressInputCity = baseComponent.createElement({
   tag: 'input',
   classNames: ['adress__city-input', 'reg-input'],
   attributes: {
     type: 'text',
-    required: '',
+    disabled: '',
+    'data-validation-type': 'city',
   },
 });
 
@@ -144,7 +141,7 @@ export const adressInputPost = baseComponent.createElement({
   classNames: ['adress__post-input', 'reg-input'],
   attributes: {
     type: 'text',
-    required: '',
+    disabled: '',
   },
 });
 
@@ -153,18 +150,15 @@ export const adressLabelCountry = baseComponent.createElement({
   classNames: ['adress__country-label', 'reg__label'],
   textContent: 'Country',
 });
-export const adressInputCountry = baseComponent.createElement({
-  tag: 'input',
-  classNames: ['adress__country-input', 'reg-input'],
-  attributes: {
-    type: 'text',
-    required: '',
-  },
+export const adressListCountry = baseComponent.createElement({
+  tag: 'div',
+  classNames: ['adress__countrys-list'],
+  textContent: 'Chose your country',
 });
 export const authFormButton = baseComponent.createElement({
   tag: 'button',
   classNames: ['reg-form__button', 'button'],
-  attributes: { disabled: 'true', type: 'submit' },
+  attributes: { disabled: '', type: 'button' },
   textContent: 'Create Account',
 });
 export function createForm(): void {
@@ -185,7 +179,7 @@ export function createForm(): void {
   authSideForm.append(adress);
   authSideForm.append(authFormButton);
   adress.append(adressLabelCountry);
-  adressLabelCountry.append(adressInputCountry);
+  adressLabelCountry.append(adressListCountry);
   adress.append(adressLabelPost);
   adressLabelPost.append(adressInputPost);
   adress.append(adressLabelCity);

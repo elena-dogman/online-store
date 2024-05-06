@@ -1,7 +1,9 @@
+@import '..//../styles/variables.scss';
 .wrapper__registration{
     display: flex;
     justify-content: center;
     height: 100%;
+    font-family: $font-family-base;
 }
 .registration__img-side{
     width: 60%;
@@ -14,6 +16,27 @@
   justify-content: space-around;
   padding: 0 55px;
   color:white
+}
+.adress__countrys-list{
+    background: white;
+    color: black;
+    width: 255px;
+    height: 20px;
+    transition: all 0.5s ease;
+    border-radius: 10px;
+    padding-left: 10px;
+    border: 1px solid ;
+    box-shadow: $button-hover-box-shadow;
+}
+.--expanded{
+    height: 300px;
+    border-radius: 10px;
+    overflow: auto;
+}
+.adress__countrys-item{
+    color: black;
+    padding:3px 0 0 10px;
+    border-bottom: 1px solid white;
 }
 .img-side__title{
     font-size: 40rem;
@@ -63,6 +86,7 @@
     padding: 0 0 1px 5px
 }
 .sign-in__button{
+    color: $text-color-accent;
     background: none;
     border: none;
 }
@@ -76,7 +100,6 @@
 .reg-form__button{
     background-color: black;
     color: white;
-    // color: $text-color-accent;
     font-size: 20rem;
     padding: 18px 0;
     border-radius:20px ;
@@ -99,8 +122,8 @@
     color: red;
 }
 .bithday__check-btn{
-    background-color: black;
     color: white;
+    background-color: black;
     font-size: 20rem;
     padding: 0 10px;
     border-radius: 10px;

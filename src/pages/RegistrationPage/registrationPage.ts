@@ -1,5 +1,5 @@
 import * as baseComponent from '../../utils/baseComponent';
-import '../../utils/validation';
+import '../../utils/validations/validation';
 import * as formComponent from '../../components/registrationForm/registrationForm';
 const app = document.getElementById('app');
 //! create loyalt
