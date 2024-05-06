@@ -1,6 +1,7 @@
 import * as baseComponent from '../../utils/baseComponent';
 import { validateInput } from '../../utils/validations/validation';
 import * as validationFunc from '../../utils/validations/validatinsComponents';
+import { addCounties } from './countryList';
 export const authSideForm = baseComponent.createElement({
   tag: 'form',
   classNames: ['auth-side__reg-form'],
@@ -189,6 +190,7 @@ export function createForm(): void {
   authSideForm.append(authFormButton);
   adress.append(adressLabelCountry);
   adressLabelCountry.append(adressListCountry);
+  adressListCountry.addEventListener('click', addCounties);
   adress.append(adressLabelPost);
   adressLabelPost.append(adressInputPost);
   adress.append(adressLabelCity);
