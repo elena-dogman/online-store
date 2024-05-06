@@ -25,22 +25,22 @@ export function createAuthPage(): HTMLElement {
   const authFormBgImage = createElement(imageParams);
   const authFormArray = createAuthForm();
   const authForm = authFormArray[0];
-  const emailInput = authFormArray[1];
+  // const emailInput = authFormArray[1];
   const passwordInput = authFormArray[2];
   const passwordInputIcon = authFormArray[3];
-  const submitButton = authFormArray[4];
+  // const submitButton = authFormArray[4];
   // here will be validation after function of validation is ready (Lenya is in progress)
   // let validatedEmail = false;
   // let validatedPassword = false;
   // emailInput.addEventListener('input', (event) => {
-  //   validatedEmail = validateInput(event);
+  //   validatedEmail = validateInput(emailInput);
   //   if (validatedEmail && validatedPassword) {
   //     submitButton.removeAttribute('disabled');
   //   } else {
   //     submitButton.setAttribute('disabled');
   //   }
   // });
-  // passwordInput.addEventListener('input', (event) => {
+  // passwordInput.addEventListener('input', (passwordInput) => {
   //   validatedPassword = validateInput(event);
   //   if (validatedEmail && validatedPassword) {
   //     submitButton.removeAttribute('disabled');
