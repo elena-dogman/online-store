@@ -2,7 +2,7 @@ import { calculateAge, checkUpperCaseLowerCase } from '../others';
 import country from 'country-list-js';
 import { postcodeValidator } from 'postcode-validator';
 import * as regFormComponents from '..//../components/registrationForm/registrationForm';
-const countrysList = regFormComponents.adressListCountry;
+const countriesList = regFormComponents.adressListCountry;
 const city = regFormComponents.adressInputCity;
 const street = regFormComponents.adressInputStreet;
 const birthDay: HTMLInputElement | HTMLElement = regFormComponents.birthDay;
@@ -143,7 +143,7 @@ export function checkNumber(): void {
 export function postCodeValidation(this: HTMLInputElement): void {
   const indextPostsArr = Object.keys(country.all);
   const countryNames = country.names();
-  const countryIndex = countryNames.indexOf(countrysList.textContent);
+  const countryIndex = countryNames.indexOf(countriesList.textContent);
   const postCode = indextPostsArr[countryIndex];
   if (postcodeValidator(this.value, postCode)) {
     city.removeAttribute('disabled');

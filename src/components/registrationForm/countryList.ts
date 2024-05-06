@@ -2,14 +2,14 @@ import country from 'country-list-js';
 import * as baseComponent from '../../utils/baseComponent';
 import * as registrationComponent from './registrationForm';
 
-const countrys = country.names();
-const countrysList = registrationComponent.adressListCountry;
-const post: HTMLInputElement | HTMLElement =
-  registrationComponent.adressInputPost;
-function addCounties(this: HTMLElement): void {
+export function addCounties(this: HTMLElement): void {
+  const countrys = country.names();
+  const countrysList = registrationComponent.adressListCountry;
+  const post: HTMLInputElement | HTMLElement =
+    registrationComponent.adressInputPost;
   this.textContent = '';
   this.classList.add('--expanded');
-  countrys.forEach((e: string | null) => {
+  countrys.forEach((e) => {
     const countrysItem = baseComponent.createElement({
       tag: 'div',
       classNames: ['adress__countrys-item'],
@@ -27,5 +27,3 @@ function addCounties(this: HTMLElement): void {
 
   countrysList.removeEventListener('click', addCounties);
 }
-
-countrysList.addEventListener('click', addCounties);
