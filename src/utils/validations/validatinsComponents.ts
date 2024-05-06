@@ -30,12 +30,12 @@ export function validationBirth(value: string): void {
     console.log(3);
   }
 }
-export function nameValidation(valuee: string): boolean {
-  if (valuee.length <= 1) {
+export function nameValidation(value: string): boolean {
+  if (value.length <= 1) {
     console.log('Name is too short');
     return false;
   }
-  if (!/^[a-zA-Z]+$/.test(valuee)) {
+  if (!/^[a-zA-Z]+$/.test(value)) {
     console.log('Name must contain only English letters');
     return false;
   }
@@ -70,7 +70,7 @@ export function streetValidation(value: string): boolean {
   console.log('Name is valid');
   return true;
 }
-export function passwrodValidation(value: string): boolean {
+export function passwordValidation(value: string): boolean {
   if (value.length <= 8) {
     console.log('is too short');
     return false;

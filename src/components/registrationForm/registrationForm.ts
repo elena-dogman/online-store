@@ -1,4 +1,6 @@
 import * as baseComponent from '../../utils/baseComponent';
+import { validateInput } from '../../utils/validations/validation';
+import * as validationFunc from '../../utils/validations/validatinsComponents';
 export const authSideForm = baseComponent.createElement({
   tag: 'form',
   classNames: ['auth-side__reg-form'],
@@ -164,10 +166,13 @@ export const authFormButton = baseComponent.createElement({
 export function createForm(): void {
   authSideForm.append(regFormLabelName);
   regFormLabelName.append(regFormInputName);
+  regFormInputName.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelLastName);
   regFormLabelLastName.append(regFormInputLastName);
+  regFormInputLastName.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelMail);
   regFormLabelMail.append(regFormInputMail);
+  regFormInputMail.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelPassword);
   regFormLabelPassword.append(regFormInputPassword);
   authSideForm.append(regFormLabelBirth);
@@ -175,7 +180,11 @@ export function createForm(): void {
   containerForBirth.append(birthDay);
   containerForBirth.append(birthMonth);
   containerForBirth.append(birthYear);
+  birthDay.addEventListener('input', validationFunc.dayValidation);
+  birthMonth.addEventListener('input', validationFunc.monthValidation);
+  birthYear.addEventListener('input', validationFunc.yearValidation);
   containerForBirth.append(birthDayCheckButton);
+  birthDayCheckButton.addEventListener('click', validationFunc.checkNumber);
   authSideForm.append(adress);
   authSideForm.append(authFormButton);
   adress.append(adressLabelCountry);
@@ -186,4 +195,7 @@ export function createForm(): void {
   adressLabelCity.append(adressInputCity);
   adress.append(adressLabelStreet);
   adressLabelStreet.append(adressInputStreet);
+  adressInputPost.addEventListener('input', validationFunc.postCodeValidation);
+  adressInputCity.addEventListener('input', validateInput);
+  adressInputStreet.addEventListener('input', validateInput);
 }

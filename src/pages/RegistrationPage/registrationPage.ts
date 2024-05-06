@@ -1,8 +1,12 @@
 import * as baseComponent from '../../utils/baseComponent';
 import '../../utils/validations/validation';
 import * as formComponent from '../../components/registrationForm/registrationForm';
-const app = document.getElementById('app');
+import { createHeader } from '../../components/header/header';
 //! create loyalt
+export const registrationContainer = baseComponent.createElement({
+  tag: 'div',
+  classNames: ['container__registration'],
+});
 export const wrapper = baseComponent.createElement({
   tag: 'div',
   classNames: ['wrapper__registration', 'wrapper'],
@@ -21,12 +25,12 @@ const imageSideDescription = baseComponent.createElement({
   tag: 'div',
   classNames: ['img-side__description'],
   textContent:
-    'Valenky.com is the best place to find remote talent. We’ve been super impress by the quality of applicants.',
+    'Valenki store is the best place to find that unique component to highlight your individuality.',
 });
 export const imageSideCreator = baseComponent.createElement({
   tag: 'h2',
   classNames: ['img-side__creator'],
-  textContent: 'Retarded Coders 🐸',
+  textContent: 'Valenky.com',
 });
 // Auth Side
 export const authSide = baseComponent.createElement({
@@ -36,7 +40,7 @@ export const authSide = baseComponent.createElement({
 export const authSideTitle = baseComponent.createElement({
   tag: 'h2',
   classNames: ['auth-side__title'],
-  textContent: 'Create an acount',
+  textContent: 'Create an account',
 });
 export const signIn = baseComponent.createElement({
   tag: 'div',
@@ -54,9 +58,12 @@ export const signInButton = baseComponent.createElement({
   attributes: { disabled: 'true', type: 'submit' },
   textContent: 'Sign in',
 });
-export function buildRegistrationPage(): void {
+
+export function buildRegistrationPage(): HTMLElement {
+  const header = createHeader();
   formComponent.createForm();
-  app?.append(wrapper);
+  registrationContainer.append(header);
+  registrationContainer.append(wrapper);
   wrapper.append(imageSide);
   wrapper.append(authSide);
   imageSide.append(imageSideTitle);
@@ -67,4 +74,5 @@ export function buildRegistrationPage(): void {
   authSide.append(signIn);
   signIn.append(signInText);
   signIn.append(signInButton);
+  return registrationContainer;
 }
