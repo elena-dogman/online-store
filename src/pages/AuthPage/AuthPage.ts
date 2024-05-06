@@ -5,6 +5,8 @@ import {
   addInnerComponent,
 } from '../../utils/baseComponent';
 import { createHeader } from '../../components/header/header';
+import { authService } from '../../api/authService';
+import { validateInput } from '../../utils/validations/validation';
 export function createAuthPage(): HTMLElement {
   const authSectionContainerParams: ElementParams<'section'> = {
     tag: 'section',
@@ -15,25 +17,66 @@ export function createAuthPage(): HTMLElement {
     tag: 'img',
     classNames: ['auth_section-background_image'],
     attributes: {
-      src: '/assets/witcher_felt_boots_auth_page_2.jpg',
+      src: '/assets/authpage/witcher_felt_boots_auth_page_2.jpg',
       alt: 'Beautiful Felt Boots',
     },
   };
 
   const header = createHeader();
   const authFormBgImage = createElement(imageParams);
-  const authForm = createAuthForm();
+  const authFormArray = createAuthForm();
+  const authForm = authFormArray[0];
+  const emailInput = authFormArray[1];
+  const passwordInput = authFormArray[2];
+  const passwordInputIcon = authFormArray[3];
+  const submitButton = authFormArray[4];
 
-  // here will be validation after function of validation is ready (Lenya is in progress)
-  //   authForm[1].addEventListener(
-  //     'input', //validateInput)
-  //   );
-  //   authForm[2].addEventListener(
-  //     'input', //validateInput)
-  //   );
-  //
+  let validatedEmail = false;
+  let validatedPassword = false;
+  emailInput.addEventListener('input', () => {
+    validatedEmail = validateInput.call(emailInput as HTMLInputElement);
+    if (validatedEmail && validatedPassword) {
+      submitButton.removeAttribute('disabled');
+    } else {
+      submitButton.setAttribute('disabled', 'true');
+    }
+  });
+  passwordInput.addEventListener('input', () => {
+    validatedPassword = validateInput.call(passwordInput as HTMLInputElement);
+    if (validatedEmail && validatedPassword) {
+      submitButton.removeAttribute('disabled');
+    } else {
+      submitButton.setAttribute('disabled', 'true');
+    }
+  });
+
+  passwordInputIcon.addEventListener('click', (event) => {
+    event.preventDefault();
+    if (passwordInput.getAttribute('type') === 'password') {
+      passwordInput.setAttribute('type', 'text');
+      passwordInputIcon.setAttribute('src', '/assets/authpage/show.png');
+      passwordInputIcon.setAttribute('title', 'Click to hide your password');
+    } else {
+      passwordInput.setAttribute('type', 'password');
+      passwordInputIcon.setAttribute('src', '/assets/authpage/hide.png');
+      passwordInputIcon.setAttribute(
+        'title',
+        'Click to make your password visible',
+      );
+    }
+  });
+  authForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(authForm as HTMLFormElement);
+    const formDataObject: Record<string, string> = {};
+    for (const [key, value] of formData.entries()) {
+      formDataObject[key] = value as string;
+    }
+
+    authService(formDataObject);
+  });
   authSectionContainer.prepend(header);
   addInnerComponent(authSectionContainer, authFormBgImage);
-  addInnerComponent(authSectionContainer, authForm[0]);
+  addInnerComponent(authSectionContainer, authForm);
   return authSectionContainer;
 }

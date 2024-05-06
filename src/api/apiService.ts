@@ -24,6 +24,10 @@ export class ApiService {
     this.projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
     this.token = '';
     this.basePath = `https://${this.region}.commercetools.com/${this.projectKey}/`;
+    this.POST = this.POST.bind(this);
+    this.GET = this.GET.bind(this);
+    this.DELETE = this.DELETE.bind(this);
+    this.GETTOKEN = this.GETTOKEN.bind(this);
   }
 
   async init(): Promise<void> {
@@ -55,6 +59,7 @@ export class ApiService {
     params?: Record<string, string>,
   ): Promise<T | undefined> {
     let url = this.basePath + path;
+
     const requestOptions = {
       method: 'GET',
       headers: {
@@ -79,6 +84,7 @@ export class ApiService {
     body: Record<string, string>,
   ): Promise<T | undefined> {
     const url = this.basePath + path;
+
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -89,6 +95,9 @@ export class ApiService {
     try {
       const response = await fetch(url, requestOptions);
       const data = await response.json();
+      if (!response.ok) {
+        throw new Error('error');
+      }
       console.log(data);
       return data;
     } catch (error) {
@@ -119,10 +128,38 @@ export class ApiService {
       console.error('There was a problem with the fetch operation:', error);
     }
   }
+
+  async GETTOKEN<T>(
+    path: string,
+    body: URLSearchParams,
+  ): Promise<T | undefined> {
+    const url = 'https://auth.europe-west1.gcp.commercetools.com/oauth/' + path;
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${btoa(`${this.clientId}:${this.clientSecret}`)}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: body,
+    };
+    try {
+      const response = await fetch(url, requestOptions);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error('error');
+      }
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  }
 }
 
 const api = new ApiService();
 const apiPOST = api.POST;
 const apiGET = api.GET;
 const apiDELETE = api.DELETE;
-export { api, apiPOST, apiGET, apiDELETE };
+const apiGETTOKEN = api.GETTOKEN;
+export { api, apiPOST, apiGET, apiDELETE, apiGETTOKEN };
