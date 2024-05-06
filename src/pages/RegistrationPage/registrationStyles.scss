@@ -73,7 +73,6 @@
   font-size: 20rem;
   min-width: 30%;
   max-width: 45%;
-  background-color: rgba(0, 0, 0, 0.5);
 }
 .reg-form__adress {
   display: flex;
@@ -132,7 +131,13 @@
   padding: 18px 0;
   border-radius: 20px;
 }
-
+.button{
+  transition: all 0.5s ease;
+}
+.button:hover{
+  background-color: white;
+  color: black;
+}
 .reg-form__birhday-container {
   display: flex;
   gap: 20px;
