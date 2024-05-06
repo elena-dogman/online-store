@@ -33,7 +33,12 @@
 .--expanded {
   height: 300px;
   border-radius: 10px;
-  overflow: auto;
+  overflow: auto
+}
+.registration__page{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .adress__countries-item {
   color: black;
