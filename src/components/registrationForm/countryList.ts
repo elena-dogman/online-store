@@ -26,4 +26,3 @@ export function addCounties(this: HTMLElement): void {
   });
 
   countrysList.removeEventListener('click', addCounties);
-}
