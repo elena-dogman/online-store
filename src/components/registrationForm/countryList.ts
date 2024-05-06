@@ -9,7 +9,7 @@ const post: HTMLInputElement | HTMLElement =
 function addCounties(this: HTMLElement): void {
   this.textContent = '';
   this.classList.add('--expanded');
-  countrys.forEach((e) => {
+  countrys.forEach((e: string | null) => {
     const countrysItem = baseComponent.createElement({
       tag: 'div',
       classNames: ['adress__countrys-item'],
