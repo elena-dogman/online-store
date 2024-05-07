@@ -19,4 +19,12 @@ export default defineConfig({
   css: {
     devSourcemap: true,
   },
+  define: {
+    global: {},
+  },
+  resolve: {
+    alias: {
+      'node-fetch': 'isomorphic-fetch',
+    },
+  },
 });

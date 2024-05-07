@@ -34,4 +34,7 @@ module.exports = {
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
   },
   ignorePatterns: ['.eslintrc.cjs', 'vite.config.js', '.env'],
+  settings: {
+    'import/ignore': ['node_modules'],
+  },
 };

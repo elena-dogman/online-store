@@ -5,8 +5,8 @@ import {
   addInnerComponent,
 } from '../../utils/baseComponent';
 import { createHeader } from '../../components/header/header';
-import { authService } from '../../api/authService';
 import { validateInput } from '../../utils/validations/validation';
+import { loginUser } from '../../api/ApiService';
 export function createAuthPage(): HTMLElement {
   const authSectionContainerParams: ElementParams<'section'> = {
     tag: 'section',
@@ -68,12 +68,17 @@ export function createAuthPage(): HTMLElement {
   authForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const formData = new FormData(authForm as HTMLFormElement);
-    const formDataObject: Record<string, string> = {};
+    const formDataObject: { email: string; password: string } = {
+      email: '',
+      password: '',
+    };
     for (const [key, value] of formData.entries()) {
-      formDataObject[key] = value as string;
+      if (key in formDataObject) {
+        formDataObject[key as keyof typeof formDataObject] = value as string;
+      }
     }
 
-    authService(formDataObject);
+    loginUser(formDataObject);
   });
   authSectionContainer.prepend(header);
   addInnerComponent(authSectionContainer, authFormBgImage);

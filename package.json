@@ -13,6 +13,7 @@
     "test": "jest --coverage"
   },
   "devDependencies": {
+    "@types/node-fetch": "^2.6.11",
     "country-list-js": "^3.1.8",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
@@ -26,9 +27,15 @@
     "vite-plugin-eslint": "^1.8.1"
   },
   "dependencies": {
+    "@commercetools/history-sdk": "^4.3.0",
+    "@commercetools/importapi-sdk": "^5.4.0",
+    "@commercetools/platform-sdk": "^7.8.0",
+    "@commercetools/sdk-client-v2": "^2.5.0",
     "@typescript-eslint/eslint-plugin": "^7.7.0",
     "@typescript-eslint/parser": "^7.7.1",
     "dotenv": "^16.4.5",
+    "isomorphic-fetch": "^3.0.0",
+    "node-fetch": "^3.3.2",
     "normalize.css": "^8.0.1",
     "postcode-validator": "^3.8.20"
   }
