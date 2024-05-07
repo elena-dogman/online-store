@@ -1,10 +1,10 @@
-import { calculateAge, checkUpperCaseLowerCase } from '../others';
+import { calculateAge, checkUpperCaseLowerCase } from '../../utils/ageAndTextChecks';
 import country from 'country-list-js';
 import { postcodeValidator } from 'postcode-validator';
 import * as regFormComponents from '..//../components/registrationForm/registrationForm';
-const countriesList = regFormComponents.adressListCountry;
-const city = regFormComponents.adressInputCity;
-const street = regFormComponents.adressInputStreet;
+const countriesList = regFormComponents.addressListCountry;
+const city = regFormComponents.addressInputCity;
+const street = regFormComponents.addressInputStreet;
 const birthDay: HTMLInputElement | HTMLElement = regFormComponents.birthDay;
 const birthMonth: HTMLInputElement | HTMLElement = regFormComponents.birthMonth;
 const birthYear: HTMLInputElement | HTMLElement = regFormComponents.birthYear;

@@ -21,31 +21,31 @@ function searchCountry(this: HTMLInputElement): void {
   });
 }
 
-export function addCounties(this: HTMLElement): void {
+export function addCountries(this: HTMLElement): void {
   const countrys = country.names().sort();
-  const input = registrationComponent.adressInputCountry;
+  const input = registrationComponent.addressLabelCountry;
   const post: HTMLInputElement | HTMLElement =
-    registrationComponent.adressInputPost;
+    registrationComponent.addressInputPost;
   this.textContent = '';
   this.classList.add('--expanded');
-  input.classList.add('countrys-input--expanded');
+  input.classList.add('countries-input--expanded');
   input.addEventListener('input', searchCountry);
   countrys.forEach((e) => {
-    const countrysItem = baseComponent.createElement({
+    const countriesItem = baseComponent.createElement({
       tag: 'div',
       classNames: ['address__countries-item'],
     });
-    countrysItem.textContent = e;
-    this.append(countrysItem);
-    countrysItem.addEventListener('click', (element) => {
+    countriesItem.textContent = e;
+    this.append(countriesItem);
+    countriesItem.addEventListener('click', (element) => {
       element.stopPropagation();
       post.removeAttribute('disabled');
-      input.classList.remove('countrys-input--expanded');
+      input.classList.remove('countries-input--expanded');
       this.classList.remove('--expanded');
-      this.textContent = countrysItem.textContent;
-      this.addEventListener('click', addCounties);
+      this.textContent = countriesItem.textContent;
+      this.addEventListener('click', addCountries);
     });
   });
 
-  this.removeEventListener('click', addCounties);
+  this.removeEventListener('click', addCountries);
 }

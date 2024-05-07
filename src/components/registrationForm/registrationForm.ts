@@ -1,56 +1,54 @@
-import * as baseComponent from '../../utils/baseComponent';
 import { validateInput } from '../../utils/validations/validation';
 import * as validationFunc from '../../utils/validations/validatinsComponents';
-import { addCounties } from './countryList';
+import { addCountries } from './countryList';
+import { createElement } from '../../utils/baseComponent';
 
-export const authSideForm = baseComponent.createElement({
+export const authSideForm = createElement({
   tag: 'form',
   classNames: ['auth-side__reg-form'],
 });
-export const regFormLabelName = baseComponent.createElement({
+export const regFormLabelName = createElement({
   tag: 'label',
   classNames: ['reg-form__name-label', 'reg__label'],
   textContent: 'Name',
 });
-export const regFormInputName = baseComponent.createElement({
+export const regFormInputName = createElement({
   tag: 'input',
   classNames: ['reg-form__name-input', 'reg-input'],
   attributes: { type: 'text', 'data-validation-type': 'name' },
 });
-export const regFormLabelLastName = baseComponent.createElement({
+export const regFormLabelLastName = createElement({
   tag: 'label',
   classNames: ['reg-form__last-name-label', 'reg__label'],
   textContent: 'Last Name',
 });
-export const regFormInputLastName = baseComponent.createElement({
+export const regFormInputLastName = createElement({
   tag: 'input',
   classNames: ['reg-form__last-name-input', 'reg-input'],
   attributes: {
     type: 'text',
-
     'data-validation-type': 'name',
   },
 });
-export const regFormLabelMail = baseComponent.createElement({
+export const regFormLabelMail = createElement({
   tag: 'label',
   classNames: ['reg-form__mail-label', 'reg__label'],
   textContent: 'Email',
 });
-export const regFormInputMail = baseComponent.createElement({
+export const regFormInputMail = createElement({
   tag: 'input',
   classNames: ['reg-form__mail-input', 'reg-input'],
   attributes: {
     type: 'email',
-
     'data-validation-type': 'email',
   },
 });
-export const regFormLabelPassword = baseComponent.createElement({
+export const regFormLabelPassword = createElement({
   tag: 'label',
   classNames: ['reg-form__password-label', 'reg__label'],
   textContent: 'Password',
 });
-export const regFormInputPassword = baseComponent.createElement({
+export const regFormInputPassword = createElement({
   tag: 'input',
   classNames: ['reg-form__password-input', 'reg-input'],
   attributes: {
@@ -58,18 +56,16 @@ export const regFormInputPassword = baseComponent.createElement({
     'data-validation-type': 'password',
   },
 });
-
-export const regFormLabelBirth = baseComponent.createElement({
+export const regFormLabelBirth = createElement({
   tag: 'label',
-  classNames: ['reg-form__birhday-label', 'reg__label'],
+  classNames: ['reg-form__birthday-label', 'reg__label'],
   textContent: 'Date Of Birth',
 });
-const containerForBirth = baseComponent.createElement({
+const containerForBirth = createElement({
   tag: 'div',
-  classNames: ['reg-form__birhday-container'],
+  classNames: ['reg-form__birthday-container'],
 });
-
-export const birthDay = baseComponent.createElement({
+export const birthDay = createElement({
   tag: 'input',
   classNames: ['birthday__day', 'reg-input', 'birthday-input'],
   attributes: {
@@ -77,16 +73,15 @@ export const birthDay = baseComponent.createElement({
     maxLength: '2',
   },
 });
-export const birthMonth = baseComponent.createElement({
+export const birthMonth = createElement({
   tag: 'input',
   classNames: ['birthday__month', 'reg-input', 'birthday-input'],
   attributes: {
     type: 'text',
-
     maxLength: '2',
   },
 });
-export const birthYear = baseComponent.createElement({
+export const birthYear = createElement({
   tag: 'input',
   classNames: ['birthday__year', 'reg-input', 'birthday-input'],
   attributes: {
@@ -94,83 +89,74 @@ export const birthYear = baseComponent.createElement({
     maxLength: '4',
   },
 });
-
-export const birthDayCheckButton = baseComponent.createElement({
+export const birthDayCheckButton = createElement({
   tag: 'button',
-  classNames: ['bithday__check-btn', 'button'],
+  classNames: ['birthday__check-btn', 'reg-button'],
   textContent: 'Check',
   attributes: { type: 'button' },
 });
-
-const adress = baseComponent.createElement({
+const address = createElement({
   tag: 'div',
-  classNames: ['reg-form__adress'],
+  classNames: ['reg-form__address'],
 });
-export const adressLabelStreet = baseComponent.createElement({
+export const addressLabelStreet = createElement({
   tag: 'label',
-  classNames: ['adress__street-label', 'reg__label'],
+  classNames: ['address__street-label', 'reg__label'],
   textContent: 'Street',
 });
-export const adressInputStreet = baseComponent.createElement({
+export const addressInputStreet = createElement({
   tag: 'input',
-  classNames: ['adress__street-input', 'reg-input'],
+  classNames: ['address__street-input', 'reg-input'],
   attributes: {
     type: 'text',
     disabled: '',
     'data-validation-type': 'street',
   },
 });
-export const adressLabelCity = baseComponent.createElement({
+export const addressLabelCity = createElement({
   tag: 'label',
-  classNames: ['adress__city-label', 'reg__label'],
+  classNames: ['address__city-label', 'reg__label'],
   textContent: 'City',
 });
-export const adressInputCity = baseComponent.createElement({
+export const addressInputCity = createElement({
   tag: 'input',
-  classNames: ['adress__city-input', 'reg-input'],
+  classNames: ['address__city-input', 'reg-input'],
   attributes: {
     type: 'text',
     disabled: '',
     'data-validation-type': 'city',
   },
 });
-
-export const adressLabelPost = baseComponent.createElement({
+export const addressLabelPost = createElement({
   tag: 'label',
-  classNames: ['adress__post-label', 'reg__label'],
+  classNames: ['address__post-label', 'reg__label'],
   textContent: 'Post',
 });
-export const adressInputPost = baseComponent.createElement({
+export const addressInputPost = createElement({
   tag: 'input',
-  classNames: ['adress__post-input', 'reg-input'],
+  classNames: ['address__post-input', 'reg-input'],
   attributes: {
     type: 'text',
     disabled: '',
   },
 });
-
-export const adressLabelCountry = baseComponent.createElement({
+export const addressLabelCountry = createElement({
   tag: 'label',
-  classNames: ['adress__country-label', 'reg__label'],
+  classNames: ['address__country-label', 'reg__label'],
   textContent: 'Country',
 });
-
-export const adressListCountry = baseComponent.createElement({
+export const addressListCountry = createElement({
   tag: 'div',
-  classNames: ['adress__countrys-list'],
-  textContent: 'Chose your country',
+  classNames: ['address__countries-list'],
+  textContent: 'Choose your country',
 });
-
-export const adressInputCountry = baseComponent.createElement({
-  tag: 'input',
-  classNames: ['adress__countrys-input', 'reg-input'],
-  textContent: 'Chose your country',
-  attributes: { type: 'text' },
+const addressCountryWrapper = createElement({
+  tag: 'div',
+  classNames: ['address__country-wrapper'],
 });
-
-export const authFormButton = baseComponent.createElement({
+export const authFormButton = createElement({
   tag: 'button',
-  classNames: ['reg-form__button', 'button'],
+  classNames: ['reg-form__button', 'reg-button'],
   attributes: { disabled: '', type: 'button' },
   textContent: 'Create Account',
 });
@@ -187,7 +173,6 @@ export function createForm(): void {
   regFormInputMail.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelPassword);
   regFormLabelPassword.append(regFormInputPassword);
-  regFormInputPassword.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelBirth);
   regFormLabelBirth.append(containerForBirth);
   containerForBirth.append(birthDay);
@@ -198,19 +183,22 @@ export function createForm(): void {
   birthYear.addEventListener('input', validationFunc.yearValidation);
   containerForBirth.append(birthDayCheckButton);
   birthDayCheckButton.addEventListener('click', validationFunc.checkNumber);
-  authSideForm.append(adress);
+
+  addressCountryWrapper.append(addressLabelCountry);
+  addressCountryWrapper.append(addressListCountry);
+  address.append(addressCountryWrapper);
+  addressListCountry.addEventListener('click', addCountries);
+
+  address.append(addressLabelPost);
+  addressLabelPost.append(addressInputPost);
+  addressInputPost.addEventListener('input', validationFunc.postCodeValidation);
+  address.append(addressLabelCity);
+  addressLabelCity.append(addressInputCity);
+  addressInputCity.addEventListener('input', validateInput);
+  address.append(addressLabelStreet);
+  addressLabelStreet.append(addressInputStreet);
+  addressInputStreet.addEventListener('input', validateInput);
+
+  authSideForm.append(address);
   authSideForm.append(authFormButton);
-  adress.append(adressLabelCountry);
-  adressLabelCountry.append(adressListCountry);
-  adressLabelCountry.append(adressInputCountry);
-  adressListCountry.addEventListener('click', addCounties);
-  adress.append(adressLabelPost);
-  adressLabelPost.append(adressInputPost);
-  adress.append(adressLabelCity);
-  adressLabelCity.append(adressInputCity);
-  adress.append(adressLabelStreet);
-  adressLabelStreet.append(adressInputStreet);
-  adressInputPost.addEventListener('input', validationFunc.postCodeValidation);
-  adressInputCity.addEventListener('input', validateInput);
-  adressInputStreet.addEventListener('input', validateInput);
 }

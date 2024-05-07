@@ -20,29 +20,35 @@
 .container__registration {
   height: 100%;
 }
-.adress__country-label{
+.address__country-label {
   position: relative;
 }
-.adress__countrys-list {
-  top: 20px;
-  position: absolute;
-  background: white;
+.address__countries-list {
+background: white;
   color: black;
-  width: 100%;;
-  height: 20px;
+  width: 80%;
   transition: all 0.5s ease;
   border-radius: 10px;
   padding-left: 10px;
   border: 1px solid;
   z-index: 10;
- 
+  position: absolute;
+  left: 80px;
+  top: 100%;
+  transform: translateY(-100%);
 }
-.adress__countrys-input{
+.address__countries-input {
   transition: all 0.5s ease;
   width: 0%;
   opacity: 0;
 }
-.countrys-input--expanded{
+
+.address__country-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.countries-input--expanded {
   opacity: 1;
   width: 100%;
 }
@@ -62,7 +68,6 @@
   color: black;
   padding: 3px 0 0 10px;
   border-bottom: 1px solid black;
-  
 }
 
 .img-side__title {
@@ -73,8 +78,9 @@
   font-size: 20rem;
   min-width: 30%;
   max-width: 45%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
-.reg-form__adress {
+.reg-form__address {
   display: flex;
   flex-direction: column;
 }
@@ -104,7 +110,7 @@
 .reg-input {
   border: none;
   border-bottom: 1px solid black;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 .reg-input:focus {
   color: black;
@@ -116,6 +122,7 @@
   color: $text-color-accent;
   background: none;
   border: none;
+  cursor: pointer;
 }
 .auth-side__sign-in {
   display: flex;
@@ -128,17 +135,15 @@
   background-color: black;
   color: white;
   font-size: 20rem;
-  padding: 18px 0;
+  padding: 15px 0;
   border-radius: 20px;
 }
-.button{
+.reg-button{
   transition: all 0.5s ease;
+  cursor: pointer;
 }
-.button:hover{
-  background-color: white;
-  color: black;
-}
-.reg-form__birhday-container {
+
+.reg-form__birthday-container {
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
@@ -154,10 +159,21 @@
   bottom: 5px;
   color: red;
 }
-.bithday__check-btn {
-  color: white;
-  background-color: black;
-  font-size: 20rem;
-  padding: 0 10px;
+.birthday__check-btn {
+  background-color: $text-color-contrast;
+  color: $text-color-base;;
+  font-size: 18rem;
+  padding: 5px 10px;
   border-radius: 10px;
+  border: $button-border;
+}
+
+@media (hover: hover) and (pointer: fine) {
+.reg-button:hover {
+box-shadow: $button-hover-box-shadow;
+  }
+.sign-in__button:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
 }
