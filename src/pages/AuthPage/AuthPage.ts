@@ -4,6 +4,7 @@ import {
   ElementParams,
   addInnerComponent,
 } from '../../utils/baseComponent';
+import { ClientResponse } from '@commercetools/platform-sdk';
 import { createHeader } from '../../components/header/header';
 import { validateInput } from '../../utils/validations/validation';
 import { loginUser } from '../../api/ApiService';
@@ -21,7 +22,11 @@ export function createAuthPage(): HTMLElement {
       alt: 'Beautiful Felt Boots',
     },
   };
-
+  const errorLoginParams: ElementParams<'span'> = {
+    tag: 'span',
+    classNames: ['auth_error'],
+  };
+  const errorLogin = createElement(errorLoginParams);
   const header = createHeader();
   const authFormBgImage = createElement(imageParams);
   const authFormArray = createAuthForm();
@@ -78,7 +83,14 @@ export function createAuthPage(): HTMLElement {
       }
     }
 
-    loginUser(formDataObject);
+    const response = (await loginUser(formDataObject)) as ClientResponse;
+    if (response.statusCode === 400) {
+      errorLogin.textContent = 'Wrong email and/or password!';
+
+      authForm.insertBefore(errorLogin, submitButton);
+    } else {
+      authForm.removeChild(errorLogin);
+    }
   });
   authSectionContainer.prepend(header);
   addInnerComponent(authSectionContainer, authFormBgImage);

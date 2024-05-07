@@ -1,6 +1,6 @@
 import { ctpClient } from './BuildClient';
 // import { showToast } from '../components/toast/toast';
-
+import router from '../router/router';
 import {
   // ApiRoot,
   createApiBuilderFromCtpClient,
@@ -23,7 +23,7 @@ export const loginUser = async (body: {
 }): Promise<ClientResponse<CustomerSignInResult> | undefined | unknown> => {
   try {
     const data = await apiRoot.login().post({ body }).execute();
-    console.log(data, '123');
+    router.navigate('/');
     return data;
   } catch (error) {
     return error;

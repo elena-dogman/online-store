@@ -96,3 +96,12 @@
   cursor: pointer;
   @include hoverButton;
 }
+.auth_error {
+  color: $text-color-error;
+  position: absolute;
+  top: 56%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  text-align: center;
+}
