@@ -63,9 +63,9 @@ export function createAuthForm(): HTMLElement[] {
   const authFormFooterSpanParams: ElementParams<'a'> = {
     tag: 'a',
     attributes: {
-      href: '/registration',
+      href: '/register',
     },
-    textContent: 'Registration',
+    textContent: 'Register',
     classNames: ['auth_form_footer_link-to-registration'],
   };
 
