@@ -1,4 +1,7 @@
-import { calculateAge, checkUpperCaseLowerCase } from '../../utils/ageAndTextChecks';
+import {
+  calculateAge,
+  checkUpperCaseLowerCase,
+} from '../../utils/ageAndTextChecks';
 import country from 'country-list-js';
 import { postcodeValidator } from 'postcode-validator';
 import * as regFormComponents from '..//../components/registrationForm/registrationForm';
