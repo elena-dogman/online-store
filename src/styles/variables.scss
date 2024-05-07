@@ -4,6 +4,7 @@ $text-color-contrast: rgb(255, 255, 255);
 $text-color-accent: rgb(57, 172, 217);
 $not-found-base-color: rgb(86, 111, 167);
 $not-active-color: rgb(151, 148, 148);
+$text-color-error: rgb(255, 64, 64);
 
 // fonts
 $font-family-base: 'Poppins', sans-serif;
@@ -17,6 +18,12 @@ $font-size-big-heading: 64rem;
 //effects
 $button-hover-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 $button-disabled-background: gray;
+@mixin hoverButton {
+  &:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+  }
+}
 
 //other
 $button-border: 1px solid #bbb5b5;

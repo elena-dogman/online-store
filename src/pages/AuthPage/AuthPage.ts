@@ -4,9 +4,10 @@ import {
   ElementParams,
   addInnerComponent,
 } from '../../utils/baseComponent';
+import { ClientResponse } from '@commercetools/platform-sdk';
 import { createHeader } from '../../components/header/header';
-import { authService } from '../../api/authService';
 import { validateInput } from '../../utils/validations/validation';
+import { loginUser } from '../../api/ApiService';
 export function createAuthPage(): HTMLElement {
   const authSectionContainerParams: ElementParams<'section'> = {
     tag: 'section',
@@ -21,7 +22,11 @@ export function createAuthPage(): HTMLElement {
       alt: 'Beautiful Felt Boots',
     },
   };
-
+  const errorLoginParams: ElementParams<'span'> = {
+    tag: 'span',
+    classNames: ['auth_error'],
+  };
+  const errorLogin = createElement(errorLoginParams);
   const header = createHeader();
   const authFormBgImage = createElement(imageParams);
   const authFormArray = createAuthForm();
@@ -68,12 +73,24 @@ export function createAuthPage(): HTMLElement {
   authForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const formData = new FormData(authForm as HTMLFormElement);
-    const formDataObject: Record<string, string> = {};
+    const formDataObject: { email: string; password: string } = {
+      email: '',
+      password: '',
+    };
     for (const [key, value] of formData.entries()) {
-      formDataObject[key] = value as string;
+      if (key in formDataObject) {
+        formDataObject[key as keyof typeof formDataObject] = value as string;
+      }
     }
 
-    authService(formDataObject);
+    const response = (await loginUser(formDataObject)) as ClientResponse;
+    if (response.statusCode === 400) {
+      errorLogin.textContent = 'Wrong email and/or password!';
+
+      authForm.insertBefore(errorLogin, submitButton);
+    } else {
+      authForm.removeChild(errorLogin);
+    }
   });
   authSectionContainer.prepend(header);
   addInnerComponent(authSectionContainer, authFormBgImage);

@@ -1,6 +1,9 @@
-import { api } from './api/apiService';
+// import { api } from './api/apiService';
 import './pages/RegistrationPage/registrationStyles.scss';
 import router from './router/router';
+import { getProject } from './api/ApiService';
 
-await api.init();
+getProject();
+
+// await api.init();
 router.handleLocationChange();
