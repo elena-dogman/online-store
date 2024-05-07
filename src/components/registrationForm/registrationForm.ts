@@ -154,11 +154,20 @@ export const adressLabelCountry = baseComponent.createElement({
   classNames: ['adress__country-label', 'reg__label'],
   textContent: 'Country',
 });
+
 export const adressListCountry = baseComponent.createElement({
   tag: 'div',
   classNames: ['adress__countrys-list'],
   textContent: 'Chose your country',
 });
+
+export const adressInputCountry = baseComponent.createElement({
+  tag: 'input',
+  classNames: ['adress__countrys-input', 'reg-input'],
+  textContent: 'Chose your country',
+  attributes: { type: 'text' },
+});
+
 export const authFormButton = baseComponent.createElement({
   tag: 'button',
   classNames: ['reg-form__button', 'button'],
@@ -178,6 +187,7 @@ export function createForm(): void {
   regFormInputMail.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelPassword);
   regFormLabelPassword.append(regFormInputPassword);
+  regFormInputPassword.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelBirth);
   regFormLabelBirth.append(containerForBirth);
   containerForBirth.append(birthDay);
@@ -192,6 +202,7 @@ export function createForm(): void {
   authSideForm.append(authFormButton);
   adress.append(adressLabelCountry);
   adressLabelCountry.append(adressListCountry);
+  adressLabelCountry.append(adressInputCountry);
   adressListCountry.addEventListener('click', addCounties);
   adress.append(adressLabelPost);
   adressLabelPost.append(adressInputPost);
