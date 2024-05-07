@@ -27,7 +27,6 @@ export const regFormInputLastName = createElement({
   classNames: ['reg-form__last-name-input', 'reg-input'],
   attributes: {
     type: 'text',
-
     'data-validation-type': 'name',
   },
 });
@@ -41,7 +40,6 @@ export const regFormInputMail = createElement({
   classNames: ['reg-form__mail-input', 'reg-input'],
   attributes: {
     type: 'email',
-
     'data-validation-type': 'email',
   },
 });
@@ -58,17 +56,15 @@ export const regFormInputPassword = createElement({
     'data-validation-type': 'password',
   },
 });
-
 export const regFormLabelBirth = createElement({
   tag: 'label',
-  classNames: ['reg-form__birhday-label', 'reg__label'],
+  classNames: ['reg-form__birthday-label', 'reg__label'],
   textContent: 'Date Of Birth',
 });
 const containerForBirth = createElement({
   tag: 'div',
   classNames: ['reg-form__birthday-container'],
 });
-
 export const birthDay = createElement({
   tag: 'input',
   classNames: ['birthday__day', 'reg-input', 'birthday-input'],
@@ -82,7 +78,6 @@ export const birthMonth = createElement({
   classNames: ['birthday__month', 'reg-input', 'birthday-input'],
   attributes: {
     type: 'text',
-
     maxLength: '2',
   },
 });
@@ -94,70 +89,70 @@ export const birthYear = createElement({
     maxLength: '4',
   },
 });
-
 export const birthDayCheckButton = createElement({
   tag: 'button',
-  classNames: ['bithday__check-btn', 'reg-button'],
+  classNames: ['birthday__check-btn', 'reg-button'],
   textContent: 'Check',
   attributes: { type: 'button' },
 });
-
-const adress = createElement({
+const address = createElement({
   tag: 'div',
   classNames: ['reg-form__address'],
 });
-export const adressLabelStreet = createElement({
+export const addressLabelStreet = createElement({
   tag: 'label',
-  classNames: ['adress__street-label', 'reg__label'],
+  classNames: ['address__street-label', 'reg__label'],
   textContent: 'Street',
 });
-export const adressInputStreet = createElement({
+export const addressInputStreet = createElement({
   tag: 'input',
-  classNames: ['adress__street-input', 'reg-input'],
+  classNames: ['address__street-input', 'reg-input'],
   attributes: {
     type: 'text',
     disabled: '',
     'data-validation-type': 'street',
   },
 });
-export const adressLabelCity = createElement({
+export const addressLabelCity = createElement({
   tag: 'label',
-  classNames: ['adress__city-label', 'reg__label'],
+  classNames: ['address__city-label', 'reg__label'],
   textContent: 'City',
 });
-export const adressInputCity = createElement({
+export const addressInputCity = createElement({
   tag: 'input',
-  classNames: ['adress__city-input', 'reg-input'],
+  classNames: ['address__city-input', 'reg-input'],
   attributes: {
     type: 'text',
     disabled: '',
     'data-validation-type': 'city',
   },
 });
-
-export const adressLabelPost = createElement({
+export const addressLabelPost = createElement({
   tag: 'label',
-  classNames: ['adress__post-label', 'reg__label'],
+  classNames: ['address__post-label', 'reg__label'],
   textContent: 'Post',
 });
 export const addressInputPost = createElement({
   tag: 'input',
-  classNames: ['adress__post-input', 'reg-input'],
+  classNames: ['address__post-input', 'reg-input'],
   attributes: {
     type: 'text',
     disabled: '',
   },
 });
-
 export const addressLabelCountry = createElement({
   tag: 'label',
   classNames: ['address__country-label', 'reg__label'],
   textContent: 'Country',
 });
-export const adressListCountry = createElement({
+export const addressListCountry = createElement({
   tag: 'div',
-  classNames: ['adress__countrys-list'],
-  textContent: 'Chose your country',
+  classNames: ['address__countries-list'],
+  textContent: 'Choose your country',
+});
+const addressCountryWrapper = createElement({
+  tag: 'div',
+  classNames: ['address__country-wrapper'],
 });
 export const authFormButton = createElement({
   tag: 'button',
@@ -188,18 +183,22 @@ export function createForm(): void {
   birthYear.addEventListener('input', validationFunc.yearValidation);
   containerForBirth.append(birthDayCheckButton);
   birthDayCheckButton.addEventListener('click', validationFunc.checkNumber);
-  authSideForm.append(adress);
-  authSideForm.append(authFormButton);
-  adress.append(addressLabelCountry);
-  addressLabelCountry.append(adressListCountry);
-  adressListCountry.addEventListener('click', addCountries);
-  adress.append(adressLabelPost);
-  adressLabelPost.append(addressInputPost);
-  adress.append(adressLabelCity);
-  adressLabelCity.append(adressInputCity);
-  adress.append(adressLabelStreet);
-  adressLabelStreet.append(adressInputStreet);
+
+  addressCountryWrapper.append(addressLabelCountry);
+  addressCountryWrapper.append(addressListCountry);
+  address.append(addressCountryWrapper);
+  addressListCountry.addEventListener('click', addCountries);
+
+  address.append(addressLabelPost);
+  addressLabelPost.append(addressInputPost);
   addressInputPost.addEventListener('input', validationFunc.postCodeValidation);
-  adressInputCity.addEventListener('input', validateInput);
-  adressInputStreet.addEventListener('input', validateInput);
+  address.append(addressLabelCity);
+  addressLabelCity.append(addressInputCity);
+  addressInputCity.addEventListener('input', validateInput);
+  address.append(addressLabelStreet);
+  addressLabelStreet.append(addressInputStreet);
+  addressInputStreet.addEventListener('input', validateInput);
+
+  authSideForm.append(address);
+  authSideForm.append(authFormButton);
 }
