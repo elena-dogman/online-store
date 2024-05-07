@@ -1,6 +1,6 @@
 import { validateInput } from '../../utils/validations/validation';
 import * as validationFunc from '../../utils/validations/validatinsComponents';
-import { addCounties } from './countryList';
+import { addCountries } from './countryList';
 import { createElement } from '../../utils/baseComponent';
 
 export const authSideForm = createElement({
@@ -66,7 +66,7 @@ export const regFormLabelBirth = createElement({
 });
 const containerForBirth = createElement({
   tag: 'div',
-  classNames: ['reg-form__birhday-container'],
+  classNames: ['reg-form__birthday-container'],
 });
 
 export const birthDay = createElement({
@@ -104,7 +104,7 @@ export const birthDayCheckButton = createElement({
 
 const adress = createElement({
   tag: 'div',
-  classNames: ['reg-form__adress'],
+  classNames: ['reg-form__address'],
 });
 export const adressLabelStreet = createElement({
   tag: 'label',
@@ -140,7 +140,7 @@ export const adressLabelPost = createElement({
   classNames: ['adress__post-label', 'reg__label'],
   textContent: 'Post',
 });
-export const adressInputPost = createElement({
+export const addressInputPost = createElement({
   tag: 'input',
   classNames: ['adress__post-input', 'reg-input'],
   attributes: {
@@ -149,9 +149,9 @@ export const adressInputPost = createElement({
   },
 });
 
-export const adressLabelCountry = createElement({
+export const addressLabelCountry = createElement({
   tag: 'label',
-  classNames: ['adress__country-label', 'reg__label'],
+  classNames: ['address__country-label', 'reg__label'],
   textContent: 'Country',
 });
 export const adressListCountry = createElement({
@@ -190,16 +190,16 @@ export function createForm(): void {
   birthDayCheckButton.addEventListener('click', validationFunc.checkNumber);
   authSideForm.append(adress);
   authSideForm.append(authFormButton);
-  adress.append(adressLabelCountry);
-  adressLabelCountry.append(adressListCountry);
-  adressListCountry.addEventListener('click', addCounties);
+  adress.append(addressLabelCountry);
+  addressLabelCountry.append(adressListCountry);
+  adressListCountry.addEventListener('click', addCountries);
   adress.append(adressLabelPost);
-  adressLabelPost.append(adressInputPost);
+  adressLabelPost.append(addressInputPost);
   adress.append(adressLabelCity);
   adressLabelCity.append(adressInputCity);
   adress.append(adressLabelStreet);
   adressLabelStreet.append(adressInputStreet);
-  adressInputPost.addEventListener('input', validationFunc.postCodeValidation);
+  addressInputPost.addEventListener('input', validationFunc.postCodeValidation);
   adressInputCity.addEventListener('input', validateInput);
   adressInputStreet.addEventListener('input', validateInput);
 }
