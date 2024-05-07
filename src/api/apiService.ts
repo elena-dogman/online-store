@@ -1,3 +1,4 @@
+import { showToast } from '../components/toast/toast';
 export class ApiService {
   clientId: string;
 
@@ -95,8 +96,9 @@ export class ApiService {
     try {
       const response = await fetch(url, requestOptions);
       const data = await response.json();
-      if (!response.ok) {
-        throw new Error('error');
+      console.log(data);
+      if (data.statusCode !== 200) {
+        showToast(data.message);
       }
       console.log(data);
       return data;

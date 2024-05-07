@@ -12,7 +12,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 1440px;
+  max-width: 1440px;
   user-select: none;
   height: auto;
   z-index: -1;
@@ -62,6 +62,7 @@
 }
 .password_icon {
   cursor: pointer;
+  @include hoverButton;
 }
 .submit_button {
   all: unset;
@@ -83,12 +84,15 @@
 }
 .auth_form_footer {
   font-size: 12rem;
+  display: flex;
+  gap: 5px;
 }
 .auth_form_footer_link-to-registration {
-  color: #000;
+  display: block;
+  color: $text-color-accent;
+  background: none;
   text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-    cursor: pointer;
-  }
+  border: none;
+  cursor: pointer;
+  @include hoverButton;
 }
