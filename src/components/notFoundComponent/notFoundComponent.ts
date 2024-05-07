@@ -12,7 +12,7 @@ export function createNotFoundPage(): HTMLElement {
     tag: 'img',
     classNames: ['not-found-image'],
     attributes: {
-      src: '/assets/404-img.png',
+      src: '/assets/notFoundComponent/404-img.png',
       alt: 'Not Found',
     },
   };

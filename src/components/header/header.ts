@@ -55,7 +55,7 @@ export function createHeader(): HTMLElement {
   const basketImage = createElement({
     tag: 'img',
     attributes: {
-      src: '/assets/basket.png',
+      src: '/assets/header/basket.png',
       alt: 'Basket',
     },
   });
@@ -67,7 +67,7 @@ export function createHeader(): HTMLElement {
   const userImage = createElement({
     tag: 'img',
     attributes: {
-      src: '/assets/user-profile.png',
+      src: '/assets/header/user-profile.png',
       alt: 'User',
     },
   });
