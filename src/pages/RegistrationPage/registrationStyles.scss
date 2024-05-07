@@ -35,7 +35,6 @@
   padding-left: 10px;
   border: 1px solid;
   z-index: 10;
- 
 }
 .adress__countrys-input{
   transition: all 0.5s ease;
@@ -62,7 +61,6 @@
   color: black;
   padding: 3px 0 0 10px;
   border-bottom: 1px solid black;
-  
 }
 
 .img-side__title {
@@ -73,6 +71,7 @@
   font-size: 20rem;
   min-width: 30%;
   max-width: 45%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 .reg-form__adress {
   display: flex;
@@ -128,16 +127,14 @@
   background-color: black;
   color: white;
   font-size: 20rem;
-  padding: 18px 0;
+  padding: 15px 0;
   border-radius: 20px;
 }
-.button{
+.reg-button{
   transition: all 0.5s ease;
+  cursor: pointer;
 }
-.button:hover{
-  background-color: white;
-  color: black;
-}
+
 .reg-form__birhday-container {
   display: flex;
   gap: 20px;
@@ -160,4 +157,9 @@
   font-size: 20rem;
   padding: 0 10px;
   border-radius: 10px;
+}
+@media (hover: hover) and (pointer: fine) {
+.reg-button:hover {
+box-shadow: $button-hover-box-shadow;
+  }
 }
