@@ -154,6 +154,12 @@ const addressCountryWrapper = createElement({
   tag: 'div',
   classNames: ['address__country-wrapper'],
 });
+export const adressInputCountry = createElement({
+  tag: 'input',
+  classNames: ['address__countries-input', 'reg-input'],
+  textContent: 'Chose your country',
+  attributes: { type: 'text' },
+});
 export const authFormButton = createElement({
   tag: 'button',
   classNames: ['reg-form__button', 'reg-button'],
@@ -184,9 +190,10 @@ export function createForm(): void {
   containerForBirth.append(birthDayCheckButton);
   birthDayCheckButton.addEventListener('click', validationFunc.checkNumber);
 
-  addressCountryWrapper.append(addressLabelCountry);
+  addressCountryWrapper.append(adressInputCountry);
+  addressLabelCountry.append(addressCountryWrapper);
   addressCountryWrapper.append(addressListCountry);
-  address.append(addressCountryWrapper);
+  address.append(addressLabelCountry);
   addressListCountry.addEventListener('click', addCountries);
 
   address.append(addressLabelPost);

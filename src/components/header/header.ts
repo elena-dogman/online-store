@@ -1,4 +1,5 @@
-import { addInnerComponent, createElement, ElementParams } from '../../utils/baseComponent';
+import { addInnerComponent, createElement, ElementParams, setAttribute } from '../../utils/baseComponent';
+import { appEvents } from '../../utils/eventEmitter';
 
 export function createHeader(): HTMLElement {
   const headerParams: ElementParams<'div'> = {
@@ -86,14 +87,14 @@ export function createHeader(): HTMLElement {
     classNames: ['header__auth-button', 'register-button'],
     textContent: 'Register',
   });
-  const loginButton = createElement({
+  const authButton = createElement({
     tag: 'a',
     attributes: { href: '/login' },
     classNames: ['header__auth-button', 'login-button'],
     textContent: 'Log In',
   });
   addInnerComponent(authContainer, registerButton);
-  addInnerComponent(authContainer, loginButton);
+  addInnerComponent(authContainer, authButton);
 
   addInnerComponent(rightContainer, iconsContainer);
   addInnerComponent(rightContainer, authContainer);
@@ -102,5 +103,22 @@ export function createHeader(): HTMLElement {
   addInnerComponent(header, navContainer);
   addInnerComponent(header, rightContainer);
 
+  function handleLogout() : void {
+    appEvents.emit('logout', undefined);
+  }
+
+  function updateAuthButton(isLoggedIn: boolean) : void {
+    if (authButton instanceof HTMLAnchorElement) {
+      authButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
+      setAttribute(authButton, 'href', isLoggedIn ? '#' : '/login');
+      if (isLoggedIn) {
+        authButton.onclick = handleLogout;
+      } else {
+        authButton.removeAttribute('onclick');
+      }
+    }
+  }
+  appEvents.on('login', () => updateAuthButton(true));
+  appEvents.on('logout', () => updateAuthButton(false));
   return header;
 }
