@@ -1,6 +1,12 @@
-import { calculateAge, checkUpperCaseLowerCase } from '../../utils/ageAndTextChecks';
+import {
+  calculateAge,
+  checkUpperCaseLowerCase,
+} from '../../utils/ageAndTextChecks';
 import country from 'country-list-js';
-import { postcodeValidator } from 'postcode-validator';
+import {
+  postcodeValidator,
+  postcodeValidatorExistsForCountry,
+} from 'postcode-validator';
 import * as regFormComponents from '..//../components/registrationForm/registrationForm';
 const countriesList = regFormComponents.addressListCountry;
 const city = regFormComponents.addressInputCity;
@@ -145,11 +151,16 @@ export function postCodeValidation(this: HTMLInputElement): void {
   const countryNames = country.names();
   const countryIndex = countryNames.indexOf(countriesList.textContent);
   const postCode = indextPostsArr[countryIndex];
-  if (postcodeValidator(this.value, postCode)) {
+  if (postcodeValidatorExistsForCountry(this.value)) {
+    if (postcodeValidator(this.value, postCode)) {
+      city.removeAttribute('disabled');
+      console.log('true');
+    } else {
+      city.setAttribute('disabled', '');
+      console.log('false');
+    }
+  } else {
     city.removeAttribute('disabled');
     console.log('true');
-  } else {
-    city.setAttribute('disabled', '');
-    console.log('false');
   }
 }
