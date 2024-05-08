@@ -84,12 +84,15 @@ export function createAuthPage(): HTMLElement {
     }
 
     const response = (await loginUser(formDataObject)) as ClientResponse;
+
     if (response.statusCode === 400) {
       errorLogin.textContent = 'Wrong email and/or password!';
 
       authForm.insertBefore(errorLogin, submitButton);
     } else {
-      authForm.removeChild(errorLogin);
+      if (errorLogin && errorLogin.parentNode === authForm) {
+        authForm.removeChild(errorLogin);
+      }
     }
   });
   authSectionContainer.prepend(header);
