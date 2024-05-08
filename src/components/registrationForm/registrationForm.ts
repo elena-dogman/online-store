@@ -27,7 +27,7 @@ export const regFormInputLastName = createElement({
   classNames: ['reg-form__last-name-input', 'reg-input'],
   attributes: {
     type: 'text',
-    'data-validation-type': 'name',
+    'data-validation-type': 'lastName',
   },
 });
 export const regFormLabelMail = createElement({
@@ -62,7 +62,7 @@ export const regFormLabelBirth = createElement({
   textContent: 'Date Of Birth',
 });
 const containerForBirth = createElement({
-  tag: 'div',
+  tag: 'label',
   classNames: ['reg-form__birthday-container'],
 });
 export const birthDay = createElement({
@@ -71,6 +71,7 @@ export const birthDay = createElement({
   attributes: {
     type: 'text',
     maxLength: '2',
+    'data-validation-type': 'day',
   },
 });
 export const birthMonth = createElement({
@@ -79,6 +80,7 @@ export const birthMonth = createElement({
   attributes: {
     type: 'text',
     maxLength: '2',
+    'data-validation-type': 'month',
   },
 });
 export const birthYear = createElement({
@@ -87,6 +89,7 @@ export const birthYear = createElement({
   attributes: {
     type: 'text',
     maxLength: '4',
+    'data-validation-type': 'year',
   },
 });
 export const birthDayCheckButton = createElement({
@@ -138,6 +141,7 @@ export const addressInputPost = createElement({
   attributes: {
     type: 'text',
     disabled: '',
+    'data-validation-type': 'post',
   },
 });
 export const addressLabelCountry = createElement({
@@ -179,14 +183,15 @@ export function createForm(): void {
   regFormInputMail.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelPassword);
   regFormLabelPassword.append(regFormInputPassword);
+  regFormInputPassword.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelBirth);
   regFormLabelBirth.append(containerForBirth);
   containerForBirth.append(birthDay);
   containerForBirth.append(birthMonth);
   containerForBirth.append(birthYear);
-  birthDay.addEventListener('input', validationFunc.dayValidation);
-  birthMonth.addEventListener('input', validationFunc.monthValidation);
-  birthYear.addEventListener('input', validationFunc.yearValidation);
+  birthDay.addEventListener('input', validateInput);
+  birthMonth.addEventListener('input', validateInput);
+  birthYear.addEventListener('input', validateInput);
   containerForBirth.append(birthDayCheckButton);
   birthDayCheckButton.addEventListener('click', validationFunc.checkNumber);
 
@@ -198,7 +203,7 @@ export function createForm(): void {
 
   address.append(addressLabelPost);
   addressLabelPost.append(addressInputPost);
-  addressInputPost.addEventListener('input', validationFunc.postCodeValidation);
+  addressInputPost.addEventListener('input', validateInput);
   address.append(addressLabelCity);
   addressLabelCity.append(addressInputCity);
   addressInputCity.addEventListener('input', validateInput);

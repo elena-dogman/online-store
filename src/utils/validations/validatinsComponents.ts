@@ -8,6 +8,7 @@ import {
   postcodeValidatorExistsForCountry,
 } from 'postcode-validator';
 import * as regFormComponents from '..//../components/registrationForm/registrationForm';
+import * as errors from './validationsErrors';
 const countriesList = regFormComponents.addressListCountry;
 const city = regFormComponents.addressInputCity;
 const street = regFormComponents.addressInputStreet;
@@ -16,112 +17,189 @@ const birthMonth: HTMLInputElement | HTMLElement = regFormComponents.birthMonth;
 const birthYear: HTMLInputElement | HTMLElement = regFormComponents.birthYear;
 const regEx = /^[a-zA-Z]+$/;
 const mailRe = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}/;
-export function mailValidation(mail: string): boolean {
+
+function incorectValidation(
+  parent: HTMLLabelElement,
+  errorSpan: HTMLSpanElement,
+  errorMessage: string,
+): void {
+  errorSpan.textContent = errorMessage;
+  parent.append(errorSpan);
+}
+export function mailValidation(
+  mail: string,
+  parent: HTMLLabelElement,
+): boolean {
+  const err = errors.errorEmailReg;
   if (mail.length <= 8) {
-    console.log('is too short');
+    incorectValidation(parent, err, 'is too short');
     return false;
   }
   if (!mailRe.test(String(mail).toLowerCase())) {
-    console.log('must contain @mail');
+    incorectValidation(parent, err, 'must contain @mail');
     return false;
   }
+  incorectValidation(parent, err, '');
   return true;
 }
-export function validationBirth(value: string): void {
+export function validationBirth(value: string, parent: HTMLLabelElement): void {
   const regex = /^(0[1-9]|1[0-2]).(0[1-9]|[12][0-9]|3[01]).\d{4}$/;
-
+  const err = errors.errorBirthReg;
   if (!regex.test(value)) {
-    console.log('Ввод должен быть формата "01.02.1997"');
+    incorectValidation(parent, err, 'Ввод должен быть формата "01.02.1997"');
   } else {
     console.log(3);
   }
 }
-export function nameValidation(value: string): boolean {
+export function nameValidation(
+  value: string,
+  parent: HTMLLabelElement,
+): boolean {
+  const err = errors.errorNameReg;
   if (value.length <= 1) {
-    console.log('Name is too short');
+    incorectValidation(parent, err, 'Name is too short');
     return false;
   }
   if (!/^[a-zA-Z]+$/.test(value)) {
-    console.log('Name must contain only English letters');
+    incorectValidation(parent, err, 'Name must contain only English letters');
     return false;
   }
-  console.log('Name is valid');
+  incorectValidation(parent, err, '');
+  return true;
+}
+export function lastNameValidation(
+  value: string,
+  parent: HTMLLabelElement,
+): boolean {
+  const err = errors.errorLastNameReg;
+  if (value.length <= 1) {
+    incorectValidation(parent, err, 'Name is too short');
+    return false;
+  }
+  if (!/^[a-zA-Z]+$/.test(value)) {
+    incorectValidation(parent, err, 'Name must contain only English letters');
+    return false;
+  }
+  incorectValidation(parent, err, '');
   return true;
 }
 
-export function cityValidation(value: string): boolean {
+export function cityValidation(
+  value: string,
+  parent: HTMLLabelElement,
+): boolean {
+  const err = errors.errorCityReg;
   if (value.length <= 1) {
     street.setAttribute('disabled', '');
-    console.log('Name is too short');
+    incorectValidation(parent, err, 'Name is too short');
     return false;
   }
   if (!/^[a-zA-Z]+$/.test(value)) {
     street.setAttribute('disabled', '');
-    console.log('Name must contain only English letters');
+    incorectValidation(parent, err, 'Name must contain only English letters');
     return false;
   }
+  incorectValidation(parent, err, '');
   street.removeAttribute('disabled');
-  console.log('Name is valid');
   return true;
 }
-export function streetValidation(value: string): boolean {
+export function streetValidation(
+  value: string,
+  parent: HTMLLabelElement,
+): boolean {
+  const err = errors.errorStreetReg;
   if (value.length <= 1) {
-    console.log('Name is too short');
+    incorectValidation(parent, err, 'The name is too short');
     return false;
   }
   if (!/^[a-zA-Z]+$/.test(value)) {
-    console.log('Name must contain only English letters');
+    incorectValidation(
+      parent,
+      err,
+      'The  name must contain only English letters',
+    );
     return false;
   }
-  console.log('Name is valid');
+  incorectValidation(parent, err, '');
   return true;
 }
-export function passwordValidation(value: string): boolean {
-  if (value.length <= 8) {
-    console.log('is too short');
+export function passwordValidation(
+  value: string,
+  parent: HTMLLabelElement,
+): boolean {
+  const err = errors.errorPasswordReg;
+
+  if (!regEx.test(value)) {
+    incorectValidation(
+      parent,
+      err,
+      'The Password must contain only english letters',
+    );
     return false;
   }
-  if (!regEx.test(value)) {
-    console.log('must contain only english letters');
+  if (value.length <= 8) {
+    incorectValidation(parent, err, 'The Password is too short');
     return false;
   }
   if (!checkUpperCaseLowerCase(value)) {
-    console.log('must contain ');
+    incorectValidation(
+      parent,
+      err,
+      'The Password must contain a capital letter',
+    );
     return false;
   }
+  incorectValidation(parent, err, '');
   return true;
 }
-export function dayValidation(this: HTMLInputElement): number {
-  const value = this.value.trim();
+export function dayValidation(
+  value: string,
+  parent: HTMLLabelElement,
+): number | undefined {
+  const err = errors.errorBirthReg;
   if (!parseInt(value)) {
-    console.log('input must be number');
+    incorectValidation(parent, err, 'The Day must be a number');
+    if (parseInt(value) > 31) {
+      incorectValidation(parent, err, 'You must chose day');
+    }
+  } else {
+    incorectValidation(parent, err, '');
+    return parseInt(value);
   }
-  if (parseInt(value) > 31) {
-    console.log('you must chose day');
-  }
-  return parseInt(value);
 }
-export function monthValidation(this: HTMLInputElement): number {
-  const value = this.value.trim();
+export function monthValidation(
+  value: string,
+  parent: HTMLLabelElement,
+): number | undefined {
+  const err = errors.errorBirthReg;
   if (!parseInt(value)) {
-    console.log('input must be number');
+    incorectValidation(parent, err, 'The Month must be a number');
+    if (parseInt(value) > 12) {
+      incorectValidation(parent, err, 'You must chose month');
+    }
+  } else {
+    incorectValidation(parent, err, '');
+    return parseInt(value);
   }
-  if (parseInt(value) > 12) {
-    console.log('you must chose month');
-  }
-  return parseInt(value);
 }
-export function yearValidation(this: HTMLInputElement): number {
-  const value = this.value.trim();
+export function yearValidation(
+  value: string,
+  parent: HTMLLabelElement,
+): number | undefined {
+  const err = errors.errorBirthReg;
   if (!parseInt(value)) {
-    console.log('input must be number');
+    incorectValidation(parent, err, 'The year must be a number');
+  } else {
+    incorectValidation(parent, err, '');
+    return parseInt(value);
   }
-  if (value.length >= 5) {
-    console.log('input must be shorter then 5');
-  }
-  return parseInt(value);
 }
-export function checkNumber(): void {
+export function checkNumber(this: HTMLButtonElement): void {
+  const err = errors.errorBirthReg;
+  const parent = this.parentNode as HTMLLabelElement | null;
+  if (!parent) {
+    return;
+  }
   if (
     birthYear instanceof HTMLInputElement &&
     birthMonth instanceof HTMLInputElement &&
@@ -139,28 +217,36 @@ export function checkNumber(): void {
           +birthMonth.value,
           +birthDay.value,
         );
-        calculateAge(age);
+        if (calculateAge(age) < 13) {
+          console.log(1);
+        } else {
+          incorectValidation(parent, err, 'you co young');
+        }
+      } else {
+        incorectValidation(parent, err, 'Please input correct data');
       }
-    } else {
-      console.log('Please input correct data');
     }
   }
 }
-export function postCodeValidation(this: HTMLInputElement): void {
+export function postCodeValidation(
+  value: string,
+  parent: HTMLLabelElement,
+): void {
   const indextPostsArr = Object.keys(country.all);
   const countryNames = country.names();
   const countryIndex = countryNames.indexOf(countriesList.textContent);
   const postCode = indextPostsArr[countryIndex];
-  if (postcodeValidatorExistsForCountry(this.value)) {
-    if (postcodeValidator(this.value, postCode)) {
-      city.removeAttribute('disabled');
-      console.log('true');
+  const err = errors.errorPostReg;
+  if (postcodeValidatorExistsForCountry(postCode)) {
+    if (postcodeValidator(value, postCode)) {
+      city.setAttribute('disabled', 'disabled');
+      incorectValidation(parent, err, '');
     } else {
       city.setAttribute('disabled', '');
-      console.log('false');
+      incorectValidation(parent, err, 'Incorect post code');
     }
-  } else {
+  } else if (!postcodeValidatorExistsForCountry(postCode)) {
     city.removeAttribute('disabled');
-    console.log('true');
+    incorectValidation(parent, err, '');
   }
 }
