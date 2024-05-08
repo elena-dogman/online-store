@@ -1,34 +1,49 @@
 import {
   ClientBuilder,
-  type AuthMiddlewareOptions, // Required for auth
-  type HttpMiddlewareOptions, // Required for sending HTTP requests
+  type AnonymousAuthMiddlewareOptions,
+  type HttpMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
+import { v4 as uuidv4 } from 'uuid';
 
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
-const scopes = [import.meta.env.VITE_CTP_SCOPES];
 
-// Configure authMiddlewareOptions
-const authMiddlewareOptions: AuthMiddlewareOptions = {
+// настройки для авторизации авторизованных запросов
+const authMiddlewareOptions: AnonymousAuthMiddlewareOptions = {
   host: `https://auth.${import.meta.env.VITE_REGION}.commercetools.com`,
   projectKey: projectKey,
   credentials: {
     clientId: import.meta.env.VITE_CTP_CLIENT_ID,
     clientSecret: import.meta.env.VITE_CTP_CLIENT_SECRET,
   },
-  scopes,
-  fetch,
+  scopes: [`manage_project:${projectKey}`],
+  fetch: fetch,
 };
 
-// Configure httpMiddlewareOptions
+
 const httpMiddlewareOptions: HttpMiddlewareOptions = {
   host: `https://api.${import.meta.env.VITE_REGION}.commercetools.com`,
   fetch,
 };
 
-// Export the ClientBuilder
+// клиент для авторизованных запросов
 export const ctpClient = new ClientBuilder()
-  .withProjectKey(projectKey)
   .withClientCredentialsFlow(authMiddlewareOptions)
+  .withHttpMiddleware(httpMiddlewareOptions)
+  .withLoggerMiddleware()
+  .build();
+
+// настройки для анонимных сессий
+const anonymousAuthOptions: AnonymousAuthMiddlewareOptions = {
+  ...authMiddlewareOptions,
+  credentials: {
+    ...authMiddlewareOptions.credentials,
+    anonymousId: uuidv4(), // айдишечка
+  },
+};
+
+// клиент для анонимных запросов
+export const anonymousCtpClient = new ClientBuilder()
+  .withAnonymousSessionFlow(anonymousAuthOptions)
   .withHttpMiddleware(httpMiddlewareOptions)
   .withLoggerMiddleware()
   .build();
