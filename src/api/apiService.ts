@@ -19,7 +19,7 @@ const anonymousApiRoot = createApiBuilderFromCtpClient(anonymousCtpClient).withP
 });
 
 export const getProject = (): Promise<ClientResponse<Project>> => {
-  return apiRoot.get().execute();
+  return anonymousApiRoot.get().execute();
 };
 
 export const loginUser = async (body: {

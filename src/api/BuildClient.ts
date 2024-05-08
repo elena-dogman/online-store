@@ -1,4 +1,5 @@
 import {
+  AuthMiddlewareOptions,
   ClientBuilder,
   type AnonymousAuthMiddlewareOptions,
   type HttpMiddlewareOptions,
@@ -8,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
 // настройки для авторизации авторизованных запросов
-const authMiddlewareOptions: AnonymousAuthMiddlewareOptions = {
+const authMiddlewareOptions: AuthMiddlewareOptions  = {
   host: `https://auth.${import.meta.env.VITE_REGION}.commercetools.com`,
   projectKey: projectKey,
   credentials: {
@@ -27,6 +28,7 @@ const httpMiddlewareOptions: HttpMiddlewareOptions = {
 
 // клиент для авторизованных запросов
 export const ctpClient = new ClientBuilder()
+  .withProjectKey(projectKey)
   .withClientCredentialsFlow(authMiddlewareOptions)
   .withHttpMiddleware(httpMiddlewareOptions)
   .withLoggerMiddleware()
