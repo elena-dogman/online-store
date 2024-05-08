@@ -23,7 +23,7 @@ function searchCountry(this: HTMLInputElement): void {
 
 export function addCountries(this: HTMLElement): void {
   const countrys = country.names().sort();
-  const input = registrationComponent.addressLabelCountry;
+  const input = registrationComponent.adressInputCountry;
   const post: HTMLInputElement | HTMLElement =
     registrationComponent.addressInputPost;
   this.textContent = '';
