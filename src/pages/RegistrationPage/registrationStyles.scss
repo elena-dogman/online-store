@@ -24,6 +24,8 @@
   position: relative;
 }
 .address__countries-list {
+  position:absolute;
+  top:0;
   background: white;
   color: black;
   width: 255px;
@@ -45,6 +47,7 @@
   display: flex;
   align-items: center;
   position: relative;
+  flex-direction: column;
 }
 .countries-input--expanded {
   opacity: 1;
