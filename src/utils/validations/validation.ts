@@ -7,7 +7,7 @@ export function validateInput(this: HTMLInputElement): boolean {
     validationFunc.nameValidation(value, parent);
   }
   if (attribute === 'lastName') {
-    validationFunc.nameValidation(value, parent);
+    validationFunc.lastNameValidation(value, parent);
   }
   if (attribute === 'city') {
     validationFunc.cityValidation(value, parent);

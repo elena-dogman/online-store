@@ -30,7 +30,7 @@ export function mailValidation(
   mail: string,
   parent: HTMLLabelElement,
 ): boolean {
-  const err = errors.errorNameReg;
+  const err = errors.errorEmailReg;
   if (mail.length <= 8) {
     incorectValidation(parent, err, 'is too short');
     return false;
@@ -71,7 +71,7 @@ export function lastNameValidation(
   value: string,
   parent: HTMLLabelElement,
 ): boolean {
-  const err = errors.errorNameReg;
+  const err = errors.errorLastNameReg;
   if (value.length <= 1) {
     incorectValidation(parent, err, 'Name is too short');
     return false;
@@ -88,7 +88,7 @@ export function cityValidation(
   value: string,
   parent: HTMLLabelElement,
 ): boolean {
-  const err = errors.errorNameReg;
+  const err = errors.errorCityReg;
   if (value.length <= 1) {
     street.setAttribute('disabled', '');
     incorectValidation(parent, err, 'Name is too short');
@@ -188,7 +188,7 @@ export function yearValidation(
 ): number | undefined {
   const err = errors.errorBirthReg;
   if (!parseInt(value)) {
-    incorectValidation(parent, err, 'The input must be a number');
+    incorectValidation(parent, err, 'The year must be a number');
   } else {
     incorectValidation(parent, err, '');
     return parseInt(value);
