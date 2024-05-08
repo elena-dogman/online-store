@@ -16,6 +16,9 @@ const birthMonth: HTMLInputElement | HTMLElement = regFormComponents.birthMonth;
 const birthYear: HTMLInputElement | HTMLElement = regFormComponents.birthYear;
 const regEx = /^[a-zA-Z]+$/;
 const mailRe = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}/;
+function incorectValidation(parent: HTMLLabelElement): void {
+  console.log(parent);
+}
 export function mailValidation(mail: string): boolean {
   if (mail.length <= 8) {
     console.log('is too short');
@@ -36,7 +39,11 @@ export function validationBirth(value: string): void {
     console.log(3);
   }
 }
-export function nameValidation(value: string): boolean {
+export function nameValidation(
+  value: string,
+  parent: HTMLLabelElement,
+): boolean {
+  incorectValidation(parent);
   if (value.length <= 1) {
     console.log('Name is too short');
     return false;

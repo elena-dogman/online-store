@@ -1,9 +1,10 @@
 import * as validationFunc from './validatinsComponents';
 export function validateInput(this: HTMLInputElement): boolean {
   const value = this.value.trim();
+  const parent = this.parentNode;
   const attribute = this.getAttribute('data-validation-type');
   if (attribute === 'name') {
-    validationFunc.nameValidation(value);
+    validationFunc.nameValidation(value, parent);
   }
   if (attribute === 'city') {
     validationFunc.cityValidation(value);
