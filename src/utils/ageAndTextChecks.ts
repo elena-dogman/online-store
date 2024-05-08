@@ -20,7 +20,7 @@ export function isValidDateInput(age: number): boolean {
   console.log('privet');
   return true;
 }
-export function calculateAge(date: Date): void {
+export function calculateAge(date: Date): number {
   const currentDate = new Date();
 
   let age = currentDate.getFullYear() - date.getFullYear();
@@ -32,5 +32,5 @@ export function calculateAge(date: Date): void {
   ) {
     age--;
   }
-  console.log(age);
+  return age;
 }
