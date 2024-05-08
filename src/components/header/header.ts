@@ -1,4 +1,5 @@
-import { addInnerComponent, createElement, ElementParams } from '../../utils/baseComponent';
+import { addInnerComponent, createElement, ElementParams, setAttribute } from '../../utils/baseComponent';
+import { appEvents } from '../../utils/eventEmitter';
 
 export function createHeader(): HTMLElement {
   const headerParams: ElementParams<'div'> = {
@@ -102,5 +103,22 @@ export function createHeader(): HTMLElement {
   addInnerComponent(header, navContainer);
   addInnerComponent(header, rightContainer);
 
+  function handleLogout() : void {
+    appEvents.emit('logout', undefined);
+  }
+
+  function updateAuthButton(isLoggedIn: boolean) : void {
+    if (loginButton instanceof HTMLAnchorElement) {
+      loginButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
+      setAttribute(loginButton, 'href', isLoggedIn ? '#' : '/login');
+      if (isLoggedIn) {
+        loginButton.onclick = handleLogout;
+      } else {
+        loginButton.removeAttribute('onclick');
+      }
+    }
+  }
+  appEvents.on('login', () => updateAuthButton(true));
+  appEvents.on('logout', () => updateAuthButton(false));
   return header;
 }

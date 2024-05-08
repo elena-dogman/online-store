@@ -6,6 +6,7 @@ import {
   CustomerSignInResult,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
+import { appEvents } from '../utils/eventEmitter';
 
 // apiRoot с авторизованным клиентом
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
@@ -28,6 +29,7 @@ export const loginUser = async (body: {
   try {
     const data = await apiRoot.login().post({ body }).execute();
     router.navigate('/');
+    appEvents.emit('login', undefined);
     return data;
   } catch (error) {
     console.error('Login failed', error);
@@ -41,6 +43,7 @@ export const logoutUser = async (): Promise<void> => {
     const response = await anonymousApiRoot.get().execute();
     console.log('Switched to anonymous mode:', response);
     router.navigate('/login'); // на логин
+    appEvents.emit('logout', undefined);
   } catch (error) {
     console.error('Logout failed', error);
   }
