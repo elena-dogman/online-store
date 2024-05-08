@@ -7,7 +7,7 @@
 }
 .registration__img-side {
   width: 60%;
-  background-image: url('/assets/registration/registration-img.jpg');
+  background-image: url('/assets/registration/registration-img.jpeg');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -24,7 +24,7 @@
   position: relative;
 }
 .address__countries-list {
-background: white;
+  background: white;
   color: black;
   width: 80%;
   transition: all 0.5s ease;
@@ -56,9 +56,9 @@ background: white;
   top: 40px;
   height: 300px;
   border-radius: 10px;
-  overflow: auto
+  overflow: auto;
 }
-.registration__page{
+.registration__page {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -79,6 +79,7 @@ background: white;
   min-width: 30%;
   max-width: 45%;
   background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
 }
 .reg-form__address {
   display: flex;
@@ -137,8 +138,11 @@ background: white;
   font-size: 20rem;
   padding: 15px 0;
   border-radius: 20px;
+  &:hover {
+    box-shadow: $button-hover-box-shadow;
+  }
 }
-.reg-button{
+.reg-button {
   transition: all 0.5s ease;
   cursor: pointer;
 }
@@ -161,7 +165,7 @@ background: white;
 }
 .birthday__check-btn {
   background-color: $text-color-contrast;
-  color: $text-color-base;;
+  color: $text-color-base;
   font-size: 18rem;
   padding: 5px 10px;
   border-radius: 10px;
@@ -169,11 +173,11 @@ background: white;
 }
 
 @media (hover: hover) and (pointer: fine) {
-.reg-button:hover {
-box-shadow: $button-hover-box-shadow;
+  .reg-button:hover {
+    box-shadow: $button-hover-box-shadow;
   }
-.sign-in__button:hover {
-  transform: scale(1.1);
-  transition: transform 0.3s ease;
-}
+  .sign-in__button:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+  }
 }

@@ -7,7 +7,6 @@
 }
 
 .auth_section-background_image {
-  box-shadow: 0 6px 4px rgba(0, 0, 0, 0.1);
   position: absolute;
   top: 50%;
   left: 50%;
@@ -18,8 +17,13 @@
   z-index: -1;
   border-radius: 50%;
   object-fit: cover;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.05)
+  );
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 1));
 }
-
 .auth_form {
   display: flex;
   flex-direction: column;
@@ -37,6 +41,7 @@
   border-radius: 10px;
   align-items: center;
   justify-content: space-around;
+  font-family: $font-family-base;
 }
 .auth_form_header {
   font-size: $font-size-large-text;
@@ -83,7 +88,7 @@
   }
 }
 .auth_form_footer {
-  font-size: 12rem;
+  all: unset;
   display: flex;
   gap: 5px;
 }
