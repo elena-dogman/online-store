@@ -7,7 +7,7 @@ import {
 import { ClientResponse } from '@commercetools/platform-sdk';
 import { createHeader } from '../../components/header/header';
 import { validateInput } from '../../utils/validations/validation';
-import { loginUser } from '../../api/ApiService';
+import { loginUser } from '../../api/apiService';
 export function createAuthPage(): HTMLElement {
   const authSectionContainerParams: ElementParams<'section'> = {
     tag: 'section',
