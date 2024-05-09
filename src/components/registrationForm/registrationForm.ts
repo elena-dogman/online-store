@@ -92,12 +92,6 @@ export const birthYear = createElement({
     'data-validation-type': 'year',
   },
 });
-export const birthDayCheckButton = createElement({
-  tag: 'button',
-  classNames: ['birthday__check-btn', 'reg-button'],
-  textContent: 'Check',
-  attributes: { type: 'button' },
-});
 const address = createElement({
   tag: 'div',
   classNames: ['reg-form__address'],
@@ -192,8 +186,7 @@ export function createForm(): void {
   birthDay.addEventListener('input', validateInput);
   birthMonth.addEventListener('input', validateInput);
   birthYear.addEventListener('input', validateInput);
-  containerForBirth.append(birthDayCheckButton);
-  birthDayCheckButton.addEventListener('click', validationFunc.checkNumber);
+  birthYear.addEventListener('input', validationFunc.checkNumber);
 
   addressCountryWrapper.append(adressInputCountry);
   addressLabelCountry.append(addressCountryWrapper);
