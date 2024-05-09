@@ -26,7 +26,6 @@
 .address__countries-list {
   position:absolute;
   top:0;
-  background: white;
   color: black;
   width: 255px;
   width: 100%;;
@@ -34,6 +33,7 @@
   transition: all 0.5s ease;
   border-radius: 10px;
   padding-left: 10px;
+  padding-right: 10px;
   border: 1px solid;
   z-index: 10;
 }
@@ -55,9 +55,24 @@
 }
 .--expanded {
   top: 20px;
-  height: 230px;
-  border-radius: 10px;
-  overflow: auto;
+  height: 250px;
+  border-radius: 10px 0 0 10px;
+  overflow-y: auto;
+  background: white;
+}
+.--expanded::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 60px;
+  left: -10px;
+}
+.--expanded::-webkit-scrollbar-track {
+  background: white;        /* цвет зоны отслеживания */
+}
+
+.--expanded::-webkit-scrollbar-thumb {
+  background-color: black;    /* цвет бегунка */
+  border-radius: 20px;       /* округлось бегунка */
+  border: 3px solid white;  /* отступ вокруг бегунка */
 }
 .registration__page {
   display: flex;

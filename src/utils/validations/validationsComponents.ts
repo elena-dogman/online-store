@@ -1,7 +1,4 @@
-import {
-  calculateAge,
-  checkUpperCaseLowerCase,
-} from '../ageAndTextChecks';
+import { calculateAge, checkUpperCaseLowerCase } from '../ageAndTextChecks';
 import country from 'country-list-js';
 import {
   postcodeValidator,
@@ -33,6 +30,7 @@ const ERROR_MESSAGES = {
 const REGEX = {
   email: /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}/,
   lettersOnly: /^[a-zA-Z]+$/,
+  lettersAndNumbers: /^[A-Za-z0-9._%+-]+$/,
   birthDate: /^(0[1-9]|1[0-2]).(0[1-9]|[12][0-9]|3[01]).\d{4}$/,
   number: /^\d+$/,
 };
@@ -46,15 +44,14 @@ function incorectValidation(
   parent.append(errorSpan);
 }
 export function mailValidation(
-  mail: string,
+  value: string,
   parent: HTMLLabelElement,
 ): boolean {
   const err = errors.errorEmailReg;
-  if (mail.length <= 8) {
-    incorectValidation(parent, err, 'is too short');
-    return false;
+  if (value.length === 0) {
+    incorectValidation(parent, err, '');
   }
-  if (!REGEX.email.test(String(mail).toLowerCase())) {
+  if (!REGEX.email.test(String(value).toLowerCase())) {
     incorectValidation(parent, err, ERROR_MESSAGES.invalidEmail);
     return false;
   }
@@ -73,6 +70,10 @@ export function nameValidation(
   parent: HTMLLabelElement,
 ): boolean {
   const err = errors.errorNameReg;
+  if (value.length === 0) {
+    incorectValidation(parent, err, '');
+    return false;
+  }
   if (value.length <= 1) {
     incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
     return false;
@@ -89,6 +90,10 @@ export function lastNameValidation(
   parent: HTMLLabelElement,
 ): boolean {
   const err = errors.errorLastNameReg;
+  if (value.length === 0) {
+    incorectValidation(parent, err, '');
+    return false;
+  }
   if (value.length <= 1) {
     incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
     return false;
@@ -106,6 +111,10 @@ export function cityValidation(
   parent: HTMLLabelElement,
 ): boolean {
   const err = errors.errorCityReg;
+  if (value.length === 0) {
+    incorectValidation(parent, err, '');
+    return false;
+  }
   if (value.length <= 1) {
     street.setAttribute('disabled', '');
     incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
@@ -125,8 +134,16 @@ export function streetValidation(
   parent: HTMLLabelElement,
 ): boolean {
   const err = errors.errorStreetReg;
+  if (value.length === 0) {
+    incorectValidation(parent, err, '');
+    return false;
+  }
   if (value.length <= 1) {
     incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
+    return false;
+  }
+  if (!REGEX.lettersAndNumbers.test(value)) {
+    incorectValidation(parent, err, ERROR_MESSAGES.onlyEnglishLetters);
     return false;
   }
   incorectValidation(parent, err, '');
@@ -139,11 +156,7 @@ export function passwordValidation(
   const err = errors.errorPasswordReg;
 
   if (!REGEX.lettersOnly.test(value)) {
-    incorectValidation(
-      parent,
-      err,
-      ERROR_MESSAGES.onlyEnglishLetters,
-    );
+    incorectValidation(parent, err, ERROR_MESSAGES.onlyEnglishLetters);
     return false;
   }
   if (value.length <= 8) {
@@ -151,11 +164,7 @@ export function passwordValidation(
     return false;
   }
   if (!checkUpperCaseLowerCase(value)) {
-    incorectValidation(
-      parent,
-      err,
-      ERROR_MESSAGES.passwordCapitalLetter,
-    );
+    incorectValidation(parent, err, ERROR_MESSAGES.passwordCapitalLetter);
     return false;
   }
   incorectValidation(parent, err, '');
@@ -166,6 +175,10 @@ export function dayValidation(
   parent: HTMLLabelElement,
 ): number | undefined {
   const err = errors.errorBirthReg;
+  if (value.length === 0) {
+    incorectValidation(parent, err, '');
+    return;
+  }
   if (!parseInt(value)) {
     incorectValidation(parent, err, ERROR_MESSAGES.mustBeNumber);
     if (parseInt(value) > 31) {
@@ -181,6 +194,10 @@ export function monthValidation(
   parent: HTMLLabelElement,
 ): number | undefined {
   const err = errors.errorBirthReg;
+  if (value.length === 0) {
+    incorectValidation(parent, err, '');
+    return;
+  }
   if (!parseInt(value)) {
     incorectValidation(parent, err, ERROR_MESSAGES.mustBeNumber);
     if (parseInt(value) > 12) {
@@ -196,6 +213,10 @@ export function yearValidation(
   parent: HTMLLabelElement,
 ): number | undefined {
   const err = errors.errorBirthReg;
+  if (value.length === 0) {
+    incorectValidation(parent, err, '');
+    return;
+  }
   if (!parseInt(value)) {
     incorectValidation(parent, err, ERROR_MESSAGES.mustBeNumber);
   }
@@ -237,12 +258,17 @@ export function checkNumber(this: HTMLButtonElement): void {
   }
 }
 
-export function postCodeValidation(value: string, parent: HTMLLabelElement): void {
+export function postCodeValidation(
+  value: string,
+  parent: HTMLLabelElement,
+): void {
   const countryNames = country.names();
   const countryIndex = countryNames.indexOf(countriesList.textContent);
   const postCode = Object.keys(country.all)[countryIndex];
   const err = errors.errorPostReg;
-
+  if (value.length === 0) {
+    incorectValidation(parent, err, '');
+  }
   if (postcodeValidatorExistsForCountry(postCode)) {
     if (postcodeValidator(value, postCode)) {
       city.removeAttribute('disabled');
