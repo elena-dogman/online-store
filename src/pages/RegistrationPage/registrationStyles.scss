@@ -112,7 +112,7 @@
 .reg-input {
   border: none;
   border-bottom: 1px solid black;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 .reg-input:focus {
   color: black;
@@ -137,7 +137,7 @@
   background-color: black;
   color: white;
   font-size: 20rem;
-  padding: 15px 0;
+  padding: 12px 0;
   border-radius: 20px;
   &:hover {
     box-shadow: $button-hover-box-shadow;
