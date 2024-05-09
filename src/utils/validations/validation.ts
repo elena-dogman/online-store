@@ -1,4 +1,4 @@
-import * as validationFunc from './validatinsComponents';
+import * as validationFunc from './validationsComponents';
 export function validateInput(this: HTMLInputElement): boolean {
   const value = this.value.trim();
   const parent: HTMLLabelElement | null = this.parentNode as HTMLLabelElement;

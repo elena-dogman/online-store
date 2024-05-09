@@ -1,5 +1,5 @@
 import { validateInput } from '../../utils/validations/validation';
-import * as validationFunc from '../../utils/validations/validatinsComponents';
+import * as validationFunc from '../../utils/validations/validationsComponents';
 import { addCountries } from './countryList';
 import { createElement } from '../../utils/baseComponent';
 
