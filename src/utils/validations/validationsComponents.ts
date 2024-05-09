@@ -206,11 +206,10 @@ export function yearValidation(
   const err = errors.errorBirthReg;
   if (!parseInt(value)) {
     incorectValidation(parent, err, ERROR_MESSAGES.mustBeNumber);
-  } else {
-    incorectValidation(parent, err, ERROR_MESSAGES.dateOfBirth);
-    return parseInt(value);
   }
+  return parseInt(value);
 }
+
 export function checkNumber(this: HTMLButtonElement): void {
   const err = errors.errorBirthReg;
   const parent = this.parentNode as HTMLLabelElement | null;
@@ -231,13 +230,13 @@ export function checkNumber(this: HTMLButtonElement): void {
       ) {
         const age = new Date(
           +birthYear.value,
-          +birthMonth.value,
+          +birthMonth.value - 1,
           +birthDay.value,
         );
         if (calculateAge(age) < 13) {
-          console.log(1);
-        } else {
           incorectValidation(parent, err, ERROR_MESSAGES.ageRequirement);
+        } else {
+          incorectValidation(parent, err, '');
         }
       } else {
         incorectValidation(parent, err, ERROR_MESSAGES.incorrectData);
@@ -245,6 +244,7 @@ export function checkNumber(this: HTMLButtonElement): void {
     }
   }
 }
+
 export function postCodeValidation(
   value: string,
   parent: HTMLLabelElement,
