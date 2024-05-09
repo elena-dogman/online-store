@@ -245,24 +245,21 @@ export function checkNumber(this: HTMLButtonElement): void {
   }
 }
 
-export function postCodeValidation(
-  value: string,
-  parent: HTMLLabelElement,
-): void {
-  const indextPostsArr = Object.keys(country.all);
+export function postCodeValidation(value: string, parent: HTMLLabelElement): void {
   const countryNames = country.names();
   const countryIndex = countryNames.indexOf(countriesList.textContent);
-  const postCode = indextPostsArr[countryIndex];
+  const postCode = Object.keys(country.all)[countryIndex];
   const err = errors.errorPostReg;
+
   if (postcodeValidatorExistsForCountry(postCode)) {
     if (postcodeValidator(value, postCode)) {
-      city.setAttribute('disabled', 'disabled');
+      city.removeAttribute('disabled');
       incorectValidation(parent, err, '');
     } else {
-      city.setAttribute('disabled', '');
+      city.setAttribute('disabled', 'disabled');
       incorectValidation(parent, err, ERROR_MESSAGES.incorrectData);
     }
-  } else if (!postcodeValidatorExistsForCountry(postCode)) {
+  } else {
     city.removeAttribute('disabled');
     incorectValidation(parent, err, '');
   }

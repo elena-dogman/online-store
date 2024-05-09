@@ -113,12 +113,15 @@
   border: none;
   border-bottom: 1px solid black;
   margin-bottom: 18px;
-}
-.reg-input:focus {
-  color: black;
-  border-bottom: 1px solid #86b7fe;
-  outline: 0;
-  padding: 0 0 1px 5px;
+
+  &:focus {
+    color: black;
+    border-bottom: 1px solid #86b7fe;
+    outline: 0;
+    padding: 0 0 1px 5px;
+  }
+
+ @include inputDisabled;
 }
 .sign-in__button {
   color: $text-color-accent;
