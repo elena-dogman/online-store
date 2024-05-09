@@ -1,13 +1,13 @@
 import {
   calculateAge,
   checkUpperCaseLowerCase,
-} from '../../utils/ageAndTextChecks';
+} from '../ageAndTextChecks';
 import country from 'country-list-js';
 import {
   postcodeValidator,
   postcodeValidatorExistsForCountry,
 } from 'postcode-validator';
-import * as regFormComponents from '..//../components/registrationForm/registrationForm';
+import * as regFormComponents from '../../components/registrationForm/registrationForm';
 import * as errors from './validationsErrors';
 const countriesList = regFormComponents.addressListCountry;
 const city = regFormComponents.addressInputCity;
@@ -15,8 +15,27 @@ const street = regFormComponents.addressInputStreet;
 const birthDay: HTMLInputElement | HTMLElement = regFormComponents.birthDay;
 const birthMonth: HTMLInputElement | HTMLElement = regFormComponents.birthMonth;
 const birthYear: HTMLInputElement | HTMLElement = regFormComponents.birthYear;
-const regEx = /^[a-zA-Z]+$/;
-const mailRe = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}/;
+
+const ERROR_MESSAGES = {
+  shortInput: 'Must contain at least 2 letters',
+  invalidEmail: "Email must contain an '@' symbol",
+  onlyEnglishLetters: 'Must contain only English letters',
+  invalidFormat: 'Incorrect format',
+  passwordRequirements: 'Password must meet requirements',
+  mustBeNumber: 'Must be a number',
+  dateOfBirth: 'Please enter your date of birth',
+  atLeast8Characters: 'Password must contain at least 8 characters',
+  passwordCapitalLetter: 'Password must contain a capital letter',
+  ageRequirement: 'Registration open to those 13 and older',
+  incorrectData: 'Please enter correct data',
+};
+
+const REGEX = {
+  email: /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}/,
+  lettersOnly: /^[a-zA-Z]+$/,
+  birthDate: /^(0[1-9]|1[0-2]).(0[1-9]|[12][0-9]|3[01]).\d{4}$/,
+  number: /^\d+$/,
+};
 
 function incorectValidation(
   parent: HTMLLabelElement,
@@ -35,20 +54,18 @@ export function mailValidation(
     incorectValidation(parent, err, 'is too short');
     return false;
   }
-  if (!mailRe.test(String(mail).toLowerCase())) {
-    incorectValidation(parent, err, 'must contain @mail');
+  if (!REGEX.email.test(String(mail).toLowerCase())) {
+    incorectValidation(parent, err, ERROR_MESSAGES.invalidEmail);
     return false;
   }
   incorectValidation(parent, err, '');
   return true;
 }
 export function validationBirth(value: string, parent: HTMLLabelElement): void {
-  const regex = /^(0[1-9]|1[0-2]).(0[1-9]|[12][0-9]|3[01]).\d{4}$/;
+  const regex = REGEX.birthDate;
   const err = errors.errorBirthReg;
   if (!regex.test(value)) {
-    incorectValidation(parent, err, 'Ввод должен быть формата "01.02.1997"');
-  } else {
-    console.log(3);
+    incorectValidation(parent, err, ERROR_MESSAGES.invalidFormat);
   }
 }
 export function nameValidation(
@@ -57,11 +74,11 @@ export function nameValidation(
 ): boolean {
   const err = errors.errorNameReg;
   if (value.length <= 1) {
-    incorectValidation(parent, err, 'Name is too short');
+    incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
     return false;
   }
-  if (!/^[a-zA-Z]+$/.test(value)) {
-    incorectValidation(parent, err, 'Name must contain only English letters');
+  if (!REGEX.lettersOnly.test(value)) {
+    incorectValidation(parent, err, ERROR_MESSAGES.onlyEnglishLetters);
     return false;
   }
   incorectValidation(parent, err, '');
@@ -73,11 +90,11 @@ export function lastNameValidation(
 ): boolean {
   const err = errors.errorLastNameReg;
   if (value.length <= 1) {
-    incorectValidation(parent, err, 'Name is too short');
+    incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
     return false;
   }
-  if (!/^[a-zA-Z]+$/.test(value)) {
-    incorectValidation(parent, err, 'Name must contain only English letters');
+  if (!REGEX.lettersOnly.test(value)) {
+    incorectValidation(parent, err, ERROR_MESSAGES.onlyEnglishLetters);
     return false;
   }
   incorectValidation(parent, err, '');
@@ -91,12 +108,12 @@ export function cityValidation(
   const err = errors.errorCityReg;
   if (value.length <= 1) {
     street.setAttribute('disabled', '');
-    incorectValidation(parent, err, 'Name is too short');
+    incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
     return false;
   }
-  if (!/^[a-zA-Z]+$/.test(value)) {
+  if (!REGEX.lettersOnly.test(value)) {
     street.setAttribute('disabled', '');
-    incorectValidation(parent, err, 'Name must contain only English letters');
+    incorectValidation(parent, err, ERROR_MESSAGES.onlyEnglishLetters);
     return false;
   }
   incorectValidation(parent, err, '');
@@ -109,14 +126,14 @@ export function streetValidation(
 ): boolean {
   const err = errors.errorStreetReg;
   if (value.length <= 1) {
-    incorectValidation(parent, err, 'The name is too short');
+    incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
     return false;
   }
-  if (!/^[a-zA-Z]+$/.test(value)) {
+  if (!REGEX.lettersOnly.test(value)) {
     incorectValidation(
       parent,
       err,
-      'The  name must contain only English letters',
+      ERROR_MESSAGES.onlyEnglishLetters,
     );
     return false;
   }
@@ -129,23 +146,23 @@ export function passwordValidation(
 ): boolean {
   const err = errors.errorPasswordReg;
 
-  if (!regEx.test(value)) {
+  if (!REGEX.lettersOnly.test(value)) {
     incorectValidation(
       parent,
       err,
-      'The Password must contain only english letters',
+      ERROR_MESSAGES.onlyEnglishLetters,
     );
     return false;
   }
   if (value.length <= 8) {
-    incorectValidation(parent, err, 'The Password is too short');
+    incorectValidation(parent, err, ERROR_MESSAGES.atLeast8Characters);
     return false;
   }
   if (!checkUpperCaseLowerCase(value)) {
     incorectValidation(
       parent,
       err,
-      'The Password must contain a capital letter',
+      ERROR_MESSAGES.passwordCapitalLetter,
     );
     return false;
   }
@@ -158,9 +175,9 @@ export function dayValidation(
 ): number | undefined {
   const err = errors.errorBirthReg;
   if (!parseInt(value)) {
-    incorectValidation(parent, err, 'The Day must be a number');
+    incorectValidation(parent, err, ERROR_MESSAGES.mustBeNumber);
     if (parseInt(value) > 31) {
-      incorectValidation(parent, err, 'You must chose day');
+      incorectValidation(parent, err, ERROR_MESSAGES.dateOfBirth);
     }
   } else {
     incorectValidation(parent, err, '');
@@ -173,9 +190,9 @@ export function monthValidation(
 ): number | undefined {
   const err = errors.errorBirthReg;
   if (!parseInt(value)) {
-    incorectValidation(parent, err, 'The Month must be a number');
+    incorectValidation(parent, err, ERROR_MESSAGES.mustBeNumber);
     if (parseInt(value) > 12) {
-      incorectValidation(parent, err, 'You must chose month');
+      incorectValidation(parent, err, ERROR_MESSAGES.dateOfBirth);
     }
   } else {
     incorectValidation(parent, err, '');
@@ -188,12 +205,11 @@ export function yearValidation(
 ): number | undefined {
   const err = errors.errorBirthReg;
   if (!parseInt(value)) {
-    incorectValidation(parent, err, 'The year must be a number');
-  } else {
-    incorectValidation(parent, err, '');
-    return parseInt(value);
+    incorectValidation(parent, err, ERROR_MESSAGES.mustBeNumber);
   }
+  return parseInt(value);
 }
+
 export function checkNumber(this: HTMLButtonElement): void {
   const err = errors.errorBirthReg;
   const parent = this.parentNode as HTMLLabelElement | null;
@@ -214,20 +230,21 @@ export function checkNumber(this: HTMLButtonElement): void {
       ) {
         const age = new Date(
           +birthYear.value,
-          +birthMonth.value,
+          +birthMonth.value - 1,
           +birthDay.value,
         );
         if (calculateAge(age) < 13) {
-          console.log(1);
+          incorectValidation(parent, err, ERROR_MESSAGES.ageRequirement);
         } else {
-          incorectValidation(parent, err, 'you co young');
+          incorectValidation(parent, err, '');
         }
       } else {
-        incorectValidation(parent, err, 'Please input correct data');
+        incorectValidation(parent, err, ERROR_MESSAGES.incorrectData);
       }
     }
   }
 }
+
 export function postCodeValidation(
   value: string,
   parent: HTMLLabelElement,
@@ -243,7 +260,7 @@ export function postCodeValidation(
       incorectValidation(parent, err, '');
     } else {
       city.setAttribute('disabled', '');
-      incorectValidation(parent, err, 'Incorect post code');
+      incorectValidation(parent, err, ERROR_MESSAGES.incorrectData);
     }
   } else if (!postcodeValidatorExistsForCountry(postCode)) {
     city.removeAttribute('disabled');
