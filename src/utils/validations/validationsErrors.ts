@@ -1,35 +1,17 @@
 import { createElement } from '../baseComponent';
-export const errorNameReg = createElement({
-  tag: 'span',
-  classNames: ['error'],
-});
-export const errorLastNameReg = createElement({
-  tag: 'span',
-  classNames: ['error'],
-});
-export const errorEmailReg = createElement({
-  tag: 'span',
-  classNames: ['error'],
-});
 
-export const errorPasswordReg = createElement({
-  tag: 'span',
-  classNames: ['error'],
-});
-export const errorBirthReg = createElement({
-  tag: 'span',
-  classNames: ['error'],
-});
-export const errorPostReg = createElement({
-  tag: 'span',
-  classNames: ['error'],
-});
-export const errorCityReg = createElement({
-  tag: 'span',
-  classNames: ['error'],
-});
+function createErrorElement(): HTMLElement {
+  return createElement({
+    tag: 'span',
+    classNames: ['error'],
+  });
+}
 
-export const errorStreetReg = createElement({
-  tag: 'span',
-  classNames: ['error'],
-});
+export const errorNameReg = createErrorElement();
+export const errorLastNameReg = createErrorElement();
+export const errorEmailReg = createErrorElement();
+export const errorPasswordReg = createErrorElement();
+export const errorBirthReg = createErrorElement();
+export const errorPostReg = createErrorElement();
+export const errorCityReg = createErrorElement();
+export const errorStreetReg = createErrorElement();
