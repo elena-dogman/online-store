@@ -44,14 +44,14 @@ function incorectValidation(
   parent.append(errorSpan);
 }
 export function mailValidation(
-  mail: string,
+  value: string,
   parent: HTMLLabelElement,
 ): boolean {
   const err = errors.errorEmailReg;
-  if (mail.length === 0) {
+  if (value.length === 0) {
     incorectValidation(parent, err, '');
   }
-  if (!REGEX.email.test(String(mail).toLowerCase())) {
+  if (!REGEX.email.test(String(value).toLowerCase())) {
     incorectValidation(parent, err, ERROR_MESSAGES.invalidEmail);
     return false;
   }
@@ -262,7 +262,6 @@ export function postCodeValidation(
   value: string,
   parent: HTMLLabelElement,
 ): void {
-  const indextPostsArr = Object.keys(country.all);
   const countryNames = country.names();
   const countryIndex = countryNames.indexOf(countriesList.textContent);
   const postCode = Object.keys(country.all)[countryIndex];
@@ -272,7 +271,6 @@ export function postCodeValidation(
   }
   if (postcodeValidatorExistsForCountry(postCode)) {
     if (postcodeValidator(value, postCode)) {
-      city.removeAttribute('disabled');
       city.removeAttribute('disabled');
       incorectValidation(parent, err, '');
     } else {
