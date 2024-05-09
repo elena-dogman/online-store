@@ -129,14 +129,6 @@ export function streetValidation(
     incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
     return false;
   }
-  if (!REGEX.lettersOnly.test(value)) {
-    incorectValidation(
-      parent,
-      err,
-      ERROR_MESSAGES.onlyEnglishLetters,
-    );
-    return false;
-  }
   incorectValidation(parent, err, '');
   return true;
 }
