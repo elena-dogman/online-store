@@ -58,6 +58,12 @@
   position: relative;
   width: 80%;
 }
+.email_container > span,
+.password_container > span {
+  text-wrap: nowrap;
+  left: 0;
+  bottom: 100%;
+}
 .email_icon,
 .password_icon {
   width: 20px;
