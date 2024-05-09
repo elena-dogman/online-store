@@ -105,7 +105,7 @@ const address = createElement({
 export const addressLabelStreet = createElement({
   tag: 'label',
   classNames: ['address__street-label', 'reg__label'],
-  textContent: 'Street',
+  textContent: 'Address',
 });
 export const addressInputStreet = createElement({
   tag: 'input',

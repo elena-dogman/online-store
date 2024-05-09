@@ -18,6 +18,11 @@ $font-size-big-heading: 64rem;
 //effects
 $button-hover-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 $button-disabled-background: gray;
+
+//other
+$button-border: 1px solid #bbb5b5;
+
+//mixins
 @mixin hoverButton {
   &:hover {
     transform: scale(1.1);
@@ -25,5 +30,14 @@ $button-disabled-background: gray;
   }
 }
 
-//other
-$button-border: 1px solid #bbb5b5;
+@mixin inputDisabled {
+  &:disabled {
+    background-color: #f0f0f0;
+    color: #ccc;
+    border-bottom: 1px solid #ccc;
+
+    &:hover {
+      cursor: not-allowed;
+    }
+  }
+}
