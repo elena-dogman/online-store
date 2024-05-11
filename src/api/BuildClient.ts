@@ -102,7 +102,7 @@ export function createRefreshTokenClient(
 ): typeof refreshTokenClient {
   const refreshAuthMiddlewareOptions: RefreshAuthMiddlewareOptions = {
     host: 'https://auth.europe-west1.gcp.commercetools.com',
-    projectKey: 'test-project-key',
+    projectKey: projectKey,
     credentials: {
       clientId: import.meta.env.VITE_CTP_CLIENT_ID,
       clientSecret: import.meta.env.VITE_CTP_CLIENT_SECRET,
