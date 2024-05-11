@@ -2,7 +2,7 @@ import { validateInput } from '../../utils/validations/validation';
 import * as validationFunc from '../../utils/validations/validationsComponents';
 import { addCountries } from './countryList';
 import { createElement } from '../../utils/baseComponent';
-
+import * as errors from '..//..//utils/validations/validationsErrors';
 export const authSideForm = createElement({
   tag: 'form',
   classNames: ['auth-side__reg-form'],
@@ -168,17 +168,22 @@ export const authFormButton = createElement({
 export function createForm(): void {
   authSideForm.append(regFormLabelName);
   regFormLabelName.append(regFormInputName);
+  regFormLabelName.append(errors.errorNameReg);
   regFormInputName.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelLastName);
   regFormLabelLastName.append(regFormInputLastName);
+  regFormLabelLastName.append(errors.errorLastNameReg);
   regFormInputLastName.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelMail);
   regFormLabelMail.append(regFormInputMail);
+  regFormLabelMail.append(errors.errorEmailReg);
   regFormInputMail.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelPassword);
   regFormLabelPassword.append(regFormInputPassword);
+  regFormLabelPassword.append(errors.errorPasswordReg);
   regFormInputPassword.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelBirth);
+  regFormLabelBirth.append(errors.errorBirthReg);
   regFormLabelBirth.append(containerForBirth);
   containerForBirth.append(birthDay);
   containerForBirth.append(birthMonth);
@@ -196,12 +201,15 @@ export function createForm(): void {
 
   address.append(addressLabelPost);
   addressLabelPost.append(addressInputPost);
+  addressLabelPost.append(errors.errorPostReg);
   addressInputPost.addEventListener('input', validateInput);
   address.append(addressLabelCity);
   addressLabelCity.append(addressInputCity);
+  addressLabelCity.append(errors.errorCityReg);
   addressInputCity.addEventListener('input', validateInput);
   address.append(addressLabelStreet);
   addressLabelStreet.append(addressInputStreet);
+  addressLabelStreet.append(errors.errorStreetReg);
   addressInputStreet.addEventListener('input', validateInput);
 
   authSideForm.append(address);

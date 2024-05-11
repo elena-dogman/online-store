@@ -1,40 +1,39 @@
 import * as validationFunc from './validationsComponents';
 export function validateInput(this: HTMLInputElement): boolean {
   const value = this.value.trim();
-  const parent: HTMLLabelElement | null = this.parentNode as HTMLLabelElement;
   const attribute = this.getAttribute('data-validation-type');
   if (attribute === 'name') {
-    validationFunc.nameValidation(value, parent);
+    validationFunc.nameValidation(value);
   }
   if (attribute === 'lastName') {
-    validationFunc.lastNameValidation(value, parent);
+    validationFunc.lastNameValidation(value);
   }
   if (attribute === 'city') {
-    validationFunc.cityValidation(value, parent);
+    validationFunc.cityValidation(value);
   }
   if (attribute === 'street') {
-    validationFunc.streetValidation(value, parent);
+    validationFunc.streetValidation(value);
   }
   if (attribute === 'password') {
-    validationFunc.passwordValidation(value, parent);
+    validationFunc.passwordValidation(value);
   }
   if (attribute === 'email') {
-    validationFunc.mailValidation(value, parent);
+    validationFunc.mailValidation(value);
   }
   if (attribute === 'birthday') {
-    validationFunc.validationBirth(value, parent);
+    validationFunc.validationBirth(value);
   }
   if (attribute === 'day') {
-    validationFunc.dayValidation(value, parent);
+    validationFunc.dayValidation(value);
   }
   if (attribute === 'month') {
-    validationFunc.monthValidation(value, parent);
+    validationFunc.monthValidation(value);
   }
   if (attribute === 'year') {
-    validationFunc.yearValidation(value, parent);
+    validationFunc.yearValidation(value);
   }
   if (attribute === 'post') {
-    validationFunc.postCodeValidation(value, parent);
+    validationFunc.postCodeValidation(value);
   }
   return true;
 }
