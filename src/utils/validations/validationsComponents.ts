@@ -1,4 +1,4 @@
-import { calculateAge, checkUpperCaseLowerCase } from '../ageAndTextChecks';
+import { calculateAge, validatePassword } from '../ageAndTextChecks';
 import country from 'country-list-js';
 import {
   postcodeValidator,
@@ -6,23 +6,28 @@ import {
 } from 'postcode-validator';
 import * as regFormComponents from '../../components/registrationForm/registrationForm';
 import * as errors from './validationsErrors';
-const countriesList = regFormComponents.addressListCountry;
-const city = regFormComponents.addressInputCity;
-const street = regFormComponents.addressInputStreet;
-const birthDay: HTMLInputElement | HTMLElement = regFormComponents.birthDay;
-const birthMonth: HTMLInputElement | HTMLElement = regFormComponents.birthMonth;
-const birthYear: HTMLInputElement | HTMLElement = regFormComponents.birthYear;
+import * as bolleanValid from './booleanValid';
+export type Input = HTMLInputElement | HTMLElement;
 
+const countriesList = regFormComponents.addressListCountry;
+const city: Input = regFormComponents.addressInputCity;
+const post: Input = regFormComponents.addressInputPost;
+const street: Input = regFormComponents.addressInputStreet;
+const birthDay: Input = regFormComponents.birthDay;
+const birthMonth: Input = regFormComponents.birthMonth;
+const birthYear: Input = regFormComponents.birthYear;
 const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
   invalidEmail: "Email must contain an '@' symbol",
   onlyEnglishLetters: 'Must contain only English letters',
+  onlyEnglishLettersAndNumbers: 'Must contain only English letters and numbers',
   invalidFormat: 'Incorrect format',
   passwordRequirements: 'Password must meet requirements',
   mustBeNumber: 'Must be a number',
   dateOfBirth: 'Please enter your date of birth',
   atLeast8Characters: 'Password must contain at least 8 characters',
-  passwordCapitalLetter: 'Password must contain a capital letter',
+  passwordCapitalLetter:
+    'Password must contain at  at least 1 uppercase letter, 1 lowercase letter and 1 number',
   ageRequirement: 'Registration open to those 13 and older',
   incorrectData: 'Please enter correct data',
 };
@@ -36,189 +41,201 @@ const REGEX = {
 };
 
 function incorectValidation(
-  parent: HTMLLabelElement,
   errorSpan: HTMLSpanElement,
   errorMessage: string,
 ): void {
   errorSpan.textContent = errorMessage;
-  parent.append(errorSpan);
 }
-export function mailValidation(
-  value: string,
-  parent: HTMLLabelElement,
-): boolean {
+export function mailValidation(value: string): boolean {
   const err = errors.errorEmailReg;
   if (value.length === 0) {
-    incorectValidation(parent, err, '');
-  }
-  if (!REGEX.email.test(String(value).toLowerCase())) {
-    incorectValidation(parent, err, ERROR_MESSAGES.invalidEmail);
+    incorectValidation(err, '');
+    bolleanValid.setValidStatus('mail', false);
     return false;
   }
-  incorectValidation(parent, err, '');
+  if (!REGEX.email.test(String(value).toLowerCase())) {
+    incorectValidation(err, ERROR_MESSAGES.invalidEmail);
+    bolleanValid.setValidStatus('mail', false);
+    return false;
+  }
+  incorectValidation(err, '');
+  bolleanValid.setValidStatus('mail', true);
   return true;
 }
-export function validationBirth(value: string, parent: HTMLLabelElement): void {
+export function validationBirth(value: string): boolean {
   const regex = REGEX.birthDate;
   const err = errors.errorBirthReg;
   if (!regex.test(value)) {
-    incorectValidation(parent, err, ERROR_MESSAGES.invalidFormat);
-  }
-}
-export function nameValidation(
-  value: string,
-  parent: HTMLLabelElement,
-): boolean {
-  const err = errors.errorNameReg;
-  if (value.length === 0) {
-    incorectValidation(parent, err, '');
+    incorectValidation(err, ERROR_MESSAGES.invalidFormat);
     return false;
   }
-  if (value.length <= 1) {
-    incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
-    return false;
-  }
-  if (!REGEX.lettersOnly.test(value)) {
-    incorectValidation(parent, err, ERROR_MESSAGES.onlyEnglishLetters);
-    return false;
-  }
-  incorectValidation(parent, err, '');
   return true;
 }
-export function lastNameValidation(
-  value: string,
-  parent: HTMLLabelElement,
-): boolean {
-  const err = errors.errorLastNameReg;
+export function nameValidation(value: string): boolean {
+  const err = errors.errorNameReg;
   if (value.length === 0) {
-    incorectValidation(parent, err, '');
+    incorectValidation(err, '');
+    bolleanValid.setValidStatus('name', false);
     return false;
   }
   if (value.length <= 1) {
-    incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
+    incorectValidation(err, ERROR_MESSAGES.shortInput);
+    bolleanValid.setValidStatus('name', false);
     return false;
   }
   if (!REGEX.lettersOnly.test(value)) {
-    incorectValidation(parent, err, ERROR_MESSAGES.onlyEnglishLetters);
+    incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+    bolleanValid.setValidStatus('name', false);
     return false;
   }
-  incorectValidation(parent, err, '');
+  bolleanValid.setValidStatus('name', true);
+  incorectValidation(err, '');
+  return true;
+}
+export function lastNameValidation(value: string): boolean {
+  const err = errors.errorLastNameReg;
+  if (value.length === 0) {
+    incorectValidation(err, '');
+    bolleanValid.setValidStatus('lastName', false);
+    return false;
+  }
+  if (value.length <= 1) {
+    incorectValidation(err, ERROR_MESSAGES.shortInput);
+    bolleanValid.setValidStatus('lastName', false);
+    return false;
+  }
+  if (!REGEX.lettersOnly.test(value)) {
+    incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+    bolleanValid.setValidStatus('lastName', false);
+    return false;
+  }
+  bolleanValid.setValidStatus('lastName', true);
+  incorectValidation(err, '');
   return true;
 }
 
-export function cityValidation(
-  value: string,
-  parent: HTMLLabelElement,
-): boolean {
+export function cityValidation(value: string): boolean {
   const err = errors.errorCityReg;
+  const streetErr = errors.errorStreetReg;
   if (value.length === 0) {
-    incorectValidation(parent, err, '');
-    return false;
+    if (street instanceof HTMLInputElement) {
+      bolleanValid.setValidStatus('city', false);
+      bolleanValid.setValidStatus('street', false);
+      street.value = '';
+      incorectValidation(err, '');
+      return false;
+    }
   }
   if (value.length <= 1) {
-    street.setAttribute('disabled', '');
-    incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
-    return false;
+    if (street instanceof HTMLInputElement) {
+      street.setAttribute('disabled', '');
+      incorectValidation(err, ERROR_MESSAGES.shortInput);
+      bolleanValid.setValidStatus('city', false);
+      bolleanValid.setValidStatus('street', false);
+      streetErr.textContent = '';
+      street.value = '';
+      return false;
+    }
   }
   if (!REGEX.lettersOnly.test(value)) {
-    street.setAttribute('disabled', '');
-    incorectValidation(parent, err, ERROR_MESSAGES.onlyEnglishLetters);
-    return false;
+    if (street instanceof HTMLInputElement) {
+      bolleanValid.setValidStatus('city', false);
+      bolleanValid.setValidStatus('street', false);
+      street.setAttribute('disabled', '');
+      streetErr.textContent = '';
+      street.value = '';
+      incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+      return false;
+    }
   }
-  incorectValidation(parent, err, '');
+  incorectValidation(err, '');
+  bolleanValid.setValidStatus('city', true);
   street.removeAttribute('disabled');
   return true;
 }
-export function streetValidation(
-  value: string,
-  parent: HTMLLabelElement,
-): boolean {
+export function streetValidation(value: string): boolean {
   const err = errors.errorStreetReg;
   if (value.length === 0) {
-    incorectValidation(parent, err, '');
+    bolleanValid.setValidStatus('street', false);
+    incorectValidation(err, '');
     return false;
   }
   if (value.length <= 1) {
-    incorectValidation(parent, err, ERROR_MESSAGES.shortInput);
+    bolleanValid.setValidStatus('street', false);
+    incorectValidation(err, ERROR_MESSAGES.shortInput);
     return false;
   }
   if (!REGEX.lettersAndNumbers.test(value)) {
-    incorectValidation(parent, err, ERROR_MESSAGES.onlyEnglishLetters);
+    bolleanValid.setValidStatus('street', false);
+    incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
     return false;
   }
-  incorectValidation(parent, err, '');
+  bolleanValid.setValidStatus('street', true);
+  incorectValidation(err, '');
   return true;
 }
-export function passwordValidation(
-  value: string,
-  parent: HTMLLabelElement,
-): boolean {
+export function passwordValidation(value: string): boolean {
   const err = errors.errorPasswordReg;
 
-  if (!REGEX.lettersOnly.test(value)) {
-    incorectValidation(parent, err, ERROR_MESSAGES.onlyEnglishLetters);
+  if (!REGEX.lettersAndNumbers.test(value)) {
+    incorectValidation(err, ERROR_MESSAGES.onlyEnglishLettersAndNumbers);
+    bolleanValid.setValidStatus('password', false);
     return false;
   }
   if (value.length <= 8) {
-    incorectValidation(parent, err, ERROR_MESSAGES.atLeast8Characters);
+    bolleanValid.setValidStatus('password', false);
+    incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
     return false;
   }
-  if (!checkUpperCaseLowerCase(value)) {
-    incorectValidation(parent, err, ERROR_MESSAGES.passwordCapitalLetter);
+  if (!validatePassword(value)) {
+    bolleanValid.setValidStatus('password', false);
+    incorectValidation(err, ERROR_MESSAGES.passwordCapitalLetter);
     return false;
   }
-  incorectValidation(parent, err, '');
+  bolleanValid.setValidStatus('password', true);
+  incorectValidation(err, '');
   return true;
 }
-export function dayValidation(
-  value: string,
-  parent: HTMLLabelElement,
-): number | undefined {
+export function dayValidation(value: string): number | undefined {
   const err = errors.errorBirthReg;
   if (value.length === 0) {
-    incorectValidation(parent, err, '');
+    incorectValidation(err, '');
     return;
   }
   if (!parseInt(value)) {
-    incorectValidation(parent, err, ERROR_MESSAGES.mustBeNumber);
+    incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
     if (parseInt(value) > 31) {
-      incorectValidation(parent, err, ERROR_MESSAGES.dateOfBirth);
+      incorectValidation(err, ERROR_MESSAGES.dateOfBirth);
     }
   } else {
-    incorectValidation(parent, err, '');
+    incorectValidation(err, '');
     return parseInt(value);
   }
 }
-export function monthValidation(
-  value: string,
-  parent: HTMLLabelElement,
-): number | undefined {
+export function monthValidation(value: string): number | undefined {
   const err = errors.errorBirthReg;
   if (value.length === 0) {
-    incorectValidation(parent, err, '');
+    incorectValidation(err, '');
     return;
   }
   if (!parseInt(value)) {
-    incorectValidation(parent, err, ERROR_MESSAGES.mustBeNumber);
+    incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
     if (parseInt(value) > 12) {
-      incorectValidation(parent, err, ERROR_MESSAGES.dateOfBirth);
+      incorectValidation(err, ERROR_MESSAGES.dateOfBirth);
     }
   } else {
-    incorectValidation(parent, err, '');
+    incorectValidation(err, '');
     return parseInt(value);
   }
 }
-export function yearValidation(
-  value: string,
-  parent: HTMLLabelElement,
-): number | undefined {
+export function yearValidation(value: string): number | undefined {
   const err = errors.errorBirthReg;
   if (value.length === 0) {
-    incorectValidation(parent, err, '');
+    incorectValidation(err, '');
     return;
   }
   if (!parseInt(value)) {
-    incorectValidation(parent, err, ERROR_MESSAGES.mustBeNumber);
+    incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
   }
   return parseInt(value);
 }
@@ -247,38 +264,86 @@ export function checkNumber(this: HTMLButtonElement): void {
           +birthDay.value,
         );
         if (calculateAge(age) < 13) {
-          incorectValidation(parent, err, ERROR_MESSAGES.ageRequirement);
+          incorectValidation(err, ERROR_MESSAGES.ageRequirement);
         } else {
-          incorectValidation(parent, err, '');
+          bolleanValid.setValidStatus('date', true);
+          incorectValidation(err, '');
         }
       } else {
-        incorectValidation(parent, err, ERROR_MESSAGES.incorrectData);
+        bolleanValid.setValidStatus('date', false);
+        incorectValidation(err, ERROR_MESSAGES.incorrectData);
       }
+    } else {
+      bolleanValid.setValidStatus('date', false);
+      incorectValidation(err, ERROR_MESSAGES.incorrectData);
     }
   }
 }
 
-export function postCodeValidation(
-  value: string,
-  parent: HTMLLabelElement,
-): void {
+export function postCodeValidation(value: string): void {
   const countryNames = country.names();
   const countryIndex = countryNames.indexOf(countriesList.textContent);
   const postCode = Object.keys(country.all)[countryIndex];
   const err = errors.errorPostReg;
+  const cityErr = errors.errorCityReg;
+  const streetErr = errors.errorStreetReg;
   if (value.length === 0) {
-    incorectValidation(parent, err, '');
+    if (
+      street instanceof HTMLInputElement &&
+      city instanceof HTMLInputElement
+    ) {
+      incorectValidation(err, '');
+      city.setAttribute('disabled', '');
+      street.setAttribute('disabled', '');
+      bolleanValid.setValidStatus('city', false);
+      bolleanValid.setValidStatus('post', false);
+      bolleanValid.setValidStatus('street', false);
+      cityErr.textContent = '';
+      streetErr.textContent = '';
+      street.value = '';
+      city.value = '';
+      return;
+    }
   }
   if (postcodeValidatorExistsForCountry(postCode)) {
     if (postcodeValidator(value, postCode)) {
       city.removeAttribute('disabled');
-      incorectValidation(parent, err, '');
+      incorectValidation(err, '');
     } else {
-      city.setAttribute('disabled', 'disabled');
-      incorectValidation(parent, err, ERROR_MESSAGES.incorrectData);
+      if (
+        street instanceof HTMLInputElement &&
+        city instanceof HTMLInputElement
+      ) {
+        city.setAttribute('disabled', '');
+        street.setAttribute('disabled', '');
+        bolleanValid.setValidStatus('city', false);
+        bolleanValid.setValidStatus('post', false);
+        bolleanValid.setValidStatus('street', false);
+        cityErr.textContent = '';
+        streetErr.textContent = '';
+        street.value = '';
+        city.value = '';
+        incorectValidation(err, ERROR_MESSAGES.incorrectData);
+        return;
+      }
     }
   } else {
+    bolleanValid.setValidStatus('post', true);
     city.removeAttribute('disabled');
-    incorectValidation(parent, err, '');
+    incorectValidation(err, '');
+    return;
+  }
+}
+export function disableLocation(): void {
+  if (
+    street instanceof HTMLInputElement &&
+    post instanceof HTMLInputElement &&
+    city instanceof HTMLInputElement
+  ) {
+    street.removeAttribute('disabled');
+    city.removeAttribute('disabled');
+    street.value = '';
+    post.value = '';
+    city.value = '';
   }
 }

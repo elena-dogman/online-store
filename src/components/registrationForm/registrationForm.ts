@@ -2,6 +2,8 @@ import { validateInput } from '../../utils/validations/validation';
 import * as validationFunc from '../../utils/validations/validationsComponents';
 import { addCountries } from './countryList';
 import { createElement } from '../../utils/baseComponent';
+import * as errors from '..//..//utils/validations/validationsErrors';
+import { submitRegData } from '../../utils/validations/submitRegData';
 
 export const authSideForm = createElement({
   tag: 'form',
@@ -161,30 +163,37 @@ export const adressInputCountry = createElement({
 export const authFormButton = createElement({
   tag: 'button',
   classNames: ['reg-form__button', 'reg-button'],
-  attributes: { disabled: '', type: 'button' },
+  attributes: { type: 'button' },
   textContent: 'Create Account',
 });
 
 export function createForm(): void {
   authSideForm.append(regFormLabelName);
   regFormLabelName.append(regFormInputName);
+  regFormLabelName.append(errors.errorNameReg);
   regFormInputName.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelLastName);
   regFormLabelLastName.append(regFormInputLastName);
+  regFormLabelLastName.append(errors.errorLastNameReg);
   regFormInputLastName.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelMail);
   regFormLabelMail.append(regFormInputMail);
+  regFormLabelMail.append(errors.errorEmailReg);
   regFormInputMail.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelPassword);
   regFormLabelPassword.append(regFormInputPassword);
+  regFormLabelPassword.append(errors.errorPasswordReg);
   regFormInputPassword.addEventListener('input', validateInput);
   authSideForm.append(regFormLabelBirth);
+  regFormLabelBirth.append(errors.errorBirthReg);
   regFormLabelBirth.append(containerForBirth);
   containerForBirth.append(birthDay);
   containerForBirth.append(birthMonth);
   containerForBirth.append(birthYear);
   birthDay.addEventListener('input', validateInput);
+  birthDay.addEventListener('input', validationFunc.checkNumber);
   birthMonth.addEventListener('input', validateInput);
+  birthMonth.addEventListener('input', validationFunc.checkNumber);
   birthYear.addEventListener('input', validateInput);
   birthYear.addEventListener('input', validationFunc.checkNumber);
 
@@ -196,14 +205,19 @@ export function createForm(): void {
 
   address.append(addressLabelPost);
   addressLabelPost.append(addressInputPost);
+  addressLabelPost.append(errors.errorPostReg);
   addressInputPost.addEventListener('input', validateInput);
   address.append(addressLabelCity);
   addressLabelCity.append(addressInputCity);
+  addressLabelCity.append(errors.errorCityReg);
   addressInputCity.addEventListener('input', validateInput);
   address.append(addressLabelStreet);
   addressLabelStreet.append(addressInputStreet);
+  addressLabelStreet.append(errors.errorStreetReg);
   addressInputStreet.addEventListener('input', validateInput);
 
   authSideForm.append(address);
   authSideForm.append(authFormButton);
+  authFormButton.addEventListener('click', submitRegData);
+  console.log(authFormButton);
 }

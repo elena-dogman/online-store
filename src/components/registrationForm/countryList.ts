@@ -1,6 +1,7 @@
 import country from 'country-list-js';
-import * as baseComponent from '../../utils/baseComponent';
+import { createElement } from '../../utils/baseComponent';
 import * as registrationComponent from './registrationForm';
+import { disableLocation } from '../../utils/validations/validationsComponents';
 function searchCountry(this: HTMLInputElement): void {
   const countyItems = document.querySelectorAll('.address__countries-item');
   const value = this.value.toLowerCase();
@@ -22,7 +23,8 @@ function searchCountry(this: HTMLInputElement): void {
 }
 
 export function addCountries(this: HTMLElement): void {
-  const countrys = country.names().sort();
+  disableLocation();
+  const countries = country.names().sort();
   const input = registrationComponent.adressInputCountry;
   const post: HTMLInputElement | HTMLElement =
     registrationComponent.addressInputPost;
@@ -30,8 +32,8 @@ export function addCountries(this: HTMLElement): void {
   this.classList.add('--expanded');
   input.classList.add('countries-input--expanded');
   input.addEventListener('input', searchCountry);
-  countrys.forEach((e) => {
-    const countriesItem = baseComponent.createElement({
+  countries.forEach((e) => {
+    const countriesItem = createElement({
       tag: 'div',
       classNames: ['address__countries-item'],
     });

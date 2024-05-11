@@ -1,5 +1,4 @@
 import { createElement } from '../baseComponent';
-
 function createErrorElement(): HTMLElement {
   return createElement({
     tag: 'span',
