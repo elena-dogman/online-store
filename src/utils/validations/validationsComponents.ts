@@ -50,16 +50,16 @@ export function mailValidation(value: string): boolean {
   const err = errors.errorEmailReg;
   if (value.length === 0) {
     incorectValidation(err, '');
-    bolleanValid.setMail(false);
+    bolleanValid.setValidStatus('mail', false);
     return false;
   }
   if (!REGEX.email.test(String(value).toLowerCase())) {
     incorectValidation(err, ERROR_MESSAGES.invalidEmail);
-    bolleanValid.setMail(false);
+    bolleanValid.setValidStatus('mail', false);
     return false;
   }
   incorectValidation(err, '');
-  bolleanValid.setMail(true);
+  bolleanValid.setValidStatus('mail', true);
   return true;
 }
 export function validationBirth(value: string): boolean {
@@ -75,20 +75,20 @@ export function nameValidation(value: string): boolean {
   const err = errors.errorNameReg;
   if (value.length === 0) {
     incorectValidation(err, '');
-    bolleanValid.setName(false);
+    bolleanValid.setValidStatus('name', false);
     return false;
   }
   if (value.length <= 1) {
     incorectValidation(err, ERROR_MESSAGES.shortInput);
-    bolleanValid.setName(false);
+    bolleanValid.setValidStatus('name', false);
     return false;
   }
   if (!REGEX.lettersOnly.test(value)) {
     incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-    bolleanValid.setName(false);
+    bolleanValid.setValidStatus('name', false);
     return false;
   }
-  bolleanValid.setName(true);
+  bolleanValid.setValidStatus('name', true);
   incorectValidation(err, '');
   return true;
 }
@@ -96,20 +96,20 @@ export function lastNameValidation(value: string): boolean {
   const err = errors.errorLastNameReg;
   if (value.length === 0) {
     incorectValidation(err, '');
-    bolleanValid.setlastName(false);
+    bolleanValid.setValidStatus('lastName', false);
     return false;
   }
   if (value.length <= 1) {
     incorectValidation(err, ERROR_MESSAGES.shortInput);
-    bolleanValid.setlastName(false);
+    bolleanValid.setValidStatus('lastName', false);
     return false;
   }
   if (!REGEX.lettersOnly.test(value)) {
     incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-    bolleanValid.setlastName(false);
+    bolleanValid.setValidStatus('lastName', false);
     return false;
   }
-  bolleanValid.setlastName(true);
+  bolleanValid.setValidStatus('lastName', true);
   incorectValidation(err, '');
   return true;
 }
@@ -119,8 +119,8 @@ export function cityValidation(value: string): boolean {
   const streetErr = errors.errorStreetReg;
   if (value.length === 0) {
     if (street instanceof HTMLInputElement) {
-      bolleanValid.setCity(false);
-      bolleanValid.setStreet(false);
+      bolleanValid.setValidStatus('city', false);
+      bolleanValid.setValidStatus('street', false);
       street.value = '';
       incorectValidation(err, '');
       return false;
@@ -130,8 +130,8 @@ export function cityValidation(value: string): boolean {
     if (street instanceof HTMLInputElement) {
       street.setAttribute('disabled', '');
       incorectValidation(err, ERROR_MESSAGES.shortInput);
-      bolleanValid.setCity(false);
-      bolleanValid.setStreet(false);
+      bolleanValid.setValidStatus('city', false);
+      bolleanValid.setValidStatus('street', false);
       streetErr.textContent = '';
       street.value = '';
       return false;
@@ -139,8 +139,8 @@ export function cityValidation(value: string): boolean {
   }
   if (!REGEX.lettersOnly.test(value)) {
     if (street instanceof HTMLInputElement) {
-      bolleanValid.setCity(false);
-      bolleanValid.setStreet(false);
+      bolleanValid.setValidStatus('city', false);
+      bolleanValid.setValidStatus('street', false);
       street.setAttribute('disabled', '');
       streetErr.textContent = '';
       street.value = '';
@@ -149,28 +149,28 @@ export function cityValidation(value: string): boolean {
     }
   }
   incorectValidation(err, '');
-  bolleanValid.setCity(true);
+  bolleanValid.setValidStatus('city', true);
   street.removeAttribute('disabled');
   return true;
 }
 export function streetValidation(value: string): boolean {
   const err = errors.errorStreetReg;
   if (value.length === 0) {
-    bolleanValid.setStreet(false);
+    bolleanValid.setValidStatus('street', false);
     incorectValidation(err, '');
     return false;
   }
   if (value.length <= 1) {
-    bolleanValid.setStreet(false);
+    bolleanValid.setValidStatus('street', false);
     incorectValidation(err, ERROR_MESSAGES.shortInput);
     return false;
   }
   if (!REGEX.lettersAndNumbers.test(value)) {
-    bolleanValid.setStreet(false);
+    bolleanValid.setValidStatus('street', false);
     incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
     return false;
   }
-  bolleanValid.setStreet(true);
+  bolleanValid.setValidStatus('street', true);
   incorectValidation(err, '');
   return true;
 }
@@ -179,20 +179,20 @@ export function passwordValidation(value: string): boolean {
 
   if (!REGEX.lettersAndNumbers.test(value)) {
     incorectValidation(err, ERROR_MESSAGES.onlyEnglishLettersAndNumbers);
-    bolleanValid.setPassword(false);
+    bolleanValid.setValidStatus('password', false);
     return false;
   }
   if (value.length <= 8) {
-    bolleanValid.setPassword(false);
+    bolleanValid.setValidStatus('password', false);
     incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
     return false;
   }
   if (!validatePassword(value)) {
-    bolleanValid.setPassword(false);
+    bolleanValid.setValidStatus('password', false);
     incorectValidation(err, ERROR_MESSAGES.passwordCapitalLetter);
     return false;
   }
-  bolleanValid.setPassword(true);
+  bolleanValid.setValidStatus('password', true);
   incorectValidation(err, '');
   return true;
 }
@@ -266,13 +266,15 @@ export function checkNumber(this: HTMLButtonElement): void {
         if (calculateAge(age) < 13) {
           incorectValidation(err, ERROR_MESSAGES.ageRequirement);
         } else {
-          bolleanValid.setDate(true);
+          bolleanValid.setValidStatus('date', true);
           incorectValidation(err, '');
         }
       } else {
+        bolleanValid.setValidStatus('date', false);
         incorectValidation(err, ERROR_MESSAGES.incorrectData);
       }
     } else {
+      bolleanValid.setValidStatus('date', false);
       incorectValidation(err, ERROR_MESSAGES.incorrectData);
     }
   }
@@ -293,9 +295,9 @@ export function postCodeValidation(value: string): void {
       incorectValidation(err, '');
       city.setAttribute('disabled', '');
       street.setAttribute('disabled', '');
-      bolleanValid.setCity(false);
-      bolleanValid.setPost(false);
-      bolleanValid.setStreet(false);
+      bolleanValid.setValidStatus('city', false);
+      bolleanValid.setValidStatus('post', false);
+      bolleanValid.setValidStatus('street', false);
       cityErr.textContent = '';
       streetErr.textContent = '';
       street.value = '';
@@ -314,9 +316,9 @@ export function postCodeValidation(value: string): void {
       ) {
         city.setAttribute('disabled', '');
         street.setAttribute('disabled', '');
-        bolleanValid.setCity(false);
-        bolleanValid.setPost(false);
-        bolleanValid.setStreet(false);
+        bolleanValid.setValidStatus('city', false);
+        bolleanValid.setValidStatus('post', false);
+        bolleanValid.setValidStatus('street', false);
         cityErr.textContent = '';
         streetErr.textContent = '';
         street.value = '';
@@ -326,7 +328,7 @@ export function postCodeValidation(value: string): void {
       }
     }
   } else {
-    bolleanValid.setPost(true);
+    bolleanValid.setValidStatus('post', true);
     city.removeAttribute('disabled');
     incorectValidation(err, '');
     return;
