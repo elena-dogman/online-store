@@ -1,25 +1,18 @@
-export function checkUpperCaseLowerCase(str: string): boolean {
-  let hasUpperCase = false;
-  let hasLowerCase = false;
-
-  for (let i = 0; i < str.length; i++) {
-    if (str[i] === str[i].toUpperCase()) {
-      hasUpperCase = true;
-    } else if (str[i] === str[i].toLowerCase()) {
-      hasLowerCase = true;
-    }
-  }
-
-  return hasUpperCase && hasLowerCase;
-}
-export function isValidDateInput(age: number): boolean {
-  if (age < 13) {
-    console.log('is too young old');
+export const validatePassword = (password: string): boolean => {
+  const uppercaseRegex = /[A-Z]/;
+  const lowercaseRegex = /[a-z]/;
+  const numberRegex = /[0-9]/;
+  if (!uppercaseRegex.test(password)) {
     return false;
   }
-  console.log('privet');
+  if (!lowercaseRegex.test(password)) {
+    return false;
+  }
+  if (!numberRegex.test(password)) {
+    return false;
+  }
   return true;
-}
+};
 export function calculateAge(date: Date): number {
   const currentDate = new Date();
 

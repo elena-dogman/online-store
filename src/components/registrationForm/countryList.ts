@@ -1,6 +1,7 @@
 import country from 'country-list-js';
 import * as baseComponent from '../../utils/baseComponent';
 import * as registrationComponent from './registrationForm';
+import { disableLocation } from '../../utils/validations/validationsComponents';
 function searchCountry(this: HTMLInputElement): void {
   const countyItems = document.querySelectorAll('.address__countries-item');
   const value = this.value.toLowerCase();
@@ -22,6 +23,7 @@ function searchCountry(this: HTMLInputElement): void {
 }
 
 export function addCountries(this: HTMLElement): void {
+  disableLocation();
   const countrys = country.names().sort();
   const input = registrationComponent.adressInputCountry;
   const post: HTMLInputElement | HTMLElement =

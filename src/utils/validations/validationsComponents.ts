@@ -1,4 +1,4 @@
-import { calculateAge, checkUpperCaseLowerCase } from '../ageAndTextChecks';
+import { calculateAge, validatePassword } from '../ageAndTextChecks';
 import country from 'country-list-js';
 import {
   postcodeValidator,
@@ -6,24 +6,28 @@ import {
 } from 'postcode-validator';
 import * as regFormComponents from '../../components/registrationForm/registrationForm';
 import * as errors from './validationsErrors';
-type Input = HTMLInputElement | HTMLElement;
+import * as bolleanValid from './booleanValid';
+export type Input = HTMLInputElement | HTMLElement;
+
 const countriesList = regFormComponents.addressListCountry;
 const city: Input = regFormComponents.addressInputCity;
+const post: Input = regFormComponents.addressInputPost;
 const street: Input = regFormComponents.addressInputStreet;
 const birthDay: Input = regFormComponents.birthDay;
 const birthMonth: Input = regFormComponents.birthMonth;
 const birthYear: Input = regFormComponents.birthYear;
-
 const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
   invalidEmail: "Email must contain an '@' symbol",
   onlyEnglishLetters: 'Must contain only English letters',
+  onlyEnglishLettersAndNumbers: 'Must contain only English letters and numbers',
   invalidFormat: 'Incorrect format',
   passwordRequirements: 'Password must meet requirements',
   mustBeNumber: 'Must be a number',
   dateOfBirth: 'Please enter your date of birth',
   atLeast8Characters: 'Password must contain at least 8 characters',
-  passwordCapitalLetter: 'Password must contain a capital letter',
+  passwordCapitalLetter:
+    'Password must contain at  at least 1 uppercase letter, 1 lowercase letter and 1 number',
   ageRequirement: 'Registration open to those 13 and older',
   incorrectData: 'Please enter correct data',
 };
@@ -46,35 +50,45 @@ export function mailValidation(value: string): boolean {
   const err = errors.errorEmailReg;
   if (value.length === 0) {
     incorectValidation(err, '');
+    bolleanValid.setMail(false);
+    return false;
   }
   if (!REGEX.email.test(String(value).toLowerCase())) {
     incorectValidation(err, ERROR_MESSAGES.invalidEmail);
+    bolleanValid.setMail(false);
     return false;
   }
   incorectValidation(err, '');
+  bolleanValid.setMail(true);
   return true;
 }
-export function validationBirth(value: string): void {
+export function validationBirth(value: string): boolean {
   const regex = REGEX.birthDate;
   const err = errors.errorBirthReg;
   if (!regex.test(value)) {
     incorectValidation(err, ERROR_MESSAGES.invalidFormat);
+    return false;
   }
+  return true;
 }
 export function nameValidation(value: string): boolean {
   const err = errors.errorNameReg;
   if (value.length === 0) {
     incorectValidation(err, '');
+    bolleanValid.setName(false);
     return false;
   }
   if (value.length <= 1) {
     incorectValidation(err, ERROR_MESSAGES.shortInput);
+    bolleanValid.setName(false);
     return false;
   }
   if (!REGEX.lettersOnly.test(value)) {
     incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+    bolleanValid.setName(false);
     return false;
   }
+  bolleanValid.setName(true);
   incorectValidation(err, '');
   return true;
 }
@@ -82,16 +96,20 @@ export function lastNameValidation(value: string): boolean {
   const err = errors.errorLastNameReg;
   if (value.length === 0) {
     incorectValidation(err, '');
+    bolleanValid.setlastName(false);
     return false;
   }
   if (value.length <= 1) {
     incorectValidation(err, ERROR_MESSAGES.shortInput);
+    bolleanValid.setlastName(false);
     return false;
   }
   if (!REGEX.lettersOnly.test(value)) {
     incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+    bolleanValid.setlastName(false);
     return false;
   }
+  bolleanValid.setlastName(true);
   incorectValidation(err, '');
   return true;
 }
@@ -100,13 +118,20 @@ export function cityValidation(value: string): boolean {
   const err = errors.errorCityReg;
   const streetErr = errors.errorStreetReg;
   if (value.length === 0) {
-    incorectValidation(err, '');
-    return false;
+    if (street instanceof HTMLInputElement) {
+      bolleanValid.setCity(false);
+      bolleanValid.setStreet(false);
+      street.value = '';
+      incorectValidation(err, '');
+      return false;
+    }
   }
   if (value.length <= 1) {
-    street.setAttribute('disabled', '');
     if (street instanceof HTMLInputElement) {
+      street.setAttribute('disabled', '');
       incorectValidation(err, ERROR_MESSAGES.shortInput);
+      bolleanValid.setCity(false);
+      bolleanValid.setStreet(false);
       streetErr.textContent = '';
       street.value = '';
       return false;
@@ -114,6 +139,8 @@ export function cityValidation(value: string): boolean {
   }
   if (!REGEX.lettersOnly.test(value)) {
     if (street instanceof HTMLInputElement) {
+      bolleanValid.setCity(false);
+      bolleanValid.setStreet(false);
       street.setAttribute('disabled', '');
       streetErr.textContent = '';
       street.value = '';
@@ -122,41 +149,50 @@ export function cityValidation(value: string): boolean {
     }
   }
   incorectValidation(err, '');
+  bolleanValid.setCity(true);
   street.removeAttribute('disabled');
   return true;
 }
 export function streetValidation(value: string): boolean {
   const err = errors.errorStreetReg;
   if (value.length === 0) {
+    bolleanValid.setStreet(false);
     incorectValidation(err, '');
     return false;
   }
   if (value.length <= 1) {
+    bolleanValid.setStreet(false);
     incorectValidation(err, ERROR_MESSAGES.shortInput);
     return false;
   }
   if (!REGEX.lettersAndNumbers.test(value)) {
+    bolleanValid.setStreet(false);
     incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
     return false;
   }
+  bolleanValid.setStreet(true);
   incorectValidation(err, '');
   return true;
 }
 export function passwordValidation(value: string): boolean {
   const err = errors.errorPasswordReg;
 
-  if (!REGEX.lettersOnly.test(value)) {
-    incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+  if (!REGEX.lettersAndNumbers.test(value)) {
+    incorectValidation(err, ERROR_MESSAGES.onlyEnglishLettersAndNumbers);
+    bolleanValid.setPassword(false);
     return false;
   }
   if (value.length <= 8) {
+    bolleanValid.setPassword(false);
     incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
     return false;
   }
-  if (!checkUpperCaseLowerCase(value)) {
+  if (!validatePassword(value)) {
+    bolleanValid.setPassword(false);
     incorectValidation(err, ERROR_MESSAGES.passwordCapitalLetter);
     return false;
   }
+  bolleanValid.setPassword(true);
   incorectValidation(err, '');
   return true;
 }
@@ -230,6 +266,7 @@ export function checkNumber(this: HTMLButtonElement): void {
         if (calculateAge(age) < 13) {
           incorectValidation(err, ERROR_MESSAGES.ageRequirement);
         } else {
+          bolleanValid.setDate(true);
           incorectValidation(err, '');
         }
       } else {
@@ -254,6 +291,9 @@ export function postCodeValidation(value: string): void {
       incorectValidation(err, '');
       city.setAttribute('disabled', '');
       street.setAttribute('disabled', '');
+      bolleanValid.setCity(false);
+      bolleanValid.setPost(false);
+      bolleanValid.setStreet(false);
       cityErr.textContent = '';
       streetErr.textContent = '';
       street.value = '';
@@ -272,6 +312,9 @@ export function postCodeValidation(value: string): void {
       ) {
         city.setAttribute('disabled', '');
         street.setAttribute('disabled', '');
+        bolleanValid.setCity(false);
+        bolleanValid.setPost(false);
+        bolleanValid.setStreet(false);
         cityErr.textContent = '';
         streetErr.textContent = '';
         street.value = '';
@@ -281,8 +324,22 @@ export function postCodeValidation(value: string): void {
       }
     }
   } else {
+    bolleanValid.setPost(true);
     city.removeAttribute('disabled');
     incorectValidation(err, '');
     return;
+  }
+}
+export function disableLocation(): void {
+  if (
+    street instanceof HTMLInputElement &&
+    post instanceof HTMLInputElement &&
+    city instanceof HTMLInputElement
+  ) {
+    street.removeAttribute('disabled');
+    city.removeAttribute('disabled');
+    street.value = '';
+    post.value = '';
+    city.value = '';
   }
 }

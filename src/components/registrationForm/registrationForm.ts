@@ -3,6 +3,8 @@ import * as validationFunc from '../../utils/validations/validationsComponents';
 import { addCountries } from './countryList';
 import { createElement } from '../../utils/baseComponent';
 import * as errors from '..//..//utils/validations/validationsErrors';
+import { submitRegData } from '../../utils/validations/submitRegData';
+
 export const authSideForm = createElement({
   tag: 'form',
   classNames: ['auth-side__reg-form'],
@@ -161,7 +163,7 @@ export const adressInputCountry = createElement({
 export const authFormButton = createElement({
   tag: 'button',
   classNames: ['reg-form__button', 'reg-button'],
-  attributes: { disabled: '', type: 'button' },
+  attributes: { type: 'button' },
   textContent: 'Create Account',
 });
 
@@ -214,4 +216,6 @@ export function createForm(): void {
 
   authSideForm.append(address);
   authSideForm.append(authFormButton);
+  authFormButton.addEventListener('click', submitRegData);
+  console.log(authFormButton);
 }
