@@ -191,7 +191,9 @@ export function createForm(): void {
   containerForBirth.append(birthMonth);
   containerForBirth.append(birthYear);
   birthDay.addEventListener('input', validateInput);
+  birthDay.addEventListener('input', validationFunc.checkNumber);
   birthMonth.addEventListener('input', validateInput);
+  birthMonth.addEventListener('input', validationFunc.checkNumber);
   birthYear.addEventListener('input', validateInput);
   birthYear.addEventListener('input', validationFunc.checkNumber);
 

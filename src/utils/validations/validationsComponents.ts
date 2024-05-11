@@ -272,6 +272,8 @@ export function checkNumber(this: HTMLButtonElement): void {
       } else {
         incorectValidation(err, ERROR_MESSAGES.incorrectData);
       }
+    } else {
+      incorectValidation(err, ERROR_MESSAGES.incorrectData);
     }
   }
 }
