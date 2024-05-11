@@ -14,14 +14,14 @@ export function submitRegData(): void {
   const birthYear = regFormComponents.birthYear as HTMLInputElement;
   const date = `${birthDay.value.padStart(2, '0')}${birthMonth.value.padStart(2, '0')}${birthYear.value.padStart(2, '0')}`;
   if (
-    booleanValid.nameValid &&
-    booleanValid.lastNameValid &&
-    booleanValid.passworValid &&
-    booleanValid.mailValid &&
-    booleanValid.dateValid &&
-    booleanValid.postValid &&
-    booleanValid.cityValid &&
-    booleanValid.streetValid
+    booleanValid.validStatus.name &&
+    booleanValid.validStatus.lastName &&
+    booleanValid.validStatus.password &&
+    booleanValid.validStatus.mail &&
+    booleanValid.validStatus.date &&
+    booleanValid.validStatus.post &&
+    booleanValid.validStatus.city &&
+    booleanValid.validStatus.street
   ) {
     const regDate = {
       name: name.value,
