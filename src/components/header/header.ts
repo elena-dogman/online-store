@@ -1,6 +1,11 @@
-import { addInnerComponent, createElement, ElementParams, setAttribute } from '../../utils/baseComponent';
+import {
+  addInnerComponent,
+  createElement,
+  ElementParams,
+  setAttribute,
+} from '../../utils/baseComponent';
 import { appEvents } from '../../utils/eventEmitter';
-
+import { logoutUser } from '../../api/apiService';
 export function createHeader(): HTMLElement {
   const headerParams: ElementParams<'div'> = {
     tag: 'div',
@@ -103,18 +108,23 @@ export function createHeader(): HTMLElement {
   addInnerComponent(header, navContainer);
   addInnerComponent(header, rightContainer);
 
-  function handleLogout() : void {
+  async function handleLogout(): Promise<void> {
+    await logoutUser();
     appEvents.emit('logout', undefined);
   }
 
-  function updateAuthButton(isLoggedIn: boolean) : void {
+  async function updateAuthButton(isLoggedIn: boolean): Promise<void> {
     if (authButton instanceof HTMLAnchorElement) {
       authButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
       setAttribute(authButton, 'href', isLoggedIn ? '#' : '/login');
       if (isLoggedIn) {
         authButton.onclick = handleLogout;
+        registerButton.remove();
       } else {
         authButton.removeAttribute('onclick');
+        if (!authContainer.contains(registerButton)) {
+          addInnerComponent(authContainer, registerButton);
+        }
       }
     }
   }
