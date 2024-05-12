@@ -66,6 +66,7 @@ export const logoutUser = async (): Promise<void> => {
 export async function isUserLogined(): Promise<ClientResponse<Customer> | void> {
   if (localStorage.getItem('token')) {
     const unparsedToken = JSON.parse(localStorage.getItem('token') as string);
+    const currentPath = window.location.pathname;
     const refreshToken = unparsedToken.refreshToken;
     const refreshFlowClient = createApiBuilderFromCtpClient(
       createRefreshTokenClient(refreshToken),
@@ -74,7 +75,9 @@ export async function isUserLogined(): Promise<ClientResponse<Customer> | void> 
     });
     try {
       const userData = await refreshFlowClient.me().get().execute();
-      router.navigate('/');
+      if (currentPath === '/' || currentPath === '/login') {
+        router.navigate('/');
+      }
       appEvents.emit('login', undefined);
       return userData;
     } catch (error) {
