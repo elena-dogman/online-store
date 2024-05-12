@@ -17,7 +17,6 @@ export function submitRegData(): void {
   const paddedYear = birthYear.value.padStart(4, '0');
   const date = `${paddedDay}${paddedMonth}${paddedYear}`;
 
-
   if (Object.values(booleanValid.validStatus).every(value => value)) {
     const regDate = {
       name: name.value,

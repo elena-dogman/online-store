@@ -3,12 +3,14 @@ module.exports = {
     browser: true,
     es2021: true,
     node: true,
+    'jest/globals': true
   },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'airbnb-typescript/base',
     'plugin:import/recommended',
+    'plugin:jest/recommended'
   ],
   overrides: [
     {
@@ -28,7 +30,8 @@ module.exports = {
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint',
+    'jest'],
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'error',
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
