@@ -12,17 +12,12 @@ export function submitRegData(): void {
   const birthDay = regFormComponents.birthDay as HTMLInputElement;
   const birthMonth = regFormComponents.birthMonth as HTMLInputElement;
   const birthYear = regFormComponents.birthYear as HTMLInputElement;
-  const date = `${birthDay.value.padStart(2, '0')}${birthMonth.value.padStart(2, '0')}${birthYear.value.padStart(2, '0')}`;
-  if (
-    booleanValid.validStatus.name &&
-    booleanValid.validStatus.lastName &&
-    booleanValid.validStatus.password &&
-    booleanValid.validStatus.mail &&
-    booleanValid.validStatus.date &&
-    booleanValid.validStatus.post &&
-    booleanValid.validStatus.city &&
-    booleanValid.validStatus.street
-  ) {
+  const paddedDay = birthDay.value.padStart(2, '0');
+  const paddedMonth = birthMonth.value.padStart(2, '0');
+  const paddedYear = birthYear.value.padStart(4, '0');
+  const date = `${paddedDay}${paddedMonth}${paddedYear}`;
+
+  if (Object.values(booleanValid.validStatus).every(value => value)) {
     const regDate = {
       name: name.value,
       lastName: lastName.value,
