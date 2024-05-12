@@ -173,13 +173,13 @@
   cursor: pointer;
 }
 
-.reg-form__birthday-container {
+.reg-form__date-container {
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
 }
 
-.birthday-input {
+.date-input {
   width: 50px;
   margin: 0;
   text-align: center;
@@ -188,14 +188,6 @@
   position: absolute;
   bottom: 0px;
   color: red;
-}
-.birthday__check-btn {
-  background-color: $text-color-contrast;
-  color: $text-color-base;
-  font-size: 18rem;
-  padding: 5px 10px;
-  border-radius: 10px;
-  border: $button-border;
 }
 
 @media (hover: hover) and (pointer: fine) {

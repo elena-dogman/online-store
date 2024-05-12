@@ -4,7 +4,7 @@ import {
   postcodeValidator,
   postcodeValidatorExistsForCountry,
 } from 'postcode-validator';
-import * as regFormComponents from '../../components/registrationForm/registrationForm';
+import * as dateComponents from '../../components/registrationForm/dateComponent';
 import * as shippingComponents from '../../components/registrationForm/address/shipping';
 import * as billingComponents from '../../components/registrationForm/address/billing';
 import * as errors from './validationsErrors';
@@ -21,9 +21,9 @@ const shippingPost = shippingComponents.shippingInputPost as HTMLInputElement;
 const shippingStreet =
   shippingComponents.shippingInputStreet as HTMLInputElement;
 
-const birthDay: Input = regFormComponents.birthDay;
-const birthMonth: Input = regFormComponents.birthMonth;
-const birthYear: Input = regFormComponents.birthYear;
+const dateDay: Input = dateComponents.dayDate;
+const dateMonth: Input = dateComponents.monthDate;
+const dateYear: Input = dateComponents.yearDate;
 const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
   invalidEmail: "Email must contain an '@' symbol",
@@ -288,6 +288,7 @@ export function dayValidation(
   value: string,
   err?: HTMLSpanElement | null,
 ): number | undefined {
+  console.log(1);
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
@@ -344,27 +345,27 @@ export function yearValidation(
   }
 }
 export function checkNumber(this: HTMLButtonElement): void {
-  const err = errors.errorBirthReg;
+  const err = errors.errorDateReg;
   const parent = this.parentNode as HTMLLabelElement | null;
   if (!parent) {
     return;
   }
   if (
-    birthYear instanceof HTMLInputElement &&
-    birthMonth instanceof HTMLInputElement &&
-    birthDay instanceof HTMLInputElement
+    dateYear instanceof HTMLInputElement &&
+    dateMonth instanceof HTMLInputElement &&
+    dateDay instanceof HTMLInputElement
   ) {
-    if (+birthYear.value && +birthMonth.value && +birthDay.value) {
+    if (+dateYear.value && +dateMonth.value && +dateDay.value) {
       if (
-        +birthMonth.value <= 12 &&
-        +birthDay.value <= 31 &&
-        +birthYear.value <= 2024 &&
-        +birthYear.value >= 1970
+        +dateMonth.value <= 12 &&
+        +dateDay.value <= 31 &&
+        +dateYear.value <= 2024 &&
+        +dateYear.value >= 1970
       ) {
         const age = new Date(
-          +birthYear.value,
-          +birthMonth.value - 1,
-          +birthDay.value,
+          +dateYear.value,
+          +dateMonth.value - 1,
+          +dateDay.value,
         );
         if (calculateAge(age) < 13) {
           incorectValidation(err, ERROR_MESSAGES.ageRequirement);

@@ -1,7 +1,8 @@
-import * as booleanValid from './booleanValid';
-import * as regFormComponents from '../../components/registrationForm/registrationForm';
-import * as shippingComponents from '../../components/registrationForm/address/shipping';
-import * as billingComponents from '../../components/registrationForm/address/billing';
+import * as booleanValid from '../../utils/validations/booleanValid';
+import * as regFormComponents from './registrationForm';
+import * as dateComponents from './dateComponent';
+import * as shippingComponents from './address/shipping';
+import * as billingComponents from './address/billing';
 export function submitRegData(): void {
   const name = regFormComponents.regFormInputName as HTMLInputElement;
   const lastName = regFormComponents.regFormInputLastName as HTMLInputElement;
@@ -19,9 +20,9 @@ export function submitRegData(): void {
     shippingComponents.shippingInputCountry as HTMLInputElement;
   const countryBilling =
     billingComponents.billingInputCountry as HTMLInputElement;
-  const birthDay = regFormComponents.birthDay as HTMLInputElement;
-  const birthMonth = regFormComponents.birthMonth as HTMLInputElement;
-  const birthYear = regFormComponents.birthYear as HTMLInputElement;
+  const birthDay = dateComponents.dayDate as HTMLInputElement;
+  const birthMonth = dateComponents.monthDate as HTMLInputElement;
+  const birthYear = dateComponents.yearDate as HTMLInputElement;
   const paddedDay = birthDay.value.padStart(2, '0');
   const paddedMonth = birthMonth.value.padStart(2, '0');
   const paddedYear = birthYear.value.padStart(4, '0');
@@ -35,13 +36,15 @@ export function submitRegData(): void {
       password: password.value,
       mailValue: mail.value,
       date: date,
-      country: countryBilling.textContent,
-      post: postBilling.value,
-      city: cityBilling.value,
-      street: streetBilling.value,
+      address: {
+        country: countryBilling.textContent,
+        postaCode: postBilling.value,
+        city: cityBilling.value,
+        streetName: streetBilling.value,
+      },
     };
     console.log(regDate);
   } else {
-    throw new Error('Error');
+    throw new Error('Error you must enter valid date to submit');
   }
 }

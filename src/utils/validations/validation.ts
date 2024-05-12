@@ -20,7 +20,6 @@ export function validateInput(this: HTMLInputElement): boolean {
   const value = this.value.trim();
   const error = checkError(this.parentElement?.children);
   const attribute = this.getAttribute('data-validation-type');
-
   const validationMap: ValidationMap = {
     name: validationFunc.nameValidation,
     lastName: validationFunc.lastNameValidation,

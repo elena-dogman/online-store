@@ -1,11 +1,10 @@
 import { validateInput } from '../../utils/validations/validation';
-import * as validationFunc from '../../utils/validations/validationsComponents';
-
 import { createElement } from '../../utils/baseComponent';
 import * as errors from '..//..//utils/validations/validationsErrors';
-import { submitRegData } from '../../utils/validations/submitRegData';
+import { submitRegData } from './submitRegDate';
 import { addShipping } from './address/shipping';
 import { addBilling } from './address/billing';
+import { addDate } from './dateComponent';
 
 export const authSideForm = createElement({
   tag: 'form',
@@ -60,42 +59,7 @@ export const regFormInputPassword = createElement({
     'data-validation-type': 'password',
   },
 });
-export const regFormLabelBirth = createElement({
-  tag: 'label',
-  classNames: ['reg-form__birthday-label', 'reg__label'],
-  textContent: 'Date Of Birth',
-});
-const containerForBirth = createElement({
-  tag: 'label',
-  classNames: ['reg-form__birthday-container'],
-});
-export const birthDay = createElement({
-  tag: 'input',
-  classNames: ['birthday__day', 'reg-input', 'birthday-input'],
-  attributes: {
-    type: 'text',
-    maxLength: '2',
-    'data-validation-type': 'day',
-  },
-});
-export const birthMonth = createElement({
-  tag: 'input',
-  classNames: ['birthday__month', 'reg-input', 'birthday-input'],
-  attributes: {
-    type: 'text',
-    maxLength: '2',
-    'data-validation-type': 'month',
-  },
-});
-export const birthYear = createElement({
-  tag: 'input',
-  classNames: ['birthday__year', 'reg-input', 'birthday-input'],
-  attributes: {
-    type: 'text',
-    maxLength: '4',
-    'data-validation-type': 'year',
-  },
-});
+
 const address = createElement({
   tag: 'div',
   classNames: ['reg-form__address'],
@@ -125,18 +89,7 @@ export function createForm(): void {
   regFormLabelPassword.append(regFormInputPassword);
   regFormLabelPassword.append(errors.errorPasswordReg);
   regFormInputPassword.addEventListener('input', validateInput);
-  authSideForm.append(regFormLabelBirth);
-  regFormLabelBirth.append(errors.errorBirthReg);
-  regFormLabelBirth.append(containerForBirth);
-  containerForBirth.append(birthDay);
-  containerForBirth.append(birthMonth);
-  containerForBirth.append(birthYear);
-  birthDay.addEventListener('input', validateInput);
-  birthDay.addEventListener('input', validationFunc.checkNumber);
-  birthMonth.addEventListener('input', validateInput);
-  birthMonth.addEventListener('input', validationFunc.checkNumber);
-  birthYear.addEventListener('input', validateInput);
-  birthYear.addEventListener('input', validationFunc.checkNumber);
+  authSideForm.append(addDate());
   address.append(addShipping());
   address.append(addBilling());
   authSideForm.append(address);
