@@ -1,6 +1,8 @@
 import { calculateAge } from '../utils/ageAndTextChecks';
-import { nameValidation, validationBirth } from '../utils/validations/validationsComponents';
-
+import {
+  nameValidation,
+  validationBirth,
+} from '../utils/validations/validationsComponents';
 
 describe('nameValidation', () => {
   test('returns false if the name is empty', () => {

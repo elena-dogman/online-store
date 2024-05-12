@@ -1,9 +1,11 @@
 import { validateInput } from '../../utils/validations/validation';
 import * as validationFunc from '../../utils/validations/validationsComponents';
-import { addCountries } from './countryList';
+
 import { createElement } from '../../utils/baseComponent';
 import * as errors from '..//..//utils/validations/validationsErrors';
 import { submitRegData } from '../../utils/validations/submitRegData';
+import { addShipping } from './address/shipping';
+import { addBilling } from './address/billing';
 
 export const authSideForm = createElement({
   tag: 'form',
@@ -98,68 +100,7 @@ const address = createElement({
   tag: 'div',
   classNames: ['reg-form__address'],
 });
-export const addressLabelStreet = createElement({
-  tag: 'label',
-  classNames: ['address__street-label', 'reg__label'],
-  textContent: 'Address',
-});
-export const addressInputStreet = createElement({
-  tag: 'input',
-  classNames: ['address__street-input', 'reg-input'],
-  attributes: {
-    type: 'text',
-    disabled: '',
-    'data-validation-type': 'street',
-  },
-});
-export const addressLabelCity = createElement({
-  tag: 'label',
-  classNames: ['address__city-label', 'reg__label'],
-  textContent: 'City',
-});
-export const addressInputCity = createElement({
-  tag: 'input',
-  classNames: ['address__city-input', 'reg-input'],
-  attributes: {
-    type: 'text',
-    disabled: '',
-    'data-validation-type': 'city',
-  },
-});
-export const addressLabelPost = createElement({
-  tag: 'label',
-  classNames: ['address__post-label', 'reg__label'],
-  textContent: 'Post',
-});
-export const addressInputPost = createElement({
-  tag: 'input',
-  classNames: ['address__post-input', 'reg-input'],
-  attributes: {
-    type: 'text',
-    disabled: '',
-    'data-validation-type': 'post',
-  },
-});
-export const addressLabelCountry = createElement({
-  tag: 'label',
-  classNames: ['address__country-label', 'reg__label'],
-  textContent: 'Country',
-});
-export const addressListCountry = createElement({
-  tag: 'div',
-  classNames: ['address__countries-list'],
-  textContent: 'Choose your country',
-});
-const addressCountryWrapper = createElement({
-  tag: 'div',
-  classNames: ['address__country-wrapper'],
-});
-export const adressInputCountry = createElement({
-  tag: 'input',
-  classNames: ['address__countries-input', 'reg-input'],
-  textContent: 'Chose your country',
-  attributes: { type: 'text' },
-});
+
 export const authFormButton = createElement({
   tag: 'button',
   classNames: ['reg-form__button', 'reg-button'],
@@ -196,26 +137,8 @@ export function createForm(): void {
   birthMonth.addEventListener('input', validationFunc.checkNumber);
   birthYear.addEventListener('input', validateInput);
   birthYear.addEventListener('input', validationFunc.checkNumber);
-
-  addressCountryWrapper.append(adressInputCountry);
-  addressLabelCountry.append(addressCountryWrapper);
-  addressCountryWrapper.append(addressListCountry);
-  address.append(addressLabelCountry);
-  addressListCountry.addEventListener('click', addCountries);
-
-  address.append(addressLabelPost);
-  addressLabelPost.append(addressInputPost);
-  addressLabelPost.append(errors.errorPostReg);
-  addressInputPost.addEventListener('input', validateInput);
-  address.append(addressLabelCity);
-  addressLabelCity.append(addressInputCity);
-  addressLabelCity.append(errors.errorCityReg);
-  addressInputCity.addEventListener('input', validateInput);
-  address.append(addressLabelStreet);
-  addressLabelStreet.append(addressInputStreet);
-  addressLabelStreet.append(errors.errorStreetReg);
-  addressInputStreet.addEventListener('input', validateInput);
-
+  address.append(addShipping());
+  address.append(addBilling());
   authSideForm.append(address);
   authSideForm.append(authFormButton);
   authFormButton.addEventListener('click', submitRegData);

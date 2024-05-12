@@ -5,14 +5,22 @@ import {
   postcodeValidatorExistsForCountry,
 } from 'postcode-validator';
 import * as regFormComponents from '../../components/registrationForm/registrationForm';
+import * as shippingComponents from '../../components/registrationForm/address/shipping';
+import * as billingComponents from '../../components/registrationForm/address/billing';
 import * as errors from './validationsErrors';
 import * as bolleanValid from './booleanValid';
-export type Input = HTMLInputElement | HTMLElement;
+import { Input } from '../baseComponent';
 
-const countriesList = regFormComponents.addressListCountry;
-const city: Input = regFormComponents.addressInputCity;
-const post: Input = regFormComponents.addressInputPost;
-const street: Input = regFormComponents.addressInputStreet;
+const countriesBillingList = billingComponents.billingListCountry;
+const countriesShippingList = shippingComponents.shippingListCountry;
+const billingCity = billingComponents.billingInputCity as HTMLInputElement;
+const billingPost = billingComponents.billingInputPost as HTMLInputElement;
+const billingStreet = billingComponents.billingInputStreet as HTMLInputElement;
+const shippingCity = shippingComponents.shippingInputCity as HTMLInputElement;
+const shippingPost = shippingComponents.shippingInputPost as HTMLInputElement;
+const shippingStreet =
+  shippingComponents.shippingInputStreet as HTMLInputElement;
+
 const birthDay: Input = regFormComponents.birthDay;
 const birthMonth: Input = regFormComponents.birthMonth;
 const birthYear: Input = regFormComponents.birthYear;
@@ -46,200 +54,295 @@ function incorectValidation(
 ): void {
   errorSpan.textContent = errorMessage;
 }
-export function mailValidation(value: string): boolean {
-  const err = errors.errorEmailReg;
-  if (value.length === 0) {
+export function mailValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): boolean {
+  if (err) {
+    if (value.length === 0) {
+      incorectValidation(err, '');
+      bolleanValid.setValidStatus('mail', false);
+      return false;
+    }
+    if (!REGEX.email.test(String(value).toLowerCase())) {
+      incorectValidation(err, ERROR_MESSAGES.invalidEmail);
+      bolleanValid.setValidStatus('mail', false);
+      return false;
+    }
     incorectValidation(err, '');
-    bolleanValid.setValidStatus('mail', false);
-    return false;
-  }
-  if (!REGEX.email.test(String(value).toLowerCase())) {
-    incorectValidation(err, ERROR_MESSAGES.invalidEmail);
-    bolleanValid.setValidStatus('mail', false);
-    return false;
-  }
-  incorectValidation(err, '');
-  bolleanValid.setValidStatus('mail', true);
-  return true;
-}
-export function validationBirth(value: string): boolean {
-  const regex = REGEX.birthDate;
-  const err = errors.errorBirthReg;
-  if (!regex.test(value)) {
-    incorectValidation(err, ERROR_MESSAGES.invalidFormat);
-    return false;
+    bolleanValid.setValidStatus('mail', true);
+    return true;
   }
   return true;
 }
-export function nameValidation(value: string): boolean {
-  const err = errors.errorNameReg;
-  if (value.length === 0) {
-    incorectValidation(err, '');
-    bolleanValid.setValidStatus('name', false);
-    return false;
+export function validationBirth(
+  value: string,
+  err?: HTMLSpanElement | null,
+): boolean {
+  if (err) {
+    const regex = REGEX.birthDate;
+    if (!regex.test(value)) {
+      incorectValidation(err, ERROR_MESSAGES.invalidFormat);
+      return false;
+    }
+    return true;
   }
-  if (value.length <= 1) {
-    incorectValidation(err, ERROR_MESSAGES.shortInput);
-    bolleanValid.setValidStatus('name', false);
-    return false;
-  }
-  if (!REGEX.lettersOnly.test(value)) {
-    incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-    bolleanValid.setValidStatus('name', false);
-    return false;
-  }
-  bolleanValid.setValidStatus('name', true);
-  incorectValidation(err, '');
   return true;
 }
-export function lastNameValidation(value: string): boolean {
-  const err = errors.errorLastNameReg;
-  if (value.length === 0) {
+export function nameValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): boolean {
+  if (err) {
+    if (value.length === 0) {
+      incorectValidation(err, '');
+      bolleanValid.setValidStatus('name', false);
+      return false;
+    }
+    if (value.length <= 1) {
+      incorectValidation(err, ERROR_MESSAGES.shortInput);
+      bolleanValid.setValidStatus('name', false);
+      return false;
+    }
+    if (!REGEX.lettersOnly.test(value)) {
+      incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+      bolleanValid.setValidStatus('name', false);
+      return false;
+    }
+    bolleanValid.setValidStatus('name', true);
     incorectValidation(err, '');
-    bolleanValid.setValidStatus('lastName', false);
-    return false;
+    return true;
   }
-  if (value.length <= 1) {
-    incorectValidation(err, ERROR_MESSAGES.shortInput);
-    bolleanValid.setValidStatus('lastName', false);
-    return false;
-  }
-  if (!REGEX.lettersOnly.test(value)) {
-    incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-    bolleanValid.setValidStatus('lastName', false);
-    return false;
-  }
-  bolleanValid.setValidStatus('lastName', true);
-  incorectValidation(err, '');
   return true;
 }
 
-export function cityValidation(value: string): boolean {
-  const err = errors.errorCityReg;
-  const streetErr = errors.errorStreetReg;
-  if (value.length === 0) {
-    if (street instanceof HTMLInputElement) {
-      bolleanValid.setValidStatus('city', false);
+export function lastNameValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): boolean {
+  if (err) {
+    if (value.length === 0) {
+      incorectValidation(err, '');
+      bolleanValid.setValidStatus('lastName', false);
+      return false;
+    }
+    if (value.length <= 1) {
+      incorectValidation(err, ERROR_MESSAGES.shortInput);
+      bolleanValid.setValidStatus('lastName', false);
+      return false;
+    }
+    if (!REGEX.lettersOnly.test(value)) {
+      incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+      bolleanValid.setValidStatus('lastName', false);
+      return false;
+    }
+    bolleanValid.setValidStatus('lastName', true);
+    incorectValidation(err, '');
+    return true;
+  }
+  return true;
+}
+
+export function cityBillingValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): boolean {
+  const streetErr = errors.errorBillingStreetReg;
+  if (err) {
+    if (value.length === 0) {
+      if (billingStreet instanceof HTMLInputElement) {
+        bolleanValid.setValidStatus('city', false);
+        bolleanValid.setValidStatus('street', false);
+        billingStreet.value = '';
+        incorectValidation(err, '');
+        return false;
+      }
+    }
+    if (value.length <= 1) {
+      if (billingStreet instanceof HTMLInputElement) {
+        billingStreet.setAttribute('disabled', '');
+        incorectValidation(err, ERROR_MESSAGES.shortInput);
+        bolleanValid.setValidStatus('city', false);
+        bolleanValid.setValidStatus('street', false);
+        streetErr.textContent = '';
+        billingStreet.value = '';
+        return false;
+      }
+    }
+    if (!REGEX.lettersOnly.test(value)) {
+      if (billingStreet instanceof HTMLInputElement) {
+        bolleanValid.setValidStatus('city', false);
+        bolleanValid.setValidStatus('street', false);
+        billingStreet.setAttribute('disabled', '');
+        streetErr.textContent = '';
+        billingStreet.value = '';
+        incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+        return false;
+      }
+    }
+    incorectValidation(err, '');
+    bolleanValid.setValidStatus('city', true);
+    billingStreet.removeAttribute('disabled');
+    return true;
+  }
+  return true;
+}
+export function cityShippingValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): boolean {
+  const streetErr = errors.errorBillingStreetReg;
+  if (err) {
+    if (value.length === 0) {
+      if (shippingStreet instanceof HTMLInputElement) {
+        bolleanValid.setValidStatus('city', false);
+        bolleanValid.setValidStatus('street', false);
+        shippingStreet.value = '';
+        incorectValidation(err, '');
+        return false;
+      }
+    }
+    if (value.length <= 1) {
+      if (shippingStreet instanceof HTMLInputElement) {
+        shippingStreet.setAttribute('disabled', '');
+        incorectValidation(err, ERROR_MESSAGES.shortInput);
+        bolleanValid.setValidStatus('city', false);
+        bolleanValid.setValidStatus('street', false);
+        streetErr.textContent = '';
+        shippingStreet.value = '';
+        return false;
+      }
+    }
+    if (!REGEX.lettersOnly.test(value)) {
+      if (shippingStreet instanceof HTMLInputElement) {
+        bolleanValid.setValidStatus('city', false);
+        bolleanValid.setValidStatus('street', false);
+        shippingStreet.setAttribute('disabled', '');
+        streetErr.textContent = '';
+        shippingStreet.value = '';
+        incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+        return false;
+      }
+    }
+    incorectValidation(err, '');
+    bolleanValid.setValidStatus('city', true);
+    shippingStreet.removeAttribute('disabled');
+    return true;
+  }
+  return true;
+}
+
+export function streetValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): boolean {
+  if (err) {
+    if (value.length === 0) {
       bolleanValid.setValidStatus('street', false);
-      street.value = '';
       incorectValidation(err, '');
       return false;
     }
-  }
-  if (value.length <= 1) {
-    if (street instanceof HTMLInputElement) {
-      street.setAttribute('disabled', '');
-      incorectValidation(err, ERROR_MESSAGES.shortInput);
-      bolleanValid.setValidStatus('city', false);
+    if (value.length <= 1) {
       bolleanValid.setValidStatus('street', false);
-      streetErr.textContent = '';
-      street.value = '';
+      incorectValidation(err, ERROR_MESSAGES.shortInput);
       return false;
     }
-  }
-  if (!REGEX.lettersOnly.test(value)) {
-    if (street instanceof HTMLInputElement) {
-      bolleanValid.setValidStatus('city', false);
+    if (!REGEX.lettersAndNumbers.test(value)) {
       bolleanValid.setValidStatus('street', false);
-      street.setAttribute('disabled', '');
-      streetErr.textContent = '';
-      street.value = '';
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
       return false;
     }
-  }
-  incorectValidation(err, '');
-  bolleanValid.setValidStatus('city', true);
-  street.removeAttribute('disabled');
-  return true;
-}
-export function streetValidation(value: string): boolean {
-  const err = errors.errorStreetReg;
-  if (value.length === 0) {
-    bolleanValid.setValidStatus('street', false);
+    bolleanValid.setValidStatus('street', true);
     incorectValidation(err, '');
-    return false;
+    return true;
   }
-  if (value.length <= 1) {
-    bolleanValid.setValidStatus('street', false);
-    incorectValidation(err, ERROR_MESSAGES.shortInput);
-    return false;
-  }
-  if (!REGEX.lettersAndNumbers.test(value)) {
-    bolleanValid.setValidStatus('street', false);
-    incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-    return false;
-  }
-  bolleanValid.setValidStatus('street', true);
-  incorectValidation(err, '');
   return true;
 }
-export function passwordValidation(value: string): boolean {
-  const err = errors.errorPasswordReg;
-
-  if (!REGEX.lettersAndNumbers.test(value)) {
-    incorectValidation(err, ERROR_MESSAGES.onlyEnglishLettersAndNumbers);
-    bolleanValid.setValidStatus('password', false);
-    return false;
-  }
-  if (value.length <= 8) {
-    bolleanValid.setValidStatus('password', false);
-    incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
-    return false;
-  }
-  if (!validatePassword(value)) {
-    bolleanValid.setValidStatus('password', false);
-    incorectValidation(err, ERROR_MESSAGES.passwordCapitalLetter);
-    return false;
-  }
-  bolleanValid.setValidStatus('password', true);
-  incorectValidation(err, '');
-  return true;
-}
-export function dayValidation(value: string): number | undefined {
-  const err = errors.errorBirthReg;
-  if (value.length === 0) {
-    incorectValidation(err, '');
-    return;
-  }
-  if (!parseInt(value)) {
-    incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
-    if (parseInt(value) > 31) {
-      incorectValidation(err, ERROR_MESSAGES.dateOfBirth);
+export function passwordValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): boolean {
+  if (err) {
+    if (!REGEX.lettersAndNumbers.test(value)) {
+      incorectValidation(err, ERROR_MESSAGES.onlyEnglishLettersAndNumbers);
+      bolleanValid.setValidStatus('password', false);
+      return false;
     }
-  } else {
-    incorectValidation(err, '');
-    return parseInt(value);
-  }
-}
-export function monthValidation(value: string): number | undefined {
-  const err = errors.errorBirthReg;
-  if (value.length === 0) {
-    incorectValidation(err, '');
-    return;
-  }
-  if (!parseInt(value)) {
-    incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
-    if (parseInt(value) > 12) {
-      incorectValidation(err, ERROR_MESSAGES.dateOfBirth);
+    if (value.length <= 8) {
+      bolleanValid.setValidStatus('password', false);
+      incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
+      return false;
     }
-  } else {
+    if (!validatePassword(value)) {
+      bolleanValid.setValidStatus('password', false);
+      incorectValidation(err, ERROR_MESSAGES.passwordCapitalLetter);
+      return false;
+    }
+    bolleanValid.setValidStatus('password', true);
     incorectValidation(err, '');
-    return parseInt(value);
+    return true;
+  }
+  return true;
+}
+export function dayValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): number | undefined {
+  if (err) {
+    if (value.length === 0) {
+      incorectValidation(err, '');
+      return;
+    }
+    if (!parseInt(value)) {
+      incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
+      if (parseInt(value) > 31) {
+        incorectValidation(err, ERROR_MESSAGES.dateOfBirth);
+        return;
+      }
+      return;
+    } else {
+      incorectValidation(err, '');
+      return parseInt(value);
+    }
   }
 }
-export function yearValidation(value: string): number | undefined {
-  const err = errors.errorBirthReg;
+export function monthValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): number | undefined {
+  if (err) {
+    if (value.length === 0) {
+      incorectValidation(err, '');
+      return;
+    }
+    if (!parseInt(value)) {
+      incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
+      if (parseInt(value) > 12) {
+        incorectValidation(err, ERROR_MESSAGES.dateOfBirth);
+        return;
+      }
+      return;
+    } else {
+      incorectValidation(err, '');
+      return parseInt(value);
+    }
+  }
+}
+export function yearValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): number | undefined {
   if (value.length === 0) {
-    incorectValidation(err, '');
-    return;
+    if (err) {
+      incorectValidation(err, '');
+      if (!parseInt(value)) {
+        incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
+        return;
+      }
+      return parseInt(value);
+    }
   }
-  if (!parseInt(value)) {
-    incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
-  }
-  return parseInt(value);
 }
-
 export function checkNumber(this: HTMLButtonElement): void {
   const err = errors.errorBirthReg;
   const parent = this.parentNode as HTMLLabelElement | null;
@@ -280,70 +383,143 @@ export function checkNumber(this: HTMLButtonElement): void {
   }
 }
 
-export function postCodeValidation(value: string): void {
-  const countryNames = country.names();
-  const countryIndex = countryNames.indexOf(countriesList.textContent);
-  const postCode = Object.keys(country.all)[countryIndex];
-  const err = errors.errorPostReg;
-  const cityErr = errors.errorCityReg;
-  const streetErr = errors.errorStreetReg;
-  if (value.length === 0) {
-    if (
-      street instanceof HTMLInputElement &&
-      city instanceof HTMLInputElement
-    ) {
-      incorectValidation(err, '');
-      city.setAttribute('disabled', '');
-      street.setAttribute('disabled', '');
-      bolleanValid.setValidStatus('city', false);
-      bolleanValid.setValidStatus('post', false);
-      bolleanValid.setValidStatus('street', false);
-      cityErr.textContent = '';
-      streetErr.textContent = '';
-      street.value = '';
-      city.value = '';
-      return;
-    }
-  }
-  if (postcodeValidatorExistsForCountry(postCode)) {
-    if (postcodeValidator(value, postCode)) {
-      city.removeAttribute('disabled');
-      incorectValidation(err, '');
-    } else {
+export function postCodeBillingValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): void {
+  if (err) {
+    const countryNames = country.names();
+    const countryIndex = countryNames.indexOf(countriesBillingList.textContent);
+    const postCode = Object.keys(country.all)[countryIndex];
+    const cityErr = errors.errorBillingCityReg;
+    const streetErr = errors.errorBillingStreetReg;
+    if (value.length === 0) {
       if (
-        street instanceof HTMLInputElement &&
-        city instanceof HTMLInputElement
+        billingStreet instanceof HTMLInputElement &&
+        billingCity instanceof HTMLInputElement
       ) {
-        city.setAttribute('disabled', '');
-        street.setAttribute('disabled', '');
+        incorectValidation(err, '');
+        billingCity.setAttribute('disabled', '');
+        billingStreet.setAttribute('disabled', '');
+        console.log(billingStreet);
         bolleanValid.setValidStatus('city', false);
         bolleanValid.setValidStatus('post', false);
         bolleanValid.setValidStatus('street', false);
         cityErr.textContent = '';
         streetErr.textContent = '';
-        street.value = '';
-        city.value = '';
-        incorectValidation(err, ERROR_MESSAGES.incorrectData);
+        billingStreet.value = '';
+        billingCity.value = '';
         return;
       }
     }
-  } else {
-    bolleanValid.setValidStatus('post', true);
-    city.removeAttribute('disabled');
-    incorectValidation(err, '');
-    return;
+    if (postcodeValidatorExistsForCountry(postCode)) {
+      if (postcodeValidator(value, postCode)) {
+        billingCity.removeAttribute('disabled');
+        incorectValidation(err, '');
+      } else {
+        if (
+          billingStreet instanceof HTMLInputElement &&
+          billingCity instanceof HTMLInputElement
+        ) {
+          billingCity.setAttribute('disabled', '');
+          billingStreet.setAttribute('disabled', '');
+          bolleanValid.setValidStatus('city', false);
+          bolleanValid.setValidStatus('post', false);
+          bolleanValid.setValidStatus('street', false);
+          cityErr.textContent = '';
+          streetErr.textContent = '';
+          billingStreet.value = '';
+          billingCity.value = '';
+          incorectValidation(err, ERROR_MESSAGES.incorrectData);
+          return;
+        }
+      }
+    } else {
+      bolleanValid.setValidStatus('post', true);
+      billingCity.removeAttribute('disabled');
+      incorectValidation(err, '');
+      return;
+    }
   }
 }
-export function disableLocation(): void {
-  if (
-    street instanceof HTMLInputElement &&
-    post instanceof HTMLInputElement &&
-    city instanceof HTMLInputElement
-  ) {
-    street.removeAttribute('disabled');
-    city.removeAttribute('disabled');
-    street.value = '';
-    post.value = '';
-    city.value = '';
+export function postCodeShippingValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): void {
+  if (err) {
+    const countryNames = country.names();
+    const countryIndex = countryNames.indexOf(
+      countriesShippingList.textContent,
+    );
+    const postCode = Object.keys(country.all)[countryIndex];
+    const cityErr = errors.errorShippingCityReg;
+    const streetErr = errors.errorShippingStreetReg;
+    if (value.length === 0) {
+      if (
+        shippingStreet instanceof HTMLInputElement &&
+        shippingCity instanceof HTMLInputElement
+      ) {
+        incorectValidation(err, '');
+        shippingCity.setAttribute('disabled', '');
+        shippingStreet.setAttribute('disabled', '');
+        bolleanValid.setValidStatus('city', false);
+        bolleanValid.setValidStatus('post', false);
+        bolleanValid.setValidStatus('street', false);
+        cityErr.textContent = '';
+        streetErr.textContent = '';
+        shippingStreet.value = '';
+        shippingCity.value = '';
+        return;
+      }
+    }
+    if (postcodeValidatorExistsForCountry(postCode)) {
+      if (postcodeValidator(value, postCode)) {
+        shippingCity.removeAttribute('disabled');
+        incorectValidation(err, '');
+      } else {
+        if (
+          shippingStreet instanceof HTMLInputElement &&
+          shippingCity instanceof HTMLInputElement
+        ) {
+          shippingCity.setAttribute('disabled', '');
+          shippingStreet.setAttribute('disabled', '');
+          bolleanValid.setValidStatus('city', false);
+          bolleanValid.setValidStatus('post', false);
+          bolleanValid.setValidStatus('street', false);
+          cityErr.textContent = '';
+          streetErr.textContent = '';
+          shippingStreet.value = '';
+          shippingCity.value = '';
+          incorectValidation(err, ERROR_MESSAGES.incorrectData);
+          return;
+        }
+      }
+    } else {
+      bolleanValid.setValidStatus('post', true);
+      shippingCity.removeAttribute('disabled');
+      incorectValidation(err, '');
+      return;
+    }
+  }
+}
+export function disableLocation(list: string): void {
+  if (list === 'billing') {
+    errors.errorBillingCityReg.textContent = '';
+    errors.errorBillingStreetReg.textContent = '';
+    errors.errorBillingPostReg.textContent = '';
+    billingStreet.setAttribute('disabled', '');
+    billingCity.setAttribute('disabled', '');
+    billingStreet.value = '';
+    billingPost.value = '';
+    billingCity.value = '';
+  } else if (list === 'shipping') {
+    errors.errorShippingCityReg.textContent = '';
+    errors.errorShippingStreetReg.textContent = '';
+    errors.errorShippingPostReg.textContent = '';
+    shippingStreet.setAttribute('disabled', '');
+    shippingCity.setAttribute('disabled', '');
+    shippingStreet.value = '';
+    shippingPost.value = '';
+    shippingCity.value = '';
   }
 }

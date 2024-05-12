@@ -20,10 +20,13 @@
 .container__registration {
   height: 100%;
 }
-.address__country-label {
+
+.billing__country-label,
+.shipping__country-label {
   position: relative;
 }
-.address__countries-list {
+.billing__countries-list,
+.shipping__countries-list {
   position:absolute;
   top:0;
   color: black;
@@ -37,13 +40,14 @@
   border: 1px solid;
   z-index: 10;
 }
-.address__countries-input {
+.billing__countries-input,
+.shipping__countries-input {
   transition: all 0.5s ease;
   width: 0%;
   opacity: 0;
 }
-
-.address__country-wrapper {
+.billing__country-wrapper,
+.shipping__country-wrapper {
   display: flex;
   align-items: center;
   position: relative;
@@ -55,7 +59,7 @@
 }
 .--expanded {
   top: 20px;
-  height: 250px;
+  height: 180px;
   border-radius: 10px 0 0 10px;
   overflow-y: auto;
   background: white;
@@ -98,8 +102,8 @@
   border-radius: 12px;
 }
 .reg-form__address {
+  gap: 10px;
   display: flex;
-  flex-direction: column;
 }
 .img-side__creator {
   font-size: 16rem;
@@ -136,6 +140,10 @@
   }
 
  @include inputDisabled;
+}
+.address__billing,
+.address__shipping{
+  width: 50%;
 }
 .sign-in__button {
   color: $text-color-accent;
