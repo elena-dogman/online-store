@@ -88,3 +88,7 @@ export async function isUserLogined(): Promise<ClientResponse<Customer> | void> 
     console.log('Switched to anonymous mode');
   }
 }
+
+export function checkLoginStatus(): boolean {
+  return Boolean(localStorage.getItem('token'));
+}

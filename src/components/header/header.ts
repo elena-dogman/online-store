@@ -2,10 +2,9 @@ import {
   addInnerComponent,
   createElement,
   ElementParams,
-  setAttribute,
 } from '../../utils/baseComponent';
 import { appEvents } from '../../utils/eventEmitter';
-import { logoutUser } from '../../api/apiService';
+import { checkLoginStatus, logoutUser } from '../../api/apiService';
 export function createHeader(): HTMLElement {
   const headerParams: ElementParams<'div'> = {
     tag: 'div',
@@ -114,21 +113,22 @@ export function createHeader(): HTMLElement {
   }
 
   async function updateAuthButton(isLoggedIn: boolean): Promise<void> {
-    if (authButton instanceof HTMLAnchorElement) {
-      authButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
-      setAttribute(authButton, 'href', isLoggedIn ? '#' : '/login');
-      if (isLoggedIn) {
-        authButton.onclick = handleLogout;
-        registerButton.remove();
-      } else {
-        authButton.removeAttribute('onclick');
-        if (!authContainer.contains(registerButton)) {
-          addInnerComponent(authContainer, registerButton);
-        }
-      }
-    }
+    registerButton.style.display = isLoggedIn ? 'none' : 'block';
+    authButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
+    authButton.setAttribute('href', isLoggedIn ? '#' : '/login');
+    authButton.onclick = isLoggedIn ? async (): Promise<void> => {
+      await handleLogout();
+      appEvents.emit('logout', undefined);
+    } : null;
   }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const isLoggedIn = checkLoginStatus();
+    updateAuthButton(isLoggedIn);
+  });
+
   appEvents.on('login', () => updateAuthButton(true));
   appEvents.on('logout', () => updateAuthButton(false));
+
   return header;
 }
