@@ -203,7 +203,26 @@
   bottom: 0px;
   color: red;
 }
+.address__shipping{
+  position: relative;
+  transition: all 1s ease;
+  z-index: 5;
+}
+.address__shipping--join{
+  width: 100%;
+}
+.address__billing{
+  position: relative;
+  transition: all 0.3s ease;
+  opacity: 1;
+  z-index: -1;
+}
+.address__billing--join{
+  transform: translateX(-100px);
+  opacity: 0;
+  width: 0;
 
+}
 @media (hover: hover) and (pointer: fine) {
   .reg-button:hover {
     box-shadow: $button-hover-box-shadow;

@@ -3,6 +3,9 @@ import {
   addInnerComponent,
   createElement,
 } from '../../../utils/baseComponent';
+import { billing, shipping } from '../registrationForm';
+import { setValidStatusAddress } from './booleanAddress';
+
 export function createDefaultChecks(): HTMLElement[] {
   const defaultLabelParams: ElementParams<'label'> = {
     tag: 'label',
@@ -51,7 +54,25 @@ export function createDefaultChecks(): HTMLElement[] {
     attributes: { type: 'checkbox' },
   };
   const defaultJoinAddressLabel = createElement(defaultJoinAddressLabelParams);
-  const defaultJoinAddressCheck = createElement(defaultJoinAddressCheckParams);
+  const defaultJoinAddressCheck = createElement(
+    defaultJoinAddressCheckParams,
+  ) as HTMLInputElement;
+  defaultJoinAddressCheck.addEventListener('click', () => {
+    if (defaultJoinAddressCheck.checked) {
+      setValidStatusAddress('joinAdress', true);
+      shipping.classList.add('address__shipping--join');
+      billing.classList.add('address__billing--join');
+      setTimeout(() => {
+        billing.classList.add('address__billing--remove');
+      }, 400);
+    } else {
+      billing.classList.remove('address__billing--remove');
+      shipping.classList.remove('address__shipping--join');
+      setTimeout(() => {
+        billing.classList.remove('address__billing--join');
+      }, 100);
+    }
+  });
   addInnerComponent(defaultLabel, defaultJoinAddressLabel);
   addInnerComponent(defaultJoinAddressLabel, defaultJoinAddressCheck);
   return [

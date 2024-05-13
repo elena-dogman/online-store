@@ -1,12 +1,12 @@
-export const validStatus = {
+export const validStatusAddress = {
   shippingIsDefault: false,
   billingIsDefault: false,
-  oneAdress: false,
+  joinAdress: false,
 };
 
-export function setValidStatus(
-  field: keyof typeof validStatus,
+export function setValidStatusAddress(
+  field: keyof typeof validStatusAddress,
   value: boolean,
 ): void {
-  validStatus[field] = value;
+  validStatusAddress[field] = value;
 }

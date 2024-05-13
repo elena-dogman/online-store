@@ -10,7 +10,8 @@ import { addShipping } from './address/shipping';
 import { addBilling } from './address/billing';
 import { addDate } from './dateComponent';
 import { createDefaultChecks } from './address/addressCheckBoxes';
-
+export const shipping = addShipping();
+export const billing = addBilling();
 export const authSideForm = createElement({
   tag: 'form',
   classNames: ['auth-side__reg-form'],
@@ -106,8 +107,8 @@ export function createForm(): void {
   addInnerComponent(authSideForm, regDateAndCheckContainer);
   addInnerComponent(regDateAndCheckContainer, addDate());
   addInnerComponent(regDateAndCheckContainer, createDefaultChecks()[0]);
-  addInnerComponent(address, addShipping());
-  addInnerComponent(address, addBilling());
+  addInnerComponent(address, shipping);
+  addInnerComponent(address, billing);
   addInnerComponent(authSideForm, address);
   addInnerComponent(authSideForm, authFormButton);
   authFormButton.addEventListener('click', submitRegData);
