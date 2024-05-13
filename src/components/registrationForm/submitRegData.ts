@@ -1,26 +1,23 @@
 import * as regFormComponents from './registrationForm';
 import * as dateComponents from './dateComponent';
-import { validStatusAddress } from './address/booleanAddress';
 
+import { validStatusAddress } from './address/booleanAddress';
+import { billingComponents, shippingComponents } from './address/addressFactory';
 export function submitRegData(): void {
   const name = regFormComponents.regFormInputName as HTMLInputElement;
   const lastName = regFormComponents.regFormInputLastName as HTMLInputElement;
   const password = regFormComponents.regFormInputPassword as HTMLInputElement;
   const mail = regFormComponents.regFormInputMail as HTMLInputElement;
-
-  const postShipping = document.querySelector('.shipping__post-input') as HTMLInputElement;
-  const postBilling = document.querySelector('.billing__post-input') as HTMLInputElement;
-
-  const cityBilling = document.querySelector('.billing__city-input') as HTMLInputElement;
-  const cityShipping = document.querySelector('.shipping__city-input') as HTMLInputElement;
-
-  const streetShipping = document.querySelector('.shipping__street-input') as HTMLInputElement;
-  const streetBilling = document.querySelector('.billing__street-input') as HTMLInputElement;
-
-  const countryShipping = document.querySelector('.shipping__countries-list') as HTMLElement;
-  const countryBilling = document.querySelector('.billing__countries-list') as HTMLElement;
-
-
+  const postShipping = shippingComponents.inputPost as HTMLInputElement;
+  const postBilling = billingComponents.inputPost as HTMLInputElement;
+  const cityBilling = billingComponents.inputCity as HTMLInputElement;
+  const cityShipping = shippingComponents.inputCity as HTMLInputElement;
+  const streetShipping =
+    shippingComponents.inputStreet as HTMLInputElement;
+  const streetBilling =
+    billingComponents.inputStreet as HTMLInputElement;
+  const countryShipping = shippingComponents.listCountry;
+  const countryBilling = billingComponents.listCountry;
   const birthDay = dateComponents.dayDate as HTMLInputElement;
   const birthMonth = dateComponents.monthDate as HTMLInputElement;
   const birthYear = dateComponents.yearDate as HTMLInputElement;
