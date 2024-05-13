@@ -20,10 +20,13 @@
 .container__registration {
   height: 100%;
 }
-.address__country-label {
+
+.billing__country-label,
+.shipping__country-label {
   position: relative;
 }
-.address__countries-list {
+.billing__countries-list,
+.shipping__countries-list {
   position:absolute;
   top:0;
   color: black;
@@ -37,13 +40,14 @@
   border: 1px solid;
   z-index: 10;
 }
-.address__countries-input {
+.billing__countries-input,
+.shipping__countries-input {
   transition: all 0.5s ease;
   width: 0%;
   opacity: 0;
 }
-
-.address__country-wrapper {
+.billing__country-wrapper,
+.shipping__country-wrapper {
   display: flex;
   align-items: center;
   position: relative;
@@ -55,7 +59,7 @@
 }
 .--expanded {
   top: 20px;
-  height: 250px;
+  height: 180px;
   border-radius: 10px 0 0 10px;
   overflow-y: auto;
   background: white;
@@ -79,7 +83,10 @@
   flex-direction: column;
   height: 100%;
 }
-
+.reg-form__container__date-checks{
+  display: flex;
+  justify-content: space-between;
+}
 .address__countries-item {
   color: black;
   padding: 3px 0 0 10px;
@@ -98,8 +105,8 @@
   border-radius: 12px;
 }
 .reg-form__address {
+  gap: 10px;
   display: flex;
-  flex-direction: column;
 }
 .img-side__creator {
   font-size: 16rem;
@@ -110,6 +117,7 @@
   display: flex;
   flex-direction: column;
 }
+
 .auth-side__title {
   text-align: center;
 }
@@ -124,6 +132,7 @@
   display: flex;
   flex-direction: column;
 }
+
 .reg-input {
   border: none;
   border-bottom: 1px solid black;
@@ -136,6 +145,19 @@
   }
 
  @include inputDisabled;
+}
+.reg-form__default-label{
+  column-gap: 20px;
+  display: flex;
+  flex-direction: row;
+}
+.default__label{
+  display:flex;
+  flex-direction: column;
+}
+.address__billing,
+.address__shipping{
+  width: 50%;
 }
 .sign-in__button {
   color: $text-color-accent;
@@ -163,33 +185,42 @@
 .reg-button {
   transition: all 0.5s ease;
   cursor: pointer;
+  @include inputDisabled;
 }
 
-.reg-form__birthday-container {
+.reg-form__date-container {
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
 }
 
-.birthday-input {
+.date-input {
   width: 50px;
   margin: 0;
   text-align: center;
 }
 .error {
+  font-size: 10rem;
   position: absolute;
   bottom: 0px;
   color: red;
 }
-.birthday__check-btn {
-  background-color: $text-color-contrast;
-  color: $text-color-base;
-  font-size: 18rem;
-  padding: 5px 10px;
-  border-radius: 10px;
-  border: $button-border;
+.address__shipping{
+  transition: all 1s ease;
+  z-index: 5;
 }
-
+.address__shipping--join{
+  width: 100%;
+}
+.address__billing{
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+.address__billing--join{
+  transform: translateX(-400px);
+  opacity: 0;
+  width: 0;
+}
 @media (hover: hover) and (pointer: fine) {
   .reg-button:hover {
     box-shadow: $button-hover-box-shadow;
