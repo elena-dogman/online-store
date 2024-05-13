@@ -16,10 +16,11 @@ function checkError(
   return null;
 }
 
-export function validateInput(this: HTMLInputElement): boolean {
-  const value = this.value.trim();
-  const error = checkError(this.parentElement?.children);
-  const attribute = this.getAttribute('data-validation-type');
+export function validateInput(event: Event): boolean {
+  const inputElement = event.target as HTMLInputElement;
+  const value = inputElement.value.trim();
+  const error = checkError(inputElement.parentElement?.children);
+  const attribute = inputElement.getAttribute('data-validation-type');
   const validationMap: ValidationMap = {
     name: validationFunc.nameValidation,
     lastName: validationFunc.lastNameValidation,
@@ -36,6 +37,7 @@ export function validateInput(this: HTMLInputElement): boolean {
     month: validationFunc.monthValidation,
     year: validationFunc.yearValidation,
   };
+
 
   if (attribute && validationMap[attribute]) {
     validationMap[attribute](value, error);

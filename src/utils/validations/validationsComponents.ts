@@ -9,17 +9,16 @@ import * as errors from './validationsErrors';
 import * as booleanValid from './booleanValid';
 import { billingComponents, shippingComponents } from '../../components/registrationForm/address/addressFactory';
 
-const countriesBillingList = billingComponents.listCountry;
-const countriesShippingList = shippingComponents.listCountry; // Adjusted to match the actual property name if it's different
 
-const billingCity = billingComponents.inputCity as HTMLInputElement; // Ensuring property names are correct
+const countriesBillingList = billingComponents.listCountry;
+const countriesShippingList = shippingComponents.listCountry;
+const billingCity = billingComponents.inputCity as HTMLInputElement;
 const billingPost = billingComponents.inputPost as HTMLInputElement;
 const billingStreet = billingComponents.inputStreet as HTMLInputElement;
-
 const shippingCity = shippingComponents.inputCity as HTMLInputElement;
 const shippingPost = shippingComponents.inputPost as HTMLInputElement;
-const shippingStreet = shippingComponents.inputStreet as HTMLInputElement;
-
+const shippingStreet =
+  shippingComponents.inputStreet as HTMLInputElement;
 
 const dateDay = dateComponents.dayDate;
 const dateMonth = dateComponents.monthDate;

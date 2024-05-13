@@ -54,10 +54,12 @@ function createAddressComponents(type: 'billing' | 'shipping'): AddressComponent
   const inputPost = createElement({
     tag: 'input',
     classNames: [`${type}__post-input`, 'reg-input'],
-    attributes: { type: 'text' },
+    attributes: { type: 'text', 'data-validation-type': `${type}Post` },
   }) as HTMLInputElement;
+  inputPost.addEventListener('input', function (event) {
+    validateInput(event);
+  });
   labelPost.appendChild(inputPost);
-
   const labelCountry = createElement({
     tag: 'label',
     classNames: [`${type}__country-label`, 'reg__label'],
@@ -112,4 +114,3 @@ export const addressesContainer = createElement({
   classNames: ['addresses-container'],
 });
 addressesContainer.append(billingComponents.container, shippingComponents.container);
-
