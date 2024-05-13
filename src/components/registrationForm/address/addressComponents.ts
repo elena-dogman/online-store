@@ -2,6 +2,7 @@ import { addCountries } from './countryList';
 import country from 'country-list-js';
 import { disableLocation } from '../../../utils/validations/validationsComponents';
 import { createElement } from '../../../utils/baseComponent';
+import { billingComponents } from './addressFactory';
 export function removeList(list: HTMLElement, input: HTMLInputElement): void {
   list.textContent = 'Choose your country';
   list.classList.remove('--expanded');
@@ -31,8 +32,8 @@ export function searchCountry(this: HTMLInputElement): void {
 export function addBillingCountries(countriesWrap: HTMLElement): void {
   disableLocation('billing');
   const countries = country.names().sort();
-  const input = document.querySelector('.billing__countries-input') as HTMLInputElement;
-  const post = document.querySelector('.billing__post-input') as HTMLInputElement;
+  const input = billingComponents.inputCountry as HTMLInputElement;
+  const post = billingComponents.inputPost as HTMLInputElement;
   countriesWrap.textContent = '';
   countriesWrap.classList.add('--expanded');
   input.classList.add('countries-input--expanded');
