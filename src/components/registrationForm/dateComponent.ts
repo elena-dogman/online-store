@@ -39,6 +39,7 @@ export function addDate(): HTMLElement {
     classNames: ['reg-form__date-label', 'reg__label'],
     textContent: 'Date',
   };
+
   const regFormLabelDate = createElement(regFormLabelDateParams);
   regFormLabelDate.append(errors.errorDateReg);
   regFormLabelDate.append(containerForDate);

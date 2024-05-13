@@ -83,7 +83,10 @@
   flex-direction: column;
   height: 100%;
 }
-
+.reg-form__container__date-checks{
+  display: flex;
+  justify-content: space-between;
+}
 .address__countries-item {
   color: black;
   padding: 3px 0 0 10px;
@@ -114,6 +117,7 @@
   display: flex;
   flex-direction: column;
 }
+
 .auth-side__title {
   text-align: center;
 }
@@ -128,6 +132,7 @@
   display: flex;
   flex-direction: column;
 }
+
 .reg-input {
   border: none;
   border-bottom: 1px solid black;
@@ -140,6 +145,15 @@
   }
 
  @include inputDisabled;
+}
+.reg-form__default-label{
+  column-gap: 20px;
+  display: flex;
+  flex-direction: row;
+}
+.default__label{
+  display:flex;
+  flex-direction: column;
 }
 .address__billing,
 .address__shipping{

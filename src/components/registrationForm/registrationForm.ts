@@ -1,10 +1,15 @@
 import { validateInput } from '../../utils/validations/validation';
-import { createElement } from '../../utils/baseComponent';
+import {
+  ElementParams,
+  addInnerComponent,
+  createElement,
+} from '../../utils/baseComponent';
 import * as errors from '..//..//utils/validations/validationsErrors';
-import { submitRegData } from './submitRegDate';
+import { submitRegData } from './submitRegData';
 import { addShipping } from './address/shipping';
 import { addBilling } from './address/billing';
 import { addDate } from './dateComponent';
+import { createDefaultChecks } from './address/addressCheckBoxes';
 
 export const authSideForm = createElement({
   tag: 'form',
@@ -59,6 +64,11 @@ export const regFormInputPassword = createElement({
     'data-validation-type': 'password',
   },
 });
+const regDateAndCheckContainerParams: ElementParams<'div'> = {
+  tag: 'div',
+  classNames: ['reg-form__container__date-checks'],
+};
+const regDateAndCheckContainer = createElement(regDateAndCheckContainerParams);
 
 const address = createElement({
   tag: 'div',
@@ -73,27 +83,32 @@ export const authFormButton = createElement({
 });
 
 export function createForm(): void {
-  authSideForm.append(regFormLabelName);
-  regFormLabelName.append(regFormInputName);
-  regFormLabelName.append(errors.errorNameReg);
+  addInnerComponent(authSideForm, regFormLabelName);
+  addInnerComponent(regFormLabelName, regFormInputName);
+  addInnerComponent(regFormLabelName, errors.errorNameReg);
+
   regFormInputName.addEventListener('input', validateInput);
-  authSideForm.append(regFormLabelLastName);
-  regFormLabelLastName.append(regFormInputLastName);
-  regFormLabelLastName.append(errors.errorLastNameReg);
+  addInnerComponent(authSideForm, regFormLabelLastName);
+  addInnerComponent(regFormLabelLastName, regFormInputLastName);
+  addInnerComponent(regFormLabelLastName, errors.errorLastNameReg);
   regFormInputLastName.addEventListener('input', validateInput);
-  authSideForm.append(regFormLabelMail);
-  regFormLabelMail.append(regFormInputMail);
-  regFormLabelMail.append(errors.errorEmailReg);
+
+  addInnerComponent(authSideForm, regFormLabelMail);
+  addInnerComponent(regFormLabelMail, regFormInputMail);
+  addInnerComponent(regFormLabelMail, errors.errorEmailReg);
   regFormInputMail.addEventListener('input', validateInput);
-  authSideForm.append(regFormLabelPassword);
-  regFormLabelPassword.append(regFormInputPassword);
-  regFormLabelPassword.append(errors.errorPasswordReg);
+
+  addInnerComponent(authSideForm, regFormLabelPassword);
+  addInnerComponent(regFormLabelPassword, regFormInputPassword);
+  addInnerComponent(regFormLabelPassword, errors.errorPasswordReg);
   regFormInputPassword.addEventListener('input', validateInput);
-  authSideForm.append(addDate());
-  address.append(addShipping());
-  address.append(addBilling());
-  authSideForm.append(address);
-  authSideForm.append(authFormButton);
+
+  addInnerComponent(authSideForm, regDateAndCheckContainer);
+  addInnerComponent(regDateAndCheckContainer, addDate());
+  addInnerComponent(regDateAndCheckContainer, createDefaultChecks()[0]);
+  addInnerComponent(address, addShipping());
+  addInnerComponent(address, addBilling());
+  addInnerComponent(authSideForm, address);
+  addInnerComponent(authSideForm, authFormButton);
   authFormButton.addEventListener('click', submitRegData);
-  console.log(authFormButton);
 }
