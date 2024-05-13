@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
 // настройки для авторизации авторизованных запросов
-const authMiddlewareOptions: AuthMiddlewareOptions = {
+export const authMiddlewareOptions: AuthMiddlewareOptions = {
   host: `https://auth.${import.meta.env.VITE_REGION}.commercetools.com`,
   projectKey: projectKey,
   credentials: {
