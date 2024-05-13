@@ -1,4 +1,3 @@
-import * as booleanValid from '../../utils/validations/booleanValid';
 import * as regFormComponents from './registrationForm';
 import * as dateComponents from './dateComponent';
 import * as shippingComponents from './address/shipping';
@@ -17,10 +16,8 @@ export function submitRegData(): void {
     shippingComponents.shippingInputStreet as HTMLInputElement;
   const streetBilling =
     billingComponents.billingInputStreet as HTMLInputElement;
-  const countryShipping =
-    shippingComponents.shippingInputCountry as HTMLInputElement;
-  const countryBilling =
-    billingComponents.billingInputCountry as HTMLInputElement;
+  const countryShipping = shippingComponents.shippingListCountry;
+  const countryBilling = billingComponents.billingListCountry;
   const birthDay = dateComponents.dayDate as HTMLInputElement;
   const birthMonth = dateComponents.monthDate as HTMLInputElement;
   const birthYear = dateComponents.yearDate as HTMLInputElement;
@@ -28,30 +25,32 @@ export function submitRegData(): void {
   const paddedMonth = birthMonth.value.padStart(2, '0');
   const paddedYear = birthYear.value.padStart(4, '0');
   const date = `${paddedDay}${paddedMonth}${paddedYear}`;
-  if (Object.values(booleanValid.validStatus).every((value) => value)) {
-    if (validStatusAddress.joinAdress) {
-      console.log(
-        countryShipping.textContent,
-        streetShipping.textContent,
-        cityShipping.textContent,
-        postShipping.textContent,
-      );
-    }
-    const regDate = {
-      name: name.value,
-      lastName: lastName.value,
-      password: password.value,
-      mailValue: mail.value,
-      date: date,
-      address: {
-        country: countryBilling.textContent,
-        postaCode: postBilling.value,
-        city: cityBilling.value,
-        streetName: streetBilling.value,
-      },
-    };
-    console.log(regDate);
-  } else {
-    throw new Error('Error you must enter valid date to submit');
+
+  if (validStatusAddress.joinAdress) {
+    countryBilling.textContent = countryShipping.textContent;
+    streetBilling.value = streetShipping.value;
+    cityBilling.value = cityShipping.value;
+    postBilling.value = postShipping.value;
   }
+
+  const regDate = {
+    name: name.value,
+    lastName: lastName.value,
+    password: password.value,
+    mailValue: mail.value,
+    date: date,
+    shippingAddress: {
+      country: countryShipping.textContent,
+      postaCode: postShipping.value,
+      city: cityShipping.value,
+      streetName: streetShipping.value,
+    },
+    billingAddress: {
+      country: countryBilling.textContent,
+      postaCode: postBilling.value,
+      city: cityBilling.value,
+      streetName: streetBilling.value,
+    },
+  };
+  console.log(regDate);
 }

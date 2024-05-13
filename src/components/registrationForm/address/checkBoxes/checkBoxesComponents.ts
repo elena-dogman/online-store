@@ -1,4 +1,7 @@
-import { setValidStatus } from '../../../../utils/validations/booleanValid';
+import {
+  checkAllInputs,
+  setValidStatus,
+} from '../../../../utils/validations/booleanValid';
 import { billing, shipping } from '../../registrationForm';
 import { setValidStatusAddress } from '../booleanAddress';
 
@@ -10,6 +13,7 @@ export function joinChecked(): void {
   setValidStatus('cityBilling', true);
   setValidStatus('postBilling', true);
   setValidStatus('streetBilling', true);
+  checkAllInputs();
 }
 export function joinUnchecked(): void {
   shipping.classList.remove('address__shipping--join');
@@ -18,4 +22,5 @@ export function joinUnchecked(): void {
   setValidStatus('postBilling', false);
   setValidStatus('streetBilling', false);
   setValidStatusAddress('joinAdress', false);
+  checkAllInputs();
 }

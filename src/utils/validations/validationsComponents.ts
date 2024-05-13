@@ -8,7 +8,7 @@ import * as dateComponents from '../../components/registrationForm/dateComponent
 import * as shippingComponents from '../../components/registrationForm/address/shipping';
 import * as billingComponents from '../../components/registrationForm/address/billing';
 import * as errors from './validationsErrors';
-import * as bolleanValid from './booleanValid';
+import * as booleanValid from './booleanValid';
 import { Input } from '../baseComponent';
 
 const countriesBillingList = billingComponents.billingListCountry;
@@ -61,16 +61,19 @@ export function mailValidation(
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
-      bolleanValid.setValidStatus('mail', false);
+      booleanValid.setValidStatus('mail', false);
+      booleanValid.checkAllInputs();
       return false;
     }
     if (!REGEX.email.test(String(value).toLowerCase())) {
       incorectValidation(err, ERROR_MESSAGES.invalidEmail);
-      bolleanValid.setValidStatus('mail', false);
+      booleanValid.setValidStatus('mail', false);
+      booleanValid.checkAllInputs();
       return false;
     }
     incorectValidation(err, '');
-    bolleanValid.setValidStatus('mail', true);
+    booleanValid.setValidStatus('mail', true);
+    booleanValid.checkAllInputs();
     return true;
   }
   return true;
@@ -85,7 +88,6 @@ export function validationBirth(
       incorectValidation(err, ERROR_MESSAGES.invalidFormat);
       return false;
     }
-    return true;
   }
   return true;
 }
@@ -96,20 +98,24 @@ export function nameValidation(
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
-      bolleanValid.setValidStatus('name', false);
+      booleanValid.setValidStatus('name', false);
+      booleanValid.checkAllInputs();
       return false;
     }
     if (value.length <= 1) {
       incorectValidation(err, ERROR_MESSAGES.shortInput);
-      bolleanValid.setValidStatus('name', false);
+      booleanValid.setValidStatus('name', false);
+      booleanValid.checkAllInputs();
       return false;
     }
     if (!REGEX.lettersOnly.test(value)) {
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-      bolleanValid.setValidStatus('name', false);
+      booleanValid.setValidStatus('name', false);
+      booleanValid.checkAllInputs();
       return false;
     }
-    bolleanValid.setValidStatus('name', true);
+    booleanValid.setValidStatus('name', true);
+    booleanValid.checkAllInputs();
     incorectValidation(err, '');
     return true;
   }
@@ -123,20 +129,24 @@ export function lastNameValidation(
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
-      bolleanValid.setValidStatus('lastName', false);
+      booleanValid.setValidStatus('lastName', false);
+      booleanValid.checkAllInputs();
       return false;
     }
     if (value.length <= 1) {
       incorectValidation(err, ERROR_MESSAGES.shortInput);
-      bolleanValid.setValidStatus('lastName', false);
+      booleanValid.setValidStatus('lastName', false);
+      booleanValid.checkAllInputs();
       return false;
     }
     if (!REGEX.lettersOnly.test(value)) {
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-      bolleanValid.setValidStatus('lastName', false);
+      booleanValid.setValidStatus('lastName', false);
+      booleanValid.checkAllInputs();
       return false;
     }
-    bolleanValid.setValidStatus('lastName', true);
+    booleanValid.setValidStatus('lastName', true);
+    booleanValid.checkAllInputs();
     incorectValidation(err, '');
     return true;
   }
@@ -151,8 +161,9 @@ export function cityBillingValidation(
   if (err) {
     if (value.length === 0) {
       if (billingStreet instanceof HTMLInputElement) {
-        bolleanValid.setValidStatus('cityBilling', false);
-        bolleanValid.setValidStatus('streetBilling', false);
+        booleanValid.setValidStatus('cityBilling', false);
+        booleanValid.setValidStatus('streetBilling', false);
+        booleanValid.checkAllInputs();
         billingStreet.value = '';
         incorectValidation(err, '');
         return false;
@@ -162,8 +173,9 @@ export function cityBillingValidation(
       if (billingStreet instanceof HTMLInputElement) {
         billingStreet.setAttribute('disabled', '');
         incorectValidation(err, ERROR_MESSAGES.shortInput);
-        bolleanValid.setValidStatus('cityBilling', false);
-        bolleanValid.setValidStatus('streetBilling', false);
+        booleanValid.setValidStatus('cityBilling', false);
+        booleanValid.setValidStatus('streetBilling', false);
+        booleanValid.checkAllInputs();
         streetErr.textContent = '';
         billingStreet.value = '';
         return false;
@@ -171,8 +183,9 @@ export function cityBillingValidation(
     }
     if (!REGEX.lettersOnly.test(value)) {
       if (billingStreet instanceof HTMLInputElement) {
-        bolleanValid.setValidStatus('cityBilling', false);
-        bolleanValid.setValidStatus('streetBilling', false);
+        booleanValid.setValidStatus('cityBilling', false);
+        booleanValid.setValidStatus('streetBilling', false);
+        booleanValid.checkAllInputs();
         billingStreet.setAttribute('disabled', '');
         streetErr.textContent = '';
         billingStreet.value = '';
@@ -181,7 +194,8 @@ export function cityBillingValidation(
       }
     }
     incorectValidation(err, '');
-    bolleanValid.setValidStatus('cityBilling', true);
+    booleanValid.setValidStatus('cityBilling', true);
+    booleanValid.checkAllInputs();
     billingStreet.removeAttribute('disabled');
     return true;
   }
@@ -195,8 +209,9 @@ export function cityShippingValidation(
   if (err) {
     if (value.length === 0) {
       if (shippingStreet instanceof HTMLInputElement) {
-        bolleanValid.setValidStatus('cityShipping', false);
-        bolleanValid.setValidStatus('streetShipping', false);
+        booleanValid.setValidStatus('cityShipping', false);
+        booleanValid.setValidStatus('streetShipping', false);
+        booleanValid.checkAllInputs();
         shippingStreet.value = '';
         incorectValidation(err, '');
         return false;
@@ -206,8 +221,9 @@ export function cityShippingValidation(
       if (shippingStreet instanceof HTMLInputElement) {
         shippingStreet.setAttribute('disabled', '');
         incorectValidation(err, ERROR_MESSAGES.shortInput);
-        bolleanValid.setValidStatus('cityShipping', false);
-        bolleanValid.setValidStatus('streetShipping', false);
+        booleanValid.setValidStatus('cityShipping', false);
+        booleanValid.setValidStatus('streetShipping', false);
+        booleanValid.checkAllInputs();
         streetErr.textContent = '';
         shippingStreet.value = '';
         return false;
@@ -215,8 +231,9 @@ export function cityShippingValidation(
     }
     if (!REGEX.lettersOnly.test(value)) {
       if (shippingStreet instanceof HTMLInputElement) {
-        bolleanValid.setValidStatus('cityShipping', false);
-        bolleanValid.setValidStatus('streetShipping', false);
+        booleanValid.setValidStatus('cityShipping', false);
+        booleanValid.setValidStatus('streetShipping', false);
+        booleanValid.checkAllInputs();
         shippingStreet.setAttribute('disabled', '');
         streetErr.textContent = '';
         shippingStreet.value = '';
@@ -225,7 +242,8 @@ export function cityShippingValidation(
       }
     }
     incorectValidation(err, '');
-    bolleanValid.setValidStatus('cityShipping', true);
+    booleanValid.setValidStatus('cityShipping', true);
+    booleanValid.checkAllInputs();
     shippingStreet.removeAttribute('disabled');
     return true;
   }
@@ -238,21 +256,25 @@ export function streetShippingValidation(
 ): boolean {
   if (err) {
     if (value.length === 0) {
-      bolleanValid.setValidStatus('streetShipping', false);
+      booleanValid.setValidStatus('streetShipping', false);
+      booleanValid.checkAllInputs();
       incorectValidation(err, '');
       return false;
     }
     if (value.length <= 1) {
-      bolleanValid.setValidStatus('streetShipping', false);
+      booleanValid.setValidStatus('streetShipping', false);
+      booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.shortInput);
       return false;
     }
     if (!REGEX.lettersAndNumbers.test(value)) {
-      bolleanValid.setValidStatus('streetShipping', false);
+      booleanValid.setValidStatus('streetShipping', false);
+      booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
       return false;
     }
-    bolleanValid.setValidStatus('streetShipping', true);
+    booleanValid.setValidStatus('streetShipping', true);
+    booleanValid.checkAllInputs();
     incorectValidation(err, '');
     return true;
   }
@@ -264,21 +286,25 @@ export function streetBillingValidation(
 ): boolean {
   if (err) {
     if (value.length === 0) {
-      bolleanValid.setValidStatus('streetBilling', false);
+      booleanValid.setValidStatus('streetBilling', false);
+      booleanValid.checkAllInputs();
       incorectValidation(err, '');
       return false;
     }
     if (value.length <= 1) {
-      bolleanValid.setValidStatus('streetBilling', false);
+      booleanValid.setValidStatus('streetBilling', false);
+      booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.shortInput);
       return false;
     }
     if (!REGEX.lettersAndNumbers.test(value)) {
-      bolleanValid.setValidStatus('streetBilling', false);
+      booleanValid.setValidStatus('streetBilling', false);
+      booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
       return false;
     }
-    bolleanValid.setValidStatus('streetBilling', true);
+    booleanValid.setValidStatus('streetBilling', true);
+    booleanValid.checkAllInputs();
     incorectValidation(err, '');
     return true;
   }
@@ -291,20 +317,24 @@ export function passwordValidation(
   if (err) {
     if (!REGEX.lettersAndNumbers.test(value)) {
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLettersAndNumbers);
-      bolleanValid.setValidStatus('password', false);
+      booleanValid.setValidStatus('password', false);
+      booleanValid.checkAllInputs();
       return false;
     }
     if (value.length <= 8) {
-      bolleanValid.setValidStatus('password', false);
+      booleanValid.setValidStatus('password', false);
+      booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
       return false;
     }
     if (!validatePassword(value)) {
-      bolleanValid.setValidStatus('password', false);
+      booleanValid.setValidStatus('password', false);
+      booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordCapitalLetter);
       return false;
     }
-    bolleanValid.setValidStatus('password', true);
+    booleanValid.setValidStatus('password', true);
+    booleanValid.checkAllInputs();
     incorectValidation(err, '');
     return true;
   }
@@ -396,15 +426,18 @@ export function checkNumber(this: HTMLButtonElement): void {
         if (calculateAge(age) < 13) {
           incorectValidation(err, ERROR_MESSAGES.ageRequirement);
         } else {
-          bolleanValid.setValidStatus('date', true);
+          booleanValid.setValidStatus('date', true);
+          booleanValid.checkAllInputs();
           incorectValidation(err, '');
         }
       } else {
-        bolleanValid.setValidStatus('date', false);
+        booleanValid.setValidStatus('date', false);
+        booleanValid.checkAllInputs();
         incorectValidation(err, ERROR_MESSAGES.incorrectData);
       }
     } else {
-      bolleanValid.setValidStatus('date', false);
+      booleanValid.setValidStatus('date', false);
+      booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.incorrectData);
     }
   }
@@ -429,9 +462,10 @@ export function postCodeBillingValidation(
         billingCity.setAttribute('disabled', '');
         billingStreet.setAttribute('disabled', '');
         console.log(billingStreet);
-        bolleanValid.setValidStatus('cityBilling', false);
-        bolleanValid.setValidStatus('postBilling', false);
-        bolleanValid.setValidStatus('streetBilling', false);
+        booleanValid.setValidStatus('cityBilling', false);
+        booleanValid.setValidStatus('postBilling', false);
+        booleanValid.setValidStatus('streetBilling', false);
+        booleanValid.checkAllInputs();
         cityErr.textContent = '';
         streetErr.textContent = '';
         billingStreet.value = '';
@@ -450,9 +484,10 @@ export function postCodeBillingValidation(
         ) {
           billingCity.setAttribute('disabled', '');
           billingStreet.setAttribute('disabled', '');
-          bolleanValid.setValidStatus('cityBilling', false);
-          bolleanValid.setValidStatus('postBilling', false);
-          bolleanValid.setValidStatus('streetBilling', false);
+          booleanValid.setValidStatus('cityBilling', false);
+          booleanValid.setValidStatus('postBilling', false);
+          booleanValid.setValidStatus('streetBilling', false);
+          booleanValid.checkAllInputs();
           cityErr.textContent = '';
           streetErr.textContent = '';
           billingStreet.value = '';
@@ -462,7 +497,8 @@ export function postCodeBillingValidation(
         }
       }
     } else {
-      bolleanValid.setValidStatus('postBilling', true);
+      booleanValid.setValidStatus('postBilling', true);
+      booleanValid.checkAllInputs();
       billingCity.removeAttribute('disabled');
       incorectValidation(err, '');
       return;
@@ -489,9 +525,10 @@ export function postCodeShippingValidation(
         incorectValidation(err, '');
         shippingCity.setAttribute('disabled', '');
         shippingStreet.setAttribute('disabled', '');
-        bolleanValid.setValidStatus('cityShipping', false);
-        bolleanValid.setValidStatus('postShipping', false);
-        bolleanValid.setValidStatus('streetShipping', false);
+        booleanValid.setValidStatus('cityShipping', false);
+        booleanValid.setValidStatus('postShipping', false);
+        booleanValid.setValidStatus('streetShipping', false);
+        booleanValid.checkAllInputs();
         cityErr.textContent = '';
         streetErr.textContent = '';
         shippingStreet.value = '';
@@ -502,6 +539,7 @@ export function postCodeShippingValidation(
     if (postcodeValidatorExistsForCountry(postCode)) {
       if (postcodeValidator(value, postCode)) {
         shippingCity.removeAttribute('disabled');
+        booleanValid.checkAllInputs();
         incorectValidation(err, '');
       } else {
         if (
@@ -510,9 +548,10 @@ export function postCodeShippingValidation(
         ) {
           shippingCity.setAttribute('disabled', '');
           shippingStreet.setAttribute('disabled', '');
-          bolleanValid.setValidStatus('cityShipping', false);
-          bolleanValid.setValidStatus('postShipping', false);
-          bolleanValid.setValidStatus('streetShipping', false);
+          booleanValid.setValidStatus('cityShipping', false);
+          booleanValid.setValidStatus('streetShipping', false);
+          booleanValid.setValidStatus('postShipping', false);
+          booleanValid.checkAllInputs();
           cityErr.textContent = '';
           streetErr.textContent = '';
           shippingStreet.value = '';
@@ -522,7 +561,8 @@ export function postCodeShippingValidation(
         }
       }
     } else {
-      bolleanValid.setValidStatus('postShipping', true);
+      booleanValid.setValidStatus('postShipping', true);
+      booleanValid.checkAllInputs();
       shippingCity.removeAttribute('disabled');
       incorectValidation(err, '');
       return;
@@ -536,6 +576,9 @@ export function disableLocation(list: string): void {
     errors.errorBillingPostReg.textContent = '';
     billingStreet.setAttribute('disabled', '');
     billingCity.setAttribute('disabled', '');
+    booleanValid.setValidStatus('cityBilling', false);
+    booleanValid.setValidStatus('streetBilling', false);
+    booleanValid.checkAllInputs();
     billingStreet.value = '';
     billingPost.value = '';
     billingCity.value = '';
@@ -545,6 +588,9 @@ export function disableLocation(list: string): void {
     errors.errorShippingPostReg.textContent = '';
     shippingStreet.setAttribute('disabled', '');
     shippingCity.setAttribute('disabled', '');
+    booleanValid.setValidStatus('cityShipping', false);
+    booleanValid.setValidStatus('streetShipping', false);
+    booleanValid.checkAllInputs();
     shippingStreet.value = '';
     shippingPost.value = '';
     shippingCity.value = '';

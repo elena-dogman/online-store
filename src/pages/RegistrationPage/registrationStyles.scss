@@ -185,6 +185,7 @@
 .reg-button {
   transition: all 0.5s ease;
   cursor: pointer;
+  @include inputDisabled;
 }
 
 .reg-form__date-container {
@@ -219,7 +220,6 @@
   transform: translateX(-400px);
   opacity: 0;
   width: 0;
-
 }
 @media (hover: hover) and (pointer: fine) {
   .reg-button:hover {

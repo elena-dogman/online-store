@@ -79,7 +79,7 @@ const address = createElement({
 export const authFormButton = createElement({
   tag: 'button',
   classNames: ['reg-form__button', 'reg-button'],
-  attributes: { type: 'button' },
+  attributes: { type: 'button', disabled: '' },
   textContent: 'Create Account',
 });
 

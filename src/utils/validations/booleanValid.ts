@@ -1,3 +1,5 @@
+import { authFormButton } from '../../components/registrationForm/registrationForm';
+
 export const validStatus = {
   name: false,
   lastName: false,
@@ -17,4 +19,13 @@ export function setValidStatus(
   value: boolean,
 ): void {
   validStatus[field] = value;
+}
+export function checkAllInputs(): void {
+  if (Object.values(validStatus).every((value) => value)) {
+    console.log(validStatus);
+    authFormButton.removeAttribute('disabled');
+  } else {
+    console.log(validStatus);
+    authFormButton.setAttribute('disabled', '');
+  }
 }
