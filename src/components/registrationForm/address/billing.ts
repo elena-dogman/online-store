@@ -13,7 +13,7 @@ export const billingInputStreet = createElement({
   attributes: {
     type: 'text',
     disabled: '',
-    'data-validation-type': 'street',
+    'data-validation-type': 'billingStreet',
   },
 });
 export const billingLabelCity = createElement({

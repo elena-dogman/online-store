@@ -9,7 +9,7 @@ import { submitRegData } from './submitRegData';
 import { addShipping } from './address/shipping';
 import { addBilling } from './address/billing';
 import { addDate } from './dateComponent';
-import { createDefaultChecks } from './address/addressCheckBoxes';
+import { createDefaultChecks } from './address/checkBoxes/addressCheckBoxes';
 export const shipping = addShipping();
 export const billing = addBilling();
 export const authSideForm = createElement({

@@ -3,6 +3,7 @@ import * as regFormComponents from './registrationForm';
 import * as dateComponents from './dateComponent';
 import * as shippingComponents from './address/shipping';
 import * as billingComponents from './address/billing';
+import { validStatusAddress } from './address/booleanAddress';
 export function submitRegData(): void {
   const name = regFormComponents.regFormInputName as HTMLInputElement;
   const lastName = regFormComponents.regFormInputLastName as HTMLInputElement;
@@ -27,9 +28,15 @@ export function submitRegData(): void {
   const paddedMonth = birthMonth.value.padStart(2, '0');
   const paddedYear = birthYear.value.padStart(4, '0');
   const date = `${paddedDay}${paddedMonth}${paddedYear}`;
-
   if (Object.values(booleanValid.validStatus).every((value) => value)) {
-    console.log(countryShipping, streetShipping, cityShipping, postShipping);
+    if (validStatusAddress.joinAdress) {
+      console.log(
+        countryShipping.textContent,
+        streetShipping.textContent,
+        cityShipping.textContent,
+        postShipping.textContent,
+      );
+    }
     const regDate = {
       name: name.value,
       lastName: lastName.value,

@@ -13,7 +13,7 @@ export const shippingInputStreet = createElement({
   attributes: {
     type: 'text',
     disabled: '',
-    'data-validation-type': 'street',
+    'data-validation-type': 'shippingStreet',
   },
 });
 export const shippingLabelCity = createElement({

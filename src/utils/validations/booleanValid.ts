@@ -4,9 +4,12 @@ export const validStatus = {
   password: false,
   mail: false,
   date: false,
-  post: false,
-  city: false,
-  street: false,
+  postBilling: false,
+  cityBilling: false,
+  streetBilling: false,
+  postShipping: false,
+  cityShipping: false,
+  streetShipping: false,
 };
 
 export function setValidStatus(

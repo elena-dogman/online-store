@@ -151,8 +151,8 @@ export function cityBillingValidation(
   if (err) {
     if (value.length === 0) {
       if (billingStreet instanceof HTMLInputElement) {
-        bolleanValid.setValidStatus('city', false);
-        bolleanValid.setValidStatus('street', false);
+        bolleanValid.setValidStatus('cityBilling', false);
+        bolleanValid.setValidStatus('streetBilling', false);
         billingStreet.value = '';
         incorectValidation(err, '');
         return false;
@@ -162,8 +162,8 @@ export function cityBillingValidation(
       if (billingStreet instanceof HTMLInputElement) {
         billingStreet.setAttribute('disabled', '');
         incorectValidation(err, ERROR_MESSAGES.shortInput);
-        bolleanValid.setValidStatus('city', false);
-        bolleanValid.setValidStatus('street', false);
+        bolleanValid.setValidStatus('cityBilling', false);
+        bolleanValid.setValidStatus('streetBilling', false);
         streetErr.textContent = '';
         billingStreet.value = '';
         return false;
@@ -171,8 +171,8 @@ export function cityBillingValidation(
     }
     if (!REGEX.lettersOnly.test(value)) {
       if (billingStreet instanceof HTMLInputElement) {
-        bolleanValid.setValidStatus('city', false);
-        bolleanValid.setValidStatus('street', false);
+        bolleanValid.setValidStatus('cityBilling', false);
+        bolleanValid.setValidStatus('streetBilling', false);
         billingStreet.setAttribute('disabled', '');
         streetErr.textContent = '';
         billingStreet.value = '';
@@ -181,7 +181,7 @@ export function cityBillingValidation(
       }
     }
     incorectValidation(err, '');
-    bolleanValid.setValidStatus('city', true);
+    bolleanValid.setValidStatus('cityBilling', true);
     billingStreet.removeAttribute('disabled');
     return true;
   }
@@ -195,8 +195,8 @@ export function cityShippingValidation(
   if (err) {
     if (value.length === 0) {
       if (shippingStreet instanceof HTMLInputElement) {
-        bolleanValid.setValidStatus('city', false);
-        bolleanValid.setValidStatus('street', false);
+        bolleanValid.setValidStatus('cityShipping', false);
+        bolleanValid.setValidStatus('streetShipping', false);
         shippingStreet.value = '';
         incorectValidation(err, '');
         return false;
@@ -206,8 +206,8 @@ export function cityShippingValidation(
       if (shippingStreet instanceof HTMLInputElement) {
         shippingStreet.setAttribute('disabled', '');
         incorectValidation(err, ERROR_MESSAGES.shortInput);
-        bolleanValid.setValidStatus('city', false);
-        bolleanValid.setValidStatus('street', false);
+        bolleanValid.setValidStatus('cityShipping', false);
+        bolleanValid.setValidStatus('streetShipping', false);
         streetErr.textContent = '';
         shippingStreet.value = '';
         return false;
@@ -215,8 +215,8 @@ export function cityShippingValidation(
     }
     if (!REGEX.lettersOnly.test(value)) {
       if (shippingStreet instanceof HTMLInputElement) {
-        bolleanValid.setValidStatus('city', false);
-        bolleanValid.setValidStatus('street', false);
+        bolleanValid.setValidStatus('cityShipping', false);
+        bolleanValid.setValidStatus('streetShipping', false);
         shippingStreet.setAttribute('disabled', '');
         streetErr.textContent = '';
         shippingStreet.value = '';
@@ -225,34 +225,60 @@ export function cityShippingValidation(
       }
     }
     incorectValidation(err, '');
-    bolleanValid.setValidStatus('city', true);
+    bolleanValid.setValidStatus('cityShipping', true);
     shippingStreet.removeAttribute('disabled');
     return true;
   }
   return true;
 }
 
-export function streetValidation(
+export function streetShippingValidation(
   value: string,
   err?: HTMLSpanElement | null,
 ): boolean {
   if (err) {
     if (value.length === 0) {
-      bolleanValid.setValidStatus('street', false);
+      bolleanValid.setValidStatus('streetShipping', false);
       incorectValidation(err, '');
       return false;
     }
     if (value.length <= 1) {
-      bolleanValid.setValidStatus('street', false);
+      bolleanValid.setValidStatus('streetShipping', false);
       incorectValidation(err, ERROR_MESSAGES.shortInput);
       return false;
     }
     if (!REGEX.lettersAndNumbers.test(value)) {
-      bolleanValid.setValidStatus('street', false);
+      bolleanValid.setValidStatus('streetShipping', false);
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
       return false;
     }
-    bolleanValid.setValidStatus('street', true);
+    bolleanValid.setValidStatus('streetShipping', true);
+    incorectValidation(err, '');
+    return true;
+  }
+  return true;
+}
+export function streetBillingValidation(
+  value: string,
+  err?: HTMLSpanElement | null,
+): boolean {
+  if (err) {
+    if (value.length === 0) {
+      bolleanValid.setValidStatus('streetBilling', false);
+      incorectValidation(err, '');
+      return false;
+    }
+    if (value.length <= 1) {
+      bolleanValid.setValidStatus('streetBilling', false);
+      incorectValidation(err, ERROR_MESSAGES.shortInput);
+      return false;
+    }
+    if (!REGEX.lettersAndNumbers.test(value)) {
+      bolleanValid.setValidStatus('streetBilling', false);
+      incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+      return false;
+    }
+    bolleanValid.setValidStatus('streetBilling', true);
     incorectValidation(err, '');
     return true;
   }
@@ -403,9 +429,9 @@ export function postCodeBillingValidation(
         billingCity.setAttribute('disabled', '');
         billingStreet.setAttribute('disabled', '');
         console.log(billingStreet);
-        bolleanValid.setValidStatus('city', false);
-        bolleanValid.setValidStatus('post', false);
-        bolleanValid.setValidStatus('street', false);
+        bolleanValid.setValidStatus('cityBilling', false);
+        bolleanValid.setValidStatus('postBilling', false);
+        bolleanValid.setValidStatus('streetBilling', false);
         cityErr.textContent = '';
         streetErr.textContent = '';
         billingStreet.value = '';
@@ -424,9 +450,9 @@ export function postCodeBillingValidation(
         ) {
           billingCity.setAttribute('disabled', '');
           billingStreet.setAttribute('disabled', '');
-          bolleanValid.setValidStatus('city', false);
-          bolleanValid.setValidStatus('post', false);
-          bolleanValid.setValidStatus('street', false);
+          bolleanValid.setValidStatus('cityBilling', false);
+          bolleanValid.setValidStatus('postBilling', false);
+          bolleanValid.setValidStatus('streetBilling', false);
           cityErr.textContent = '';
           streetErr.textContent = '';
           billingStreet.value = '';
@@ -436,7 +462,7 @@ export function postCodeBillingValidation(
         }
       }
     } else {
-      bolleanValid.setValidStatus('post', true);
+      bolleanValid.setValidStatus('postBilling', true);
       billingCity.removeAttribute('disabled');
       incorectValidation(err, '');
       return;
@@ -463,9 +489,9 @@ export function postCodeShippingValidation(
         incorectValidation(err, '');
         shippingCity.setAttribute('disabled', '');
         shippingStreet.setAttribute('disabled', '');
-        bolleanValid.setValidStatus('city', false);
-        bolleanValid.setValidStatus('post', false);
-        bolleanValid.setValidStatus('street', false);
+        bolleanValid.setValidStatus('cityShipping', false);
+        bolleanValid.setValidStatus('postShipping', false);
+        bolleanValid.setValidStatus('streetShipping', false);
         cityErr.textContent = '';
         streetErr.textContent = '';
         shippingStreet.value = '';
@@ -484,9 +510,9 @@ export function postCodeShippingValidation(
         ) {
           shippingCity.setAttribute('disabled', '');
           shippingStreet.setAttribute('disabled', '');
-          bolleanValid.setValidStatus('city', false);
-          bolleanValid.setValidStatus('post', false);
-          bolleanValid.setValidStatus('street', false);
+          bolleanValid.setValidStatus('cityShipping', false);
+          bolleanValid.setValidStatus('postShipping', false);
+          bolleanValid.setValidStatus('streetShipping', false);
           cityErr.textContent = '';
           streetErr.textContent = '';
           shippingStreet.value = '';
@@ -496,7 +522,7 @@ export function postCodeShippingValidation(
         }
       }
     } else {
-      bolleanValid.setValidStatus('post', true);
+      bolleanValid.setValidStatus('postShipping', true);
       shippingCity.removeAttribute('disabled');
       incorectValidation(err, '');
       return;
