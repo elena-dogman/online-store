@@ -7,14 +7,12 @@ import {
 import * as dateComponents from '../../components/registrationForm/dateComponent';
 import * as booleanValid from './booleanValid';
 import {
+  AddressComponents,
   Components,
   billingComponents,
   shippingComponents,
 } from '../../components/registrationForm/address/addressFactory';
-import { searchPost } from './checkAddress';
 
-// const countriesBillingList = billingComponents.listCountry;
-// const countriesShippingList = shippingComponents.listCountry;
 const components: Components = {
   billing: billingComponents,
   shipping: shippingComponents,
@@ -94,9 +92,6 @@ export function nameValidation(
   value: string,
   err?: HTMLSpanElement | null,
 ): boolean {
-  const post = searchPost();
-  console.log(post);
-
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
@@ -215,9 +210,10 @@ export function streetValidation(
   err?: HTMLSpanElement | null,
   type?: string | null,
 ): boolean {
-  const streetValid: 'street-shipping' | 'street-billing' =
-    type === 'shipping' ? 'street-shipping' : 'street-billing';
-  if (err) {
+  if (err && type) {
+    const streetValid: 'street-shipping' | 'street-billing' =
+      type === 'shipping' ? 'street-shipping' : 'street-billing';
+    console.log(type);
     if (value.length === 0) {
       booleanValid.setValidStatus(streetValid, false);
       booleanValid.checkAllInputs();
@@ -237,6 +233,7 @@ export function streetValidation(
       return false;
     }
     booleanValid.setValidStatus(streetValid, true);
+    console.log(streetValid);
     booleanValid.checkAllInputs();
     incorectValidation(err, '');
     return true;
@@ -333,10 +330,7 @@ export function yearValidation(
     }
   }
 }
-export function checkNumber(
-  this: HTMLInputElement,
-  // err?: HTMLSpanElement | null,
-): void {
+export function checkNumber(this: HTMLInputElement): void {
   const parent = this.parentNode as HTMLLabelElement | null;
   const err = parent?.parentElement?.firstElementChild as HTMLSpanElement;
   if (!parent) {
@@ -390,6 +384,7 @@ export function postCodeValidation(
       components[type].listCountry.textContent,
     );
     const postCode = Object.keys(country.all)[countryIndex];
+    console.log(postCode);
     const cityValid: 'city-shipping' | 'city-billing' =
       type === 'shipping' ? 'city-shipping' : 'city-billing';
     const streetValid: 'street-shipping' | 'street-billing' =
@@ -453,31 +448,24 @@ export function postCodeValidation(
   }
 }
 
-// export function disableLocation(list: string): void {
-//   if (list === 'billing') {
-//     const billingStreet = billingComponents.inputStreet;
-//     errors.errorBillingCityReg.textContent = '';
-//     errors.errorBillingStreetReg.textContent = '';
-//     errors.errorBillingPostReg.textContent = '';
-//     billingStreet.setAttribute('disabled', '');
-//     billingCity.setAttribute('disabled', '');
-//     booleanValid.setValidStatus('city-billing', false);
-//     booleanValid.setValidStatus('streetBilling', false);
-//     booleanValid.checkAllInputs();
-//     billingStreet.value = '';
-//     billingPost.value = '';
-//     billingCity.value = '';
-//   } else if (list === 'shipping') {
-//     // errors.errorShippingCityReg.textContent = '';
-//     // errors.errorShippingStreetReg.textContent = '';
-//     // errors.errorShippingPostReg.textContent = '';
-//     shippingStreet.setAttribute('disabled', '');
-//     shippingCity.setAttribute('disabled', '');
-//     booleanValid.setValidStatus('cityShipping', false);
-//     booleanValid.setValidStatus('streetShipping', false);
-//     booleanValid.checkAllInputs();
-//     shippingStreet.value = '';
-//     shippingPost.value = '';
-//     shippingCity.value = '';
-//   }
-// }
+export function disableLocation(
+  adressComponents: AddressComponents,
+  purpose: string,
+): void {
+  console.log(purpose);
+  adressComponents.errorCity.textContent = '';
+  adressComponents.errorStreet.textContent = '';
+  adressComponents.errorPost.textContent = '';
+  adressComponents.inputStreet.setAttribute('disabled', '');
+  adressComponents.inputCity.setAttribute('disabled', '');
+  const cityValid: 'city-shipping' | 'city-billing' =
+    purpose === 'shipping' ? 'city-shipping' : 'city-billing';
+  const streetValid: 'street-shipping' | 'street-billing' =
+    purpose === 'shipping' ? 'street-shipping' : 'street-billing';
+  booleanValid.setValidStatus(cityValid, false);
+  booleanValid.setValidStatus(streetValid, false);
+  booleanValid.checkAllInputs();
+  adressComponents.inputStreet.value = '';
+  adressComponents.inputPost.value = '';
+  adressComponents.inputCity.value = '';
+}

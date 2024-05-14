@@ -22,8 +22,10 @@ export function setValidStatus(
 }
 export function checkAllInputs(): void {
   if (Object.values(validStatus).every((value) => value)) {
+    console.log(validStatus);
     authFormButton.removeAttribute('disabled');
   } else {
+    console.log(validStatus);
     authFormButton.setAttribute('disabled', '');
   }
 }

@@ -47,6 +47,7 @@ function createAddressComponents(
     attributes: {
       type: 'text',
       'data-validation-type': 'street',
+      'validation-element': `${type}`,
       disabled: '',
     },
   }) as HTMLInputElement;

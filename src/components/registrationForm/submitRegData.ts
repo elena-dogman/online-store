@@ -1,8 +1,11 @@
 import * as regFormComponents from './registrationForm';
 import * as dateComponents from './dateComponent';
-
+import country from 'country-list-js';
 import { validStatusAddress } from './address/booleanAddress';
-import { billingComponents, shippingComponents } from './address/addressFactory';
+import {
+  billingComponents,
+  shippingComponents,
+} from './address/addressFactory';
 export function submitRegData(): void {
   const name = regFormComponents.regFormInputName as HTMLInputElement;
   const lastName = regFormComponents.regFormInputLastName as HTMLInputElement;
@@ -12,10 +15,8 @@ export function submitRegData(): void {
   const postBilling = billingComponents.inputPost as HTMLInputElement;
   const cityBilling = billingComponents.inputCity as HTMLInputElement;
   const cityShipping = shippingComponents.inputCity as HTMLInputElement;
-  const streetShipping =
-    shippingComponents.inputStreet as HTMLInputElement;
-  const streetBilling =
-    billingComponents.inputStreet as HTMLInputElement;
+  const streetShipping = shippingComponents.inputStreet as HTMLInputElement;
+  const streetBilling = billingComponents.inputStreet as HTMLInputElement;
   const countryShipping = shippingComponents.listCountry;
   const countryBilling = billingComponents.listCountry;
   const birthDay = dateComponents.dayDate as HTMLInputElement;
@@ -26,8 +27,15 @@ export function submitRegData(): void {
   const paddedYear = birthYear.value.padStart(4, '0');
   const date = `${paddedDay}${paddedMonth}${paddedYear}`;
 
+  const countryNames = country.names();
+  const countryBillingIndex = countryNames.indexOf(countryBilling.textContent);
+  const countryShippingIndex = countryNames.indexOf(
+    countryShipping.textContent,
+  );
+  let billingPostCode = Object.keys(country.all)[countryBillingIndex];
+  const shippingPostCode = Object.keys(country.all)[countryShippingIndex];
   if (validStatusAddress.joinAdress) {
-    countryBilling.textContent = countryShipping.textContent;
+    billingPostCode = shippingPostCode;
     streetBilling.value = streetShipping.value;
     cityBilling.value = cityShipping.value;
     postBilling.value = postShipping.value;
@@ -40,13 +48,13 @@ export function submitRegData(): void {
     mailValue: mail.value,
     date: date,
     shippingAddress: {
-      country: countryShipping.textContent,
+      country: shippingPostCode,
       postaCode: postShipping.value,
       city: cityShipping.value,
       streetName: streetShipping.value,
     },
     billingAddress: {
-      country: countryBilling.textContent,
+      country: billingPostCode,
       postaCode: postBilling.value,
       city: cityBilling.value,
       streetName: streetBilling.value,

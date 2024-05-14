@@ -3,6 +3,7 @@ import country from 'country-list-js';
 // import { disableLocation } from '../../../utils/validations/validationsComponents';
 import { createElement } from '../../../utils/baseComponent';
 import { AddressComponents } from './addressFactory';
+import { disableLocation } from '../../../utils/validations/validationsComponents';
 export function removeList(list: HTMLElement, input: HTMLInputElement): void {
   list.textContent = 'Choose your country';
   list.classList.remove('--expanded');
@@ -32,8 +33,9 @@ export function searchCountry(this: HTMLInputElement): void {
 export function addCountriesList(
   countriesWrap: HTMLElement,
   components: AddressComponents,
+  purpose: string,
 ): void {
-  // disableLocation('shipping');
+  disableLocation(components, purpose);
   const countries = country.names().sort();
   const input = components.inputCountry;
   const post = components.inputPost;
