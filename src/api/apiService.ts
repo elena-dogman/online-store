@@ -10,10 +10,11 @@ import {
   Project,
   CustomerSignInResult,
   Customer,
+  CustomerDraft,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/eventEmitter';
-
+import { RegistrationData } from '../components/registrationForm/regDataInterface';
 // apiRoot с авторизованным клиентом
 //УДАЛИТЬ СТРОКУ НИЖУ ПОСЛЕ ПЕРВОГО ЮЗА В КОДЕ
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -91,4 +92,49 @@ export async function isUserLogined(): Promise<ClientResponse<Customer> | void> 
 
 export function checkLoginStatus(): boolean {
   return Boolean(localStorage.getItem('token'));
+}
+///reg
+export async function regUser(regData: RegistrationData): Promise<void> {
+  try {
+    const requestBody: CustomerDraft = {
+      email: regData.mailValue,
+      firstName: regData.name,
+      lastName: regData.lastName,
+      password: regData.password,
+      dateOfBirth: regData.DOB,
+      addresses: [
+        {
+          key: 'Shipping-Address',
+          city: regData.shippingAddress.city,
+          country: regData.shippingAddress.country,
+          postalCode: regData.shippingAddress.postaCode,
+          streetName: regData.shippingAddress.streetName,
+        },
+        {
+          key: 'Billing-Address',
+          city: regData.billingAddress.city,
+          country: regData.billingAddress.country,
+          postalCode: regData.billingAddress.postaCode,
+          streetName: regData.billingAddress.streetName,
+        },
+      ],
+      defaultShippingAddress: 0,
+      defaultBillingAddress: 0,
+    };
+    // const editedBody = JSON.stringify(requestBody)
+    const response = await apiRoot
+      .customers()
+      .post({
+        body: requestBody as CustomerDraft,
+      })
+      .execute();
+    console.log(response);
+    const loginResponse = await loginUser({
+      email: regData.mailValue,
+      password: regData.password,
+    });
+    console.log(loginResponse);
+  } catch (error) {
+    console.log(error);
+  }
 }
