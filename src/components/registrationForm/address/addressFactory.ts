@@ -6,7 +6,7 @@ export interface Components {
   [key: string]: AddressComponents;
 }
 
-interface AddressComponents {
+export interface AddressComponents {
   container: HTMLElement;
   labelStreet: HTMLElement;
   inputStreet: HTMLInputElement;

@@ -211,15 +211,18 @@
   justify-content: space-evenly;
   align-items: flex-start;
   width: 100%;
+  column-gap: 10px;
 }
-.address__shipping{
-  transition: all 1s ease;
+.shipping__container{
+  transition: all 0.3s ease;
+  width: 50%;
   z-index: 5;
 }
 .address__shipping--join{
   width: 100%;
 }
-.address__billing{
+.billing__container{
+  width: 50%;
   transition: all 0.3s ease;
   opacity: 1;
 }
