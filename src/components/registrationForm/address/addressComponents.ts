@@ -1,9 +1,8 @@
 import { addCountries } from './countryList';
-import * as billingComponents from './billing';
-import * as shippingComponents from './shipping';
 import country from 'country-list-js';
 import { disableLocation } from '../../../utils/validations/validationsComponents';
-import { Input, createElement } from '../../../utils/baseComponent';
+import { createElement } from '../../../utils/baseComponent';
+import { billingComponents } from './addressFactory';
 export function removeList(list: HTMLElement, input: HTMLInputElement): void {
   list.textContent = 'Choose your country';
   list.classList.remove('--expanded');
@@ -33,8 +32,8 @@ export function searchCountry(this: HTMLInputElement): void {
 export function addBillingCountries(countriesWrap: HTMLElement): void {
   disableLocation('billing');
   const countries = country.names().sort();
-  const input: Input = billingComponents.billingInputCountry;
-  const post: Input = billingComponents.billingInputPost;
+  const input = billingComponents.inputCountry as HTMLInputElement;
+  const post = billingComponents.inputPost as HTMLInputElement;
   countriesWrap.textContent = '';
   countriesWrap.classList.add('--expanded');
   input.classList.add('countries-input--expanded');
@@ -60,8 +59,9 @@ export function addBillingCountries(countriesWrap: HTMLElement): void {
 export function addShippingCountries(countriesWrap: HTMLElement): void {
   disableLocation('shipping');
   const countries = country.names().sort();
-  const input = shippingComponents.shippingInputCountry;
-  const post: Input = shippingComponents.shippingInputPost;
+  const input = document.querySelector('.shipping__countries-input') as HTMLInputElement;
+  const post = document.querySelector('.shipping__post-input') as HTMLInputElement;
+
   countriesWrap.textContent = '';
   countriesWrap.classList.add('--expanded');
   input.classList.add('countries-input--expanded');

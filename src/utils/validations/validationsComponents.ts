@@ -5,25 +5,24 @@ import {
   postcodeValidatorExistsForCountry,
 } from 'postcode-validator';
 import * as dateComponents from '../../components/registrationForm/dateComponent';
-import * as shippingComponents from '../../components/registrationForm/address/shipping';
-import * as billingComponents from '../../components/registrationForm/address/billing';
 import * as errors from './validationsErrors';
 import * as booleanValid from './booleanValid';
-import { Input } from '../baseComponent';
+import { billingComponents, shippingComponents } from '../../components/registrationForm/address/addressFactory';
 
-const countriesBillingList = billingComponents.billingListCountry;
-const countriesShippingList = shippingComponents.shippingListCountry;
-const billingCity = billingComponents.billingInputCity as HTMLInputElement;
-const billingPost = billingComponents.billingInputPost as HTMLInputElement;
-const billingStreet = billingComponents.billingInputStreet as HTMLInputElement;
-const shippingCity = shippingComponents.shippingInputCity as HTMLInputElement;
-const shippingPost = shippingComponents.shippingInputPost as HTMLInputElement;
+
+const countriesBillingList = billingComponents.listCountry;
+const countriesShippingList = shippingComponents.listCountry;
+const billingCity = billingComponents.inputCity as HTMLInputElement;
+const billingPost = billingComponents.inputPost as HTMLInputElement;
+const billingStreet = billingComponents.inputStreet as HTMLInputElement;
+const shippingCity = shippingComponents.inputCity as HTMLInputElement;
+const shippingPost = shippingComponents.inputPost as HTMLInputElement;
 const shippingStreet =
-  shippingComponents.shippingInputStreet as HTMLInputElement;
+  shippingComponents.inputStreet as HTMLInputElement;
 
-const dateDay: Input = dateComponents.dayDate;
-const dateMonth: Input = dateComponents.monthDate;
-const dateYear: Input = dateComponents.yearDate;
+const dateDay = dateComponents.dayDate;
+const dateMonth = dateComponents.monthDate;
+const dateYear = dateComponents.yearDate;
 const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
   invalidEmail: "Email must contain an '@' symbol",

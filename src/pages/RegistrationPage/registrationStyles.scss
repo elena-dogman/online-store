@@ -205,6 +205,13 @@
   bottom: 0px;
   color: red;
 }
+.addresses-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  width: 100%;
+}
 .address__shipping{
   transition: all 1s ease;
   z-index: 5;

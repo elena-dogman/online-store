@@ -2,7 +2,6 @@ export type EventCallback = {
   eventType: keyof HTMLElementEventMap;
   callback: (event: Event) => void;
 };
-export type Input = HTMLInputElement | HTMLElement;
 export interface ElementParams<TTag extends keyof HTMLElementTagNameMap> {
   tag: TTag;
   classNames?: string[];

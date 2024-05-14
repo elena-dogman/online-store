@@ -1,23 +1,23 @@
 import * as regFormComponents from './registrationForm';
 import * as dateComponents from './dateComponent';
-import * as shippingComponents from './address/shipping';
-import * as billingComponents from './address/billing';
+
 import { validStatusAddress } from './address/booleanAddress';
+import { billingComponents, shippingComponents } from './address/addressFactory';
 export function submitRegData(): void {
   const name = regFormComponents.regFormInputName as HTMLInputElement;
   const lastName = regFormComponents.regFormInputLastName as HTMLInputElement;
   const password = regFormComponents.regFormInputPassword as HTMLInputElement;
   const mail = regFormComponents.regFormInputMail as HTMLInputElement;
-  const postShipping = shippingComponents.shippingInputPost as HTMLInputElement;
-  const postBilling = billingComponents.billingInputPost as HTMLInputElement;
-  const cityBilling = billingComponents.billingInputCity as HTMLInputElement;
-  const cityShipping = shippingComponents.shippingInputCity as HTMLInputElement;
+  const postShipping = shippingComponents.inputPost as HTMLInputElement;
+  const postBilling = billingComponents.inputPost as HTMLInputElement;
+  const cityBilling = billingComponents.inputCity as HTMLInputElement;
+  const cityShipping = shippingComponents.inputCity as HTMLInputElement;
   const streetShipping =
-    shippingComponents.shippingInputStreet as HTMLInputElement;
+    shippingComponents.inputStreet as HTMLInputElement;
   const streetBilling =
-    billingComponents.billingInputStreet as HTMLInputElement;
-  const countryShipping = shippingComponents.shippingListCountry;
-  const countryBilling = billingComponents.billingListCountry;
+    billingComponents.inputStreet as HTMLInputElement;
+  const countryShipping = shippingComponents.listCountry;
+  const countryBilling = billingComponents.listCountry;
   const birthDay = dateComponents.dayDate as HTMLInputElement;
   const birthMonth = dateComponents.monthDate as HTMLInputElement;
   const birthYear = dateComponents.yearDate as HTMLInputElement;

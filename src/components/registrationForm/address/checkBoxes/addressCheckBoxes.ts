@@ -16,7 +16,7 @@ export function createDefaultChecks(): HTMLElement[] {
   const defaultShippingLabelParams: ElementParams<'label'> = {
     tag: 'label',
     classNames: ['reg-form__shipping-label', 'default__label'],
-    textContent: 'Default Shippiping',
+    textContent: 'Default Shipping',
   };
   const defaultShippingCheckParams: ElementParams<'input'> = {
     tag: 'input',

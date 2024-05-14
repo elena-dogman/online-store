@@ -6,12 +6,10 @@ import {
 } from '../../utils/baseComponent';
 import * as errors from '..//..//utils/validations/validationsErrors';
 import { submitRegData } from './submitRegData';
-import { addShipping } from './address/shipping';
-import { addBilling } from './address/billing';
 import { addDate } from './dateComponent';
 import { createDefaultChecks } from './address/checkBoxes/addressCheckBoxes';
-export const shipping = addShipping();
-export const billing = addBilling();
+import { addressesContainer } from './address/addressFactory';
+
 export const authSideForm = createElement({
   tag: 'form',
   classNames: ['auth-side__reg-form'],
@@ -107,8 +105,7 @@ export function createForm(): void {
   addInnerComponent(authSideForm, regDateAndCheckContainer);
   addInnerComponent(regDateAndCheckContainer, addDate());
   addInnerComponent(regDateAndCheckContainer, createDefaultChecks()[0]);
-  addInnerComponent(address, shipping);
-  addInnerComponent(address, billing);
+  addInnerComponent(authSideForm, addressesContainer);
   addInnerComponent(authSideForm, address);
   addInnerComponent(authSideForm, authFormButton);
   authFormButton.addEventListener('click', submitRegData);
