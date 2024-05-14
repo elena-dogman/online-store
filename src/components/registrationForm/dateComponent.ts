@@ -6,6 +6,7 @@ const containerForDate = createElement({
   tag: 'label',
   classNames: ['reg-form__date-container'],
 });
+export const errorDateReg = errors.createErrorElement();
 export const dayDate = createElement({
   tag: 'input',
   classNames: ['date__day', 'reg-input', 'date-input'],
@@ -41,7 +42,7 @@ export function addDate(): HTMLElement {
   };
 
   const regFormLabelDate = createElement(regFormLabelDateParams);
-  regFormLabelDate.append(errors.errorDateReg);
+  regFormLabelDate.append(errorDateReg);
   regFormLabelDate.append(containerForDate);
   containerForDate.append(dayDate);
   containerForDate.append(monthDate);

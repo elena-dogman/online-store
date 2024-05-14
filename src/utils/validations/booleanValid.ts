@@ -6,12 +6,12 @@ export const validStatus = {
   password: false,
   mail: false,
   date: false,
-  postBilling: false,
-  cityBilling: false,
-  streetBilling: false,
-  postShipping: false,
-  cityShipping: false,
-  streetShipping: false,
+  'post-billing': false,
+  'city-billing': false,
+  'street-billing': false,
+  'post-shipping': false,
+  'city-shipping': false,
+  'street-shipping': false,
 };
 
 export function setValidStatus(
@@ -22,10 +22,8 @@ export function setValidStatus(
 }
 export function checkAllInputs(): void {
   if (Object.values(validStatus).every((value) => value)) {
-    console.log(validStatus);
     authFormButton.removeAttribute('disabled');
   } else {
-    console.log(validStatus);
     authFormButton.setAttribute('disabled', '');
   }
 }

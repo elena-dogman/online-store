@@ -5,20 +5,20 @@ import {
   postcodeValidatorExistsForCountry,
 } from 'postcode-validator';
 import * as dateComponents from '../../components/registrationForm/dateComponent';
-import * as errors from './validationsErrors';
 import * as booleanValid from './booleanValid';
-import { billingComponents, shippingComponents } from '../../components/registrationForm/address/addressFactory';
+import {
+  Components,
+  billingComponents,
+  shippingComponents,
+} from '../../components/registrationForm/address/addressFactory';
+import { searchPost } from './checkAddress';
 
-
-const countriesBillingList = billingComponents.listCountry;
-const countriesShippingList = shippingComponents.listCountry;
-const billingCity = billingComponents.inputCity as HTMLInputElement;
-const billingPost = billingComponents.inputPost as HTMLInputElement;
-const billingStreet = billingComponents.inputStreet as HTMLInputElement;
-const shippingCity = shippingComponents.inputCity as HTMLInputElement;
-const shippingPost = shippingComponents.inputPost as HTMLInputElement;
-const shippingStreet =
-  shippingComponents.inputStreet as HTMLInputElement;
+// const countriesBillingList = billingComponents.listCountry;
+// const countriesShippingList = shippingComponents.listCountry;
+const components: Components = {
+  billing: billingComponents,
+  shipping: shippingComponents,
+};
 
 const dateDay = dateComponents.dayDate;
 const dateMonth = dateComponents.monthDate;
@@ -55,7 +55,7 @@ function incorectValidation(
 }
 export function mailValidation(
   value: string,
-  err?: HTMLSpanElement | null,
+  err: HTMLSpanElement | null,
 ): boolean {
   if (err) {
     if (value.length === 0) {
@@ -94,6 +94,9 @@ export function nameValidation(
   value: string,
   err?: HTMLSpanElement | null,
 ): boolean {
+  const post = searchPost();
+  console.log(post);
+
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
@@ -152,16 +155,22 @@ export function lastNameValidation(
   return true;
 }
 
-export function cityBillingValidation(
+export function cityValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  type?: string | null,
 ): boolean {
-  const streetErr = errors.errorBillingStreetReg;
-  if (err) {
+  if (err && type) {
+    const cityValid: 'city-shipping' | 'city-billing' =
+      type === 'shipping' ? 'city-shipping' : 'city-billing';
+    const streetValid: 'street-shipping' | 'street-billing' =
+      type === 'shipping' ? 'street-shipping' : 'street-billing';
+    const streetErr = components[type].errorStreet;
+    const billingStreet = components[type].inputStreet;
     if (value.length === 0) {
       if (billingStreet instanceof HTMLInputElement) {
-        booleanValid.setValidStatus('cityBilling', false);
-        booleanValid.setValidStatus('streetBilling', false);
+        booleanValid.setValidStatus(cityValid, false);
+        booleanValid.setValidStatus(streetValid, false);
         booleanValid.checkAllInputs();
         billingStreet.value = '';
         incorectValidation(err, '');
@@ -172,8 +181,8 @@ export function cityBillingValidation(
       if (billingStreet instanceof HTMLInputElement) {
         billingStreet.setAttribute('disabled', '');
         incorectValidation(err, ERROR_MESSAGES.shortInput);
-        booleanValid.setValidStatus('cityBilling', false);
-        booleanValid.setValidStatus('streetBilling', false);
+        booleanValid.setValidStatus(cityValid, false);
+        booleanValid.setValidStatus(streetValid, false);
         booleanValid.checkAllInputs();
         streetErr.textContent = '';
         billingStreet.value = '';
@@ -182,8 +191,8 @@ export function cityBillingValidation(
     }
     if (!REGEX.lettersOnly.test(value)) {
       if (billingStreet instanceof HTMLInputElement) {
-        booleanValid.setValidStatus('cityBilling', false);
-        booleanValid.setValidStatus('streetBilling', false);
+        booleanValid.setValidStatus(cityValid, false);
+        booleanValid.setValidStatus(streetValid, false);
         booleanValid.checkAllInputs();
         billingStreet.setAttribute('disabled', '');
         streetErr.textContent = '';
@@ -193,116 +202,41 @@ export function cityBillingValidation(
       }
     }
     incorectValidation(err, '');
-    booleanValid.setValidStatus('cityBilling', true);
+    booleanValid.setValidStatus(cityValid, true);
     booleanValid.checkAllInputs();
     billingStreet.removeAttribute('disabled');
     return true;
   }
   return true;
 }
-export function cityShippingValidation(
-  value: string,
-  err?: HTMLSpanElement | null,
-): boolean {
-  const streetErr = errors.errorBillingStreetReg;
-  if (err) {
-    if (value.length === 0) {
-      if (shippingStreet instanceof HTMLInputElement) {
-        booleanValid.setValidStatus('cityShipping', false);
-        booleanValid.setValidStatus('streetShipping', false);
-        booleanValid.checkAllInputs();
-        shippingStreet.value = '';
-        incorectValidation(err, '');
-        return false;
-      }
-    }
-    if (value.length <= 1) {
-      if (shippingStreet instanceof HTMLInputElement) {
-        shippingStreet.setAttribute('disabled', '');
-        incorectValidation(err, ERROR_MESSAGES.shortInput);
-        booleanValid.setValidStatus('cityShipping', false);
-        booleanValid.setValidStatus('streetShipping', false);
-        booleanValid.checkAllInputs();
-        streetErr.textContent = '';
-        shippingStreet.value = '';
-        return false;
-      }
-    }
-    if (!REGEX.lettersOnly.test(value)) {
-      if (shippingStreet instanceof HTMLInputElement) {
-        booleanValid.setValidStatus('cityShipping', false);
-        booleanValid.setValidStatus('streetShipping', false);
-        booleanValid.checkAllInputs();
-        shippingStreet.setAttribute('disabled', '');
-        streetErr.textContent = '';
-        shippingStreet.value = '';
-        incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-        return false;
-      }
-    }
-    incorectValidation(err, '');
-    booleanValid.setValidStatus('cityShipping', true);
-    booleanValid.checkAllInputs();
-    shippingStreet.removeAttribute('disabled');
-    return true;
-  }
-  return true;
-}
 
-export function streetShippingValidation(
+export function streetValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  type?: string | null,
 ): boolean {
+  const streetValid: 'street-shipping' | 'street-billing' =
+    type === 'shipping' ? 'street-shipping' : 'street-billing';
   if (err) {
     if (value.length === 0) {
-      booleanValid.setValidStatus('streetShipping', false);
+      booleanValid.setValidStatus(streetValid, false);
       booleanValid.checkAllInputs();
       incorectValidation(err, '');
       return false;
     }
     if (value.length <= 1) {
-      booleanValid.setValidStatus('streetShipping', false);
+      booleanValid.setValidStatus(streetValid, false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.shortInput);
       return false;
     }
     if (!REGEX.lettersAndNumbers.test(value)) {
-      booleanValid.setValidStatus('streetShipping', false);
+      booleanValid.setValidStatus(streetValid, false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
       return false;
     }
-    booleanValid.setValidStatus('streetShipping', true);
-    booleanValid.checkAllInputs();
-    incorectValidation(err, '');
-    return true;
-  }
-  return true;
-}
-export function streetBillingValidation(
-  value: string,
-  err?: HTMLSpanElement | null,
-): boolean {
-  if (err) {
-    if (value.length === 0) {
-      booleanValid.setValidStatus('streetBilling', false);
-      booleanValid.checkAllInputs();
-      incorectValidation(err, '');
-      return false;
-    }
-    if (value.length <= 1) {
-      booleanValid.setValidStatus('streetBilling', false);
-      booleanValid.checkAllInputs();
-      incorectValidation(err, ERROR_MESSAGES.shortInput);
-      return false;
-    }
-    if (!REGEX.lettersAndNumbers.test(value)) {
-      booleanValid.setValidStatus('streetBilling', false);
-      booleanValid.checkAllInputs();
-      incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-      return false;
-    }
-    booleanValid.setValidStatus('streetBilling', true);
+    booleanValid.setValidStatus(streetValid, true);
     booleanValid.checkAllInputs();
     incorectValidation(err, '');
     return true;
@@ -399,9 +333,12 @@ export function yearValidation(
     }
   }
 }
-export function checkNumber(this: HTMLButtonElement): void {
-  const err = errors.errorDateReg;
+export function checkNumber(
+  this: HTMLInputElement,
+  // err?: HTMLSpanElement | null,
+): void {
   const parent = this.parentNode as HTMLLabelElement | null;
+  const err = parent?.parentElement?.firstElementChild as HTMLSpanElement;
   if (!parent) {
     return;
   }
@@ -442,16 +379,27 @@ export function checkNumber(this: HTMLButtonElement): void {
   }
 }
 
-export function postCodeBillingValidation(
+export function postCodeValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  type?: string | null,
 ): void {
-  if (err) {
+  if (err && type) {
     const countryNames = country.names();
-    const countryIndex = countryNames.indexOf(countriesBillingList.textContent);
+    const countryIndex = countryNames.indexOf(
+      components[type].listCountry.textContent,
+    );
     const postCode = Object.keys(country.all)[countryIndex];
-    const cityErr = errors.errorBillingCityReg;
-    const streetErr = errors.errorBillingStreetReg;
+    const cityValid: 'city-shipping' | 'city-billing' =
+      type === 'shipping' ? 'city-shipping' : 'city-billing';
+    const streetValid: 'street-shipping' | 'street-billing' =
+      type === 'shipping' ? 'street-shipping' : 'street-billing';
+    const postValid: 'post-shipping' | 'post-billing' =
+      type === 'shipping' ? 'post-shipping' : 'post-billing';
+    const streetErr = components[type].errorStreet;
+    const cityErr = components[type].errorCity;
+    const billingStreet = components[type].inputStreet;
+    const billingCity = components[type].inputCity;
     if (value.length === 0) {
       if (
         billingStreet instanceof HTMLInputElement &&
@@ -460,10 +408,9 @@ export function postCodeBillingValidation(
         incorectValidation(err, '');
         billingCity.setAttribute('disabled', '');
         billingStreet.setAttribute('disabled', '');
-        console.log(billingStreet);
-        booleanValid.setValidStatus('cityBilling', false);
-        booleanValid.setValidStatus('postBilling', false);
-        booleanValid.setValidStatus('streetBilling', false);
+        booleanValid.setValidStatus(cityValid, false);
+        booleanValid.setValidStatus(postValid, false);
+        booleanValid.setValidStatus(streetValid, false);
         booleanValid.checkAllInputs();
         cityErr.textContent = '';
         streetErr.textContent = '';
@@ -481,11 +428,12 @@ export function postCodeBillingValidation(
           billingStreet instanceof HTMLInputElement &&
           billingCity instanceof HTMLInputElement
         ) {
+          console.log(billingStreet);
           billingCity.setAttribute('disabled', '');
           billingStreet.setAttribute('disabled', '');
-          booleanValid.setValidStatus('cityBilling', false);
-          booleanValid.setValidStatus('postBilling', false);
-          booleanValid.setValidStatus('streetBilling', false);
+          booleanValid.setValidStatus(cityValid, false);
+          booleanValid.setValidStatus(postValid, false);
+          booleanValid.setValidStatus(streetValid, false);
           booleanValid.checkAllInputs();
           cityErr.textContent = '';
           streetErr.textContent = '';
@@ -496,7 +444,7 @@ export function postCodeBillingValidation(
         }
       }
     } else {
-      booleanValid.setValidStatus('postBilling', true);
+      booleanValid.setValidStatus(postValid, true);
       booleanValid.checkAllInputs();
       billingCity.removeAttribute('disabled');
       incorectValidation(err, '');
@@ -504,94 +452,32 @@ export function postCodeBillingValidation(
     }
   }
 }
-export function postCodeShippingValidation(
-  value: string,
-  err?: HTMLSpanElement | null,
-): void {
-  if (err) {
-    const countryNames = country.names();
-    const countryIndex = countryNames.indexOf(
-      countriesShippingList.textContent,
-    );
-    const postCode = Object.keys(country.all)[countryIndex];
-    const cityErr = errors.errorShippingCityReg;
-    const streetErr = errors.errorShippingStreetReg;
-    if (value.length === 0) {
-      if (
-        shippingStreet instanceof HTMLInputElement &&
-        shippingCity instanceof HTMLInputElement
-      ) {
-        incorectValidation(err, '');
-        shippingCity.setAttribute('disabled', '');
-        shippingStreet.setAttribute('disabled', '');
-        booleanValid.setValidStatus('cityShipping', false);
-        booleanValid.setValidStatus('postShipping', false);
-        booleanValid.setValidStatus('streetShipping', false);
-        booleanValid.checkAllInputs();
-        cityErr.textContent = '';
-        streetErr.textContent = '';
-        shippingStreet.value = '';
-        shippingCity.value = '';
-        return;
-      }
-    }
-    if (postcodeValidatorExistsForCountry(postCode)) {
-      if (postcodeValidator(value, postCode)) {
-        shippingCity.removeAttribute('disabled');
-        booleanValid.checkAllInputs();
-        incorectValidation(err, '');
-      } else {
-        if (
-          shippingStreet instanceof HTMLInputElement &&
-          shippingCity instanceof HTMLInputElement
-        ) {
-          shippingCity.setAttribute('disabled', '');
-          shippingStreet.setAttribute('disabled', '');
-          booleanValid.setValidStatus('cityShipping', false);
-          booleanValid.setValidStatus('streetShipping', false);
-          booleanValid.setValidStatus('postShipping', false);
-          booleanValid.checkAllInputs();
-          cityErr.textContent = '';
-          streetErr.textContent = '';
-          shippingStreet.value = '';
-          shippingCity.value = '';
-          incorectValidation(err, ERROR_MESSAGES.incorrectData);
-          return;
-        }
-      }
-    } else {
-      booleanValid.setValidStatus('postShipping', true);
-      booleanValid.checkAllInputs();
-      shippingCity.removeAttribute('disabled');
-      incorectValidation(err, '');
-      return;
-    }
-  }
-}
-export function disableLocation(list: string): void {
-  if (list === 'billing') {
-    errors.errorBillingCityReg.textContent = '';
-    errors.errorBillingStreetReg.textContent = '';
-    errors.errorBillingPostReg.textContent = '';
-    billingStreet.setAttribute('disabled', '');
-    billingCity.setAttribute('disabled', '');
-    booleanValid.setValidStatus('cityBilling', false);
-    booleanValid.setValidStatus('streetBilling', false);
-    booleanValid.checkAllInputs();
-    billingStreet.value = '';
-    billingPost.value = '';
-    billingCity.value = '';
-  } else if (list === 'shipping') {
-    errors.errorShippingCityReg.textContent = '';
-    errors.errorShippingStreetReg.textContent = '';
-    errors.errorShippingPostReg.textContent = '';
-    shippingStreet.setAttribute('disabled', '');
-    shippingCity.setAttribute('disabled', '');
-    booleanValid.setValidStatus('cityShipping', false);
-    booleanValid.setValidStatus('streetShipping', false);
-    booleanValid.checkAllInputs();
-    shippingStreet.value = '';
-    shippingPost.value = '';
-    shippingCity.value = '';
-  }
-}
+
+// export function disableLocation(list: string): void {
+//   if (list === 'billing') {
+//     const billingStreet = billingComponents.inputStreet;
+//     errors.errorBillingCityReg.textContent = '';
+//     errors.errorBillingStreetReg.textContent = '';
+//     errors.errorBillingPostReg.textContent = '';
+//     billingStreet.setAttribute('disabled', '');
+//     billingCity.setAttribute('disabled', '');
+//     booleanValid.setValidStatus('city-billing', false);
+//     booleanValid.setValidStatus('streetBilling', false);
+//     booleanValid.checkAllInputs();
+//     billingStreet.value = '';
+//     billingPost.value = '';
+//     billingCity.value = '';
+//   } else if (list === 'shipping') {
+//     // errors.errorShippingCityReg.textContent = '';
+//     // errors.errorShippingStreetReg.textContent = '';
+//     // errors.errorShippingPostReg.textContent = '';
+//     shippingStreet.setAttribute('disabled', '');
+//     shippingCity.setAttribute('disabled', '');
+//     booleanValid.setValidStatus('cityShipping', false);
+//     booleanValid.setValidStatus('streetShipping', false);
+//     booleanValid.checkAllInputs();
+//     shippingStreet.value = '';
+//     shippingPost.value = '';
+//     shippingCity.value = '';
+//   }
+// }
