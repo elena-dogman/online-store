@@ -408,10 +408,10 @@ export function postCodeValidation(
   if (err && type) {
     const countryNames = country.names();
     const countryIndex = countryNames.indexOf(
-      components[type].listCountry.textContent,
+      components[type].listCountry.textContent || '',
     );
     const postCode = Object.keys(country.all)[countryIndex];
-    console.log(postCode);
+
     const cityValid: 'city-shipping' | 'city-billing' =
       type === 'shipping' ? 'city-shipping' : 'city-billing';
     const streetValid: 'street-shipping' | 'street-billing' =
@@ -422,6 +422,7 @@ export function postCodeValidation(
     const cityErr = components[type].errorCity;
     const billingStreet = components[type].inputStreet;
     const billingCity = components[type].inputCity;
+
     if (value.length === 0) {
       if (
         billingStreet instanceof HTMLInputElement &&
@@ -441,16 +442,18 @@ export function postCodeValidation(
         return;
       }
     }
+
     if (postcodeValidatorExistsForCountry(postCode)) {
       if (postcodeValidator(value, postCode)) {
         billingCity.removeAttribute('disabled');
         incorectValidation(err, '');
+        booleanValid.setValidStatus(postValid, true);
+        booleanValid.checkAllInputs();
       } else {
         if (
           billingStreet instanceof HTMLInputElement &&
           billingCity instanceof HTMLInputElement
         ) {
-          console.log(billingStreet);
           billingCity.setAttribute('disabled', '');
           billingStreet.setAttribute('disabled', '');
           booleanValid.setValidStatus(cityValid, false);
@@ -462,7 +465,6 @@ export function postCodeValidation(
           billingStreet.value = '';
           billingCity.value = '';
           incorectValidation(err, ERROR_MESSAGES.incorrectData);
-          return;
         }
       }
     } else {
@@ -470,7 +472,6 @@ export function postCodeValidation(
       booleanValid.checkAllInputs();
       billingCity.removeAttribute('disabled');
       incorectValidation(err, '');
-      return;
     }
   }
 }
