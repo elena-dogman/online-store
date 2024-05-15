@@ -6,7 +6,9 @@ import {
   billingComponents,
   shippingComponents,
 } from './address/addressFactory';
-export function submitRegData(): void {
+import { regUser } from '../../api/apiService';
+import { RegistrationData } from './regDataInterface';
+export async function submitRegData(): Promise<void> {
   const name = regFormComponents.regFormInputName as HTMLInputElement;
   const lastName = regFormComponents.regFormInputLastName as HTMLInputElement;
   const password = regFormComponents.regFormInputPassword as HTMLInputElement;
@@ -25,7 +27,8 @@ export function submitRegData(): void {
   const paddedDay = birthDay.value.padStart(2, '0');
   const paddedMonth = birthMonth.value.padStart(2, '0');
   const paddedYear = birthYear.value.padStart(4, '0');
-  const date = `${paddedDay}${paddedMonth}${paddedYear}`;
+
+  const DOB = `${paddedYear}-${paddedMonth}-${paddedDay}`;
 
   const countryNames = country.names();
   const countryBillingIndex = countryNames.indexOf(countryBilling.textContent);
@@ -41,24 +44,26 @@ export function submitRegData(): void {
     postBilling.value = postShipping.value;
   }
 
-  const regDate = {
+  const regData: RegistrationData = {
     name: name.value,
     lastName: lastName.value,
     password: password.value,
     mailValue: mail.value,
-    date: date,
+    DOB: DOB,
     shippingAddress: {
+      isDefault: validStatusAddress.shippingIsDefault,
       country: shippingPostCode,
       postaCode: postShipping.value,
       city: cityShipping.value,
       streetName: streetShipping.value,
     },
     billingAddress: {
+      isDefault: validStatusAddress.billingIsDefault,
       country: billingPostCode,
       postaCode: postBilling.value,
       city: cityBilling.value,
       streetName: streetBilling.value,
     },
   };
-  console.log(regDate);
+  await regUser(regData);
 }

@@ -45,7 +45,7 @@ export function showToast(error: string | undefined | unknown): void {
   const intervalId = setInterval(() => {
     countdown--;
     timer.textContent = `This window will be closed in ${countdown} seconds.`;
-    if (countdown === 0) {
+    if (countdown === 1) {
       clearInterval(intervalId);
       modalContainer.remove();
     }

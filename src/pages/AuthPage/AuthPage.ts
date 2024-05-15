@@ -36,23 +36,12 @@ export function createAuthPage(): HTMLElement {
   const passwordInputIcon = authFormArray[3];
   const submitButton = authFormArray[4];
 
-  let validatedEmail = false;
-  let validatedPassword = false;
-  emailInput.addEventListener('input', () => {
-    validatedEmail = validateInput.call(emailInput as HTMLInputElement);
-    if (validatedEmail && validatedPassword) {
-      submitButton.removeAttribute('disabled');
-    } else {
-      submitButton.setAttribute('disabled', 'true');
-    }
+  emailInput.addEventListener('input', (event) => {
+    validateInput(event);
   });
-  passwordInput.addEventListener('input', () => {
-    validatedPassword = validateInput.call(passwordInput as HTMLInputElement);
-    if (validatedEmail && validatedPassword) {
-      submitButton.removeAttribute('disabled');
-    } else {
-      submitButton.setAttribute('disabled', 'true');
-    }
+
+  passwordInput.addEventListener('input', (event) => {
+    validateInput(event);
   });
 
   passwordInputIcon.addEventListener('click', (event) => {

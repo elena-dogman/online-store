@@ -82,6 +82,10 @@ export function createAuthForm(): HTMLElement[] {
     tag: 'div',
     classNames: ['password_container'],
   };
+  const emailErrorSpanParams: ElementParams<'span'> = {
+    tag: 'span',
+    classNames: ['error'],
+  };
   const emailIconParams: ElementParams<'img'> = {
     tag: 'img',
     attributes: {
@@ -99,8 +103,14 @@ export function createAuthForm(): HTMLElement[] {
     },
     classNames: ['password_icon'],
   };
+  const passwordErrorSpanParams: ElementParams<'span'> = {
+    tag: 'span',
+    classNames: ['error'],
+  };
   const emailIcon = createElement(emailIconParams);
   const passwordIcon = createElement(passwordIconParams);
+  const emailErrorSpan = createElement(emailErrorSpanParams);
+  const passwordErrorSpan = createElement(passwordErrorSpanParams);
   const [emailLabel, emailInput] = createInput('email', 'email');
   const [passwordLabel, passwordInput] = createInput(
     'password',
@@ -112,9 +122,11 @@ export function createAuthForm(): HTMLElement[] {
   const submitButton = createElement(submitButtonParams);
   addInnerComponent(emailContainer, emailLabel);
   addInnerComponent(emailContainer, emailInput);
+  addInnerComponent(emailContainer, emailErrorSpan);
   addInnerComponent(emailContainer, emailIcon);
   addInnerComponent(passwordContainer, passwordLabel);
   addInnerComponent(passwordContainer, passwordInput);
+  addInnerComponent(passwordContainer, passwordErrorSpan);
   addInnerComponent(passwordContainer, passwordIcon);
   addInnerComponent(authForm, authFormHeader);
   addInnerComponent(authForm, emailContainer);

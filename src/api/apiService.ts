@@ -10,18 +10,18 @@ import {
   Project,
   CustomerSignInResult,
   Customer,
+  CustomerDraft,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/eventEmitter';
+import { RegistrationData } from '../components/registrationForm/regDataInterface';
+import { showToast } from '../components/toast/toast';
+import { isCustomError } from '../utils/customError';
 
-// apiRoot с авторизованным клиентом
-//УДАЛИТЬ СТРОКУ НИЖУ ПОСЛЕ ПЕРВОГО ЮЗА В КОДЕ
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
 });
 
-// apiRoot с анонимным клиентом
 const anonymousApiRoot = createApiBuilderFromCtpClient(
   anonymousCtpClient,
 ).withProjectKey({
@@ -54,12 +54,17 @@ export const loginUser = async (body: {
 export const logoutUser = async (): Promise<void> => {
   try {
     localStorage.removeItem('token');
-    const response = await anonymousApiRoot.get().execute();
-    console.log('Switched to anonymous mode:', response);
+    await anonymousApiRoot.get().execute();
     router.navigate('/login');
     appEvents.emit('logout', undefined);
   } catch (error) {
-    console.error('Logout failed', error);
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
   }
 };
 
@@ -85,10 +90,63 @@ export async function isUserLogined(): Promise<ClientResponse<Customer> | void> 
     }
   } else {
     await getProject();
-    console.log('Switched to anonymous mode');
   }
 }
 
 export function checkLoginStatus(): boolean {
   return Boolean(localStorage.getItem('token'));
+}
+
+export async function regUser(
+  regData: RegistrationData,
+): Promise<ClientResponse<CustomerSignInResult> | undefined> {
+  try {
+    const addresses = [
+      {
+        key: 'Shipping-Address',
+        city: regData.shippingAddress.city,
+        country: regData.shippingAddress.country,
+        postalCode: regData.shippingAddress.postaCode,
+        streetName: regData.shippingAddress.streetName,
+      },
+      {
+        key: 'Billing-Address',
+        city: regData.billingAddress.city,
+        country: regData.billingAddress.country,
+        postalCode: regData.billingAddress.postaCode,
+        streetName: regData.billingAddress.streetName,
+      },
+    ];
+
+    const requestBody: CustomerDraft = {
+      email: regData.mailValue,
+      firstName: regData.name,
+      lastName: regData.lastName,
+      password: regData.password,
+      dateOfBirth: regData.DOB,
+      addresses: addresses,
+      ...(regData.shippingAddress.isDefault && { defaultShippingAddress: 0 }),
+      ...(regData.billingAddress.isDefault && { defaultBillingAddress: 1 }),
+    };
+    await apiRoot
+      .customers()
+      .post({
+        body: requestBody as CustomerDraft,
+      })
+      .execute();
+
+    await loginUser({
+      email: regData.mailValue,
+      password: regData.password,
+    });
+  } catch (error: unknown) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
+    return undefined;
+  }
 }
