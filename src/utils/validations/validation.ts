@@ -1,6 +1,10 @@
 import * as validationFunc from './validationsComponents';
 interface ValidationMap {
-  [key: string]: (input: string, error?: HTMLSpanElement | null) => void;
+  [key: string]: (
+    input: string,
+    error: HTMLSpanElement | null,
+    type?: string | null,
+  ) => void;
 }
 function checkError(
   childrens: HTMLCollectionOf<Element> | undefined,
@@ -17,19 +21,17 @@ function checkError(
 }
 
 export function validateInput(event: Event): boolean {
-  const inputElement = event.target as HTMLInputElement;
-  const value = inputElement.value.trim();
-  const error = checkError(inputElement.parentElement?.children);
-  const attribute = inputElement.getAttribute('data-validation-type');
+  const element = event.target as HTMLInputElement;
+  const value = element.value.trim();
+  const error = checkError(element.parentElement?.children);
+  const attribute = element.getAttribute('data-validation-type');
+  const type = element.getAttribute('validation-element');
   const validationMap: ValidationMap = {
     name: validationFunc.nameValidation,
     lastName: validationFunc.lastNameValidation,
-    shippingPost: validationFunc.postCodeShippingValidation,
-    shippingCity: validationFunc.cityShippingValidation,
-    billingPost: validationFunc.postCodeBillingValidation,
-    billingCity: validationFunc.cityBillingValidation,
-    billingStreet: validationFunc.streetBillingValidation,
-    shippingStreet: validationFunc.streetShippingValidation,
+    city: validationFunc.cityValidation,
+    post: validationFunc.postCodeValidation,
+    street: validationFunc.streetValidation,
     password: validationFunc.passwordValidation,
     email: validationFunc.mailValidation,
     birthday: validationFunc.validationBirth,
@@ -38,9 +40,8 @@ export function validateInput(event: Event): boolean {
     year: validationFunc.yearValidation,
   };
 
-
   if (attribute && validationMap[attribute]) {
-    validationMap[attribute](value, error);
+    validationMap[attribute](value, error, type);
   }
 
   return true;

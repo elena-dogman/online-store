@@ -9,7 +9,8 @@ import { submitRegData } from './submitRegData';
 import { addDate } from './dateComponent';
 import { createDefaultChecks } from './address/checkBoxes/addressCheckBoxes';
 import { addressesContainer } from './address/addressFactory';
-
+export const errorNameReg = errors.createErrorElement();
+export const errorLastNameReg = errors.createErrorElement();
 export const authSideForm = createElement({
   tag: 'form',
   classNames: ['auth-side__reg-form'],
@@ -42,6 +43,7 @@ export const regFormLabelMail = createElement({
   classNames: ['reg-form__mail-label', 'reg__label'],
   textContent: 'Email',
 });
+export const errorEmailReg = errors.createErrorElement();
 export const regFormInputMail = createElement({
   tag: 'input',
   classNames: ['reg-form__mail-input', 'reg-input'],
@@ -55,6 +57,7 @@ export const regFormLabelPassword = createElement({
   classNames: ['reg-form__password-label', 'reg__label'],
   textContent: 'Password',
 });
+export const errorPasswordReg = errors.createErrorElement();
 export const regFormInputPassword = createElement({
   tag: 'input',
   classNames: ['reg-form__password-input', 'reg-input'],
@@ -67,6 +70,7 @@ const regDateAndCheckContainerParams: ElementParams<'div'> = {
   tag: 'div',
   classNames: ['reg-form__container__date-checks'],
 };
+
 const regDateAndCheckContainer = createElement(regDateAndCheckContainerParams);
 
 const address = createElement({
@@ -84,22 +88,22 @@ export const authFormButton = createElement({
 export function createForm(): void {
   addInnerComponent(authSideForm, regFormLabelName);
   addInnerComponent(regFormLabelName, regFormInputName);
-  addInnerComponent(regFormLabelName, errors.errorNameReg);
+  addInnerComponent(regFormLabelName, errorNameReg);
 
   regFormInputName.addEventListener('input', validateInput);
   addInnerComponent(authSideForm, regFormLabelLastName);
   addInnerComponent(regFormLabelLastName, regFormInputLastName);
-  addInnerComponent(regFormLabelLastName, errors.errorLastNameReg);
+  addInnerComponent(regFormLabelLastName, errorLastNameReg);
   regFormInputLastName.addEventListener('input', validateInput);
 
   addInnerComponent(authSideForm, regFormLabelMail);
   addInnerComponent(regFormLabelMail, regFormInputMail);
-  addInnerComponent(regFormLabelMail, errors.errorEmailReg);
+  addInnerComponent(regFormLabelMail, errorEmailReg);
   regFormInputMail.addEventListener('input', validateInput);
 
   addInnerComponent(authSideForm, regFormLabelPassword);
   addInnerComponent(regFormLabelPassword, regFormInputPassword);
-  addInnerComponent(regFormLabelPassword, errors.errorPasswordReg);
+  addInnerComponent(regFormLabelPassword, errorPasswordReg);
   regFormInputPassword.addEventListener('input', validateInput);
 
   addInnerComponent(authSideForm, regDateAndCheckContainer);

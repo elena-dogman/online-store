@@ -1,8 +1,4 @@
-import {
-  addBillingCountries,
-  addShippingCountries,
-  removeList,
-} from './addressComponents';
+import { addCountriesList, removeList } from './addressComponents';
 import { billingComponents, shippingComponents } from './addressFactory';
 
 export function addCountries(this: HTMLElement): void {
@@ -11,7 +7,7 @@ export function addCountries(this: HTMLElement): void {
   const shippingInput = shippingComponents.inputCountry as HTMLInputElement;
   const billingInput = billingComponents.inputCity as HTMLInputElement;
   if (this === billingCountries) {
-    addBillingCountries(this);
+    addCountriesList(this, billingComponents, 'billing');
     if (shippingCountries.textContent !== 'Choose your country') {
       if (shippingCountries.children.length > 2) {
         removeList(shippingCountries, shippingInput);
@@ -19,7 +15,7 @@ export function addCountries(this: HTMLElement): void {
     }
   }
   if (this === shippingCountries) {
-    addShippingCountries(this);
+    addCountriesList(this, shippingComponents, 'shipping');
     if (billingCountries.textContent !== 'Choose your country') {
       if (billingCountries.children.length > 2) {
         removeList(billingCountries, billingInput);

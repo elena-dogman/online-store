@@ -1,8 +1,9 @@
 import { addCountries } from './countryList';
 import country from 'country-list-js';
-import { disableLocation } from '../../../utils/validations/validationsComponents';
+// import { disableLocation } from '../../../utils/validations/validationsComponents';
 import { createElement } from '../../../utils/baseComponent';
-import { billingComponents } from './addressFactory';
+import { AddressComponents } from './addressFactory';
+import { disableLocation } from '../../../utils/validations/validationsComponents';
 export function removeList(list: HTMLElement, input: HTMLInputElement): void {
   list.textContent = 'Choose your country';
   list.classList.remove('--expanded');
@@ -29,39 +30,15 @@ export function searchCountry(this: HTMLInputElement): void {
     }
   });
 }
-export function addBillingCountries(countriesWrap: HTMLElement): void {
-  disableLocation('billing');
+export function addCountriesList(
+  countriesWrap: HTMLElement,
+  components: AddressComponents,
+  purpose: string,
+): void {
+  disableLocation(components, purpose);
   const countries = country.names().sort();
-  const input = billingComponents.inputCountry as HTMLInputElement;
-  const post = billingComponents.inputPost as HTMLInputElement;
-  countriesWrap.textContent = '';
-  countriesWrap.classList.add('--expanded');
-  input.classList.add('countries-input--expanded');
-  input.addEventListener('input', searchCountry);
-  countries.forEach((e) => {
-    const countriesItem = createElement({
-      tag: 'div',
-      classNames: ['address__countries-item'],
-    });
-    countriesItem.textContent = e;
-    countriesWrap.append(countriesItem);
-    countriesItem.addEventListener('click', (element) => {
-      element.stopPropagation();
-      post.removeAttribute('disabled');
-      input.classList.remove('countries-input--expanded');
-      countriesWrap.classList.remove('--expanded');
-      countriesWrap.textContent = countriesItem.textContent;
-      countriesWrap.addEventListener('click', addCountries);
-    });
-  });
-  countriesWrap.removeEventListener('click', addCountries);
-}
-export function addShippingCountries(countriesWrap: HTMLElement): void {
-  disableLocation('shipping');
-  const countries = country.names().sort();
-  const input = document.querySelector('.shipping__countries-input') as HTMLInputElement;
-  const post = document.querySelector('.shipping__post-input') as HTMLInputElement;
-
+  const input = components.inputCountry;
+  const post = components.inputPost;
   countriesWrap.textContent = '';
   countriesWrap.classList.add('--expanded');
   input.classList.add('countries-input--expanded');

@@ -8,20 +8,20 @@ import { setValidStatusAddress } from '../booleanAddress';
 
 export function joinChecked(): void {
   setValidStatusAddress('joinAdress', true);
-  shippingComponents.countryWrapper.classList.add('address__shipping--join');
-  billingComponents.countryWrapper.classList.add('address__billing--join');
-  setValidStatus('cityBilling', true);
-  setValidStatus('postBilling', true);
-  setValidStatus('streetBilling', true);
+  shippingComponents.container.classList.add('address__shipping--join');
+  billingComponents.container.classList.add('address__billing--join');
+  setValidStatus('city-billing', true);
+  setValidStatus('post-billing', true);
+  setValidStatus('street-billing', true);
   checkAllInputs();
 }
 
 export function joinUnchecked(): void {
-  shippingComponents.countryWrapper.classList.remove('address__shipping--join');
-  billingComponents.countryWrapper.classList.remove('address__billing--join');
-  setValidStatus('cityBilling', false);
-  setValidStatus('postBilling', false);
-  setValidStatus('streetBilling', false);
+  shippingComponents.container.classList.remove('address__shipping--join');
+  billingComponents.container.classList.remove('address__billing--join');
+  setValidStatus('city-billing', false);
+  setValidStatus('post-billing', false);
+  setValidStatus('street-billing', false);
   setValidStatusAddress('joinAdress', false);
   checkAllInputs();
 }
