@@ -10,6 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "lint:script-check": "eslint src",
     "prepare": "husky",
+    "clear-jest-cache": "jest --clearCache",
     "test": "jest"
   },
   "devDependencies": {
