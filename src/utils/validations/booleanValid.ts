@@ -20,12 +20,20 @@ export function setValidStatus(
 ): void {
   validStatus[field] = value;
 }
+
 export function checkAllInputs(): void {
-  if (Object.values(validStatus).every((value) => value)) {
-    console.log(validStatus);
-    authFormButton.removeAttribute('disabled');
-  } else {
-    console.log(validStatus);
-    authFormButton.setAttribute('disabled', '');
+  if (window.location.href.includes('register')) {
+    if (Object.values(validStatus).every((value) => value)) {
+      authFormButton.removeAttribute('disabled');
+    } else {
+      authFormButton.setAttribute('disabled', '');
+    }
+  } else if (window.location.href.includes('login')) {
+    const submitButton = document.querySelector('.submit_button');
+    if (validStatus.mail && validStatus.password) {
+      submitButton?.removeAttribute('disabled');
+    } else {
+      submitButton?.setAttribute('disabled', '');
+    }
   }
 }

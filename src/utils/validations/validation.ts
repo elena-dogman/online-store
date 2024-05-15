@@ -39,10 +39,8 @@ export function validateInput(event: Event): boolean {
     month: validationFunc.monthValidation,
     year: validationFunc.yearValidation,
   };
-
   if (attribute && validationMap[attribute]) {
     validationMap[attribute](value, error, type);
   }
-
   return true;
 }

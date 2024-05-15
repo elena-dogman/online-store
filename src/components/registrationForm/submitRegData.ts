@@ -2,17 +2,13 @@ import * as regFormComponents from './registrationForm';
 import * as dateComponents from './dateComponent';
 import country from 'country-list-js';
 import { validStatusAddress } from './address/booleanAddress';
-<<<<<<< HEAD
 import {
   billingComponents,
   shippingComponents,
 } from './address/addressFactory';
-export function submitRegData(): void {
-=======
 import { regUser } from '../../api/apiService';
 import { RegistrationData } from './regDataInterface';
 export async function submitRegData(): Promise<void> {
->>>>>>> 2bc9364 (feat: implement user registration on server)
   const name = regFormComponents.regFormInputName as HTMLInputElement;
   const lastName = regFormComponents.regFormInputLastName as HTMLInputElement;
   const password = regFormComponents.regFormInputPassword as HTMLInputElement;
@@ -31,12 +27,8 @@ export async function submitRegData(): Promise<void> {
   const paddedDay = birthDay.value.padStart(2, '0');
   const paddedMonth = birthMonth.value.padStart(2, '0');
   const paddedYear = birthYear.value.padStart(4, '0');
-  const date = `${paddedDay}${paddedMonth}${paddedYear}`;
-  ///formatting dob to ISO8601
-  const day = date.substring(0, 2);
-  const month = date.substring(2, 4);
-  const year = date.substring(4);
-  const DOB: string = `${year}-${month}-${day}`;
+
+  const DOB = `${paddedYear}-${paddedMonth}-${paddedDay}`;
 
   const countryNames = country.names();
   const countryBillingIndex = countryNames.indexOf(countryBilling.textContent);
@@ -59,28 +51,19 @@ export async function submitRegData(): Promise<void> {
     mailValue: mail.value,
     DOB: DOB,
     shippingAddress: {
-<<<<<<< HEAD
+      isDefault: validStatusAddress.shippingIsDefault,
       country: shippingPostCode,
-=======
-      country: 'AF',
->>>>>>> 2bc9364 (feat: implement user registration on server)
       postaCode: postShipping.value,
       city: cityShipping.value,
       streetName: streetShipping.value,
     },
     billingAddress: {
-<<<<<<< HEAD
+      isDefault: validStatusAddress.billingIsDefault,
       country: billingPostCode,
-=======
-      country: 'AF',
->>>>>>> 2bc9364 (feat: implement user registration on server)
       postaCode: postBilling.value,
       city: cityBilling.value,
       streetName: streetBilling.value,
     },
   };
   await regUser(regData);
-  console.log(regData);
 }
-// country: countryShipping.textContent as string,
-// country: countryBilling.textContent as string,

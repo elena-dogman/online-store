@@ -10,6 +10,7 @@ export interface RegistrationData {
 }
 
 export interface Address {
+  isDefault: boolean;
   city: string;
   country: string;
   postaCode: string;
