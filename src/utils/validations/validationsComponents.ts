@@ -1,4 +1,4 @@
-import { calculateAge, validatePassword } from '../ageAndTextChecks';
+import { calculateAge } from '../ageAndTextChecks';
 import country from 'country-list-js';
 import {
   postcodeValidator,
@@ -31,10 +31,11 @@ const ERROR_MESSAGES = {
   mustBeNumber: 'Must be a number',
   dateOfBirth: 'Please enter your date of birth',
   atLeast8Characters: 'Password must contain at least 8 characters',
-  passwordCapitalLetter:
+  passwordDetails:
     'Password must contain at  at least 1 uppercase letter, 1 lowercase letter and 1 number',
   ageRequirement: 'Registration open to those 13 and older',
   incorrectData: 'Please enter correct data',
+  passwordNoSpaces: 'Password must not contain spaces',
 };
 
 const REGEX = {
@@ -43,6 +44,7 @@ const REGEX = {
   lettersAndNumbers: /^[A-Za-z0-9._%+-]+$/,
   birthDate: /^(0[1-9]|1[0-2]).(0[1-9]|[12][0-9]|3[01]).\d{4}$/,
   number: /^\d+$/,
+  password: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[\S]{8,}$/,
 };
 
 function incorectValidation(
@@ -245,24 +247,49 @@ export function passwordValidation(
   err?: HTMLSpanElement | null,
 ): boolean {
   if (err) {
-    if (!REGEX.lettersAndNumbers.test(value)) {
-      incorectValidation(err, ERROR_MESSAGES.onlyEnglishLettersAndNumbers);
+    if (value.startsWith(' ') || value.endsWith(' ')) {
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
+      incorectValidation(err, ERROR_MESSAGES.passwordNoSpaces);
       return false;
     }
-    if (value.length <= 8) {
+
+    if (/\s/.test(value)) {
+      console.log('Password contains spaces.');
+      booleanValid.setValidStatus('password', false);
+      booleanValid.checkAllInputs();
+      incorectValidation(err, ERROR_MESSAGES.passwordNoSpaces);
+      return false;
+    }
+
+    if (value.length < 8) {
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
       return false;
     }
-    if (!validatePassword(value)) {
+
+    if (!/[A-Z]/.test(value)) {
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
-      incorectValidation(err, ERROR_MESSAGES.passwordCapitalLetter);
+      incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       return false;
     }
+
+    if (!/[a-z]/.test(value)) {
+      booleanValid.setValidStatus('password', false);
+      booleanValid.checkAllInputs();
+      incorectValidation(err, ERROR_MESSAGES.passwordDetails);
+      return false;
+    }
+
+    if (!/\d/.test(value)) {
+      booleanValid.setValidStatus('password', false);
+      booleanValid.checkAllInputs();
+      incorectValidation(err, ERROR_MESSAGES.passwordDetails);
+      return false;
+    }
+
     booleanValid.setValidStatus('password', true);
     booleanValid.checkAllInputs();
     incorectValidation(err, '');

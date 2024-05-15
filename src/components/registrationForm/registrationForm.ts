@@ -66,6 +66,11 @@ export const regFormInputPassword = createElement({
     'data-validation-type': 'password',
   },
 });
+regFormInputPassword.addEventListener('keydown', function (event) {
+  if (event.key === ' ') {
+    event.preventDefault();
+  }
+});
 const regDateAndCheckContainerParams: ElementParams<'div'> = {
   tag: 'div',
   classNames: ['reg-form__container__date-checks'],
