@@ -15,5 +15,8 @@ module.exports = {
   'moduleNameMapper': {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  testPathIgnorePatterns: [
+    '<rootDir>/src/api/apiService.ts',
+  ],
 
 };

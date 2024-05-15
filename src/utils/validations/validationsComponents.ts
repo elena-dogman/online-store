@@ -247,13 +247,6 @@ export function passwordValidation(
   err?: HTMLSpanElement | null,
 ): boolean {
   if (err) {
-    if (value.startsWith(' ') || value.endsWith(' ')) {
-      booleanValid.setValidStatus('password', false);
-      booleanValid.checkAllInputs();
-      incorectValidation(err, ERROR_MESSAGES.passwordNoSpaces);
-      return false;
-    }
-
     if (/\s/.test(value)) {
       console.log('Password contains spaces.');
       booleanValid.setValidStatus('password', false);
