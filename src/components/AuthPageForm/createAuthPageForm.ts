@@ -3,7 +3,7 @@ import {
   ElementParams,
   addInnerComponent,
 } from '../../utils/baseComponent';
-
+import { passwordIconParams } from '../registrationForm/registrationForm';
 function createInput(
   id: string,
 
@@ -94,15 +94,7 @@ export function createAuthForm(): HTMLElement[] {
     },
     classNames: ['email_icon'],
   };
-  const passwordIconParams: ElementParams<'img'> = {
-    tag: 'img',
-    attributes: {
-      src: '/assets/authpage/hide.png',
-      alt: 'make your password visible/hide',
-      title: 'Click to make your password visible',
-    },
-    classNames: ['password_icon'],
-  };
+
   const passwordErrorSpanParams: ElementParams<'span'> = {
     tag: 'span',
     classNames: ['error'],
