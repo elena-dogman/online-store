@@ -66,6 +66,18 @@ export const regFormInputPassword = createElement({
     'data-validation-type': 'password',
   },
 });
+
+export const passwordIconParams: ElementParams<'img'> = {
+  tag: 'img',
+  attributes: {
+    src: '/assets/authpage/hide.png',
+    alt: 'make your password visible/hide',
+    title: 'Click to make your password visible',
+  },
+  classNames: ['password_icon'],
+};
+
+const passwordIcon = createElement(passwordIconParams);
 regFormInputPassword.addEventListener('keydown', function (event) {
   if (event.key === ' ') {
     event.preventDefault();
@@ -108,6 +120,7 @@ export function createForm(): void {
 
   addInnerComponent(authSideForm, regFormLabelPassword);
   addInnerComponent(regFormLabelPassword, regFormInputPassword);
+  addInnerComponent(regFormLabelPassword, passwordIcon);
   addInnerComponent(regFormLabelPassword, errorPasswordReg);
   regFormInputPassword.addEventListener('input', validateInput);
 
@@ -118,4 +131,17 @@ export function createForm(): void {
   addInnerComponent(authSideForm, address);
   addInnerComponent(authSideForm, authFormButton);
   authFormButton.addEventListener('click', submitRegData);
+
+  passwordIcon.addEventListener('click', (event) => {
+    event.preventDefault();
+    if (regFormInputPassword.getAttribute('type') === 'password') {
+      regFormInputPassword.setAttribute('type', 'text');
+      passwordIcon.setAttribute('src', '/assets/authpage/show.png');
+      passwordIcon.setAttribute('title', 'Click to hide your password');
+    } else {
+      regFormInputPassword.setAttribute('type', 'password');
+      passwordIcon.setAttribute('src', '/assets/authpage/hide.png');
+      passwordIcon.setAttribute('title', 'Click to make your password visible');
+    }
+  });
 }
