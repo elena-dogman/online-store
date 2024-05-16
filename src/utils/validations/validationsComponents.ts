@@ -21,7 +21,7 @@ const components: Components = {
 const dateDay = dateComponents.dayDate;
 const dateMonth = dateComponents.monthDate;
 const dateYear = dateComponents.yearDate;
-const ERROR_MESSAGES = {
+export const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
   invalidEmail: "Email must contain an '@' symbol",
   onlyEnglishLetters: 'Must contain only English letters',
@@ -339,16 +339,22 @@ export function yearValidation(
   value: string,
   err?: HTMLSpanElement | null,
 ): number | undefined {
-  if (value.length === 0) {
-    if (err) {
-      incorectValidation(err, '');
-      if (!parseInt(value)) {
-        incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
-        return;
-      }
-      return parseInt(value);
+  if (err) {
+    const year = parseInt(value);
+    if (isNaN(year)) {
+      incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
+      return;
     }
+    const age = calculateAge(new Date(year, 0, 1));
+    if (age < 13) {
+      incorectValidation(err, ERROR_MESSAGES.ageRequirement);
+      return;
+    }
+    incorectValidation(err, '');
+    return year;
   }
+
+  return parseInt(value);
 }
 export function checkNumber(this: HTMLInputElement): void {
   const parent = this.parentNode as HTMLLabelElement | null;
@@ -366,7 +372,7 @@ export function checkNumber(this: HTMLInputElement): void {
         +dateMonth.value <= 12 &&
         +dateDay.value <= 31 &&
         +dateYear.value <= 2024 &&
-        +dateYear.value >= 1970
+        +dateYear.value >= 1900
       ) {
         const age = new Date(
           +dateYear.value,
