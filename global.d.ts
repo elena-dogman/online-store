@@ -1,13 +1,13 @@
-interface ImportMetaEnv {
-  VITE_CTP_PROJECT_KEY: string;
-}
-
-interface ImportMeta {
-  env: ImportMetaEnv;
-}
-
+/* eslint-disable no-var */
 declare global {
-  const importMeta: ImportMeta;
+  var window: Window & typeof globalThis;
+  var document: Document;
+  var navigator: Navigator;
+  var importMeta: {
+    env: {
+      VITE_CTP_PROJECT_KEY: string;
+    };
+  };
 }
 
-export { type ImportMeta };
+export {};

@@ -10,7 +10,6 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "lint:script-check": "eslint src",
     "prepare": "husky",
-    "clear-jest-cache": "jest --clearCache",
     "test": "vitest"
   },
   "devDependencies": {
@@ -20,6 +19,8 @@
     "@types/uuid": "^9.0.8",
     "@vanilla-extract/jest-transform": "^1.1.4",
     "@vitejs/plugin-vue": "^5.0.4",
+    "@vitest/coverage-v8": "^1.6.0",
+    "c8": "^9.1.0",
     "country-list-js": "^3.1.8",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
