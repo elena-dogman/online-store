@@ -5,6 +5,7 @@ import {
 } from '../../utils/baseComponent';
 import { appEvents } from '../../utils/eventEmitter';
 import { checkLoginStatus, logoutUser } from '../../api/apiService';
+
 export function createHeader(): HTMLElement {
   const headerParams: ElementParams<'div'> = {
     tag: 'div',
@@ -81,6 +82,11 @@ export function createHeader(): HTMLElement {
   addInnerComponent(iconsContainer, basketIcon);
   addInnerComponent(iconsContainer, userIcon);
 
+  const authNavContainer = createElement({
+    tag: 'div',
+    classNames: ['header__auth-nav-container'],
+  });
+
   const authContainer = createElement({
     tag: 'div',
     classNames: ['header__auth-buttons'],
@@ -100,12 +106,43 @@ export function createHeader(): HTMLElement {
   addInnerComponent(authContainer, registerButton);
   addInnerComponent(authContainer, authButton);
 
+  addInnerComponent(authNavContainer, authContainer);
+
   addInnerComponent(rightContainer, iconsContainer);
-  addInnerComponent(rightContainer, authContainer);
+  addInnerComponent(rightContainer, authNavContainer);
 
   addInnerComponent(header, logoLink);
   addInnerComponent(header, navContainer);
   addInnerComponent(header, rightContainer);
+
+  const burgerMenu = createElement({
+    tag: 'div',
+    classNames: ['header__burger'],
+  });
+  const burgerLine1 = createElement({ tag: 'div', classNames: ['line1'] });
+  const burgerLine2 = createElement({ tag: 'div', classNames: ['line2'] });
+  const burgerLine3 = createElement({ tag: 'div', classNames: ['line3'] });
+  addInnerComponent(burgerMenu, burgerLine1);
+  addInnerComponent(burgerMenu, burgerLine2);
+  addInnerComponent(burgerMenu, burgerLine3);
+  addInnerComponent(header, burgerMenu);
+
+  burgerMenu.onclick = (): void => {
+    authNavContainer.classList.toggle('open');
+    burgerMenu.classList.toggle('change');
+  };
+
+  const moveNavLinks = (): void => {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      addInnerComponent(authNavContainer, navContainer);
+    } else {
+      header.insertBefore(navContainer, rightContainer);
+    }
+  };
+
+  window.addEventListener('resize', moveNavLinks);
+  document.addEventListener('DOMContentLoaded', moveNavLinks);
 
   async function handleLogout(): Promise<void> {
     await logoutUser();
@@ -116,10 +153,12 @@ export function createHeader(): HTMLElement {
     registerButton.style.display = isLoggedIn ? 'none' : 'block';
     authButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
     authButton.setAttribute('href', isLoggedIn ? '#' : '/login');
-    authButton.onclick = isLoggedIn ? async (): Promise<void> => {
-      await handleLogout();
-      appEvents.emit('logout', undefined);
-    } : null;
+    authButton.onclick = isLoggedIn
+      ? async (): Promise<void> => {
+        await handleLogout();
+        appEvents.emit('logout', undefined);
+      }
+      : null;
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
