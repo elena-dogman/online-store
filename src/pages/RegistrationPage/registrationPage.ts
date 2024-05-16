@@ -8,14 +8,21 @@ export function buildRegistrationPage(): HTMLElement {
     tag: 'div',
     classNames: ['registration__page'],
   });
-
+  const regImg = createElement({
+    tag: 'img',
+    classNames: ['registration-img'],
+    attributes: {
+      alt: 'registration__img',
+      src: '/assets/registration/registration-img.jpeg',
+    },
+  });
   const header = createHeader();
   const registrationComponent = createRegistrationComponent();
 
   formComponent.createForm();
 
   registrationPage.append(header);
+  registrationPage.append(regImg);
   registrationPage.append(registrationComponent);
-
   return registrationPage;
 }
