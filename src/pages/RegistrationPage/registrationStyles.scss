@@ -1,24 +1,28 @@
 @import '..//../styles/variables.scss';
-.wrapper__registration {
+
+.registration-img{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 1440px;
+  user-select: none;
+  height: auto;
+  z-index: -1;
+  border-radius: 50%;
+  object-fit: cover;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05));
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgb(0, 0, 0));
+}
+.wrapper__registration  {
+  position: relative;
+  height: 100%;
   display: flex;
+  align-items: center;
   justify-content: center;
-  height: 100%;
-  font-family: $font-family-base;
-}
-.registration__img-side {
-  width: 60%;
-  background-image: url('/assets/registration/registration-img.jpeg');
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  padding: 0 55px;
-  color: white;
-}
-.container__registration {
-  height: 100%;
+  max-width: 1440px;
+  object-fit: cover;
+  margin: 0 auto;
 }
 
 .billing__country-label,
@@ -30,8 +34,7 @@
   position:absolute;
   top:0;
   color: black;
-  width: 255px;
-  width: 100%;;
+  width: 100%;
   height: 20px;
   transition: all 0.5s ease;
   border-radius: 10px;
@@ -70,15 +73,17 @@
   left: -10px;
 }
 .--expanded::-webkit-scrollbar-track {
-  background: white;        /* цвет зоны отслеживания */
+  background: white;   
 }
 
 .--expanded::-webkit-scrollbar-thumb {
-  background-color: black;    /* цвет бегунка */
-  border-radius: 20px;       /* округлось бегунка */
-  border: 3px solid white;  /* отступ вокруг бегунка */
+  background-color: black;   
+  border-radius: 20px;      
+  border: 3px solid white; 
 }
 .registration__page {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -92,26 +97,6 @@
   padding: 3px 0 0 10px;
   border-bottom: 1px solid black;
 }
-
-.img-side__title {
-  font-size: 40rem;
-}
-.img-side__description {
-  padding: 10px;
-  font-size: 20rem;
-  min-width: 30%;
-  max-width: 45%;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 12px;
-}
-.reg-form__address {
-  gap: 10px;
-  display: flex;
-}
-.img-side__creator {
-  font-size: 16rem;
-}
-
 .reg__label {
   position: relative;
   display: flex;
@@ -120,13 +105,17 @@
 
 .auth-side__title {
   text-align: center;
+  padding-bottom: 20px;
 }
 .registration__auth-side {
-  width: 40%;
   display: flex;
+  width: 80vw;
   flex-direction: column;
-  padding: 0 50px 0 100px;
   justify-content: space-around;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  padding: 10px
 }
 .auth-side__reg-form {
   display: flex;
@@ -146,19 +135,25 @@
 
  @include inputDisabled;
 }
+input[type="checkbox"] {
+  accent-color: black;
+  border-radius: 10px;
+  height: 16px;
+  width: 16px;
+}
 .reg-form__default-label{
   column-gap: 20px;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
 }
 .default__label{
   display:flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
-.address__billing,
-.address__shipping{
-  width: 50%;
-}
+
 .sign-in__button {
   color: $text-color-accent;
   background: none;
@@ -173,6 +168,7 @@
   padding-right: 30px;
 }
 .reg-form__button {
+  margin-bottom:20px;
   background-color: black;
   color: white;
   font-size: 20rem;
@@ -214,11 +210,11 @@
   column-gap: 10px;
 }
 .shipping__container{
-  transition: all 0.3s ease;
   width: 50%;
+  transition: all 0.3s ease;
   z-index: 5;
 }
-.address__shipping--join{
+.shipping__container--join{
   width: 100%;
 }
 .billing__container{
@@ -226,7 +222,7 @@
   transition: all 0.3s ease;
   opacity: 1;
 }
-.address__billing--join{
+.billing__container--join{
   transform: translateX(-400px);
   opacity: 0;
   width: 0;

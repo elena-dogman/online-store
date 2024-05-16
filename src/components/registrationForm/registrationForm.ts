@@ -126,7 +126,7 @@ export function createForm(): void {
 
   addInnerComponent(authSideForm, regDateAndCheckContainer);
   addInnerComponent(regDateAndCheckContainer, addDate());
-  addInnerComponent(regDateAndCheckContainer, createDefaultChecks()[0]);
+  addInnerComponent(authSideForm, createDefaultChecks()[0]);
   addInnerComponent(authSideForm, addressesContainer);
   addInnerComponent(authSideForm, address);
   addInnerComponent(authSideForm, authFormButton);

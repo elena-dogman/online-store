@@ -17,8 +17,10 @@
 .header__nav-links,
 .header__icons,
 .header__auth-buttons {
+  flex-wrap: wrap;
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 .header__nav-link,

@@ -38,6 +38,31 @@ export function createDefaultChecks(): HTMLElement[] {
 
   addInnerComponent(defaultLabel, defaultShippingLabel);
   addInnerComponent(defaultShippingLabel, defaultShippingCheck);
+  const defaultJoinAddressLabelParams: ElementParams<'label'> = {
+    tag: 'label',
+    classNames: ['reg-form__join-label', 'default__label'],
+    textContent: 'Default Join',
+  };
+  const defaultJoinAddressCheckParams: ElementParams<'input'> = {
+    tag: 'input',
+    classNames: ['reg-form__join-check'],
+    attributes: { type: 'checkbox' },
+  };
+  const defaultJoinAddressLabel = createElement(defaultJoinAddressLabelParams);
+  const defaultJoinAddressCheck = createElement(
+    defaultJoinAddressCheckParams,
+  ) as HTMLInputElement;
+
+  defaultJoinAddressCheck.addEventListener('click', () => {
+    if (defaultJoinAddressCheck.checked) {
+      joinChecked();
+    } else {
+      joinUnchecked();
+    }
+  });
+
+  addInnerComponent(defaultLabel, defaultJoinAddressLabel);
+  addInnerComponent(defaultJoinAddressLabel, defaultJoinAddressCheck);
   const defaultBillingLabelParams: ElementParams<'label'> = {
     tag: 'label',
     classNames: ['reg-form__billing-checkbox', 'default__label'],
@@ -64,31 +89,7 @@ export function createDefaultChecks(): HTMLElement[] {
 
   addInnerComponent(defaultLabel, defaultBillingLabel);
   addInnerComponent(defaultBillingLabel, defaultBillingCheck);
-  const defaultJoinAddressLabelParams: ElementParams<'label'> = {
-    tag: 'label',
-    classNames: ['reg-form__join-label', 'default__label'],
-    textContent: 'Default Join',
-  };
-  const defaultJoinAddressCheckParams: ElementParams<'input'> = {
-    tag: 'input',
-    classNames: ['reg-form__join-check'],
-    attributes: { type: 'checkbox' },
-  };
-  const defaultJoinAddressLabel = createElement(defaultJoinAddressLabelParams);
-  const defaultJoinAddressCheck = createElement(
-    defaultJoinAddressCheckParams,
-  ) as HTMLInputElement;
 
-  defaultJoinAddressCheck.addEventListener('click', () => {
-    if (defaultJoinAddressCheck.checked) {
-      joinChecked();
-    } else {
-      joinUnchecked();
-    }
-  });
-
-  addInnerComponent(defaultLabel, defaultJoinAddressLabel);
-  addInnerComponent(defaultJoinAddressLabel, defaultJoinAddressCheck);
   return [
     defaultLabel,
     defaultShippingCheck,
