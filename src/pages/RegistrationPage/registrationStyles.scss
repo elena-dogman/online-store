@@ -1,5 +1,11 @@
 @import '..//../styles/variables.scss';
-
+.registration__page {
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 .registration-img{
   position: absolute;
   top: 50%;
@@ -23,6 +29,78 @@
   max-width: 1440px;
   object-fit: cover;
   margin: 0 auto;
+  padding: 20px;
+}
+.registration__auth-side {
+  display: flex;
+  width: 80vw;
+  max-width: 800px;
+  flex-direction: column;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  padding: 10px
+}
+.auth-side__title {
+  text-align: center;
+  padding-bottom: 20px;
+}
+.auth-side__reg-form {
+  display: flex;
+  flex-direction: column;
+}
+.reg__label {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.countries-input--expanded {
+  opacity: 1;
+  width: 100%;
+}
+.--expanded::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 60px;
+  left: -10px;
+}
+.--expanded::-webkit-scrollbar-track {
+  background: white;   
+}
+
+.--expanded::-webkit-scrollbar-thumb {
+  background-color: black;   
+  border-radius: 20px;      
+  border: 3px solid white; 
+}
+
+.reg-form__container__date-checks{
+  display: flex;
+  justify-content: space-between;
+}
+.address__countries-item {
+  color: black;
+  padding: 3px 0 0 10px;
+  border-bottom: 1px solid black;
+}
+.--expanded {
+  top: 20px;
+  height: 180px;
+  border-radius: 10px 0 0 10px;
+  overflow-y: auto;
+  background: white;
+}
+.reg-form__default-label{
+  column-gap: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.default__label{
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .billing__country-label,
@@ -55,71 +133,7 @@
   position: relative;
   flex-direction: column;
 }
-.countries-input--expanded {
-  opacity: 1;
-  width: 100%;
-}
-.--expanded {
-  top: 20px;
-  height: 180px;
-  border-radius: 10px 0 0 10px;
-  overflow-y: auto;
-  background: white;
-}
-.--expanded::-webkit-scrollbar {
-  width: 10px;
-  border-radius: 60px;
-  left: -10px;
-}
-.--expanded::-webkit-scrollbar-track {
-  background: white;   
-}
 
-.--expanded::-webkit-scrollbar-thumb {
-  background-color: black;   
-  border-radius: 20px;      
-  border: 3px solid white; 
-}
-.registration__page {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-.reg-form__container__date-checks{
-  display: flex;
-  justify-content: space-between;
-}
-.address__countries-item {
-  color: black;
-  padding: 3px 0 0 10px;
-  border-bottom: 1px solid black;
-}
-.reg__label {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.auth-side__title {
-  text-align: center;
-  padding-bottom: 20px;
-}
-.registration__auth-side {
-  display: flex;
-  width: 80vw;
-  flex-direction: column;
-  justify-content: space-around;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
-  border-radius: 10px;
-  padding: 10px
-}
-.auth-side__reg-form {
-  display: flex;
-  flex-direction: column;
-}
 
 .reg-input {
   border: none;
@@ -139,18 +153,6 @@ input[type="checkbox"] {
   border-radius: 10px;
   height: 16px;
   width: 16px;
-}
-.reg-form__default-label{
-  column-gap: 20px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-.default__label{
-  display:flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
 .sign-in__button {
