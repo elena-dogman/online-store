@@ -80,7 +80,7 @@ export function createHeader(): HTMLElement {
   addInnerComponent(basketIcon, basketImage);
   addInnerComponent(userIcon, userImage);
   addInnerComponent(iconsContainer, basketIcon);
-  addInnerComponent(iconsContainer, userImage);
+  addInnerComponent(iconsContainer, userIcon);
 
   const authNavContainer = createElement({
     tag: 'div',
@@ -107,12 +107,12 @@ export function createHeader(): HTMLElement {
   addInnerComponent(authContainer, authButton);
 
   addInnerComponent(authNavContainer, authContainer);
-  addInnerComponent(authNavContainer, navContainer);
 
   addInnerComponent(rightContainer, iconsContainer);
   addInnerComponent(rightContainer, authNavContainer);
 
   addInnerComponent(header, logoLink);
+  addInnerComponent(header, navContainer);
   addInnerComponent(header, rightContainer);
 
   const burgerMenu = createElement({
@@ -132,6 +132,18 @@ export function createHeader(): HTMLElement {
     burgerMenu.classList.toggle('change');
   };
 
+  const moveNavLinks = (): void => {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      addInnerComponent(authNavContainer, navContainer);
+    } else {
+      header.insertBefore(navContainer, rightContainer);
+    }
+  };
+
+  window.addEventListener('resize', moveNavLinks);
+  document.addEventListener('DOMContentLoaded', moveNavLinks);
+
   async function handleLogout(): Promise<void> {
     await logoutUser();
     appEvents.emit('logout', undefined);
@@ -141,10 +153,12 @@ export function createHeader(): HTMLElement {
     registerButton.style.display = isLoggedIn ? 'none' : 'block';
     authButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
     authButton.setAttribute('href', isLoggedIn ? '#' : '/login');
-    authButton.onclick = isLoggedIn ? async (): Promise<void> => {
-      await handleLogout();
-      appEvents.emit('logout', undefined);
-    } : null;
+    authButton.onclick = isLoggedIn
+      ? async (): Promise<void> => {
+        await handleLogout();
+        appEvents.emit('logout', undefined);
+      }
+      : null;
   }
 
   document.addEventListener('DOMContentLoaded', async () => {

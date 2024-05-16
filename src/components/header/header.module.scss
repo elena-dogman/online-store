@@ -69,6 +69,7 @@
   color: $text-color-contrast;
 }
 
+/* Стили для бургер-меню */
 .header__burger {
   display: none;
   flex-direction: column;
@@ -173,9 +174,13 @@
   .header__auth-nav-container.open .register-button {
     color: $text-color-accent;
   }
+
+  .login-button {
+    font-weight: bold;
+  }
 }
 
-@media (max-width: 390px) {
+@media (max-width: 400px) {
   .header__logo {
     font-size: $font-size-button-text;
   }
