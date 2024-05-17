@@ -1,13 +1,13 @@
 .header {
   display: flex;
+  position: fixed;
+  width: 100%;
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
   font-family: $font-family-base;
   background: white;
   z-index: 9999;
-  position: fixed;
-  width: 100%;
 }
 
 .header__logo-link,
@@ -15,7 +15,6 @@
 .header__icon,
 .header__auth-button {
   text-decoration: none;
-  margin: 0 10px;
 }
 
 .header__nav-links,
@@ -92,7 +91,7 @@
 }
 
 .header__burger.change .line1 {
-  transform: rotate(-45deg) translate(-8px, 8px);
+  transform: rotate(-45deg) translate(-7px, 7px);
 }
 
 .header__burger.change .line2 {
@@ -106,30 +105,28 @@
 .header__auth-nav-container {
   display: flex;
   align-items: center;
-  display: none;
-  opacity: 0;
-  transition: opacity 0.5s ease;
+}
 
-  &.open {
-    display: flex;
-    opacity: 1;
-    flex-direction: column;
-    position: absolute;
-    top: 60px;
-    right: 20px;
-    border-radius: 5px;
-    padding: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: white;
-    color: $text-color-base;
-    font-size: $font-size-base;
-  }
+.header__auth-nav-container.open {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  color: $text-color-base;
+  font-size: $font-size-base;
+  gap: 10px;
 }
 
 .header__auth-nav-container.open .header__auth-buttons,
 .header__auth-nav-container.open .header__nav-links {
   display: flex;
   flex-direction: column;
+
 }
 
 .header__auth-nav-container.open .header__nav-link,
@@ -145,6 +142,7 @@
 }
 
 @media (max-width: 768px) {
+
   .header__auth-buttons,
   .header__nav-links {
     display: none;
@@ -175,7 +173,6 @@
     background: none;
     border: none;
     padding: 0;
-    margin: 10px 0;
     font-size: $font-size-button-text;
   }
 
@@ -188,16 +185,14 @@
   }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 410px) {
   .header__logo {
     font-size: $font-size-button-text;
-  }
-  .header__logo-link {
-    margin: 0;
   }
 }
 
 @media (hover: hover) and (pointer: fine) {
+
   .header__logo-link:hover,
   .header__nav-link:hover,
   .header__icon:hover {
