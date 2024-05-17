@@ -127,49 +127,21 @@ export function createHeader(): HTMLElement {
   addInnerComponent(burgerMenu, burgerLine3);
   addInnerComponent(header, burgerMenu);
 
-  let isAnimating = false;
-  let isOpen = false;
-  function closeMenu(): void {
-    isAnimating = true;
-    authNavContainer.classList.remove('open');
-    setTimeout(() => {
-      authNavContainer.style.display = 'none';
-      isOpen = false;
-      isAnimating = false;
-    }, 500);
-    burgerMenu.classList.remove('change');
-  }
-  function openMenu(): void {
-    isAnimating = true;
-    authNavContainer.style.display = 'flex';
-    setTimeout(() => {
-      authNavContainer.classList.add('open');
-      isOpen = true;
-      isAnimating = false;
-    }, 10);
-    burgerMenu.classList.add('change');
-  }
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Node)) return;
+    const isClickInsideMenu = burgerMenu.contains(event.target as Node);
+    const isMenuOpen = authNavContainer.classList.contains('open');
 
-  burgerMenu.onclick = (event): void => {
-    event.stopPropagation();
-    if (isAnimating) return;
-
-    if (isOpen) {
-      closeMenu();
-    } else {
-      openMenu();
-    }
-  };
-
-  document.addEventListener('click', (event): void => {
-    if (
-      isOpen &&
-      event.target !== burgerMenu &&
-      !authNavContainer.contains(event.target as Node)
-    ) {
-      closeMenu();
+    if (!isClickInsideMenu && isMenuOpen) {
+      authNavContainer.classList.remove('open');
+      burgerMenu.classList.remove('change');
     }
   });
+
+  burgerMenu.onclick = (): void => {
+    authNavContainer.classList.toggle('open');
+    burgerMenu.classList.toggle('change');
+  };
 
   const moveNavLinks = (): void => {
     const isMobile = window.innerWidth <= 768;
