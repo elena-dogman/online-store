@@ -1,6 +1,7 @@
 import { createElement, addInnerComponent } from '../../utils/baseComponent';
 import '../../utils/validations/validation';
 import * as formComponent from '../../components/registrationForm/registrationForm';
+import router from '../../router/router';
 
 export function createRegistrationComponent(): HTMLElement {
   const wrapper = createElement({
@@ -35,9 +36,13 @@ export function createRegistrationComponent(): HTMLElement {
   const signInButton = createElement({
     tag: 'button',
     classNames: ['sign-in__button', 'button'],
-    attributes: { disabled: 'true', type: 'submit' },
+    attributes: { type: 'submit' },
     textContent: 'Sign in',
   });
+
+signInButton.addEventListener('click', () => {
+    router.navigate('/login');
+});
 
   addInnerComponent(wrapper, authSide);
   addInnerComponent(authSide, authSideTitle);
