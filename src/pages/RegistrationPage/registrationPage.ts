@@ -13,7 +13,7 @@ export function buildRegistrationPage(): HTMLElement {
     classNames: ['registration-img'],
     attributes: {
       alt: 'registration__img',
-      src: '/assets/registration/registration-img.jpeg',
+      src: '/assets/registration/registration-img.jpg',
     },
   });
   const header = createHeader();
