@@ -12,3 +12,6 @@ export function calculateAge(date: Date): number {
   }
   return age;
 }
+export function checkDaysInMonth(month: string, year: string): number {
+  return new Date(+year, +month, 0).getDate();
+}

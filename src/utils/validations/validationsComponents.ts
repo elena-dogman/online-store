@@ -1,4 +1,4 @@
-import { calculateAge } from '../ageAndTextChecks';
+import { calculateAge, checkDaysInMonth } from '../ageAndTextChecks';
 import country from 'country-list-js';
 import {
   postcodeValidator,
@@ -18,9 +18,9 @@ const components: Components = {
   shipping: shippingComponents,
 };
 
-const dateDay = dateComponents.dayDate;
-const dateMonth = dateComponents.monthDate;
-const dateYear = dateComponents.yearDate;
+const dateDay = dateComponents.dayDate as HTMLInputElement;
+const dateMonth = dateComponents.monthDate as HTMLInputElement;
+const dateYear = dateComponents.yearDate as HTMLInputElement;
 export const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
   invalidEmail: "Email must contain an '@' symbol",
@@ -294,7 +294,7 @@ export function dayValidation(
   value: string,
   err?: HTMLSpanElement | null,
 ): number | undefined {
-  console.log(1);
+  const daysInMonth = checkDaysInMonth(dateMonth.value, dateYear.value);
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
@@ -302,7 +302,7 @@ export function dayValidation(
     }
     if (!parseInt(value)) {
       incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
-      if (parseInt(value) > 31) {
+      if (parseInt(value) > daysInMonth) {
         incorectValidation(err, ERROR_MESSAGES.dateOfBirth);
         return;
       }
@@ -359,43 +359,39 @@ export function yearValidation(
 export function checkNumber(this: HTMLInputElement): void {
   const parent = this.parentNode as HTMLLabelElement | null;
   const err = parent?.parentElement?.firstElementChild as HTMLSpanElement;
+  const daysInMonth = checkDaysInMonth(dateMonth.value, dateYear.value);
   if (!parent) {
     return;
   }
-  if (
-    dateYear instanceof HTMLInputElement &&
-    dateMonth instanceof HTMLInputElement &&
-    dateDay instanceof HTMLInputElement
-  ) {
-    if (+dateYear.value && +dateMonth.value && +dateDay.value) {
-      if (
-        +dateMonth.value <= 12 &&
-        +dateDay.value <= 31 &&
-        +dateYear.value <= 2024 &&
-        +dateYear.value >= 1900
-      ) {
-        const age = new Date(
-          +dateYear.value,
-          +dateMonth.value - 1,
-          +dateDay.value,
-        );
-        if (calculateAge(age) < 13) {
-          incorectValidation(err, ERROR_MESSAGES.ageRequirement);
-        } else {
-          booleanValid.setValidStatus('date', true);
-          booleanValid.checkAllInputs();
-          incorectValidation(err, '');
-        }
+
+  if (+dateYear.value && +dateMonth.value && +dateDay.value) {
+    if (
+      +dateMonth.value <= 12 &&
+      +dateDay.value <= daysInMonth &&
+      +dateYear.value <= 2024 &&
+      +dateYear.value >= 1900
+    ) {
+      const age = new Date(
+        +dateYear.value,
+        +dateMonth.value - 1,
+        +dateDay.value,
+      );
+      if (calculateAge(age) < 13) {
+        incorectValidation(err, ERROR_MESSAGES.ageRequirement);
       } else {
-        booleanValid.setValidStatus('date', false);
+        booleanValid.setValidStatus('date', true);
         booleanValid.checkAllInputs();
-        incorectValidation(err, ERROR_MESSAGES.incorrectData);
+        incorectValidation(err, '');
       }
     } else {
       booleanValid.setValidStatus('date', false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.incorrectData);
     }
+  } else {
+    booleanValid.setValidStatus('date', false);
+    booleanValid.checkAllInputs();
+    incorectValidation(err, ERROR_MESSAGES.incorrectData);
   }
 }
 
@@ -479,7 +475,6 @@ export function disableLocation(
   adressComponents: AddressComponents,
   purpose: string,
 ): void {
-  console.log(purpose);
   adressComponents.errorCity.textContent = '';
   adressComponents.errorStreet.textContent = '';
   adressComponents.errorPost.textContent = '';
