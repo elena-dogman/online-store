@@ -38,7 +38,7 @@ export function addDate(): HTMLElement {
   const regFormLabelDateParams: ElementParams<'label'> = {
     tag: 'label',
     classNames: ['reg-form__date-label', 'reg__label'],
-    textContent: 'Date',
+    textContent: 'Date of birth',
   };
 
   const regFormLabelDate = createElement(regFormLabelDateParams);

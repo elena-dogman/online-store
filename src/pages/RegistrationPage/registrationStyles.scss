@@ -4,6 +4,7 @@
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  font-family:$font-family-base ;
   height: 100%;
 }
 .registration-img{
@@ -31,6 +32,15 @@
   margin: 0 auto;
   padding: 20px;
 }
+
+.reg-form__common-inf-container{
+  display: flex;
+  justify-content: space-between;
+}
+.common-inputs-container__mail-pass-container,
+.common-inputs-container__names-container{
+  width: 48%;
+}
 .registration__auth-side {
   display: flex;
   width: 80vw;
@@ -44,7 +54,7 @@
 }
 .auth-side__title {
   text-align: center;
-  padding-bottom: 20px;
+  margin: 25px 0 30px;
 }
 .auth-side__reg-form {
   display: flex;
@@ -149,7 +159,7 @@ input[type="checkbox"] {
   padding-right: 30px;
 }
 .reg-form__button {
-  margin-bottom:20px;
+  margin:20px;
   background-color: black;
   color: white;
   font-size: 20rem;
@@ -179,7 +189,7 @@ input[type="checkbox"] {
 .error {
   font-size: 10rem;
   position: absolute;
-  bottom: 0px;
+  bottom: 0;
   color: red;
 }
 .addresses-container {
@@ -240,4 +250,26 @@ input[type="checkbox"] {
   background-color: black;   
   border-radius: 20px;      
   border: 3px solid white; 
+}
+@media (max-width:768px){
+  .reg-form__common-inf-container{
+    flex-direction: column;
+  }
+  .common-inputs-container__names-container,
+  .common-inputs-container__mail-pass-container{
+    width: 100%;
+  }
+  .addresses-container{
+    flex-direction: column;
+  }
+  .billing__container,
+  .shipping__container{
+    width: 100%;
+  }
+  .billing__container--join{
+    transform: translateX(-400px);
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
 }

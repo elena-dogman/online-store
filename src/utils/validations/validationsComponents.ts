@@ -58,6 +58,7 @@ export function mailValidation(
   value: string,
   err: HTMLSpanElement | null,
 ): boolean {
+  console.log(1);
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
@@ -250,6 +251,7 @@ export function passwordValidation(
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordNoSpaces);
+      err.style.bottom = '0px';
       return false;
     }
 
@@ -257,6 +259,7 @@ export function passwordValidation(
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
+      err.style.bottom = '0px';
       return false;
     }
 
@@ -264,12 +267,14 @@ export function passwordValidation(
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
+      err.style.bottom = '-4px';
       return false;
     }
 
     if (!/[a-z]/.test(value)) {
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
+      err.style.bottom = '0px';
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       return false;
     }
@@ -278,12 +283,14 @@ export function passwordValidation(
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
+      err.style.bottom = '0px';
       return false;
     }
 
     booleanValid.setValidStatus('password', true);
     booleanValid.checkAllInputs();
     incorectValidation(err, '');
+    err.style.bottom = '0px';
     return true;
   }
   return true;

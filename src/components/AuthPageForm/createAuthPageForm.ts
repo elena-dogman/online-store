@@ -3,7 +3,7 @@ import {
   ElementParams,
   addInnerComponent,
 } from '../../utils/baseComponent';
-import { passwordIconParams } from '../registrationForm/registrationForm';
+import { commonFormCompontens } from '../registrationForm/nameMailForm';
 function createInput(
   id: string,
 
@@ -100,7 +100,7 @@ export function createAuthForm(): HTMLElement[] {
     classNames: ['error'],
   };
   const emailIcon = createElement(emailIconParams);
-  const passwordIcon = createElement(passwordIconParams);
+  const passwordIcon = commonFormCompontens.passwordIcon;
   const emailErrorSpan = createElement(emailErrorSpanParams);
   const passwordErrorSpan = createElement(passwordErrorSpanParams);
   const [emailLabel, emailInput] = createInput('email', 'email');
