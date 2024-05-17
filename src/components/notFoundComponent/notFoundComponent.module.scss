@@ -62,6 +62,10 @@
     font-size: 40rem;
     font-weight: 700;
   }
+
+  .not-found-description {
+    font-size: $font-size-button-text;
+  }
 }
 
 @media (max-width: 768px) {
@@ -72,5 +76,10 @@
   .back-home-button {
     padding: 8px 16px;
     max-width: 150px;
+  }
+
+  .not-found-title,
+  .not-found-description {
+      margin: 0;
   }
 }
