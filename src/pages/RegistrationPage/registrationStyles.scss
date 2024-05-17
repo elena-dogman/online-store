@@ -73,10 +73,13 @@
   flex-direction: row;
   justify-content: space-between;
 }
+.reg-form__join-label{
+  padding:20px 0;
+}
 .default__label{
   display:flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row-reverse;
+  justify-content: start;
   align-items: center;
 }
 

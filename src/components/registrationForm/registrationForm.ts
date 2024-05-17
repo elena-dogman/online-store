@@ -7,7 +7,7 @@ import {
 import * as errors from '..//..//utils/validations/validationsErrors';
 import { submitRegData } from './submitRegData';
 import { addDate } from './dateComponent';
-import { createDefaultChecks } from './address/checkBoxes/addressCheckBoxes';
+import { createDefaultCheck } from './address/checkBoxes/addressCheckBoxes';
 import { addressesContainer } from './address/addressFactory';
 export const errorNameReg = errors.createErrorElement();
 export const errorLastNameReg = errors.createErrorElement();
@@ -126,7 +126,7 @@ export function createForm(): void {
 
   addInnerComponent(authSideForm, regDateAndCheckContainer);
   addInnerComponent(regDateAndCheckContainer, addDate());
-  addInnerComponent(authSideForm, createDefaultChecks()[0]);
+  addInnerComponent(authSideForm, createDefaultCheck()[0]);
   addInnerComponent(authSideForm, addressesContainer);
   addInnerComponent(authSideForm, address);
   addInnerComponent(authSideForm, authFormButton);
