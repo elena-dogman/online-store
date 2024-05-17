@@ -137,6 +137,10 @@ export function createHeader(): HTMLElement {
     if (isMobile) {
       addInnerComponent(authNavContainer, navContainer);
     } else {
+      if (authNavContainer.classList.contains('open')) {
+        authNavContainer.classList.remove('open');
+        burgerMenu.classList.remove('change');
+      }
       header.insertBefore(navContainer, rightContainer);
     }
   };
