@@ -42,6 +42,7 @@ const REGEX = {
   email: /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/,
   lettersOnly: /^[a-zA-Z]+$/,
   lettersAndNumbers: /^[A-Za-z0-9._%+-]+$/,
+  lettersAndNumbersAndWhiteSpaces: /^[A-Za-z0-9._%+-\s]+$/,
   birthDate: /^(0[1-9]|1[0-2]).(0[1-9]|[12][0-9]|3[01]).\d{4}$/,
   number: /^\d+$/,
   password: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[\S]{8,}$/,
@@ -186,7 +187,7 @@ export function cityValidation(
         return false;
       }
     }
-    if (!REGEX.lettersOnly.test(value)) {
+    if (!REGEX.lettersAndNumbersAndWhiteSpaces.test(value)) {
       if (billingStreet instanceof HTMLInputElement) {
         booleanValid.setValidStatus(cityValid, false);
         booleanValid.setValidStatus(streetValid, false);
@@ -194,7 +195,7 @@ export function cityValidation(
         billingStreet.setAttribute('disabled', '');
         streetErr.textContent = '';
         billingStreet.value = '';
-        incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+        incorectValidation(err, ERROR_MESSAGES.onlyEnglishLettersAndNumbers);
         return false;
       }
     }
@@ -215,7 +216,6 @@ export function streetValidation(
   if (err && type) {
     const streetValid: 'street-shipping' | 'street-billing' =
       type === 'shipping' ? 'street-shipping' : 'street-billing';
-    console.log(type);
     if (value.length === 0) {
       booleanValid.setValidStatus(streetValid, false);
       booleanValid.checkAllInputs();
@@ -228,14 +228,13 @@ export function streetValidation(
       incorectValidation(err, ERROR_MESSAGES.shortInput);
       return false;
     }
-    if (!REGEX.lettersAndNumbers.test(value)) {
+    if (!REGEX.lettersAndNumbersAndWhiteSpaces.test(value)) {
       booleanValid.setValidStatus(streetValid, false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
       return false;
     }
     booleanValid.setValidStatus(streetValid, true);
-    console.log(streetValid);
     booleanValid.checkAllInputs();
     incorectValidation(err, '');
     return true;
@@ -248,7 +247,6 @@ export function passwordValidation(
 ): boolean {
   if (err) {
     if (/\s/.test(value)) {
-      console.log('Password contains spaces.');
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordNoSpaces);

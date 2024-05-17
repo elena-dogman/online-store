@@ -44,7 +44,7 @@ function createAddressComponents(
       'street-label',
       'label-street',
     ],
-    textContent: 'Address',
+    textContent: 'Street',
   });
   const inputStreet = createElement({
     tag: 'input',
