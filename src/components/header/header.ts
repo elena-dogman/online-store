@@ -127,21 +127,19 @@ export function createHeader(): HTMLElement {
   addInnerComponent(burgerMenu, burgerLine3);
   addInnerComponent(header, burgerMenu);
 
-  document.addEventListener('click', (event) => {
-    if (!(event.target instanceof Node)) return;
-    const isClickInsideMenu = burgerMenu.contains(event.target as Node);
-    const isMenuOpen = authNavContainer.classList.contains('open');
-
-    if (!isClickInsideMenu && isMenuOpen) {
-      authNavContainer.classList.remove('open');
-      burgerMenu.classList.remove('change');
-    }
-  });
-
   burgerMenu.onclick = (): void => {
     authNavContainer.classList.toggle('open');
     burgerMenu.classList.toggle('change');
   };
+
+  const closeBurgerMenu = (event: MouseEvent): void => {
+    if (!header.contains(event.target as Node) && authNavContainer.classList.contains('open')) {
+      authNavContainer.classList.remove('open');
+      burgerMenu.classList.remove('change');
+    }
+  };
+
+  document.addEventListener('click', closeBurgerMenu);
 
   const moveNavLinks = (): void => {
     const isMobile = window.innerWidth <= 768;
@@ -170,9 +168,9 @@ export function createHeader(): HTMLElement {
     authButton.setAttribute('href', isLoggedIn ? '#' : '/login');
     authButton.onclick = isLoggedIn
       ? async (): Promise<void> => {
-          await handleLogout();
-          appEvents.emit('logout', undefined);
-        }
+        await handleLogout();
+        appEvents.emit('logout', undefined);
+      }
       : null;
   }
 
