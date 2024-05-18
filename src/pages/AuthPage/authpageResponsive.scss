@@ -81,6 +81,9 @@
     font-size: $font-size-base;
     text-align: justify;
   }
+  .password_container > .password_icon {
+    right: 0 !important;
+  }
   .auth_form_footer {
     text-wrap: nowrap;
     align-items: center;
