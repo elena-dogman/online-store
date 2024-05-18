@@ -57,8 +57,8 @@ function createAddressComponents(
     },
   }) as HTMLInputElement;
   const errorStreet = createErrorElement();
-  labelStreet.appendChild(inputStreet);
-  labelStreet.appendChild(errorStreet);
+  labelStreet.append(inputStreet);
+  labelStreet.append(errorStreet);
 
   const labelCity = createElement({
     tag: 'label',
@@ -102,12 +102,12 @@ function createAddressComponents(
     validateInput(event);
   });
   const errorPost = createErrorElement();
-  labelPost.appendChild(inputPost);
-  labelPost.appendChild(errorPost);
+  labelPost.append(inputPost);
+  labelPost.append(errorPost);
   const labelCountry = createElement({
     tag: 'label',
     classNames: [`${type}__country-label`, 'reg__label'],
-    textContent: `${type === 'billing' ? 'Billing' : 'Shipping'} Country`,
+    textContent: `${type === 'billing' ? 'Billing' : 'Shipping'} address`,
   });
   const listCountry = createElement({
     tag: 'div',
@@ -117,14 +117,14 @@ function createAddressComponents(
   const inputCountry = createElement({
     tag: 'input',
     classNames: [`${type}__countries-input`, 'reg-input'],
-    attributes: { type: 'text', placeholder: 'Enter your Country ' },
+    attributes: { type: 'text', placeholder: 'Enter your country ' },
   }) as HTMLInputElement;
   const countryWrapper = createElement({
     tag: 'div',
     classNames: [`${type}__country-wrapper`],
   });
   countryWrapper.append(inputCountry, listCountry);
-  labelCountry.appendChild(countryWrapper);
+  labelCountry.append(countryWrapper);
 
   const defaultBillingLabelParams: ElementParams<'label'> = {
     tag: 'label',
