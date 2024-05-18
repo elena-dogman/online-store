@@ -185,7 +185,7 @@ export function cityValidation(
         return false;
       }
     }
-    if (!REGEX.lettersAndNumbersAndWhiteSpaces.test(value)) {
+    if (!REGEX.lettersOnly.test(value)) {
       if (billingStreet instanceof HTMLInputElement) {
         booleanValid.setValidStatus(cityValid, false);
         booleanValid.setValidStatus(streetValid, false);

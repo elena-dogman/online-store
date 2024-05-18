@@ -1,11 +1,6 @@
-import {
-  ElementParams,
-  addInnerComponent,
-  createElement,
-} from '../../../utils/baseComponent';
+import { createElement } from '../../../utils/baseComponent';
 import { validateInput } from '../../../utils/validations/validation';
 import { createErrorElement } from '../../../utils/validations/validationsErrors';
-import { setValidStatusAddress, validStatusAddress } from './booleanAddress';
 import { addCountries } from './countryList';
 export interface Components {
   [key: string]: AddressComponents;
@@ -126,33 +121,6 @@ function createAddressComponents(
   countryWrapper.append(inputCountry, listCountry);
   labelCountry.append(countryWrapper);
 
-  const defaultBillingLabelParams: ElementParams<'label'> = {
-    tag: 'label',
-    classNames: [`reg-form__${type}-checkbox`, 'default__label'],
-    textContent: ` Use as default ${type} address`,
-  };
-  const defaultBillingCheckParams: ElementParams<'input'> = {
-    tag: 'input',
-    classNames: [`reg-form__${type}-checkbox`],
-    attributes: { type: 'checkbox' },
-  };
-
-  const defaultLabel = createElement(defaultBillingLabelParams);
-  const defaultCheck = createElement(
-    defaultBillingCheckParams,
-  ) as HTMLInputElement;
-
-  defaultCheck.addEventListener('click', () => {
-    if (defaultCheck.checked) {
-      setValidStatusAddress(`${type}IsDefault`, true);
-      console.log(validStatusAddress);
-    } else {
-      setValidStatusAddress(`${type}IsDefault`, false);
-    }
-  });
-
-  addInnerComponent(defaultLabel, defaultCheck);
-
   inputStreet.addEventListener('input', validateInput);
   inputCity.addEventListener('input', validateInput);
   inputPost.addEventListener('input', validateInput);
@@ -163,7 +131,6 @@ function createAddressComponents(
     labelPost,
     labelCity,
     labelStreet,
-    defaultLabel,
   );
 
   return {
