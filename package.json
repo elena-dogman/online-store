@@ -51,6 +51,7 @@
     "isomorphic-fetch": "^3.0.0",
     "node-fetch": "^3.3.2",
     "normalize.css": "^8.0.1",
+    "postal-codes-js": "^2.5.2",
     "postcode-validator": "^3.8.20",
     "uuid": "^9.0.1"
   }

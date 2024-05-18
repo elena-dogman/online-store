@@ -1,9 +1,6 @@
 import { calculateAge, checkDaysInMonth } from '../ageAndTextChecks';
 import country from 'country-list-js';
-import {
-  postcodeValidator,
-  postcodeValidatorExistsForCountry,
-} from 'postcode-validator';
+
 import * as dateComponents from '../../components/registrationForm/dateComponent';
 import * as booleanValid from './booleanValid';
 import {
@@ -12,7 +9,7 @@ import {
   billingComponents,
   shippingComponents,
 } from '../../components/registrationForm/address/addressFactory';
-
+import * as postalCodes from 'postal-codes-js';
 const components: Components = {
   billing: billingComponents,
   shipping: shippingComponents,
@@ -422,7 +419,6 @@ export function postCodeValidation(
     const cityErr = components[type].errorCity;
     const billingStreet = components[type].inputStreet;
     const billingCity = components[type].inputCity;
-
     if (value.length === 0) {
       if (
         billingStreet instanceof HTMLInputElement &&
@@ -443,35 +439,28 @@ export function postCodeValidation(
       }
     }
 
-    if (postcodeValidatorExistsForCountry(postCode)) {
-      if (postcodeValidator(value, postCode)) {
-        billingCity.removeAttribute('disabled');
-        incorectValidation(err, '');
-        booleanValid.setValidStatus(postValid, true);
-        booleanValid.checkAllInputs();
-      } else {
-        if (
-          billingStreet instanceof HTMLInputElement &&
-          billingCity instanceof HTMLInputElement
-        ) {
-          billingCity.setAttribute('disabled', '');
-          billingStreet.setAttribute('disabled', '');
-          booleanValid.setValidStatus(cityValid, false);
-          booleanValid.setValidStatus(postValid, false);
-          booleanValid.setValidStatus(streetValid, false);
-          booleanValid.checkAllInputs();
-          cityErr.textContent = '';
-          streetErr.textContent = '';
-          billingStreet.value = '';
-          billingCity.value = '';
-          incorectValidation(err, ERROR_MESSAGES.incorrectData);
-        }
-      }
-    } else {
-      booleanValid.setValidStatus(postValid, true);
-      booleanValid.checkAllInputs();
+    if (postalCodes.validate(postCode, value) === true) {
       billingCity.removeAttribute('disabled');
       incorectValidation(err, '');
+      booleanValid.setValidStatus(postValid, true);
+      booleanValid.checkAllInputs();
+    } else {
+      if (
+        billingStreet instanceof HTMLInputElement &&
+        billingCity instanceof HTMLInputElement
+      ) {
+        billingCity.setAttribute('disabled', '');
+        billingStreet.setAttribute('disabled', '');
+        booleanValid.setValidStatus(cityValid, false);
+        booleanValid.setValidStatus(postValid, false);
+        booleanValid.setValidStatus(streetValid, false);
+        booleanValid.checkAllInputs();
+        cityErr.textContent = '';
+        streetErr.textContent = '';
+        billingStreet.value = '';
+        billingCity.value = '';
+        incorectValidation(err, ERROR_MESSAGES.incorrectData);
+      }
     }
   }
 }
