@@ -9,6 +9,7 @@ import { createDefaultCheck } from './address/checkBoxes/addressCheckBoxes';
 import { addressesContainer } from './address/addressFactory';
 import { commonFormCompontens } from './nameMailForm';
 import { submitRegData } from './submitRegData';
+import { addDefaultChecks } from './address/checkBoxes/checkBoxesComponents';
 export const errorNameReg = errors.createErrorElement();
 export const errorLastNameReg = errors.createErrorElement();
 export const authSideForm = createElement({
@@ -41,6 +42,7 @@ export function createForm(): void {
   addInnerComponent(authSideForm, createDefaultCheck()[0]);
   addInnerComponent(authSideForm, addressesContainer);
   addInnerComponent(authSideForm, address);
+  addInnerComponent(authSideForm, addDefaultChecks());
   addInnerComponent(authSideForm, authFormButton);
   authFormButton.addEventListener('click', submitRegData);
 }

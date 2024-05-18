@@ -40,6 +40,10 @@
   display: flex;
   justify-content: space-between;
 }
+.reg-form__container-checkbox{
+  display: flex;
+  justify-content: space-evenly;
+}
 .common-inputs-container__mail-pass-container,
 .common-inputs-container__names-container {
   width: 48%;
