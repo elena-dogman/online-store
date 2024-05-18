@@ -1,4 +1,4 @@
-import { calculateAge } from '../ageAndTextChecks';
+import { calculateAge, checkDaysInMonth } from '../ageAndTextChecks';
 import country from 'country-list-js';
 import {
   postcodeValidator,
@@ -18,9 +18,9 @@ const components: Components = {
   shipping: shippingComponents,
 };
 
-const dateDay = dateComponents.dayDate;
-const dateMonth = dateComponents.monthDate;
-const dateYear = dateComponents.yearDate;
+const dateDay = dateComponents.dayDate as HTMLInputElement;
+const dateMonth = dateComponents.monthDate as HTMLInputElement;
+const dateYear = dateComponents.yearDate as HTMLInputElement;
 export const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
   invalidEmail: "Email must contain an '@' symbol",
@@ -42,6 +42,7 @@ const REGEX = {
   email: /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/,
   lettersOnly: /^[a-zA-Z]+$/,
   lettersAndNumbers: /^[A-Za-z0-9._%+-]+$/,
+  lettersAndNumbersAndWhiteSpaces: /^[A-Za-z0-9._%+-\s]+$/,
   birthDate: /^(0[1-9]|1[0-2]).(0[1-9]|[12][0-9]|3[01]).\d{4}$/,
   number: /^\d+$/,
   password: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[\S]{8,}$/,
@@ -57,6 +58,7 @@ export function mailValidation(
   value: string,
   err: HTMLSpanElement | null,
 ): boolean {
+  console.log(1);
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
@@ -186,7 +188,7 @@ export function cityValidation(
         return false;
       }
     }
-    if (!REGEX.lettersOnly.test(value)) {
+    if (!REGEX.lettersAndNumbersAndWhiteSpaces.test(value)) {
       if (billingStreet instanceof HTMLInputElement) {
         booleanValid.setValidStatus(cityValid, false);
         booleanValid.setValidStatus(streetValid, false);
@@ -194,7 +196,7 @@ export function cityValidation(
         billingStreet.setAttribute('disabled', '');
         streetErr.textContent = '';
         billingStreet.value = '';
-        incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
+        incorectValidation(err, ERROR_MESSAGES.onlyEnglishLettersAndNumbers);
         return false;
       }
     }
@@ -215,7 +217,6 @@ export function streetValidation(
   if (err && type) {
     const streetValid: 'street-shipping' | 'street-billing' =
       type === 'shipping' ? 'street-shipping' : 'street-billing';
-    console.log(type);
     if (value.length === 0) {
       booleanValid.setValidStatus(streetValid, false);
       booleanValid.checkAllInputs();
@@ -228,14 +229,13 @@ export function streetValidation(
       incorectValidation(err, ERROR_MESSAGES.shortInput);
       return false;
     }
-    if (!REGEX.lettersAndNumbers.test(value)) {
+    if (!REGEX.lettersAndNumbersAndWhiteSpaces.test(value)) {
       booleanValid.setValidStatus(streetValid, false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
       return false;
     }
     booleanValid.setValidStatus(streetValid, true);
-    console.log(streetValid);
     booleanValid.checkAllInputs();
     incorectValidation(err, '');
     return true;
@@ -248,10 +248,10 @@ export function passwordValidation(
 ): boolean {
   if (err) {
     if (/\s/.test(value)) {
-      console.log('Password contains spaces.');
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordNoSpaces);
+      err.style.bottom = '0px';
       return false;
     }
 
@@ -259,6 +259,7 @@ export function passwordValidation(
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
+      err.style.bottom = '0px';
       return false;
     }
 
@@ -266,12 +267,14 @@ export function passwordValidation(
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
+      err.style.bottom = '-4px';
       return false;
     }
 
     if (!/[a-z]/.test(value)) {
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
+      err.style.bottom = '0px';
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       return false;
     }
@@ -280,12 +283,14 @@ export function passwordValidation(
       booleanValid.setValidStatus('password', false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
+      err.style.bottom = '0px';
       return false;
     }
 
     booleanValid.setValidStatus('password', true);
     booleanValid.checkAllInputs();
     incorectValidation(err, '');
+    err.style.bottom = '0px';
     return true;
   }
   return true;
@@ -294,7 +299,7 @@ export function dayValidation(
   value: string,
   err?: HTMLSpanElement | null,
 ): number | undefined {
-  console.log(1);
+  const daysInMonth = checkDaysInMonth(dateMonth.value, dateYear.value);
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
@@ -302,7 +307,7 @@ export function dayValidation(
     }
     if (!parseInt(value)) {
       incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
-      if (parseInt(value) > 31) {
+      if (parseInt(value) > daysInMonth) {
         incorectValidation(err, ERROR_MESSAGES.dateOfBirth);
         return;
       }
@@ -359,43 +364,39 @@ export function yearValidation(
 export function checkNumber(this: HTMLInputElement): void {
   const parent = this.parentNode as HTMLLabelElement | null;
   const err = parent?.parentElement?.firstElementChild as HTMLSpanElement;
+  const daysInMonth = checkDaysInMonth(dateMonth.value, dateYear.value);
   if (!parent) {
     return;
   }
-  if (
-    dateYear instanceof HTMLInputElement &&
-    dateMonth instanceof HTMLInputElement &&
-    dateDay instanceof HTMLInputElement
-  ) {
-    if (+dateYear.value && +dateMonth.value && +dateDay.value) {
-      if (
-        +dateMonth.value <= 12 &&
-        +dateDay.value <= 31 &&
-        +dateYear.value <= 2024 &&
-        +dateYear.value >= 1900
-      ) {
-        const age = new Date(
-          +dateYear.value,
-          +dateMonth.value - 1,
-          +dateDay.value,
-        );
-        if (calculateAge(age) < 13) {
-          incorectValidation(err, ERROR_MESSAGES.ageRequirement);
-        } else {
-          booleanValid.setValidStatus('date', true);
-          booleanValid.checkAllInputs();
-          incorectValidation(err, '');
-        }
+
+  if (+dateYear.value && +dateMonth.value && +dateDay.value) {
+    if (
+      +dateMonth.value <= 12 &&
+      +dateDay.value <= daysInMonth &&
+      +dateYear.value <= 2024 &&
+      +dateYear.value >= 1900
+    ) {
+      const age = new Date(
+        +dateYear.value,
+        +dateMonth.value - 1,
+        +dateDay.value,
+      );
+      if (calculateAge(age) < 13) {
+        incorectValidation(err, ERROR_MESSAGES.ageRequirement);
       } else {
-        booleanValid.setValidStatus('date', false);
+        booleanValid.setValidStatus('date', true);
         booleanValid.checkAllInputs();
-        incorectValidation(err, ERROR_MESSAGES.incorrectData);
+        incorectValidation(err, '');
       }
     } else {
       booleanValid.setValidStatus('date', false);
       booleanValid.checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.incorrectData);
     }
+  } else {
+    booleanValid.setValidStatus('date', false);
+    booleanValid.checkAllInputs();
+    incorectValidation(err, ERROR_MESSAGES.incorrectData);
   }
 }
 
@@ -479,7 +480,6 @@ export function disableLocation(
   adressComponents: AddressComponents,
   purpose: string,
 ): void {
-  console.log(purpose);
   adressComponents.errorCity.textContent = '';
   adressComponents.errorStreet.textContent = '';
   adressComponents.errorPost.textContent = '';

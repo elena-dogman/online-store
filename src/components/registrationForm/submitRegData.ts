@@ -1,4 +1,3 @@
-import * as regFormComponents from './registrationForm';
 import * as dateComponents from './dateComponent';
 import country from 'country-list-js';
 import { validStatusAddress } from './address/booleanAddress';
@@ -8,11 +7,12 @@ import {
 } from './address/addressFactory';
 import { regUser } from '../../api/apiService';
 import { RegistrationData } from './regDataInterface';
+import { commonFormCompontens } from './nameMailForm';
 export async function submitRegData(): Promise<void> {
-  const name = regFormComponents.regFormInputName as HTMLInputElement;
-  const lastName = regFormComponents.regFormInputLastName as HTMLInputElement;
-  const password = regFormComponents.regFormInputPassword as HTMLInputElement;
-  const mail = regFormComponents.regFormInputMail as HTMLInputElement;
+  const name = commonFormCompontens.inputName as HTMLInputElement;
+  const lastName = commonFormCompontens.inputLastName as HTMLInputElement;
+  const password = commonFormCompontens.inputPassword as HTMLInputElement;
+  const mail = commonFormCompontens.inputMail as HTMLInputElement;
   const postShipping = shippingComponents.inputPost as HTMLInputElement;
   const postBilling = billingComponents.inputPost as HTMLInputElement;
   const cityBilling = billingComponents.inputCity as HTMLInputElement;
