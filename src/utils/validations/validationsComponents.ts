@@ -30,7 +30,7 @@ export const ERROR_MESSAGES = {
   atLeast8Characters: 'Password must contain at least 8 characters',
   passwordDetails:
     'Password must contain at  at least 1 uppercase letter, 1 lowercase letter and 1 number',
-  ageRequirement: 'Registration open to those 13 and older',
+  ageRequirement: 'You must be 13 or older',
   incorrectData: 'Please enter correct data',
   passwordNoSpaces: 'Password must not contain spaces',
 };

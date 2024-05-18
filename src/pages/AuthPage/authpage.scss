@@ -60,10 +60,12 @@
 }
 .email_container > span,
 .password_container > span {
-  text-wrap: nowrap;
-  left: 50% !important;
+  text-wrap: wrap;
+  text-align: justify;
+  top: 100%;
   left: 0;
-  bottom: 100%;
+
+  position: absolute;
 }
 .email_icon,
 .password_icon {

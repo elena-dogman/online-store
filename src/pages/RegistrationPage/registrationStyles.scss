@@ -13,11 +13,9 @@
   left: 50%;
   height: 100%;
   transform: translate(-50%, -50%);
-  max-width: 1440px;
+  width: 100%;
   user-select: none;
-
   z-index: -1;
-  border-radius: 50%;
   object-fit: cover;
   -webkit-mask-image: linear-gradient(
     to bottom,
@@ -159,6 +157,13 @@ input[type='checkbox'] {
   background: none;
   border: none;
   cursor: pointer;
+  &:hover:not(:disabled) {
+    box-shadow: $button-hover-box-shadow;
+  }
+  &:disabled {
+    background-color: $button-disabled-background;
+    cursor: not-allowed;
+  }
 }
 .auth-side__sign-in {
   display: flex;
@@ -174,14 +179,24 @@ input[type='checkbox'] {
   font-size: 20rem;
   padding: 12px 0;
   border-radius: 20px;
-  &:hover {
+  &:hover:not(:disabled) {
     box-shadow: $button-hover-box-shadow;
+  }
+  &:disabled {
+    background-color: $button-disabled-background;
+    cursor: not-allowed;
   }
 }
 .reg-button {
   transition: all 0.5s ease;
   cursor: pointer;
-  @include inputDisabled;
+  &:hover:not(:disabled) {
+    box-shadow: $button-hover-box-shadow;
+  }
+  &:disabled {
+    background-color: $button-disabled-background;
+    cursor: not-allowed;
+  }
 }
 
 .reg-form__date-container {
@@ -210,16 +225,16 @@ input[type='checkbox'] {
   column-gap: 10px;
 }
 .shipping__container {
-  width: 50%;
-  transition: all 0.3s ease;
+  width: 100%;
+
   z-index: 5;
 }
 .shipping__container--join {
   width: 100%;
 }
 .billing__container {
-  width: 50%;
-  transition: all 0.3s ease;
+  width: 100%;
+
   opacity: 1;
 }
 .billing__container--join {
@@ -235,9 +250,6 @@ input[type='checkbox'] {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .reg-button:hover {
-    box-shadow: $button-hover-box-shadow;
-  }
   .sign-in__button:hover {
     transform: scale(1.1);
     transition: transform 0.3s ease;
@@ -262,7 +274,9 @@ input[type='checkbox'] {
 .--expanded::-webkit-scrollbar-track {
   background: white;
 }
-
+.reg-form__date-label.reg__label > span {
+  bottom: -5px;
+}
 .--expanded::-webkit-scrollbar-thumb {
   background-color: black;
   border-radius: 20px;
@@ -385,6 +399,7 @@ input[type='checkbox'] {
   }
   .reg-form__date-label.reg__label > span {
     top: 100%;
+    bottom: 0;
   }
   .auth-side__sign-in {
     align-items: center;
@@ -402,15 +417,12 @@ input[type='checkbox'] {
     padding: 10px 20px;
     height: 40px;
     cursor: pointer;
-    &:hover {
-      transform: scale(1);
-      background-color: $text-color-accent;
-      color: $text-color-contrast;
+    &:hover:not(:disabled) {
+      box-shadow: $button-hover-box-shadow;
     }
-
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 2px rgba($text-color-accent, 0.5);
+    &:disabled {
+      background-color: $button-disabled-background;
+      cursor: not-allowed;
     }
   }
   .billing__container.billing__container {
