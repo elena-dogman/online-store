@@ -30,7 +30,7 @@ export function createNotFoundPage(): HTMLElement {
   const descriptionParams: ElementParams<'p'> = {
     tag: 'p',
     classNames: ['not-found-description'],
-    textContent: 'Looks like big foot has broken the link.',
+    textContent: 'Looks like Bigfoot has broken the link.',
   };
   const description = createElement(descriptionParams);
 
