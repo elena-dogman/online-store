@@ -37,7 +37,7 @@ export function createHeader(): HTMLElement {
   });
   const aboutLink = createElement({
     tag: 'a',
-    attributes: { href: '#' },
+    attributes: { href: '/about' },
     classNames: ['header__nav-link'],
     textContent: 'About Us',
   });

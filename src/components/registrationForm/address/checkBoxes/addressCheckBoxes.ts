@@ -14,7 +14,7 @@ export function createDefaultCheck(): HTMLElement[] {
   const defaultJoinAddressLabelParams: ElementParams<'label'> = {
     tag: 'label',
     classNames: ['reg-form__join-label', 'default__label'],
-    textContent: 'Default Join (Billing address is the same as shipping)',
+    textContent: 'Default join (billing address is the same as shipping address)',
   };
   const defaultJoinAddressCheckParams: ElementParams<'input'> = {
     tag: 'input',

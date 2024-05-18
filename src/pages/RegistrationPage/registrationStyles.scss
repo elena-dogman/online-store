@@ -4,7 +4,7 @@
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  font-family:$font-family-base ;
+  font-family: $font-family-base;
   height: 100%;
 }
 .registration-img{
@@ -50,11 +50,12 @@
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
   border-radius: 10px;
-  padding: 10px
+  padding: 10px;
+  margin-top: 60px;
 }
 .auth-side__title {
   text-align: center;
-  margin: 25px 0 30px;
+  margin: 10px 0 20px;
 }
 .auth-side__reg-form {
   display: flex;
@@ -65,7 +66,6 @@
   display: flex;
   flex-direction: column;
 }
-
 
 .reg-form__container__date-checks{
   display: flex;
@@ -84,18 +84,21 @@
   justify-content: space-between;
 }
 .reg-form__join-label{
-  padding:20px 0;
+  padding: 10px 0;
 }
 .default__label{
   display:flex;
   flex-direction: row-reverse;
   justify-content: start;
   align-items: center;
+  font-style: italic;
+  font-size: $font-size-small;
 }
 
 .billing__country-label,
 .shipping__country-label {
   position: relative;
+  margin-bottom: 5px;
 }
 .billing__countries-list,
 .shipping__countries-list {
@@ -124,7 +127,6 @@
   flex-direction: column;
 }
 
-
 .reg-input {
   border: none;
   border-bottom: 1px solid black;
@@ -143,6 +145,7 @@ input[type="checkbox"] {
   border-radius: 10px;
   height: 16px;
   width: 16px;
+  margin-right: 5px;
 }
 
 .sign-in__button {
@@ -156,7 +159,7 @@ input[type="checkbox"] {
   justify-content: center;
 }
 .sign-in__text {
-  padding-right: 30px;
+  padding-right: 10px;
 }
 .reg-form__button {
   margin:20px;
@@ -178,13 +181,13 @@ input[type="checkbox"] {
 .reg-form__date-container {
   display: flex;
   gap: 20px;
-  margin-bottom: 20px;
 }
 
 .date-input {
   width: 50px;
   margin: 0;
   text-align: center;
+  margin-bottom: 10px;
 }
 .error {
   font-size: 10rem;
@@ -217,6 +220,7 @@ input[type="checkbox"] {
   transform: translateX(-400px);
   opacity: 0;
   width: 0;
+  height: 0;
 }
 @media (hover: hover) and (pointer: fine) {
   .reg-button:hover {
@@ -243,33 +247,51 @@ input[type="checkbox"] {
   left: -10px;
 }
 .--expanded::-webkit-scrollbar-track {
-  background: white;   
+  background: white;
 }
 
 .--expanded::-webkit-scrollbar-thumb {
-  background-color: black;   
-  border-radius: 20px;      
-  border: 3px solid white; 
+  background-color: black;
+  border-radius: 20px;
+  border: 3px solid white;
 }
-@media (max-width:768px){
-  .reg-form__common-inf-container{
+@media (max-width: 768px) {
+
+  .wrapper__registration {
+      padding: 0;
+    }
+
+  .registration__auth-side {
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .auth-side__reg-form {
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .addresses-container {
     flex-direction: column;
+    align-items: stretch;
   }
-  .common-inputs-container__names-container,
-  .common-inputs-container__mail-pass-container{
-    width: 100%;
-  }
-  .addresses-container{
-    flex-direction: column;
-  }
+
   .billing__container,
-  .shipping__container{
+  .shipping__container {
     width: 100%;
   }
-  .billing__container--join{
-    transform: translateX(-400px);
+
+  .billing__container--join {
+    transform: none;
     opacity: 0;
     width: 0;
     height: 0;
   }
+
+    .default__label {
+      margin-bottom: 10px;
+    }
 }
