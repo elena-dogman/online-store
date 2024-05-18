@@ -129,7 +129,7 @@ function createAddressComponents(
   const defaultBillingLabelParams: ElementParams<'label'> = {
     tag: 'label',
     classNames: [`reg-form__${type}-checkbox`, 'default__label'],
-    textContent: ` Use ${type} as default address`,
+    textContent: ` Use as default ${type} address`,
   };
   const defaultBillingCheckParams: ElementParams<'input'> = {
     tag: 'input',

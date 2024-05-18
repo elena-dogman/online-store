@@ -1,27 +1,32 @@
 @import '..//../styles/variables.scss';
 .registration__page {
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   font-family: $font-family-base;
   height: 100%;
 }
-.registration-img{
+.registration-img {
   position: absolute;
   top: 50%;
   left: 50%;
+  height: 105%;
   transform: translate(-50%, -50%);
   max-width: 1440px;
   user-select: none;
-  height: auto;
+
   z-index: -1;
   border-radius: 50%;
   object-fit: cover;
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.05));
-  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgb(0, 0, 0));
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.8),
+    rgba(0, 0, 0, 0.05)
+  );
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgb(0, 0, 0));
 }
-.wrapper__registration  {
+.wrapper__registration {
   position: relative;
   height: 100%;
   display: flex;
@@ -33,12 +38,12 @@
   padding: 20px;
 }
 
-.reg-form__common-inf-container{
+.reg-form__common-inf-container {
   display: flex;
   justify-content: space-between;
 }
 .common-inputs-container__mail-pass-container,
-.common-inputs-container__names-container{
+.common-inputs-container__names-container {
   width: 48%;
 }
 .registration__auth-side {
@@ -67,7 +72,7 @@
   flex-direction: column;
 }
 
-.reg-form__container__date-checks{
+.reg-form__container__date-checks {
   display: flex;
   justify-content: space-between;
 }
@@ -77,17 +82,17 @@
   border-bottom: 1px solid black;
 }
 
-.reg-form__default-label{
+.reg-form__default-label {
   column-gap: 20px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
-.reg-form__join-label{
+.reg-form__join-label {
   padding: 10px 0;
 }
-.default__label{
-  display:flex;
+.default__label {
+  display: flex;
   flex-direction: row-reverse;
   justify-content: start;
   align-items: center;
@@ -102,8 +107,8 @@
 }
 .billing__countries-list,
 .shipping__countries-list {
-  position:absolute;
-  top:0;
+  position: absolute;
+  top: 0;
   color: black;
   width: 100%;
   height: 20px;
@@ -129,6 +134,7 @@
 
 .reg-input {
   border: none;
+  background-color: transparent;
   border-bottom: 1px solid black;
   margin-bottom: 18px;
   padding: 0 0 1px 5px;
@@ -138,9 +144,9 @@
     outline: 0;
   }
 
- @include inputDisabled;
+  @include inputDisabled;
 }
-input[type="checkbox"] {
+input[type='checkbox'] {
   accent-color: black;
   border-radius: 10px;
   height: 16px;
@@ -162,7 +168,7 @@ input[type="checkbox"] {
   padding-right: 10px;
 }
 .reg-form__button {
-  margin:20px;
+  margin: 20px;
   background-color: black;
   color: white;
   font-size: 20rem;
@@ -203,20 +209,20 @@ input[type="checkbox"] {
   width: 100%;
   column-gap: 10px;
 }
-.shipping__container{
+.shipping__container {
   width: 50%;
   transition: all 0.3s ease;
   z-index: 5;
 }
-.shipping__container--join{
+.shipping__container--join {
   width: 100%;
 }
-.billing__container{
+.billing__container {
   width: 50%;
   transition: all 0.3s ease;
   opacity: 1;
 }
-.billing__container--join{
+.billing__container--join {
   transform: translateX(-400px);
   opacity: 0;
   width: 0;
@@ -230,7 +236,8 @@ input[type="checkbox"] {
     transform: scale(1.1);
     transition: transform 0.3s ease;
   }
-}.--expanded {
+}
+.--expanded {
   top: 20px;
   height: 180px;
   border-radius: 10px 0 0 10px;
@@ -256,10 +263,9 @@ input[type="checkbox"] {
   border: 3px solid white;
 }
 @media (max-width: 768px) {
-
   .wrapper__registration {
-      padding: 0;
-    }
+    padding: 0;
+  }
 
   .registration__auth-side {
     width: 100vw;
@@ -291,7 +297,118 @@ input[type="checkbox"] {
     height: 0;
   }
 
-    .default__label {
-      margin-bottom: 10px;
+  .default__label {
+    margin-bottom: 10px;
+  }
+}
+@media (max-width: 500px) {
+  .registration-img {
+    height: 70%;
+  }
+  .auth-side__reg-form {
+    align-items: flex-start;
+  }
+  .reg-form__common-inf-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .common-inputs-container__names-container,
+  .common-inputs-container__mail-pass-container {
+    width: 100%;
+  }
+  .reg-input {
+    border: 2px solid $button-disabled-background;
+    border-radius: 20px;
+    transition: border-color 0.3s ease;
+    width: 100%;
+    padding: 10px;
+    margin-top: 4px;
+  }
+
+  .reg-input:focus {
+    border-color: $text-color-accent;
+  }
+
+  .reg-input.date-input {
+    text-align: center;
+    vertical-align: middle;
+  }
+  .shipping__countries-list,
+  .billing__countries-list {
+    padding: 10px;
+    border: 2px solid $button-disabled-background;
+    border-radius: 20px;
+    transition: border-color 0.3s ease;
+    width: 100%;
+    height: auto;
+    &:focus {
+      border-color: $text-color-accent;
     }
+  }
+  .reg-form__container__date-checks {
+    border-bottom: 1px solid $text-color-accent;
+  }
+  .shipping__container,
+  .billing__container {
+    border-bottom: 1px solid $text-color-accent;
+  }
+  .addresses-container {
+    gap: 10px;
+  }
+  .shipping__countries-list.--expanded,
+  .billing__countries-list.--expanded {
+    height: 180px;
+    top: 45px;
+  }
+  .reg-form__button.reg-button {
+    width: 100%;
+    margin: 10px 0;
+  }
+  .password_icon {
+    right: 15px;
+  }
+  .error {
+    color: $text-color-error;
+    position: absolute;
+    font-size: 16rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+  }
+  .reg-form__date-label.reg__label {
+    margin-bottom: 15px;
+  }
+  .reg-form__date-label.reg__label > span {
+    top: 100%;
+  }
+  .auth-side__sign-in {
+    align-items: center;
+    background-color: $not-found-base-color;
+    margin-bottom: 25px;
+    border-radius: 20px;
+    height: 60px;
+  }
+  .sign-in__button {
+    display: inline-block;
+    color: $text-color-accent;
+    background: none;
+    text-decoration: none;
+    border: 2px solid $text-color-accent;
+    border-radius: 20px;
+    padding: 10px 20px;
+    height: 40px;
+    cursor: pointer;
+    &:hover {
+      transform: scale(1);
+      background-color: $text-color-accent;
+      color: $text-color-contrast;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba($text-color-accent, 0.5);
+    }
+  }
 }
