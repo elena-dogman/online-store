@@ -11,8 +11,8 @@ export function buildRegistrationPage(): HTMLElement {
     tag: 'img',
     classNames: ['registration-img'],
     attributes: {
-      alt: 'registration__img',
-      src: '/assets/registration/registration-img.png',
+      alt: 'Registration Page Background Image',
+      src: '/assets/registration/background.jpg',
     },
   });
   const header = createHeader();
