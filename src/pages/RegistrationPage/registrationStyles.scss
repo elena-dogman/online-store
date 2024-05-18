@@ -247,33 +247,51 @@ input[type="checkbox"] {
   left: -10px;
 }
 .--expanded::-webkit-scrollbar-track {
-  background: white;   
+  background: white;
 }
 
 .--expanded::-webkit-scrollbar-thumb {
-  background-color: black;   
-  border-radius: 20px;      
-  border: 3px solid white; 
+  background-color: black;
+  border-radius: 20px;
+  border: 3px solid white;
 }
-@media (max-width:768px){
-  .reg-form__common-inf-container{
+@media (max-width: 768px) {
+
+  .wrapper__registration {
+      padding: 0;
+    }
+
+  .registration__auth-side {
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .auth-side__reg-form {
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .addresses-container {
     flex-direction: column;
+    align-items: stretch;
   }
-  .common-inputs-container__names-container,
-  .common-inputs-container__mail-pass-container{
-    width: 100%;
-  }
-  .addresses-container{
-    flex-direction: column;
-  }
+
   .billing__container,
-  .shipping__container{
+  .shipping__container {
     width: 100%;
   }
-  .billing__container--join{
-    transform: translateX(-400px);
+
+  .billing__container--join {
+    transform: none;
     opacity: 0;
     width: 0;
     height: 0;
   }
+
+    .default__label {
+      margin-bottom: 10px;
+    }
 }
