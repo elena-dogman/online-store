@@ -228,6 +228,12 @@ input[type='checkbox'] {
   width: 0;
   height: 0;
 }
+@media (max-height: 600px) {
+  .registration__page {
+    overflow: auto;
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
   .reg-button:hover {
     box-shadow: $button-hover-box-shadow;
@@ -409,5 +415,11 @@ input[type='checkbox'] {
       outline: none;
       box-shadow: 0 0 0 2px rgba($text-color-accent, 0.5);
     }
+  }
+  .billing__container.billing__container {
+    transform: scale(1);
+  }
+  .billing__container.billing__container--join {
+    transform: scale(0);
   }
 }
