@@ -40,7 +40,7 @@
   display: flex;
   justify-content: space-between;
 }
-.reg-form__container-checkbox{
+.reg-form__container-checkbox {
   display: flex;
   justify-content: space-evenly;
 }
@@ -300,7 +300,7 @@ input[type='checkbox'] {
   }
 
   .auth-side__reg-form {
-    height: 100%;
+    height: auto;
     overflow-y: auto;
   }
 
