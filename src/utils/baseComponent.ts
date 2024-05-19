@@ -2,6 +2,7 @@ export type EventCallback = {
   eventType: keyof HTMLElementEventMap;
   callback: (event: Event) => void;
 };
+
 export interface ElementParams<TTag extends keyof HTMLElementTagNameMap> {
   tag: TTag;
   classNames?: string[];
@@ -10,18 +11,13 @@ export interface ElementParams<TTag extends keyof HTMLElementTagNameMap> {
   callbacks?: EventCallback[];
 }
 
-function setCallbacks(
-  element: HTMLElement,
-  callbacks: Array<EventCallback>,
-): void {
+function setCallbacks(element: HTMLElement, callbacks: Array<EventCallback>): void {
   callbacks.forEach(({ eventType, callback }) => {
     element.addEventListener(eventType, callback);
   });
 }
 
-export function createElement(
-  params: ElementParams<keyof HTMLElementTagNameMap>,
-): HTMLElement {
+export function createElement(params: ElementParams<keyof HTMLElementTagNameMap>): HTMLElement {
   const element = document.createElement(params.tag);
 
   if (params.classNames) {
@@ -47,10 +43,7 @@ export function createElement(
   return element;
 }
 
-export function addInnerComponent(
-  parent: HTMLElement,
-  child: HTMLElement,
-): void {
+export function addInnerComponent(parent: HTMLElement, child: HTMLElement): void {
   parent.appendChild(child);
 }
 
@@ -58,11 +51,7 @@ export function removeElement(element: HTMLElement): void {
   element.remove();
 }
 
-export function setAttribute(
-  element: HTMLElement,
-  name: string,
-  value: string,
-): HTMLElement {
+export function setAttribute(element: HTMLElement, name: string, value: string): HTMLElement {
   const newElement = element.cloneNode(true) as HTMLElement;
   newElement.setAttribute(name, value);
   return newElement;
@@ -74,10 +63,7 @@ export function addClass(element: HTMLElement, className: string): HTMLElement {
   return newElement;
 }
 
-export function removeClass(
-  element: HTMLElement,
-  className: string,
-): HTMLElement {
+export function removeClass(element: HTMLElement, className: string): HTMLElement {
   const newElement = element.cloneNode(true) as HTMLElement;
   newElement.classList.remove(className);
   return newElement;
@@ -88,10 +74,7 @@ export function clear(element: HTMLElement): HTMLElement {
   return newElement;
 }
 
-export function setDisabled(
-  element: HTMLButtonElement,
-  disabled: boolean,
-): HTMLButtonElement {
+export function setDisabled(element: HTMLButtonElement, disabled: boolean): HTMLButtonElement {
   const newElement = element.cloneNode(true) as HTMLButtonElement;
   newElement.disabled = disabled;
   return newElement;
@@ -105,10 +88,7 @@ export function getValue(element: HTMLInputElement): string {
   return element.value;
 }
 
-export function setValue(
-  element: HTMLInputElement,
-  value: string,
-): HTMLInputElement {
+export function setValue(element: HTMLInputElement, value: string): HTMLInputElement {
   const newElement = element.cloneNode(true) as HTMLInputElement;
   newElement.value = value;
   return newElement;
