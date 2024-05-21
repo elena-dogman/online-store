@@ -162,7 +162,8 @@ input[type='checkbox'] {
   border: none;
   cursor: pointer;
   &:hover:not(:disabled) {
-    box-shadow: $button-hover-box-shadow;
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
   }
   &:disabled {
     background-color: $button-disabled-background;

@@ -69,37 +69,32 @@ export const logoutUser = async (): Promise<void> => {
 };
 
 export async function isUserLogined(): Promise<ClientResponse<Customer> | void> {
-  const token = localStorage.getItem('token');
-  if (token) {
-    const unparsedToken = JSON.parse(token);
+  if (localStorage.getItem('token')) {
+    const unparsedToken = JSON.parse(localStorage.getItem('token') as string);
+    const currentPath = window.location.pathname;
     const refreshToken = unparsedToken.refreshToken;
     const refreshFlowClient = createApiBuilderFromCtpClient(
       createRefreshTokenClient(refreshToken),
     ).withProjectKey({
       projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
     });
-
     try {
       const userData = await refreshFlowClient.me().get().execute();
+      if (currentPath === '/' || currentPath === '/login') {
+        router.navigate('/');
+      }
       appEvents.emit('login', undefined);
       return userData;
     } catch (error) {
-      localStorage.removeItem('token');
       router.navigate('/login');
     }
   } else {
-    router.navigate('/login');
+    await getProject();
   }
 }
 
 export function checkLoginStatus(): boolean {
   return Boolean(localStorage.getItem('token'));
-}
-
-export function redirectToMainIfLoggedIn(): void {
-  if (checkLoginStatus()) {
-    router.navigate('/');
-  }
 }
 
 export async function regUser(

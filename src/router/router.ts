@@ -17,14 +17,6 @@ function createRouter(routes: Routes): Router {
     handleLocationChange() {
       const appElement = document.getElementById('app');
       const path = window.location.pathname;
-
-      const isLoggedIn = Boolean(localStorage.getItem('token'));
-
-      if (path === '/login' && isLoggedIn) {
-        this.navigate('/');
-        return;
-      }
-
       const handler = this.routes[path] || notFoundPage;
       const view = handler();
       if (appElement) {
@@ -46,7 +38,6 @@ function createRouter(routes: Routes): Router {
 
   return router;
 }
-
 
 const routes = {
   '/': createMainPage,
