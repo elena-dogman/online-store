@@ -321,6 +321,12 @@ input[type='checkbox'] {
     width: 0;
     height: 0;
   }
+  .auth-side__sign-in {
+    align-items: center;
+    margin-bottom: 25px;
+    border-radius: 20px;
+    height: 60px;
+  }
 
   .default__label {
     margin-bottom: 10px;
