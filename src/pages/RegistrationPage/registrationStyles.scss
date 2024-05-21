@@ -248,9 +248,18 @@ input[type='checkbox'] {
   width: 0;
   height: 0;
 }
-@media (max-height: 600px) {
+@media (max-height: 700px) {
   .registration__auth-side {
     overflow: auto;
+  }
+  .registration__page {
+    overflow: scroll;
+  }
+  .registration-img {
+    height: 200%;
+  }
+  .wrapper__registration.wrapper {
+    top: 25%;
   }
 }
 
@@ -330,6 +339,15 @@ input[type='checkbox'] {
 
   .default__label {
     margin-bottom: 10px;
+  }
+  .registration__page {
+    overflow: hidden;
+  }
+  .registration-img {
+    height: 100%;
+  }
+  .wrapper__registration.wrapper {
+    top: 0;
   }
 }
 @media (max-width: 500px) {
@@ -441,5 +459,14 @@ input[type='checkbox'] {
   }
   .billing__container.billing__container--join {
     transform: scale(0);
+  }
+  .registration__page {
+    overflow: hidden;
+  }
+  .registration-img {
+    height: 100%;
+  }
+  .wrapper__registration.wrapper {
+    top: 0;
   }
 }
