@@ -11,6 +11,8 @@ import {
   CustomerSignInResult,
   Customer,
   CustomerDraft,
+  ProductProjectionPagedQueryResponse,
+  ProductData,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/eventEmitter';
@@ -150,3 +152,29 @@ export async function regUser(
     return undefined;
   }
 }
+
+export const fetchProducts = async (): Promise<ProductData[]> => {
+  try {
+    const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
+      .productProjections()
+      .get()
+      .execute();
+
+    const products = response.body.results as ProductData[];
+    products.forEach(product => {
+      const productName = product.name?.['en-US'] ?? 'No name';
+      const productDescription = product.description?.['en-US'] ?? 'No description';
+      const productImage = product.masterVariant.images?.[0]?.url ?? 'No image';
+
+      console.log(`Product Name: ${productName}`);
+      console.log(`Product Description: ${productDescription}`);
+      console.log(`Image URL: ${productImage}`);
+      console.log('----------------------');
+    });
+
+    return products;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+};
