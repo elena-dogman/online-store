@@ -162,9 +162,25 @@ export const fetchProducts = async (limit = 9, offset = 0): Promise<ProductData[
 
     const products = response.body.results as ProductData[];
     products.forEach(product => {
-      const productName = product.name?.['en-US'] ?? 'No name';
-      const productDescription = product.description?.['en-US'] ?? 'No description';
-      const productImage = product.masterVariant.images?.[0]?.url ?? 'No image';
+ let productName = 'No name';
+      let productDescription = 'No description';
+      let productImage = 'No image';
+
+      if (product.name && product.name['en-US']) {
+        productName = product.name['en-US'];
+      }
+
+      if (product.description && product.description['en-US']) {
+        productDescription = product.description['en-US'];
+      }
+
+      if (
+        product.masterVariant.images &&
+        product.masterVariant.images[0] &&
+        product.masterVariant.images[0].url
+      ) {
+        productImage = product.masterVariant.images[0].url;
+      }
 
       console.log(`Product Name: ${productName}`);
       console.log(`Product Description: ${productDescription}`);
