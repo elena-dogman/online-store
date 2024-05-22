@@ -39,7 +39,7 @@ export function createHeader(): HTMLElement {
     tag: 'a',
     attributes: { href: '/about' },
     classNames: ['header__nav-link'],
-    textContent: 'About Us',
+    textContent: 'Catalog',
   });
   addInnerComponent(navContainer, homeLink);
   addInnerComponent(navContainer, aboutLink);
