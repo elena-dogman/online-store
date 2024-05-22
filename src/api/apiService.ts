@@ -153,11 +153,11 @@ export async function regUser(
   }
 }
 
-export const fetchProducts = async (): Promise<ProductData[]> => {
+export const fetchProducts = async (limit = 9, offset = 0): Promise<ProductData[]> => {
   try {
     const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
       .productProjections()
-      .get()
+      .get({ queryArgs: { limit, offset } })
       .execute();
 
     const products = response.body.results as ProductData[];
