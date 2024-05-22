@@ -2,7 +2,7 @@ import { createMainPage } from '../pages/MainPage/MainPage';
 import { notFoundPage } from '../pages/NotFoundPage/NotFoundPage';
 import { createAuthPage } from '../pages/AuthPage/AuthPage';
 import { buildRegistrationPage } from '../pages/RegistrationPage/registrationPage';
-import { catalogPage } from '../pages/CatalogPage/CatalogPage';
+import { createCatalogPage } from '../pages/CatalogPage/CatalogPage';
 type RouteHandler = () => HTMLElement;
 type Routes = Record<string, RouteHandler>;
 
@@ -53,7 +53,7 @@ const routes = {
   '/login': createAuthPage,
   '/register': buildRegistrationPage,
   '/404': notFoundPage,
-  '/catalog': catalogPage,
+  '/catalog': createCatalogPage,
 };
 
 const router = createRouter(routes);
