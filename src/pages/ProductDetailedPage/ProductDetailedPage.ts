@@ -6,7 +6,9 @@ import {
 import { createHeader } from '../../components/header/header';
 import { productDetailedPageComponent } from '../../components/ProductDetailedPageComponent/ProductDetailedPageComponent';
 
-export function createDetailedProductPage(params?: Record<string, string>): HTMLElement {
+export function createDetailedProductPage(
+  params?: Record<string, string>,
+): HTMLElement {
   if (!params || !params.id) {
     const errorContainer = createElement({
       tag: 'div',
