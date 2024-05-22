@@ -3,37 +3,8 @@ import {
   ElementParams,
   addInnerComponent,
 } from '../../utils/baseComponent';
+import { createInput } from '../../utils/createInput';
 import { commonFormCompontens } from '../registrationForm/nameMailForm';
-function createInput(
-  id: string,
-
-  validationType: string,
-  type: string = 'text',
-): [HTMLLabelElement, HTMLInputElement] {
-  const inputParams: ElementParams<'input'> = {
-    tag: 'input',
-    attributes: {
-      id: id,
-      type: type,
-      name: id,
-      'data-validation-type': validationType,
-      required: '',
-    },
-    classNames: ['form-input'],
-  };
-  const labelParams: ElementParams<'label'> = {
-    tag: 'label',
-    textContent: id,
-    attributes: {
-      for: id,
-    },
-    classNames: ['form-label'],
-  };
-  const input = createElement(inputParams) as HTMLInputElement;
-  const label = createElement(labelParams) as HTMLLabelElement;
-
-  return [label, input];
-}
 export function createAuthForm(): HTMLElement[] {
   const formContainerParams: ElementParams<'form'> = {
     tag: 'form',
