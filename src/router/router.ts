@@ -3,6 +3,7 @@ import { notFoundPage } from '../pages/NotFoundPage/NotFoundPage';
 import { createAuthPage } from '../pages/AuthPage/AuthPage';
 import { buildRegistrationPage } from '../pages/RegistrationPage/registrationPage';
 import { createCatalogPage } from '../pages/CatalogPage/CatalogPage';
+import { createDetailedProductPage } from '../pages/ProductDetailedPage/ProductDetailedPage';
 type RouteHandler = () => HTMLElement;
 type Routes = Record<string, RouteHandler>;
 
@@ -54,6 +55,7 @@ const routes = {
   '/register': buildRegistrationPage,
   '/404': notFoundPage,
   '/catalog': createCatalogPage,
+  '/product': createDetailedProductPage,
 };
 
 const router = createRouter(routes);
