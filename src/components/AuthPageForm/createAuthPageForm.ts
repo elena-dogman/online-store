@@ -74,9 +74,14 @@ export function createAuthForm(): HTMLElement[] {
   const passwordIcon = commonFormCompontens.passwordIcon;
   const emailErrorSpan = createElement(emailErrorSpanParams);
   const passwordErrorSpan = createElement(passwordErrorSpanParams);
-  const [emailLabel, emailInput] = createInput('email', 'email');
+  const [emailLabel, emailInput] = createInput(
+    'email',
+    [['form-label'], ['form-input']],
+    'email',
+  );
   const [passwordLabel, passwordInput] = createInput(
     'password',
+    [['form-label'], ['form-input']],
     'password',
     'password',
   );
