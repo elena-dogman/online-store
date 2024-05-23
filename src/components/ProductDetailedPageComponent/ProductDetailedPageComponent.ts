@@ -4,6 +4,7 @@ import {
   addInnerComponent,
 } from '../../utils/baseComponent';
 import { createSwiper } from './createSwiperProductDetailedPage';
+
 import { ClientResponse, Product } from '@commercetools/platform-sdk';
 
 export function productDetailedPageComponent(ID: string): HTMLElement {
