@@ -27,7 +27,6 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
         addInnerComponent(detailedProductContainer, swiperContainer);
 
         const productData = response.body.masterData.current;
-        console.log(productData);
 
         const descriptionContainerParams: ElementParams<'div'> = {
           tag: 'div',
@@ -78,6 +77,50 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
 
         addInnerComponent(descriptionContainer, productTitle);
         addInnerComponent(descriptionContainer, productPriceContainer);
+
+        const productDescriptionText =
+          productData.description?.['en-US'] ||
+          'There should be a description... But it is missing somehow';
+
+        const productDescriptionParams: ElementParams<'p'> = {
+          tag: 'p',
+          classNames: ['product_description'],
+          textContent: productDescriptionText,
+        };
+        const productDescription = createElement(productDescriptionParams);
+        addInnerComponent(descriptionContainer, productDescription);
+
+        const sizeContainerParams: ElementParams<'div'> = {
+          tag: 'div',
+          classNames: ['size_container'],
+        };
+        const sizeContainer = createElement(sizeContainerParams);
+
+        const sizeTitleParams: ElementParams<'h3'> = {
+          tag: 'h3',
+          classNames: ['size_title'],
+          textContent: 'Choose your size:',
+        };
+        const sizeTitle = createElement(sizeTitleParams);
+        addInnerComponent(sizeContainer, sizeTitle);
+
+        productData.variants.forEach((variant) => {
+          if (variant.attributes) {
+            variant.attributes.forEach((attribute) => {
+              if (attribute.name === 'size') {
+                const sizeButtonParams: ElementParams<'button'> = {
+                  tag: 'button',
+                  classNames: ['size_button'],
+                  textContent: attribute.value,
+                };
+                const sizeButton = createElement(sizeButtonParams);
+                addInnerComponent(sizeContainer, sizeButton);
+              }
+            });
+          }
+        });
+
+        addInnerComponent(descriptionContainer, sizeContainer);
         addInnerComponent(detailedProductContainer, descriptionContainer);
       },
     )
