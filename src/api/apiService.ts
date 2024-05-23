@@ -13,12 +13,14 @@ import {
   CustomerDraft,
   ProductProjectionPagedQueryResponse,
   ProductData,
+  Product,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/eventEmitter';
 import { RegistrationData } from '../components/registrationForm/regDataInterface';
 import { showToast } from '../components/toast/toast';
 import { isCustomError } from '../utils/customError';
+// import { U } from 'vitest/dist/reporters-yx5ZTtEV.js';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
@@ -153,16 +155,34 @@ export async function regUser(
   }
 }
 
-export const fetchProducts = async (limit = 9, offset = 0): Promise<ProductData[]> => {
+export async function getDetailedProduct(
+  ID: string,
+): Promise<ClientResponse<Product> | undefined> {
   try {
-    const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
-      .productProjections()
-      .get({ queryArgs: { limit, offset } })
-      .execute();
+    const response = await apiRoot.products().withId({ ID }).get().execute();
+    const productImages =
+      response?.body.masterData.current.masterVariant.images;
+    console.log(productImages);
+    return response;
+  } catch (error: unknown) {
+    return undefined;
+  }
+}
+
+export const fetchProducts = async (
+  limit = 9,
+  offset = 0,
+): Promise<ProductData[]> => {
+  try {
+    const response: ClientResponse<ProductProjectionPagedQueryResponse> =
+      await apiRoot
+        .productProjections()
+        .get({ queryArgs: { limit, offset } })
+        .execute();
 
     const products = response.body.results as ProductData[];
-    products.forEach(product => {
- let productName = 'No name';
+    products.forEach((product) => {
+      let productName = 'No name';
       let productDescription = 'No description';
       let productImage = 'No image';
 

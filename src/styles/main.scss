@@ -5,7 +5,14 @@
 @import '../components/toast/toast.scss';
 @import '../pages/AuthPage/authpageResponsive.scss';
 @import '../pages//MainPage/MainPage.scss';
-@import '../components/productCatalog/productCatalog.module.scss';
+// @import '../components/productCatalog/productCatalog.module.scss';
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+@import 'swiper/scss/autoplay';
+@import './swiper.scss';
+@import 'swiper/swiper-bundle.css';
+@import '../pages/ProductDetailedPage/productdetailedpage.scss';
 * {
   box-sizing: border-box;
   padding: 0;
