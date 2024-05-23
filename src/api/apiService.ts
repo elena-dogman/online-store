@@ -12,8 +12,8 @@ import {
   Customer,
   CustomerDraft,
   ProductProjectionPagedQueryResponse,
-  ProductData,
   Product,
+  ProductProjection,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/eventEmitter';
@@ -172,7 +172,7 @@ export async function getDetailedProduct(
 export const fetchProducts = async (
   limit = 9,
   offset = 0,
-): Promise<ProductData[]> => {
+): Promise<ProductProjection[]> => {
   try {
     const response: ClientResponse<ProductProjectionPagedQueryResponse> =
       await apiRoot
@@ -180,8 +180,9 @@ export const fetchProducts = async (
         .get({ queryArgs: { limit, offset } })
         .execute();
 
-    const products = response.body.results as ProductData[];
-    products.forEach((product) => {
+    const products: ProductProjection[] = response.body.results;
+
+    products.forEach((product: ProductProjection) => {
       let productName = 'No name';
       let productDescription = 'No description';
       let productImage = 'No image';

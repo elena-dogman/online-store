@@ -1,6 +1,7 @@
-import { ProductData } from '@commercetools/platform-sdk';
+import { ProductProjection } from '@commercetools/platform-sdk';
 import { fetchProducts } from '../../api/apiService';
 import { createElement, addInnerComponent } from '../../utils/baseComponent';
+
 
 export function createProductCatalog(): HTMLElement {
   const catalogContainer = createElement({
@@ -8,8 +9,8 @@ export function createProductCatalog(): HTMLElement {
     classNames: ['catalog-container'],
   });
 
-  fetchProducts().then((response: ProductData[]) => {
-    console.log('Response in catalog:', response);
+  fetchProducts().then((response: ProductProjection[]) => {
+    console.log('Response in createProductCatalog:', response);
     response.forEach(product => {
       let productName = 'No name';
       let productDescription = 'No description';
@@ -33,23 +34,23 @@ export function createProductCatalog(): HTMLElement {
         productImage = product.masterVariant.images[0].url;
       }
 
-      if (
-        product.masterVariant.prices &&
-        product.masterVariant.prices[0] &&
-        product.masterVariant.prices[0].value) {
+      if (product.masterVariant.prices && product.masterVariant.prices[0] && product.masterVariant.prices[0].value) {
         price = `$${(product.masterVariant.prices[0].value.centAmount / 100).toFixed(2)}`;
       }
 
-      if (
-        product.masterVariant.prices &&
-        product.masterVariant.prices[0] &&
-        product.masterVariant.prices[0].discounted) {
+      if (product.masterVariant.prices && product.masterVariant.prices[0] && product.masterVariant.prices[0].discounted) {
         discountedPrice = `$${(product.masterVariant.prices[0].discounted.value.centAmount / 100).toFixed(2)}`;
       }
 
-     const productCard = createElement({
+      const productCard = createElement({
         tag: 'div',
         classNames: ['product-card'],
+        // callbacks: [
+        //   {
+        //     eventType: 'click',
+        //     callback: () => navigateTo(`/productcard/${product.id}`),
+        //   },
+        // ],
       });
 
       const imageElement = createElement({
