@@ -9,12 +9,45 @@ export function createProductCatalog(): HTMLElement {
   });
 
   fetchProducts().then((response: ProductData[]) => {
+    console.log('Response in catalog:', response);
     response.forEach(product => {
-      const productName = product.name?.['en-US'] ?? 'No name';
-      const productDescription = product.description?.['en-US'] ?? 'No description';
-      const productImage = product.masterVariant.images?.[0]?.url ?? 'No image';
+      let productName = 'No name';
+      let productDescription = 'No description';
+      let productImage = 'No image';
+      let price: string | undefined = undefined;
+      let discountedPrice: string | undefined = undefined;
 
-      const productCard = createElement({
+      if (product.name && product.name['en-US']) {
+        productName = product.name['en-US'];
+      }
+
+      if (product.description && product.description['en-US']) {
+        productDescription = product.description['en-US'];
+      }
+
+      if (
+        product.masterVariant.images &&
+        product.masterVariant.images[0] &&
+        product.masterVariant.images[0].url
+      ) {
+        productImage = product.masterVariant.images[0].url;
+      }
+
+      if (
+        product.masterVariant.prices &&
+        product.masterVariant.prices[0] &&
+        product.masterVariant.prices[0].value) {
+        price = `$${(product.masterVariant.prices[0].value.centAmount / 100).toFixed(2)}`;
+      }
+
+      if (
+        product.masterVariant.prices &&
+        product.masterVariant.prices[0] &&
+        product.masterVariant.prices[0].discounted) {
+        discountedPrice = `$${(product.masterVariant.prices[0].discounted.value.centAmount / 100).toFixed(2)}`;
+      }
+
+     const productCard = createElement({
         tag: 'div',
         classNames: ['product-card'],
       });
@@ -37,9 +70,37 @@ export function createProductCatalog(): HTMLElement {
         textContent: productDescription,
       });
 
+      const priceContainer = createElement({
+        tag: 'div',
+        classNames: ['product-price-container'],
+      });
+
+      if (discountedPrice) {
+        const originalPriceElement = createElement({
+          tag: 'p',
+          classNames: ['product-original-price'],
+          textContent: price,
+        });
+        const discountedPriceElement = createElement({
+          tag: 'p',
+          classNames: ['product-discounted-price'],
+          textContent: discountedPrice,
+        });
+        addInnerComponent(priceContainer, originalPriceElement);
+        addInnerComponent(priceContainer, discountedPriceElement);
+      } else {
+        const priceElement = createElement({
+          tag: 'p',
+          classNames: ['product-price'],
+          textContent: price,
+        });
+        addInnerComponent(priceContainer, priceElement);
+      }
+
       addInnerComponent(productCard, imageElement);
       addInnerComponent(productCard, nameElement);
       addInnerComponent(productCard, descriptionElement);
+      addInnerComponent(productCard, priceContainer);
 
       addInnerComponent(catalogContainer, productCard);
     });
