@@ -1,7 +1,7 @@
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { fetchProducts } from '../../api/apiService';
 import { createElement, addInnerComponent } from '../../utils/baseComponent';
-
+import { navigateTo } from '../../router/router';
 
 export function createProductCatalog(): HTMLElement {
   const catalogContainer = createElement({
@@ -45,12 +45,12 @@ export function createProductCatalog(): HTMLElement {
       const productCard = createElement({
         tag: 'div',
         classNames: ['product-card'],
-        // callbacks: [
-        //   {
-        //     eventType: 'click',
-        //     callback: () => navigateTo(`/productcard/${product.id}`),
-        //   },
-        // ],
+        callbacks: [
+          {
+            eventType: 'click',
+            callback: (): void => navigateTo(`/product/${product.id}`),
+          },
+        ],
       });
 
       const imageElement = createElement({
