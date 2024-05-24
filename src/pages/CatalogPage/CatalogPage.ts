@@ -12,14 +12,20 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   };
   const pageContainer = createElement(pageContainerParams);
 
-  const filterContainerParams: ElementParams<'div'> = {
+  const filterWrapperParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['filter-container'],
+    classNames: ['filter-wrapper'],
   };
-  const filterContainer = createElement(filterContainerParams);
+  const filterWrapper = createElement(filterWrapperParams);
 
-  const catalogContainerParams: ElementParams<'div'> = {
+  const catalogContainerWrapperParams: ElementParams<'div'> = {
     tag: 'div',
+    classNames: ['catalog-container-wrapper'],
+  };
+  const catalogContainerWrapper = createElement(catalogContainerWrapperParams);
+
+  const catalogContainerParams: ElementParams<'section'> = {
+    tag: 'section',
     classNames: ['catalog-container'],
   };
   const catalogContainer = createElement(catalogContainerParams);
@@ -33,15 +39,18 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   const header = createHeader();
   const filterComponent = await createFilterComponent();
 
+  const filterTextParams: ElementParams<'p'> = {
+    tag: 'p',
+    textContent: 'Use the filters below to narrow down your product search:',
+    classNames: ['filter-instructions'],
+  };
+  const filterText = createElement(filterTextParams);
+
   let currentPage = 1;
   const itemsPerPage = 8;
   let allProducts: ProductProjection[] = await fetchProducts();
 
-  const renderPagination = (
-    totalItems: number,
-    itemsPerPageCount: number,
-    currentPageIndex: number,
-  ): void => {
+  const renderPagination = (totalItems: number, itemsPerPageCount: number, currentPageIndex: number): void => {
     const totalPages = Math.ceil(totalItems / itemsPerPageCount);
 
     clear(paginationContainer);
@@ -71,11 +80,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     }
   };
 
-  const renderProducts = (
-    products: ProductProjection[],
-    page: number,
-    itemsPerPageCount: number,
-  ): void => {
+  const renderProducts = (products: ProductProjection[], page: number, itemsPerPageCount: number): void => {
     clear(catalogContainer);
 
     const start = (page - 1) * itemsPerPageCount;
@@ -84,39 +89,45 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
     const productCatalog = createProductCatalog(paginatedProducts);
     addInnerComponent(catalogContainer, productCatalog);
-    addInnerComponent(catalogContainer, paginationContainer);
 
     renderPagination(products.length, itemsPerPageCount, page);
   };
 
   filterComponent.addEventListener('change', async () => {
-    const selectedAudience = (filterComponent.querySelector('.audience-filter') as HTMLSelectElement)?.value;
-    const selectedCategory = (filterComponent.querySelector('.category-filter') as HTMLSelectElement)?.value;
-    const maxPrice = (filterComponent.querySelector('.price-filter') as HTMLInputElement)?.value;
-    const selectedSize = (filterComponent.querySelector('.size-filter') as HTMLSelectElement)?.value;
+    const selectedFilters: string[] = [];
 
-    const filters = [];
-    if (selectedAudience) {
-      filters.push(`variants.attributes.audience:"${selectedAudience}"`);
-    }
-    if (selectedCategory) {
-      filters.push(`variants.attributes.category:"${selectedCategory}"`);
-    }
-    if (maxPrice) {
-      filters.push(`variants.scopedPrice.currentValue.centAmount:range (0 to ${parseInt(maxPrice) * 100})`);
-    }
-    if (selectedSize) {
-      filters.push(`variants.attributes.size:"${selectedSize}"`);
+    const audienceCheckboxes = filterComponent.querySelectorAll('.audience-filter:checked') as NodeListOf<HTMLInputElement>;
+    const categoryCheckboxes = filterComponent.querySelectorAll('.category-filter:checked') as NodeListOf<HTMLInputElement>;
+    const sizeCheckboxes = filterComponent.querySelectorAll('.size-filter:checked') as NodeListOf<HTMLInputElement>;
+
+    audienceCheckboxes.forEach(checkbox => {
+      selectedFilters.push(`variants.attributes.audience:"${checkbox.value}"`);
+    });
+
+    categoryCheckboxes.forEach(checkbox => {
+      selectedFilters.push(`variants.attributes.category:"${checkbox.value}"`);
+    });
+
+    sizeCheckboxes.forEach(checkbox => {
+      selectedFilters.push(`variants.attributes.size:"${checkbox.value}"`);
+    });
+
+    if (selectedFilters.length > 0) {
+      allProducts = await fetchFilteredProducts(selectedFilters);
+    } else {
+      allProducts = await fetchProducts();
     }
 
-    allProducts = await fetchFilteredProducts(filters);
     renderProducts(allProducts, 1, itemsPerPage);
   });
 
   pageContainer.prepend(header);
-  addInnerComponent(pageContainer, filterContainer);
-  addInnerComponent(filterContainer, filterComponent);
-  addInnerComponent(pageContainer, catalogContainer);
+  addInnerComponent(pageContainer, filterWrapper);
+  addInnerComponent(filterWrapper, filterText);
+  addInnerComponent(filterWrapper, filterComponent);
+  addInnerComponent(pageContainer, catalogContainerWrapper);
+  addInnerComponent(catalogContainerWrapper, catalogContainer);
+  addInnerComponent(catalogContainerWrapper, paginationContainer);
   renderProducts(allProducts, currentPage, itemsPerPage);
 
   return pageContainer;
