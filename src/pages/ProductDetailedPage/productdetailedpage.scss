@@ -2,8 +2,121 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-family: $font-family-base;
+  background-color: $card-background;
+  height: 100%;
 }
 .product_detailed_container {
   display: flex;
+  flex-direction: column;
   margin-top: 100px;
+  position: relative;
+
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  gap: 50px;
+}
+.description_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 50px;
+}
+.product_title {
+  text-align: center;
+  font-size: $font-size-big-heading;
+}
+.price_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+.product_price {
+  font-size: $font-size-subtitle;
+  color: $text-color-base;
+}
+.product_price.discounted_price {
+  all: unset;
+  font-size: $font-size-subtitle;
+  color: $additional-info-color;
+  text-decoration: line-through;
+}
+.discount_price {
+  font-size: $font-size-subtitle;
+  color: red;
+}
+.size_container {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+.size_button {
+  all: unset;
+  border: 1px solid $text-color-base;
+  padding: 12px 20px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  color: $text-color-base;
+  transition: background-color 0.3s ease;
+  &:hover {
+    box-shadow: $button-hover-box-shadow;
+    background-color: $text-color-base;
+    color: $text-color-contrast;
+  }
+}
+.size_button.__selected {
+  background-color: $text-color-base;
+  color: $text-color-contrast;
+  cursor: pointer;
+}
+.product_description {
+  all: unset;
+  font-style: italic;
+  font-size: $font-size-large-text;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.add_to_cart {
+  all: unset;
+  text-align: center;
+  width: 260px;
+  height: 56px;
+  border-radius: 6px;
+  border: 1px solid $text-color-base;
+  margin-bottom: 20px;
+  color: $text-color-base;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  &:hover {
+    box-shadow: $button-hover-box-shadow;
+    background-color: $text-color-base;
+    color: $text-color-contrast;
+  }
+}
+.icons_container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+.icon_container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.text_container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.text_top {
+  color: rgba(128, 128, 128);
+}
+.text_bottom {
+  color: $text-color-base;
 }

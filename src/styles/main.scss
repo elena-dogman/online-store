@@ -11,6 +11,7 @@
 @import 'swiper/css/navigation';
 @import 'swiper/css/pagination';
 @import 'swiper/scss/autoplay';
+@import 'swiper/css/zoom';
 @import './swiper.scss';
 @import 'swiper/swiper-bundle.css';
 @import '../pages/ProductDetailedPage/productdetailedpage.scss';
@@ -24,6 +25,7 @@ html,
 body,
 #app {
   height: 100%;
+  scrollbar-width: none;
 }
 #app {
   display: flex;
