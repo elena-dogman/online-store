@@ -5,14 +5,30 @@ import {
 } from '../../utils/baseComponent';
 import { getDetailedProduct } from '../../api/apiService';
 import Swiper from 'swiper';
-import { Pagination, Autoplay, Scrollbar, Mousewheel } from 'swiper/modules';
+import {
+  Pagination,
+  Autoplay,
+  Scrollbar,
+  Mousewheel,
+  EffectCube,
+  Navigation,
+  Keyboard,
+  Zoom,
+} from 'swiper/modules';
 import { ClientResponse, Product } from '@commercetools/platform-sdk';
 
-Swiper.use([Pagination, Autoplay, Scrollbar, Mousewheel]);
+Swiper.use([
+  Pagination,
+  Autoplay,
+  Scrollbar,
+  Mousewheel,
+  EffectCube,
+  Navigation,
+  Keyboard,
+  Zoom,
+]);
 
-export function createSwiper(
-  ID: string,
-): Promise<{
+export function createSwiper(ID: string): Promise<{
   swiperContainer: HTMLElement;
   response: ClientResponse<Product>;
 }> {
@@ -40,10 +56,34 @@ export function createSwiper(
     tag: 'div',
     classNames: ['swiper-scrollbar'],
   };
+  const swiperNavigationPrevParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['swiper-button-prev'],
+  };
+  const swiperNavigationNextParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['swiper-button-next'],
+  };
+  const swiperNavigationPrevContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['swiper-button-prev-container'],
+  };
+  const swiperNavigationNextContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['swiper-button-next-container'],
+  };
 
   const swiperContainer = createElement(swiperContainerParams);
   const swiperScrollbar = createElement(swiperScrollbarParams);
   const swiperPagination = createElement(swiperPaginationParams);
+  const swiperNavigationPrev = createElement(swiperNavigationPrevParams);
+  const swiperNavigationNext = createElement(swiperNavigationNextParams);
+  const swiperNavigationPrevContainer = createElement(
+    swiperNavigationPrevContainerParams,
+  );
+  const swiperNavigationNextContainer = createElement(
+    swiperNavigationNextContainerParams,
+  );
   const swiperWrapper = createElement(swiperWrapperParams);
   const swiperMain = createElement(swiperParams);
 
@@ -53,6 +93,14 @@ export function createSwiper(
         response.body.masterData.current.masterVariant.images?.forEach(
           (image) => {
             const swiperSlide = createElement(swiperSlideParams);
+            const swiperZoomContainerParams: ElementParams<'div'> = {
+              tag: 'div',
+              classNames: ['swiper-zoom-container'],
+            };
+            const swiperZoomContainer = createElement(
+              swiperZoomContainerParams,
+            );
+
             const imgSlideParams: ElementParams<'img'> = {
               tag: 'img',
               attributes: {
@@ -61,29 +109,47 @@ export function createSwiper(
               classNames: ['img-slide'],
             };
             const imgSlide = createElement(imgSlideParams);
-            addInnerComponent(swiperSlide, imgSlide);
+
+            addInnerComponent(swiperZoomContainer, imgSlide);
+            addInnerComponent(swiperSlide, swiperZoomContainer);
             addInnerComponent(swiperWrapper, swiperSlide);
           },
         );
 
         addInnerComponent(swiperMain, swiperWrapper);
         addInnerComponent(swiperMain, swiperPagination);
+        addInnerComponent(swiperNavigationPrevContainer, swiperNavigationPrev);
+        addInnerComponent(swiperNavigationNextContainer, swiperNavigationNext);
+        addInnerComponent(swiperMain, swiperNavigationPrevContainer);
+        addInnerComponent(swiperMain, swiperNavigationNextContainer);
         addInnerComponent(swiperMain, swiperScrollbar);
         addInnerComponent(swiperContainer, swiperMain);
 
-        // Ensure the Swiper is initialized after the elements are added to the DOM
         setTimeout(() => {
           new Swiper('.swiper', {
             direction: 'horizontal',
             loop: true,
             speed: 1000,
+            preventClicks: true,
+            keyboard: {
+              enabled: true,
+              onlyInViewport: false,
+            },
+            effect: 'cube',
+            cubeEffect: {
+              slideShadows: true,
+            },
+            navigation: {
+              nextEl: '.swiper-button-next-container',
+              prevEl: '.swiper-button-prev-container',
+            },
             pagination: {
               el: '.swiper-pagination',
               clickable: true,
             },
             autoplay: {
               delay: 30000,
-              disableOnInteraction: false,
+              disableOnInteraction: true,
             },
             scrollbar: {
               el: '.swiper-scrollbar',
@@ -93,6 +159,11 @@ export function createSwiper(
               enabled: true,
               eventsTarget: '.swiper',
             },
+            zoom: {
+              maxRatio: 2,
+              toggle: true,
+            },
+            updateOnWindowResize: true,
           });
         }, 0);
 
