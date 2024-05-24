@@ -14,8 +14,6 @@ import {
   ProductProjectionPagedQueryResponse,
   Product,
   ProductProjection,
-  CategoryReference,
-  Attribute,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/eventEmitter';
@@ -25,8 +23,10 @@ import { isCustomError } from '../utils/customError';
 // import { U } from 'vitest/dist/reporters-yx5ZTtEV.js';
 
 export interface ProductAttributesResponse {
-  categories: CategoryReference[];
-  attributes: Attribute[];
+  audience: Set<string>;
+  categories: Set<string>;
+  prices: Set<number>;
+  sizes: Set<number>;
 }
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
@@ -201,75 +201,112 @@ export async function getDetailedProduct(
   }
 }
 
-export const fetchProducts = async (
-  limit = 9,
-  offset = 0,
-): Promise<ProductProjection[]> => {
+export async function fetchProducts(): Promise<ProductProjection[]> {
   try {
-    const response: ClientResponse<ProductProjectionPagedQueryResponse> =
-      await apiRoot
-        .productProjections()
-        .get({ queryArgs: { limit, offset } })
-        .execute();
+    let offset = 0;
+    const limit = 500;
+    let allProducts: ProductProjection[] = [];
+    let hasMore = true;
 
-    const products: ProductProjection[] = response.body.results;
+    while (hasMore) {
+      const response: ClientResponse<ProductProjectionPagedQueryResponse> =
+        await apiRoot
+          .productProjections()
+          .get({
+            queryArgs: {
+              limit,
+              offset,
+            },
+          })
+          .execute();
 
-    products.forEach((product: ProductProjection) => {
-      let productName = 'No name';
-      let productDescription = 'No description';
-      let productImage = 'No image';
-
-      if (product.name && product.name['en-US']) {
-        productName = product.name['en-US'];
+      if (response.body.results.length === 0) {
+        hasMore = false;
+      } else {
+        allProducts = allProducts.concat(response.body.results);
+        offset += limit;
+        if (response.body.results.length < limit) {
+          hasMore = false;
+        }
       }
+    }
 
-      if (product.description && product.description['en-US']) {
-        productDescription = product.description['en-US'];
-      }
-
-      if (
-        product.masterVariant.images &&
-        product.masterVariant.images[0] &&
-        product.masterVariant.images[0].url
-      ) {
-        productImage = product.masterVariant.images[0].url;
-      }
-
-      console.log(`Product Name: ${productName}`);
-      console.log(`Product Description: ${productDescription}`);
-      console.log(`Image URL: ${productImage}`);
-      console.log('----------------------');
-    });
-
-    return products;
+    return allProducts;
   } catch (error) {
     console.error('Error fetching products:', error);
     return [];
   }
-};
+}
 
 export async function fetchProductAttributes(): Promise<ProductAttributesResponse | null> {
   try {
-    const response: ClientResponse<ProductProjectionPagedQueryResponse> =
-      await apiRoot
+    let offset = 0;
+    const limit = 500;
+    let allProducts: ProductProjection[] = [];
+    let hasMore = true;
+
+    while (hasMore) {
+      const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
         .productProjections()
         .search()
         .get({
           queryArgs: {
-            limit: 1,
+            limit,
+            offset,
           },
         })
         .execute();
 
-    if (response.body.results.length === 0) {
+      if (response.body.results.length === 0) {
+        hasMore = false;
+      } else {
+        allProducts = allProducts.concat(response.body.results);
+        offset += limit;
+        if (response.body.results.length < limit) {
+          hasMore = false;
+        }
+      }
+    }
+
+    if (allProducts.length === 0) {
       return null;
     }
 
-    const product = response.body.results[0];
-    const categories = product.categories;
-    const attributes = product.masterVariant.attributes ?? [];
+    console.log('Products:', allProducts);
 
-    return { categories, attributes };
+    const audience: Set<string> = new Set();
+    const categories: Set<string> = new Set();
+    const prices: Set<number> = new Set();
+    const sizes: Set<number> = new Set();
+
+    allProducts.forEach(product => {
+      product.masterVariant.attributes?.forEach(attribute => {
+        if (attribute.name === 'audience' && typeof attribute.value === 'string') {
+          audience.add(attribute.value);
+        }
+        if (attribute.name === 'category' && typeof attribute.value === 'string') {
+          categories.add(attribute.value);
+        }
+        if (attribute.name === 'price' && typeof attribute.value === 'object' && attribute.value.centAmount) {
+          prices.add(attribute.value.centAmount);
+        }
+        if (attribute.name === 'size' && typeof attribute.value === 'number') {
+          sizes.add(attribute.value);
+        }
+      });
+    });
+
+    console.log('Audience:', Array.from(audience));
+    console.log('Categories:', Array.from(categories));
+    console.log('Prices:', Array.from(prices));
+    console.log('Sizes:', Array.from(sizes));
+
+    return {
+      audience,
+      categories,
+      prices,
+      sizes,
+    };
   } catch (error) {
     console.error('Error fetching product attributes:', error);
     return null;

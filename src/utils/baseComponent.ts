@@ -83,9 +83,8 @@ export function removeClass(
   return newElement;
 }
 
-export function clear(element: HTMLElement): HTMLElement {
-  const newElement = element.cloneNode(false) as HTMLElement;
-  return newElement;
+export function clear(element: HTMLElement): void {
+  element.innerHTML = '';
 }
 
 export function setDisabled(
