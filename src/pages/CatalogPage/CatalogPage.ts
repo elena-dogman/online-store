@@ -1,19 +1,53 @@
-import { addInnerComponent, createElement, ElementParams } from '../../utils/baseComponent';
+import { createElement, addInnerComponent, clear, ElementParams } from '../../utils/baseComponent';
 import { createHeader } from '../../components/header/header';
 import { createProductCatalog } from '../../components/productCatalog/productCatalog';
+import { createFilterComponent } from '../../components/productFilter/productFilter';
+import { fetchFilteredProducts, fetchProducts } from '../../api/apiService';
 
-export function createCatalogPage(): HTMLElement {
-  const pageContainerParams: ElementParams<'div'> = {
-    tag: 'div',
-    classNames: ['catalog-page-wrapper'],
+export async function createCatalogPage(): Promise<HTMLElement> {
+  const catalogContainerParams: ElementParams<'section'> = {
+    tag: 'section',
+    classNames: ['catalog_container'],
   };
-  const container = createElement(pageContainerParams);
+  const catalogContainer = createElement(catalogContainerParams);
 
   const header = createHeader();
-  addInnerComponent(container, header);
+  const filterComponent = await createFilterComponent();
 
-  const catalog = createProductCatalog();
-  addInnerComponent(container, catalog);
+  // Fetch initial products
+  const initialProducts = await fetchProducts();
+  const productCatalog = createProductCatalog(initialProducts);
 
-  return container;
+  filterComponent.addEventListener('change', () => {
+    const selectedCategory = (filterComponent.querySelector('.category-filter') as HTMLSelectElement)?.value;
+    const selectedAudience = (filterComponent.querySelector('.audience-filter') as HTMLSelectElement)?.value;
+    const maxPrice = (filterComponent.querySelector('.price-filter') as HTMLInputElement)?.value;
+    const selectedSize = (filterComponent.querySelector('.size-filter') as HTMLSelectElement)?.value;
+
+    const filters = [];
+    if (selectedCategory) {
+      filters.push(`categories.id:"${selectedCategory}"`);
+    }
+    if (selectedAudience) {
+      filters.push(`variants.attributes.audience:"${selectedAudience}"`);
+    }
+    if (maxPrice) {
+      filters.push(`variants.scopedPrice.currentValue.centAmount:range (0 to ${parseInt(maxPrice) * 100})`);
+    }
+    if (selectedSize) {
+      filters.push(`variants.attributes.size:"${selectedSize}"`);
+    }
+
+    fetchFilteredProducts(filters).then(filteredProducts => {
+      const newProductCatalog = createProductCatalog(filteredProducts);
+      clear(productCatalog);
+      addInnerComponent(catalogContainer, newProductCatalog);
+    });
+  });
+
+  catalogContainer.prepend(header);
+  addInnerComponent(catalogContainer, filterComponent);
+  addInnerComponent(catalogContainer, productCatalog);
+
+  return catalogContainer;
 }

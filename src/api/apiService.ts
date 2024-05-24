@@ -14,6 +14,8 @@ import {
   ProductProjectionPagedQueryResponse,
   Product,
   ProductProjection,
+  CategoryReference,
+  Attribute,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/eventEmitter';
@@ -21,6 +23,11 @@ import { RegistrationData } from '../components/registrationForm/regDataInterfac
 import { showToast } from '../components/toast/toast';
 import { isCustomError } from '../utils/customError';
 // import { U } from 'vitest/dist/reporters-yx5ZTtEV.js';
+
+export interface ProductAttributesResponse {
+  categories: CategoryReference[];
+  attributes: Attribute[];
+}
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
@@ -240,3 +247,50 @@ export const fetchProducts = async (
     return [];
   }
 };
+
+export async function fetchProductAttributes(): Promise<ProductAttributesResponse | null> {
+  try {
+    const response: ClientResponse<ProductProjectionPagedQueryResponse> =
+      await apiRoot
+        .productProjections()
+        .search()
+        .get({
+          queryArgs: {
+            limit: 1,
+          },
+        })
+        .execute();
+
+    if (response.body.results.length === 0) {
+      return null;
+    }
+
+    const product = response.body.results[0];
+    const categories = product.categories;
+    const attributes = product.masterVariant.attributes ?? [];
+
+    return { categories, attributes };
+  } catch (error) {
+    console.error('Error fetching product attributes:', error);
+    return null;
+  }
+}
+
+export async function fetchFilteredProducts(filters: string[]): Promise<ProductProjection[]> {
+  try {
+    const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
+      .productProjections()
+      .search()
+      .get({
+        queryArgs: {
+          filter: filters,
+        },
+      })
+      .execute();
+
+    return response.body.results;
+  } catch (error) {
+    console.error('Error fetching filtered products:', error);
+    return [];
+  }
+}
