@@ -4,8 +4,11 @@ import { createAuthPage } from '../pages/AuthPage/AuthPage';
 import { buildRegistrationPage } from '../pages/RegistrationPage/registrationPage';
 import { createCatalogPage } from '../pages/CatalogPage/CatalogPage';
 import { createDetailedProductPage } from '../pages/ProductDetailedPage/ProductDetailedPage';
+import { buildUserProfilePage } from '../pages/UserProfilePage/userProfilePage';
 
-type RouteHandler = (params?: Record<string, string>) => HTMLElement | Promise<HTMLElement>;
+type RouteHandler = (
+  params?: Record<string, string>,
+) => HTMLElement | Promise<HTMLElement>;
 type Routes = Record<string, RouteHandler>;
 
 interface Router {
@@ -14,8 +17,11 @@ interface Router {
   navigate: (path: string) => void;
 }
 
-function matchPath(route: string, path: string): {
-    params: Record<string, string>;
+function matchPath(
+  route: string,
+  path: string,
+): {
+  params: Record<string, string>;
 } | null {
   const routeSegments = route.split('/').filter(Boolean);
   const pathSegments = path.split('/').filter(Boolean);
@@ -99,6 +105,7 @@ const routes = {
   '/register': buildRegistrationPage,
   '/404': notFoundPage,
   '/catalog': createCatalogPage,
+  '/profile': buildUserProfilePage,
   '/product/:id': createDetailedProductPage,
 };
 
@@ -108,8 +115,6 @@ function navigateTo(path: string): void {
   window.history.pushState({}, '', path);
   router.handleLocationChange();
 }
-
-
 
 export { navigateTo };
 export default router;
