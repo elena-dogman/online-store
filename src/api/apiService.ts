@@ -23,12 +23,11 @@ import { isCustomError } from '../utils/customError';
 // import { U } from 'vitest/dist/reporters-yx5ZTtEV.js';
 
 export interface ProductAttributesResponse {
-  audience: Set<string>;
-  categories: Set<string>;
-  prices: Set<number>;
-  sizes: Set<number>;
+  attributes: {
+    name: string;
+    values: (string | number)[];
+  }[];
 }
-
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
 });
@@ -274,38 +273,50 @@ export async function fetchProductAttributes(): Promise<ProductAttributesRespons
 
     console.log('Products:', allProducts);
 
-    const audience: Set<string> = new Set();
-    const categories: Set<string> = new Set();
-    const prices: Set<number> = new Set();
+    const audiences = new Set<string>();
     const sizes: Set<number> = new Set();
+    const categories = new Set<string>();
 
     allProducts.forEach(product => {
       product.masterVariant.attributes?.forEach(attribute => {
-        if (attribute.name === 'audience' && typeof attribute.value === 'string') {
-          audience.add(attribute.value);
+        if (attribute.name === 'audience') {
+          audiences.add(attribute.value as string);
         }
-        if (attribute.name === 'category' && typeof attribute.value === 'string') {
-          categories.add(attribute.value);
+        if (attribute.name === 'category') {
+          categories.add(attribute.value as string);
         }
-        if (attribute.name === 'price' && typeof attribute.value === 'object' && attribute.value.centAmount) {
-          prices.add(attribute.value.centAmount);
+        if (attribute.name === 'size') {
+          const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
+          sizes.add(sizeValue as number);
         }
-        if (attribute.name === 'size' && typeof attribute.value === 'number') {
-          sizes.add(attribute.value);
-        }
+      });
+
+      product.variants.forEach(variant => {
+        variant.attributes?.forEach(attribute => {
+          if (attribute.name === 'audience') {
+            audiences.add(attribute.value as string);
+          }
+          if (attribute.name === 'category') {
+            categories.add(attribute.value as string);
+          }
+          if (attribute.name === 'size') {
+            const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
+            sizes.add(sizeValue as number);
+          }
+        });
       });
     });
 
-    console.log('Audience:', Array.from(audience));
-    console.log('Categories:', Array.from(categories));
-    console.log('Prices:', Array.from(prices));
-    console.log('Sizes:', Array.from(sizes));
+    const uniqueSizes = Array.from(sizes).sort((a, b) => a - b);
+
+    console.log('Unique Sizes:', uniqueSizes);
 
     return {
-      audience,
-      categories,
-      prices,
-      sizes,
+      attributes: [
+        { name: 'audience', values: Array.from(audiences) },
+        { name: 'category', values: Array.from(categories) },
+        { name: 'size', values: uniqueSizes },
+      ],
     };
   } catch (error) {
     console.error('Error fetching product attributes:', error);
@@ -331,3 +342,5 @@ export async function fetchFilteredProducts(filters: string[]): Promise<ProductP
     return [];
   }
 }
+
+
