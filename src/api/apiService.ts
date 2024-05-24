@@ -97,6 +97,31 @@ export async function isUserLogined(): Promise<ClientResponse<Customer> | void> 
   }
 }
 
+export async function getUserData(): Promise<ClientResponse<Customer> | void> {
+  if (localStorage.getItem('token')) {
+    const unparsedToken = JSON.parse(localStorage.getItem('token') as string);
+    const refreshToken = unparsedToken.refreshToken;
+    const refreshFlowClient = createApiBuilderFromCtpClient(
+      createRefreshTokenClient(refreshToken),
+    ).withProjectKey({
+      projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
+    });
+    try {
+      const userData = await refreshFlowClient.me().get().execute();
+      return userData;
+    } catch (error: unknown) {
+      if (isCustomError(error)) {
+        showToast(error.body.message);
+      } else if (error instanceof Error) {
+        showToast(error.message);
+      } else {
+        showToast('An unknown error occurred');
+      }
+      return undefined;
+    }
+  }
+}
+
 export function checkLoginStatus(): boolean {
   return Boolean(localStorage.getItem('token'));
 }
