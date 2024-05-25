@@ -1,19 +1,129 @@
-import { addInnerComponent, createElement, ElementParams } from '../../utils/baseComponent';
+import { createElement, addInnerComponent, clear, ElementParams } from '../../utils/baseComponent';
 import { createHeader } from '../../components/header/header';
-import { createProductCatalog } from '../../components/productCatalog/productCatalog';
+import { createProductCatalog } from '../../components/catalog/productCatalog/productCatalog';
+import { createFilterComponent } from '../../components/catalog/productFilter/productFilter';
+import { fetchFilteredProducts, fetchProducts } from '../../api/apiService';
+import { ProductProjection } from '@commercetools/platform-sdk';
+import { createPagination } from '../../components/catalog/pagination/pagination';
 
-export function createCatalogPage(): HTMLElement {
+interface Filters {
+  audience: Set<string>;
+  category: Set<string>;
+  size: Set<string>;
+}
+
+export async function createCatalogPage(): Promise<HTMLElement> {
   const pageContainerParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['catalog-page-wrapper'],
+    classNames: ['catalog-page-container'],
   };
-  const container = createElement(pageContainerParams);
+  const pageContainer = createElement(pageContainerParams);
+
+  const filterWrapperParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['filter-wrapper'],
+  };
+  const filterWrapper = createElement(filterWrapperParams);
+
+  const catalogContainerWrapperParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['catalog-container-wrapper'],
+  };
+  const catalogContainerWrapper = createElement(catalogContainerWrapperParams);
+
+  const catalogContainerParams: ElementParams<'section'> = {
+    tag: 'section',
+    classNames: ['catalog-container'],
+  };
+  const catalogContainer = createElement(catalogContainerParams);
+
+  const paginationContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['pagination-container'],
+  };
+  const paginationContainer = createElement(paginationContainerParams);
 
   const header = createHeader();
-  addInnerComponent(container, header);
+  const filterComponent = await createFilterComponent();
 
-  const catalog = createProductCatalog();
-  addInnerComponent(container, catalog);
+  let currentPage = 1;
+  const itemsPerPage = 8;
+  let allProducts: ProductProjection[] = await fetchProducts();
+  const filters: Filters = {
+    audience: new Set<string>(),
+    category: new Set<string>(),
+    size: new Set<string>(),
+  };
 
-  return container;
+  const updateFilters = (filterName: keyof Filters, value: string, checked: boolean): void  => {
+    if (checked) {
+      filters[filterName].add(value);
+    } else {
+      filters[filterName].delete(value);
+    }
+  };
+
+  const renderProducts = (products: ProductProjection[], page: number, itemsPerPageCount: number): void => {
+    clear(catalogContainer);
+
+    const start = (page - 1) * itemsPerPageCount;
+    const end = start + itemsPerPageCount;
+    const paginatedProducts = products.slice(start, end);
+
+    const productCatalog = createProductCatalog(paginatedProducts);
+    addInnerComponent(catalogContainer, productCatalog);
+
+    const pagination = createPagination({
+      totalItems: products.length,
+      itemsPerPage: itemsPerPageCount,
+      currentPage: page,
+      onPageChange: (newPage) => {
+        currentPage = newPage;
+        renderProducts(products, currentPage, itemsPerPageCount);
+      },
+    });
+
+    clear(paginationContainer);
+    addInnerComponent(paginationContainer, pagination);
+  };
+
+  filterComponent.addEventListener('change', async (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const filterName = target.classList[0].split('-')[0] as keyof Filters;
+
+    updateFilters(filterName, target.value, target.checked);
+
+    const selectedFilters: string[] = [];
+
+    if (filters.audience.size > 0) {
+      selectedFilters.push(...Array.from(filters.audience).map(value => `variants.attributes.audience:"${value}"`));
+    }
+
+    if (filters.category.size > 0) {
+      selectedFilters.push(...Array.from(filters.category).map(value => `variants.attributes.category:"${value}"`));
+    }
+
+    if (filters.size.size > 0) {
+      selectedFilters.push(...Array.from(filters.size).map(value => `variants.attributes.size:"${value}"`));
+    }
+
+    if (selectedFilters.length > 0) {
+      allProducts = await fetchFilteredProducts(selectedFilters);
+    } else {
+      allProducts = await fetchProducts();
+    }
+
+    renderProducts(allProducts, 1, itemsPerPage);
+  });
+
+  pageContainer.prepend(header);
+  addInnerComponent(pageContainer, filterWrapper);
+  addInnerComponent(filterWrapper, filterComponent);
+  addInnerComponent(pageContainer, catalogContainerWrapper);
+  addInnerComponent(catalogContainerWrapper, catalogContainer);
+  addInnerComponent(catalogContainerWrapper, paginationContainer);
+
+  renderProducts(allProducts, currentPage, itemsPerPage);
+
+  return pageContainer;
 }

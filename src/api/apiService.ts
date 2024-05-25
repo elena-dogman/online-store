@@ -22,6 +22,12 @@ import { showToast } from '../components/toast/toast';
 import { isCustomError } from '../utils/customError';
 // import { U } from 'vitest/dist/reporters-yx5ZTtEV.js';
 
+export interface ProductAttributesResponse {
+  attributes: {
+    name: string;
+    values: (string | number)[];
+  }[];
+}
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
 });
@@ -194,49 +200,147 @@ export async function getDetailedProduct(
   }
 }
 
-export const fetchProducts = async (
-  limit = 9,
-  offset = 0,
-): Promise<ProductProjection[]> => {
+export async function fetchProducts(): Promise<ProductProjection[]> {
   try {
-    const response: ClientResponse<ProductProjectionPagedQueryResponse> =
-      await apiRoot
-        .productProjections()
-        .get({ queryArgs: { limit, offset } })
-        .execute();
+    let offset = 0;
+    const limit = 500;
+    let allProducts: ProductProjection[] = [];
+    let hasMore = true;
 
-    const products: ProductProjection[] = response.body.results;
+    while (hasMore) {
+      const response: ClientResponse<ProductProjectionPagedQueryResponse> =
+        await apiRoot
+          .productProjections()
+          .get({
+            queryArgs: {
+              limit,
+              offset,
+            },
+          })
+          .execute();
 
-    products.forEach((product: ProductProjection) => {
-      let productName = 'No name';
-      let productDescription = 'No description';
-      let productImage = 'No image';
-
-      if (product.name && product.name['en-US']) {
-        productName = product.name['en-US'];
+      if (response.body.results.length === 0) {
+        hasMore = false;
+      } else {
+        allProducts = allProducts.concat(response.body.results);
+        offset += limit;
+        if (response.body.results.length < limit) {
+          hasMore = false;
+        }
       }
+    }
 
-      if (product.description && product.description['en-US']) {
-        productDescription = product.description['en-US'];
-      }
-
-      if (
-        product.masterVariant.images &&
-        product.masterVariant.images[0] &&
-        product.masterVariant.images[0].url
-      ) {
-        productImage = product.masterVariant.images[0].url;
-      }
-
-      console.log(`Product Name: ${productName}`);
-      console.log(`Product Description: ${productDescription}`);
-      console.log(`Image URL: ${productImage}`);
-      console.log('----------------------');
-    });
-
-    return products;
+    return allProducts;
   } catch (error) {
     console.error('Error fetching products:', error);
     return [];
   }
-};
+}
+
+export async function fetchProductAttributes(): Promise<ProductAttributesResponse | null> {
+  try {
+    let offset = 0;
+    const limit = 500;
+    let allProducts: ProductProjection[] = [];
+    let hasMore = true;
+
+    while (hasMore) {
+      const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
+        .productProjections()
+        .search()
+        .get({
+          queryArgs: {
+            limit,
+            offset,
+          },
+        })
+        .execute();
+
+      if (response.body.results.length === 0) {
+        hasMore = false;
+      } else {
+        allProducts = allProducts.concat(response.body.results);
+        offset += limit;
+        if (response.body.results.length < limit) {
+          hasMore = false;
+        }
+      }
+    }
+
+    if (allProducts.length === 0) {
+      return null;
+    }
+
+    console.log('Products:', allProducts);
+
+    const audiences = new Set<string>();
+    const sizes: Set<number> = new Set();
+    const categories = new Set<string>();
+
+    allProducts.forEach(product => {
+      product.masterVariant.attributes?.forEach(attribute => {
+        if (attribute.name === 'audience') {
+          audiences.add(attribute.value as string);
+        }
+        if (attribute.name === 'category') {
+          categories.add(attribute.value as string);
+        }
+        if (attribute.name === 'size') {
+          const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
+          sizes.add(sizeValue as number);
+        }
+      });
+
+      product.variants.forEach(variant => {
+        variant.attributes?.forEach(attribute => {
+          if (attribute.name === 'audience') {
+            audiences.add(attribute.value as string);
+          }
+          if (attribute.name === 'category') {
+            categories.add(attribute.value as string);
+          }
+          if (attribute.name === 'size') {
+            const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
+            sizes.add(sizeValue as number);
+          }
+        });
+      });
+    });
+
+    const uniqueSizes = Array.from(sizes).sort((a, b) => a - b);
+
+    console.log('Unique Sizes:', uniqueSizes);
+
+    return {
+      attributes: [
+        { name: 'audience', values: Array.from(audiences) },
+        { name: 'category', values: Array.from(categories) },
+        { name: 'size', values: uniqueSizes },
+      ],
+    };
+  } catch (error) {
+    console.error('Error fetching product attributes:', error);
+    return null;
+  }
+}
+
+export async function fetchFilteredProducts(filters: string[]): Promise<ProductProjection[]> {
+  try {
+    const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
+      .productProjections()
+      .search()
+      .get({
+        queryArgs: {
+          filter: filters,
+        },
+      })
+      .execute();
+
+    return response.body.results;
+  } catch (error) {
+    console.error('Error fetching filtered products:', error);
+    return [];
+  }
+}
+
+
