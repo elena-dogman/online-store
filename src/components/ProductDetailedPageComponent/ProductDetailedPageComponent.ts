@@ -112,8 +112,17 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
         };
         const sizeTitle = createElement(sizeTitleParams);
         addInnerComponent(sizeContainer, sizeTitle);
-
+        const sizeButtonContainerParams: ElementParams<'div'> = {
+          tag: 'div',
+          classNames: ['size_button_container'],
+        };
+        const sizeButtonContainer = createElement(sizeButtonContainerParams);
+        addInnerComponent(sizeContainer, sizeButtonContainer);
         const sizes: number[] = [];
+        if (productData.masterVariant.attributes) {
+          const firstSize = productData.masterVariant.attributes[3].value;
+          sizes.push(firstSize);
+        }
 
         productData.variants.forEach((variant) => {
           if (variant.attributes) {
@@ -146,7 +155,7 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
             });
             sizeButton.classList.add('__selected');
           });
-          addInnerComponent(sizeContainer, sizeButton);
+          addInnerComponent(sizeButtonContainer, sizeButton);
         });
         const addToCartBtnParams: ElementParams<'button'> = {
           tag: 'button',
