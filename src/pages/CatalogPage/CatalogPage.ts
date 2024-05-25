@@ -48,14 +48,14 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
   let currentPage = 1;
   const itemsPerPage = 8;
-  let allProducts: ProductProjection[] = await fetchProducts();
+  const allProducts: ProductProjection[] = await fetchProducts();
   const filters: Filters = {
     audience: new Set<string>(),
     category: new Set<string>(),
     size: new Set<string>(),
   };
 
-  const updateFilters = (filterName: keyof Filters, value: string, checked: boolean): void  => {
+  const updateFilters = (filterName: keyof Filters, value: string, checked: boolean): void => {
     if (checked) {
       filters[filterName].add(value);
     } else {
@@ -95,25 +95,32 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
     const selectedFilters: string[] = [];
 
-    if (filters.audience.size > 0) {
-      selectedFilters.push(...Array.from(filters.audience).map(value => `variants.attributes.audience:"${value}"`));
-    }
+    const buildFilterString = (key: keyof Filters): string => {
+      if (filters[key].size > 0) {
+        const values = Array.from(filters[key]).map(value => `"${value}"`).join(',');
+        return `variants.attributes.${key}:${values}`;
+      }
+      return '';
+    };
 
-    if (filters.category.size > 0) {
-      selectedFilters.push(...Array.from(filters.category).map(value => `variants.attributes.category:"${value}"`));
-    }
+    const audienceFilter = buildFilterString('audience');
+    const categoryFilter = buildFilterString('category');
+    const sizeFilter = buildFilterString('size');
 
-    if (filters.size.size > 0) {
-      selectedFilters.push(...Array.from(filters.size).map(value => `variants.attributes.size:"${value}"`));
-    }
+    if (audienceFilter) selectedFilters.push(audienceFilter);
+    if (categoryFilter) selectedFilters.push(categoryFilter);
+    if (sizeFilter) selectedFilters.push(sizeFilter);
 
+    console.log('Selected Filters:', selectedFilters);
+
+    let filteredProducts: ProductProjection[] = [];
     if (selectedFilters.length > 0) {
-      allProducts = await fetchFilteredProducts(selectedFilters);
+      filteredProducts = await fetchFilteredProducts(selectedFilters);
     } else {
-      allProducts = await fetchProducts();
+      filteredProducts = await fetchProducts();
     }
 
-    renderProducts(allProducts, 1, itemsPerPage);
+    renderProducts(filteredProducts, 1, itemsPerPage);
   });
 
   pageContainer.prepend(header);
