@@ -43,6 +43,7 @@ const REGEX = {
   birthDate: /^(0[1-9]|1[0-2]).(0[1-9]|[12][0-9]|3[01]).\d{4}$/,
   number: /^\d+$/,
   password: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[\S]{8,}$/,
+  lettersAndSpacesAndHyphens: /^[A-Za-z\s-]+$/,
 };
 
 function incorectValidation(
@@ -184,7 +185,7 @@ export function cityValidation(
         return false;
       }
     }
-    if (!REGEX.lettersOnly.test(value)) {
+    if (!REGEX.lettersAndSpacesAndHyphens.test(value)) {
       if (billingStreet instanceof HTMLInputElement) {
         booleanValid.setValidStatus(cityValid, false);
         booleanValid.setValidStatus(streetValid, false);
@@ -192,7 +193,7 @@ export function cityValidation(
         billingStreet.setAttribute('disabled', '');
         streetErr.textContent = '';
         billingStreet.value = '';
-        incorectValidation(err, ERROR_MESSAGES.onlyEnglishLettersAndNumbers);
+        incorectValidation(err, ERROR_MESSAGES.incorrectData);
         return false;
       }
     }
