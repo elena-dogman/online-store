@@ -4,6 +4,7 @@ import {
   addInnerComponent,
   createElement,
 } from '../../../utils/baseComponent';
+import { checkLength } from './infoComponents';
 
 export function buildProfileHeader(): HTMLElement {
   const profileHeaderParams: ElementParams<'div'> = {
@@ -55,12 +56,17 @@ export function buildProfileHeader(): HTMLElement {
   getUserData()
     .then((userData) => {
       if (userData) {
-        const name = userData.body.firstName ? userData.body.firstName : '';
-        const lastName = userData.body.lastName ? userData.body.lastName : '';
-        const mail = userData.body.email ? userData.body.email : '';
+        let name = userData.body.firstName ? userData.body.firstName : '';
+        let lastName = userData.body.lastName ? userData.body.lastName : '';
+        let mail = userData.body.email ? userData.body.email : '';
         profileLogoImg.innerHTML = `${name[0]}${lastName[0]}`;
         logoUserTitle.innerHTML = `${name} ${lastName}`;
         logoUserLink.innerHTML = mail;
+        logoUserTitle.innerHTML = checkLength(logoUserTitle.innerHTML);
+        logoUserLink.innerHTML = checkLength(logoUserLink.innerHTML);
+        name = checkLength(name);
+        lastName = checkLength(lastName);
+        mail = checkLength(mail);
       }
     })
     .catch((err) => {
