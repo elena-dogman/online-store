@@ -1,0 +1,162 @@
+.catalog-page-container {
+  display: flex;
+  gap: 20px;
+  font-family: $font-family-base;
+}
+
+.filter-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 250px;
+  padding: 20px;
+  margin-top: 60px;
+}
+
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 250px;
+  padding: 20px;
+}
+
+.catalog-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-grow: 1;
+  margin-top: 60px;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  flex-grow: 1;
+}
+
+.product-card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin: 10px;
+  text-align: center;
+  background-color: $card-background;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.product-image {
+  width: 100%;
+  height: auto;
+}
+
+.product-name {
+  font-size: $font-size-subtitle;
+  margin: 10px 0;
+}
+
+.product-description {
+  font-size: $font-size-base;
+  color: $additional-info-color;
+}
+
+.product-price-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.product-price {
+  font-size: $font-size-subtitle;
+  color: $text-color-base;
+  margin: 10px 0;
+}
+
+.product-original-price {
+  font-size: $font-size-subtitle;
+  color: $additional-info-color;
+  text-decoration: line-through;
+  margin: 10px 0;
+}
+
+.product-discounted-price {
+  font-size: $font-size-subtitle;
+  color: red;
+  margin: 10px 0;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.pagination-button {
+  @include hoverButton;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: $font-size-small;
+  margin-bottom: 20px;
+  color: $text-color-base;
+  background-color: $text-color-contrast;
+  border-radius: 4px;
+}
+
+.pagination-button.active {
+  color: $text-color-contrast;
+  background-color: $text-color-base;
+}
+
+.filter-label-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 10px;
+  gap: 5px;
+}
+
+.triangle {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid black;
+  transition: transform 0.3s ease;
+}
+
+.triangle.open {
+  transform: rotate(180deg);
+}
+
+.filter-label {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.checkbox-container.hidden {
+  display: none;
+}
+
+.checkbox-container {
+  padding-left: 20px;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  padding: 4px;
+  align-items: center;
+}
+
+.size-checkbox-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.size-checkbox-container label {
+margin-right: 20px;
+}
