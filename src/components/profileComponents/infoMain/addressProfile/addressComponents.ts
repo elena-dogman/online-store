@@ -1,4 +1,4 @@
-import countrys from 'country-list-js';
+import countries from 'country-list-js';
 import {
   ElementParams,
   addInnerComponent,
@@ -6,32 +6,23 @@ import {
 } from '../../../../utils/baseComponent';
 
 import { createInput } from '../../../../utils/createInput';
-// interface AddressProfileComponents {
-//   streetLabel: HTMLLabelElement;
-//   cityLabel: HTMLLabelElement;
-//   postLabel: HTMLLabelElement;
-//   streetInput: HTMLInputElement;
-//   cityInput: HTMLInputElement;
-//   postInput: HTMLInputElement;
-// }
-
-export function buildCountysList(): HTMLElement {
-  const countrysListParams: ElementParams<'div'> = {
+export function buildCountriesList(): HTMLElement {
+  const countriesListParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['profile__country-list'],
+    classNames: ['profile__countries-list'],
   };
-  const countrysList = createElement(countrysListParams);
-  const allCountrys = countrys.names();
-  allCountrys.forEach((e) => {
+  const countriesList = createElement(countriesListParams);
+  const allCountries = countries.names();
+  allCountries.forEach((e) => {
     const countryItemParams: ElementParams<'div'> = {
       tag: 'div',
-      classNames: ['profile__country-item'],
+      classNames: ['profile__countries-item'],
       textContent: e,
     };
     const countryItem = createElement(countryItemParams);
-    countrysList.append(countryItem);
+    countriesList.append(countryItem);
   });
-  return countrysList;
+  return countriesList;
 }
 export function buildProfileAddressLoyalt(): [
   HTMLLabelElement,
@@ -102,16 +93,16 @@ export function buildProfileCountry(
   countryInput.setAttribute('readonly', '');
   if (currentId === billingId) {
     addInnerComponent(countryContainer, countryIndicator);
-    countryIndicator.textContent = 'Billing Adress';
+    countryIndicator.textContent = 'Billing Address';
     if (currentId === defaultBillingId) {
-      countryIndicator.textContent = ' Default Billing Adress';
+      countryIndicator.textContent = ' Default Billing Address';
     }
   }
   if (currentId === shippingId) {
     addInnerComponent(countryContainer, countryIndicator);
-    countryIndicator.textContent = 'Shipping Adress';
+    countryIndicator.textContent = 'Shipping Address';
     if (currentId === defaultShippingId) {
-      countryIndicator.textContent = ' Default Shipping Adress';
+      countryIndicator.textContent = ' Default Shipping Address';
     }
   }
   addInnerComponent(countryContainer, countryLabel);

@@ -5,7 +5,7 @@ import {
   createElement,
 } from '../../../../utils/baseComponent';
 import {
-  buildCountysList,
+  buildCountriesList,
   buildProfileAddressLoyalt,
   buildProfileCountry,
 } from './addressComponents';
@@ -65,6 +65,6 @@ export function buildAddressProfile(): HTMLElement {
     .catch((eror) => {
       console.log(eror);
     });
-  buildCountysList();
+  buildCountriesList();
   return addressInfoContainer;
 }
