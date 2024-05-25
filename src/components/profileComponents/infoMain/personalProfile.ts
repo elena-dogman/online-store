@@ -10,7 +10,7 @@ import { createErrorElement } from '../../../utils/validations/validationsErrors
 export function buildPersonalProfile(): HTMLElement {
   const infoPersonalInfContainerParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['profile-main__personal-prof-container'],
+    classNames: ['profile-form__personal-prof-container'],
   };
   const infoPersonalInfContainer = createElement(
     infoPersonalInfContainerParams,
@@ -19,8 +19,8 @@ export function buildPersonalProfile(): HTMLElement {
   const [infoLabelName, infoInputName] = createInput(
     'Name',
     [
-      ['profile-main__name-label', 'prof-label'],
-      ['profile-main__name-input', 'prof-input'],
+      ['profile-form__name-label', 'prof-label'],
+      ['profile-form__name-input', 'prof-input'],
     ],
     'name',
   );
@@ -32,8 +32,8 @@ export function buildPersonalProfile(): HTMLElement {
   const [infoLabelLastName, infoInputLastName] = createInput(
     'Last Name',
     [
-      ['profile-main__last-name-label', 'prof-label'],
-      ['profile-main__last-name-input', 'prof-input'],
+      ['profile-form__last-name-label', 'prof-label'],
+      ['profile-form__last-name-input', 'prof-input'],
     ],
     'name',
   );
@@ -47,8 +47,8 @@ export function buildPersonalProfile(): HTMLElement {
   const [infoLabelDate, infoInputDate] = createInput(
     'Date',
     [
-      ['profile-main__last-date-label', 'prof-label'],
-      ['profile-main__last-date-input', 'prof-input'],
+      ['profile-form__last-date-label', 'prof-label'],
+      ['profile-form__last-date-input', 'prof-input'],
     ],
     'name',
   );

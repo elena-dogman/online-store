@@ -75,31 +75,34 @@
   border: 0;
   color:$text-color-contrast;
   border-radius:8px ;
-  background:$text-color-accent
+  background:$text-color-accent;
+  transition:all 0.5s ease; 
+}
+.btn-edit--active{
+  background: $text-color-base;
+  color: $text-color-accent;
 }
 .profile-main__personal-profile-container{
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.profile-container__profile-main{
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 1fr;
+.profile-container__profile-form{
+  display: flex;
+  justify-content: space-around;
   grid-column-gap: 20px;  
   margin-top: 40px;
   padding: 0 20px;
-  
 }
-.profile-main__personal-prof-container{
-  grid-area: 1 / 1 / 2 / 2;
-}
-.profile-main__address-prof-container{
+.profile-form__address-prof-container{
+width: 50%;
   overflow-y: auto;
-  grid-area: 1 / 2 / 2 / 3;
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+.profile-form__personal-prof-container{
+  width: 50%;
 }
 .address-prof__country-indicator{
   font-size: 10rem;
@@ -107,6 +110,7 @@
 .prof-label{
   display: flex;
   flex-direction: column;
+  row-gap:5px ;
 }
 .prof-input {
   border: none;
@@ -120,6 +124,11 @@
     outline: 0;
   }
   @include inputDisabled;
+}
+.prof-input[readonly] {
+  color: $text-color-contrast;
+  background: black;
+  border-radius: 50px;
 }
 .prof-input[readonly]:focus {
   border-bottom: 1px solid black;

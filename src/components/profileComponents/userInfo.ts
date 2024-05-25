@@ -4,9 +4,9 @@ import {
   createElement,
 } from '../../utils/baseComponent';
 import { buildProfileHeader } from './infoHeader/infoHeader';
-import { buildProfileMain } from './infoMain/profileMain';
+import { buildProfileMain } from './infoMain/profileForm';
 
-export function createInfo(): HTMLElement {
+export async function createInfo(): Promise<HTMLElement> {
   const profileContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['profile-container'],
@@ -20,6 +20,6 @@ export function createInfo(): HTMLElement {
   addInnerComponent(profileContainer, profileWrapper);
 
   addInnerComponent(profileWrapper, buildProfileHeader());
-  addInnerComponent(profileWrapper, buildProfileMain());
+  addInnerComponent(profileWrapper, await buildProfileMain());
   return profileContainer;
 }

@@ -4,6 +4,7 @@ import {
   addInnerComponent,
   createElement,
 } from '../../../utils/baseComponent';
+import { createEdit } from '../infoEdit/infoEdit';
 import { checkLength } from './infoComponents';
 
 export function buildProfileHeader(): HTMLElement {
@@ -41,18 +42,14 @@ export function buildProfileHeader(): HTMLElement {
   const logoUserContainer = createElement(logoUserContainerParams);
   const logoUserTitle = createElement(logoUserTitleParams);
   const logoUserLink = createElement(logoUserLinkParams);
+  const editbutton = createEdit();
   addInnerComponent(profileHeader, profileLogoContainer);
   addInnerComponent(profileLogoContainer, profileLogoImg);
   addInnerComponent(profileLogoContainer, logoUserContainer);
   addInnerComponent(logoUserContainer, logoUserTitle);
   addInnerComponent(logoUserContainer, logoUserLink);
+  addInnerComponent(profileHeader, editbutton);
 
-  const infoHeaderButtonParams: ElementParams<'button'> = {
-    tag: 'button',
-    classNames: ['profile-header__btn-edit'],
-    textContent: 'Edit',
-  };
-  const infoHeaderButton = createElement(infoHeaderButtonParams);
   getUserData()
     .then((userData) => {
       if (userData) {
@@ -72,6 +69,5 @@ export function buildProfileHeader(): HTMLElement {
     .catch((err) => {
       console.log(err);
     });
-  addInnerComponent(profileHeader, infoHeaderButton);
   return profileHeader;
 }
