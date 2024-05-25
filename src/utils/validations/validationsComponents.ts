@@ -20,7 +20,10 @@ const dateMonth = dateComponents.monthDate as HTMLInputElement;
 const dateYear = dateComponents.yearDate as HTMLInputElement;
 export const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
-  invalidEmail: "Email must contain an '@' symbol",
+  invalidEmail: 'Invalid email format',
+  missingAtSymbol: "Email must contain an '@' symbol",
+  missingDomain: 'Email must contain a domain name',
+  invalidCharacters: 'Email contains invalid characters',
   onlyEnglishLetters: 'Must contain only English letters',
   onlyEnglishLettersAndNumbers: 'Must contain only English letters and numbers',
   invalidFormat: 'Incorrect format',
@@ -43,6 +46,7 @@ const REGEX = {
   birthDate: /^(0[1-9]|1[0-2]).(0[1-9]|[12][0-9]|3[01]).\d{4}$/,
   number: /^\d+$/,
   password: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[\S]{8,}$/,
+  lettersAndSpacesAndHyphens: /^[A-Za-z\s-]+$/,
 };
 
 function incorectValidation(
@@ -51,23 +55,38 @@ function incorectValidation(
 ): void {
   errorSpan.textContent = errorMessage;
 }
-export function mailValidation(
-  value: string,
-  err: HTMLSpanElement | null,
-): boolean {
+export function mailValidation(value: string, err: HTMLSpanElement | null): boolean {
   if (err) {
     if (value.length === 0) {
-      incorectValidation(err, '');
+      incorectValidation(err, ERROR_MESSAGES.invalidEmail);
       booleanValid.setValidStatus('mail', false);
       booleanValid.checkAllInputs();
       return false;
     }
+
+    if (!value.includes('@')) {
+      incorectValidation(err, ERROR_MESSAGES.missingAtSymbol);
+      booleanValid.setValidStatus('mail', false);
+      booleanValid.checkAllInputs();
+      return false;
+    }
+
+    const domainPart = value.split('@');
+
+    if (!domainPart) {
+      incorectValidation(err, ERROR_MESSAGES.missingDomain);
+      booleanValid.setValidStatus('mail', false);
+      booleanValid.checkAllInputs();
+      return false;
+    }
+
     if (!REGEX.email.test(String(value).toLowerCase())) {
       incorectValidation(err, ERROR_MESSAGES.invalidEmail);
       booleanValid.setValidStatus('mail', false);
       booleanValid.checkAllInputs();
       return false;
     }
+
     incorectValidation(err, '');
     booleanValid.setValidStatus('mail', true);
     booleanValid.checkAllInputs();
@@ -184,7 +203,7 @@ export function cityValidation(
         return false;
       }
     }
-    if (!REGEX.lettersOnly.test(value)) {
+    if (!REGEX.lettersAndSpacesAndHyphens.test(value)) {
       if (billingStreet instanceof HTMLInputElement) {
         booleanValid.setValidStatus(cityValid, false);
         booleanValid.setValidStatus(streetValid, false);
@@ -192,7 +211,7 @@ export function cityValidation(
         billingStreet.setAttribute('disabled', '');
         streetErr.textContent = '';
         billingStreet.value = '';
-        incorectValidation(err, ERROR_MESSAGES.onlyEnglishLettersAndNumbers);
+        incorectValidation(err, ERROR_MESSAGES.incorrectData);
         return false;
       }
     }

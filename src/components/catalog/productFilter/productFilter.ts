@@ -85,6 +85,7 @@ function createFilterGroup(name: string, values: (string | number)[]): HTMLEleme
 
   triangle.addEventListener('click', () => {
     checkboxContainer.classList.toggle('hidden');
+    triangle.classList.toggle('open');
   });
 
   filterGroup.addEventListener('change', () => {
