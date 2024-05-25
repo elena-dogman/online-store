@@ -102,6 +102,7 @@ export function createSwiper(ID: string): Promise<{
             const imgSlideParams: ElementParams<'img'> = {
               tag: 'img',
               attributes: {
+                alt: 'Felt Boots Img',
                 src: image.url,
               },
               classNames: ['img-slide'],
