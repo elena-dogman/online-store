@@ -114,6 +114,15 @@
   border-bottom: 1px solid black;
   margin-bottom: 18px;
   padding: 0 0 1px 5px;
+  &:focus {
+    color: black;
+    border-bottom: 1px solid #86b7fe;
+    outline: 0;
+  }
+  @include inputDisabled;
+}
+.prof-input[readonly]:focus {
+  border-bottom: 1px solid black;
 }
 .profile-address-label{
   display: flex;
