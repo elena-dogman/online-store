@@ -27,6 +27,7 @@ export function createIconContainer(
   const imageParams: ElementParams<'img'> = {
     tag: 'img',
     attributes: {
+      alt: 'Delivery/Guarantee/Stock icon',
       src: imageUrl,
     },
   };

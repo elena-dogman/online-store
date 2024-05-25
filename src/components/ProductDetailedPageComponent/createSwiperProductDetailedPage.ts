@@ -13,7 +13,6 @@ import {
   EffectCube,
   Navigation,
   Keyboard,
-  Zoom,
 } from 'swiper/modules';
 import { ClientResponse, Product } from '@commercetools/platform-sdk';
 
@@ -25,7 +24,6 @@ Swiper.use([
   EffectCube,
   Navigation,
   Keyboard,
-  Zoom,
 ]);
 
 export function createSwiper(ID: string): Promise<{
@@ -104,6 +102,7 @@ export function createSwiper(ID: string): Promise<{
             const imgSlideParams: ElementParams<'img'> = {
               tag: 'img',
               attributes: {
+                alt: 'Felt Boots Img',
                 src: image.url,
               },
               classNames: ['img-slide'],
@@ -158,10 +157,6 @@ export function createSwiper(ID: string): Promise<{
             mousewheel: {
               enabled: true,
               eventsTarget: '.swiper',
-            },
-            zoom: {
-              maxRatio: 2,
-              toggle: true,
             },
             updateOnWindowResize: true,
           });
