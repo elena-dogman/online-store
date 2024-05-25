@@ -27,7 +27,6 @@ function createFilterGroup(name: string, values: (string | number)[]): HTMLEleme
   };
   const filterGroup = createElement(filterGroupParams);
 
-
   const filterLabelWrapperParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['filter-label-wrapper'],
@@ -41,7 +40,7 @@ function createFilterGroup(name: string, values: (string | number)[]): HTMLEleme
   };
   const filterLabel = createElement(filterLabelParams);
 
-    const triangleParams: ElementParams<'div'> = {
+  const triangleParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['triangle'],
   };
@@ -53,6 +52,8 @@ function createFilterGroup(name: string, values: (string | number)[]): HTMLEleme
   };
   const checkboxContainer = createElement(checkboxContainerParams);
 
+  const checkboxes: HTMLInputElement[] = [];
+
   values.forEach(value => {
     const checkboxWrapper = createElement({
       tag: 'div',
@@ -63,7 +64,9 @@ function createFilterGroup(name: string, values: (string | number)[]): HTMLEleme
       tag: 'input',
       attributes: { type: 'checkbox', value: value.toString() },
       classNames: [`${name}-filter`],
-    });
+    }) as HTMLInputElement;
+
+    checkboxes.push(checkbox);
 
     const checkboxLabel = createElement({
       tag: 'label',
@@ -75,14 +78,19 @@ function createFilterGroup(name: string, values: (string | number)[]): HTMLEleme
     addInnerComponent(checkboxContainer, checkboxWrapper);
   });
 
-const toggleCheckboxContainer = (): void => {
+  filterLabel.addEventListener('click', () => {
     checkboxContainer.classList.toggle('hidden');
     triangle.classList.toggle('open');
-  };
+  });
 
-  filterLabel.addEventListener('click', toggleCheckboxContainer);
-  triangle.addEventListener('click', toggleCheckboxContainer);
+  triangle.addEventListener('click', () => {
+    checkboxContainer.classList.toggle('hidden');
+  });
 
+  filterGroup.addEventListener('change', () => {
+    const event = new CustomEvent('filtersChanged', { detail: { name, checkboxes } });
+    filterGroup.dispatchEvent(event);
+  });
 
   addInnerComponent(filterLabelWrapper, filterLabel);
   addInnerComponent(filterLabelWrapper, triangle);

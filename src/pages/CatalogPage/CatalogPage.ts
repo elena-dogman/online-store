@@ -6,6 +6,12 @@ import { fetchFilteredProducts, fetchProducts } from '../../api/apiService';
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { createPagination } from '../../components/catalog/pagination/pagination';
 
+interface Filters {
+  audience: Set<string>;
+  category: Set<string>;
+  size: Set<string>;
+}
+
 export async function createCatalogPage(): Promise<HTMLElement> {
   const pageContainerParams: ElementParams<'div'> = {
     tag: 'div',
@@ -31,12 +37,31 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   };
   const catalogContainer = createElement(catalogContainerParams);
 
+  const paginationContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['pagination-container'],
+  };
+  const paginationContainer = createElement(paginationContainerParams);
+
   const header = createHeader();
   const filterComponent = await createFilterComponent();
 
   let currentPage = 1;
   const itemsPerPage = 8;
   let allProducts: ProductProjection[] = await fetchProducts();
+  const filters: Filters = {
+    audience: new Set<string>(),
+    category: new Set<string>(),
+    size: new Set<string>(),
+  };
+
+  const updateFilters = (filterName: keyof Filters, value: string, checked: boolean): void  => {
+    if (checked) {
+      filters[filterName].add(value);
+    } else {
+      filters[filterName].delete(value);
+    }
+  };
 
   const renderProducts = (products: ProductProjection[], page: number, itemsPerPageCount: number): void => {
     clear(catalogContainer);
@@ -58,29 +83,29 @@ export async function createCatalogPage(): Promise<HTMLElement> {
       },
     });
 
-    clear(catalogContainerWrapper);
-    addInnerComponent(catalogContainerWrapper, catalogContainer);
-    addInnerComponent(catalogContainerWrapper, pagination);
+    clear(paginationContainer);
+    addInnerComponent(paginationContainer, pagination);
   };
 
-  filterComponent.addEventListener('change', async () => {
+  filterComponent.addEventListener('change', async (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const filterName = target.classList[0].split('-')[0] as keyof Filters;
+
+    updateFilters(filterName, target.value, target.checked);
+
     const selectedFilters: string[] = [];
 
-    const audienceCheckboxes = filterComponent.querySelectorAll('.audience-filter:checked') as NodeListOf<HTMLInputElement>;
-    const categoryCheckboxes = filterComponent.querySelectorAll('.category-filter:checked') as NodeListOf<HTMLInputElement>;
-    const sizeCheckboxes = filterComponent.querySelectorAll('.size-filter:checked') as NodeListOf<HTMLInputElement>;
+    if (filters.audience.size > 0) {
+      selectedFilters.push(...Array.from(filters.audience).map(value => `variants.attributes.audience:"${value}"`));
+    }
 
-    audienceCheckboxes.forEach(checkbox => {
-      selectedFilters.push(`variants.attributes.audience:"${checkbox.value}"`);
-    });
+    if (filters.category.size > 0) {
+      selectedFilters.push(...Array.from(filters.category).map(value => `variants.attributes.category:"${value}"`));
+    }
 
-    categoryCheckboxes.forEach(checkbox => {
-      selectedFilters.push(`variants.attributes.category:"${checkbox.value}"`);
-    });
-
-    sizeCheckboxes.forEach(checkbox => {
-      selectedFilters.push(`variants.attributes.size:"${checkbox.value}"`);
-    });
+    if (filters.size.size > 0) {
+      selectedFilters.push(...Array.from(filters.size).map(value => `variants.attributes.size:"${value}"`));
+    }
 
     if (selectedFilters.length > 0) {
       allProducts = await fetchFilteredProducts(selectedFilters);
@@ -95,6 +120,8 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   addInnerComponent(pageContainer, filterWrapper);
   addInnerComponent(filterWrapper, filterComponent);
   addInnerComponent(pageContainer, catalogContainerWrapper);
+  addInnerComponent(catalogContainerWrapper, catalogContainer);
+  addInnerComponent(catalogContainerWrapper, paginationContainer);
 
   renderProducts(allProducts, currentPage, itemsPerPage);
 
