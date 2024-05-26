@@ -30,6 +30,7 @@ export function buildProfileCountry(
     'country',
   );
   countryInput.setAttribute('readonly', '');
+  // countryInput.addEventListener('input', checkInput);
   if (currentId === billingId) {
     addInnerComponent(countryContainer, countryIndicator);
     countryIndicator.textContent = 'Billing Address';

@@ -3,6 +3,7 @@ import {
   addInnerComponent,
   createElement,
 } from '../../../utils/baseComponent';
+
 import { buildAddressProfile } from './addressProfile/addressProfile';
 import { buildPersonalProfile } from './personalProfile';
 export async function buildProfileForm(): Promise<HTMLElement> {

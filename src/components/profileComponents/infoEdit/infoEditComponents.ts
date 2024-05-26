@@ -9,12 +9,7 @@ export function showClick(e: Event): void {
   e.preventDefault();
   const elem = e.target as HTMLButtonElement;
   const form = elem.form as HTMLFormElement;
-
-  const formArray = Array.from(form.elements).filter(
-    (element) => element.tagName === 'INPUT',
-  ) as HTMLInputElement[];
-
-  fillObjectWithUniqueKeys(formArray);
+  fillObjectWithUniqueKeys(form);
   console.log(profileBoolValidation);
   const name = form.elements.namedItem('Name') as HTMLInputElement;
   const lastName = form.elements.namedItem('Last Name') as HTMLInputElement;

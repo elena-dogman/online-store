@@ -9,13 +9,18 @@ export function setInfoReadvalidStatus(
   infoReadvalidStatus[field] = value;
 }
 export let profileBoolValidation = {};
-export function fillObjectWithUniqueKeys(elements: HTMLInputElement[]): {
+export function fillObjectWithUniqueKeys(form: HTMLFormElement): {
   [key: string]: boolean;
 } {
+  const formArray = Array.from(form.elements).filter(
+    (element) =>
+      element.tagName === 'INPUT' &&
+      element.getAttribute('type') !== 'checkbox',
+  ) as HTMLInputElement[];
   const obj: { [key: string]: boolean } = {};
   let counter: number = 1;
 
-  elements.forEach((_, index) => {
+  formArray.forEach((_, index) => {
     let key: string = index.toString();
 
     while (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -26,6 +31,15 @@ export function fillObjectWithUniqueKeys(elements: HTMLInputElement[]): {
     obj[key] = true;
     counter = 1; // Reset counter for the next element
   });
+
+  if (Object.keys(obj).length !== formArray.length) {
+    while (Object.keys(obj).length > formArray.length) {
+      delete obj[Object.keys(obj).pop()!];
+    }
+    while (Object.keys(obj).length < formArray.length) {
+      obj[Object.keys(obj).length.toString()] = true;
+    }
+  }
   profileBoolValidation = obj;
   return obj;
 }

@@ -30,7 +30,17 @@ function checkButton(
     return button[0];
   }
 }
+function checkInput(event: Event): number {
+  const elem = event.target as HTMLInputElement;
+  const form = elem.form as HTMLFormElement;
+  const formArray = Array.from(form.elements).filter(
+    (element) => element.tagName === 'INPUT',
+  ) as HTMLInputElement[];
+  const index = formArray.indexOf(elem);
+  return index;
+}
 export function validateInput(event: Event): boolean {
+  console.log(checkInput(event));
   const element = event.target as HTMLInputElement;
   const value = element.value.trim();
   const error = checkError(element.parentElement?.children);
