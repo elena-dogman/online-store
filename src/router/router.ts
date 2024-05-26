@@ -60,7 +60,6 @@ function createRouter(routes: Routes): Router {
         this.navigate('/');
         return;
       }
-
       const routeKeys = Object.keys(this.routes);
       let handler: RouteHandler | null = null;
       let params: Record<string, string> = {};

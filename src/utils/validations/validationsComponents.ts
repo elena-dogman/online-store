@@ -2,7 +2,7 @@ import { calculateAge, checkDaysInMonth } from '../ageAndTextChecks';
 import country from 'country-list-js';
 
 import * as dateComponents from '../../components/registrationForm/dateComponent';
-import * as booleanValid from './booleanValid';
+import { setValidStatus, checkAllInputs } from './booleanValid';
 import {
   AddressComponents,
   Components,
@@ -55,19 +55,22 @@ function incorectValidation(
 ): void {
   errorSpan.textContent = errorMessage;
 }
-export function mailValidation(value: string, err: HTMLSpanElement | null): boolean {
+export function mailValidation(
+  value: string,
+  err: HTMLSpanElement | null,
+): boolean {
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, ERROR_MESSAGES.invalidEmail);
-      booleanValid.setValidStatus('mail', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('mail', false);
+      checkAllInputs();
       return false;
     }
 
     if (!value.includes('@')) {
       incorectValidation(err, ERROR_MESSAGES.missingAtSymbol);
-      booleanValid.setValidStatus('mail', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('mail', false);
+      checkAllInputs();
       return false;
     }
 
@@ -75,21 +78,21 @@ export function mailValidation(value: string, err: HTMLSpanElement | null): bool
 
     if (!domainPart) {
       incorectValidation(err, ERROR_MESSAGES.missingDomain);
-      booleanValid.setValidStatus('mail', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('mail', false);
+      checkAllInputs();
       return false;
     }
 
     if (!REGEX.email.test(String(value).toLowerCase())) {
       incorectValidation(err, ERROR_MESSAGES.invalidEmail);
-      booleanValid.setValidStatus('mail', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('mail', false);
+      checkAllInputs();
       return false;
     }
 
     incorectValidation(err, '');
-    booleanValid.setValidStatus('mail', true);
-    booleanValid.checkAllInputs();
+    setValidStatus('mail', true);
+    checkAllInputs();
     return true;
   }
   return true;
@@ -114,24 +117,24 @@ export function nameValidation(
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
-      booleanValid.setValidStatus('name', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('name', false);
+      checkAllInputs();
       return false;
     }
     if (value.length <= 1) {
       incorectValidation(err, ERROR_MESSAGES.shortInput);
-      booleanValid.setValidStatus('name', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('name', false);
+      checkAllInputs();
       return false;
     }
     if (!REGEX.lettersOnly.test(value)) {
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-      booleanValid.setValidStatus('name', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('name', false);
+      checkAllInputs();
       return false;
     }
-    booleanValid.setValidStatus('name', true);
-    booleanValid.checkAllInputs();
+    setValidStatus('name', true);
+    checkAllInputs();
     incorectValidation(err, '');
     return true;
   }
@@ -145,24 +148,24 @@ export function lastNameValidation(
   if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
-      booleanValid.setValidStatus('lastName', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('lastName', false);
+      checkAllInputs();
       return false;
     }
     if (value.length <= 1) {
       incorectValidation(err, ERROR_MESSAGES.shortInput);
-      booleanValid.setValidStatus('lastName', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('lastName', false);
+      checkAllInputs();
       return false;
     }
     if (!REGEX.lettersOnly.test(value)) {
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-      booleanValid.setValidStatus('lastName', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('lastName', false);
+      checkAllInputs();
       return false;
     }
-    booleanValid.setValidStatus('lastName', true);
-    booleanValid.checkAllInputs();
+    setValidStatus('lastName', true);
+    checkAllInputs();
     incorectValidation(err, '');
     return true;
   }
@@ -183,9 +186,9 @@ export function cityValidation(
     const billingStreet = components[type].inputStreet;
     if (value.length === 0) {
       if (billingStreet instanceof HTMLInputElement) {
-        booleanValid.setValidStatus(cityValid, false);
-        booleanValid.setValidStatus(streetValid, false);
-        booleanValid.checkAllInputs();
+        setValidStatus(cityValid, false);
+        setValidStatus(streetValid, false);
+        checkAllInputs();
         billingStreet.value = '';
         incorectValidation(err, '');
         return false;
@@ -195,9 +198,9 @@ export function cityValidation(
       if (billingStreet instanceof HTMLInputElement) {
         billingStreet.setAttribute('disabled', '');
         incorectValidation(err, ERROR_MESSAGES.shortInput);
-        booleanValid.setValidStatus(cityValid, false);
-        booleanValid.setValidStatus(streetValid, false);
-        booleanValid.checkAllInputs();
+        setValidStatus(cityValid, false);
+        setValidStatus(streetValid, false);
+        checkAllInputs();
         streetErr.textContent = '';
         billingStreet.value = '';
         return false;
@@ -205,9 +208,9 @@ export function cityValidation(
     }
     if (!REGEX.lettersAndSpacesAndHyphens.test(value)) {
       if (billingStreet instanceof HTMLInputElement) {
-        booleanValid.setValidStatus(cityValid, false);
-        booleanValid.setValidStatus(streetValid, false);
-        booleanValid.checkAllInputs();
+        setValidStatus(cityValid, false);
+        setValidStatus(streetValid, false);
+        checkAllInputs();
         billingStreet.setAttribute('disabled', '');
         streetErr.textContent = '';
         billingStreet.value = '';
@@ -216,8 +219,8 @@ export function cityValidation(
       }
     }
     incorectValidation(err, '');
-    booleanValid.setValidStatus(cityValid, true);
-    booleanValid.checkAllInputs();
+    setValidStatus(cityValid, true);
+    checkAllInputs();
     billingStreet.removeAttribute('disabled');
     return true;
   }
@@ -233,25 +236,25 @@ export function streetValidation(
     const streetValid: 'street-shipping' | 'street-billing' =
       type === 'shipping' ? 'street-shipping' : 'street-billing';
     if (value.length === 0) {
-      booleanValid.setValidStatus(streetValid, false);
-      booleanValid.checkAllInputs();
+      setValidStatus(streetValid, false);
+      checkAllInputs();
       incorectValidation(err, '');
       return false;
     }
     if (value.length <= 1) {
-      booleanValid.setValidStatus(streetValid, false);
-      booleanValid.checkAllInputs();
+      setValidStatus(streetValid, false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.shortInput);
       return false;
     }
     if (!REGEX.lettersAndNumbersAndWhiteSpaces.test(value)) {
-      booleanValid.setValidStatus(streetValid, false);
-      booleanValid.checkAllInputs();
+      setValidStatus(streetValid, false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
       return false;
     }
-    booleanValid.setValidStatus(streetValid, true);
-    booleanValid.checkAllInputs();
+    setValidStatus(streetValid, true);
+    checkAllInputs();
     incorectValidation(err, '');
     return true;
   }
@@ -263,47 +266,47 @@ export function passwordValidation(
 ): boolean {
   if (err) {
     if (/\s/.test(value)) {
-      booleanValid.setValidStatus('password', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('password', false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordNoSpaces);
       err.style.bottom = '0px';
       return false;
     }
 
     if (value.length < 8) {
-      booleanValid.setValidStatus('password', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('password', false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
       err.style.bottom = '0px';
       return false;
     }
 
     if (!/[A-Z]/.test(value)) {
-      booleanValid.setValidStatus('password', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('password', false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       err.style.bottom = '-4px';
       return false;
     }
 
     if (!/[a-z]/.test(value)) {
-      booleanValid.setValidStatus('password', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('password', false);
+      checkAllInputs();
       err.style.bottom = '0px';
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       return false;
     }
 
     if (!/\d/.test(value)) {
-      booleanValid.setValidStatus('password', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('password', false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       err.style.bottom = '0px';
       return false;
     }
 
-    booleanValid.setValidStatus('password', true);
-    booleanValid.checkAllInputs();
+    setValidStatus('password', true);
+    checkAllInputs();
     incorectValidation(err, '');
     err.style.bottom = '0px';
     return true;
@@ -399,18 +402,18 @@ export function checkNumber(this: HTMLInputElement): void {
       if (calculateAge(age) < 13) {
         incorectValidation(err, ERROR_MESSAGES.ageRequirement);
       } else {
-        booleanValid.setValidStatus('date', true);
-        booleanValid.checkAllInputs();
+        setValidStatus('date', true);
+        checkAllInputs();
         incorectValidation(err, '');
       }
     } else {
-      booleanValid.setValidStatus('date', false);
-      booleanValid.checkAllInputs();
+      setValidStatus('date', false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.incorrectData);
     }
   } else {
-    booleanValid.setValidStatus('date', false);
-    booleanValid.checkAllInputs();
+    setValidStatus('date', false);
+    checkAllInputs();
     incorectValidation(err, ERROR_MESSAGES.incorrectData);
   }
 }
@@ -445,10 +448,10 @@ export function postCodeValidation(
         incorectValidation(err, '');
         billingCity.setAttribute('disabled', '');
         billingStreet.setAttribute('disabled', '');
-        booleanValid.setValidStatus(cityValid, false);
-        booleanValid.setValidStatus(postValid, false);
-        booleanValid.setValidStatus(streetValid, false);
-        booleanValid.checkAllInputs();
+        setValidStatus(cityValid, false);
+        setValidStatus(postValid, false);
+        setValidStatus(streetValid, false);
+        checkAllInputs();
         cityErr.textContent = '';
         streetErr.textContent = '';
         billingStreet.value = '';
@@ -460,8 +463,8 @@ export function postCodeValidation(
     if (postalCodes.validate(postCode, value) === true) {
       billingCity.removeAttribute('disabled');
       incorectValidation(err, '');
-      booleanValid.setValidStatus(postValid, true);
-      booleanValid.checkAllInputs();
+      setValidStatus(postValid, true);
+      checkAllInputs();
     } else {
       if (
         billingStreet instanceof HTMLInputElement &&
@@ -469,10 +472,10 @@ export function postCodeValidation(
       ) {
         billingCity.setAttribute('disabled', '');
         billingStreet.setAttribute('disabled', '');
-        booleanValid.setValidStatus(cityValid, false);
-        booleanValid.setValidStatus(postValid, false);
-        booleanValid.setValidStatus(streetValid, false);
-        booleanValid.checkAllInputs();
+        setValidStatus(cityValid, false);
+        setValidStatus(postValid, false);
+        setValidStatus(streetValid, false);
+        checkAllInputs();
         cityErr.textContent = '';
         streetErr.textContent = '';
         billingStreet.value = '';
@@ -496,9 +499,9 @@ export function disableLocation(
     purpose === 'shipping' ? 'city-shipping' : 'city-billing';
   const streetValid: 'street-shipping' | 'street-billing' =
     purpose === 'shipping' ? 'street-shipping' : 'street-billing';
-  booleanValid.setValidStatus(cityValid, false);
-  booleanValid.setValidStatus(streetValid, false);
-  booleanValid.checkAllInputs();
+  setValidStatus(cityValid, false);
+  setValidStatus(streetValid, false);
+  checkAllInputs();
   adressComponents.inputStreet.value = '';
   adressComponents.inputPost.value = '';
   adressComponents.inputCity.value = '';

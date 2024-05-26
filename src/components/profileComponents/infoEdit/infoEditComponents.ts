@@ -1,9 +1,21 @@
-import { infoReadvalidStatus, setInfoReadvalidStatus } from './infoBoolean';
+import {
+  fillObjectWithUniqueKeys,
+  infoReadvalidStatus,
+  profileBoolValidation,
+  setInfoReadvalidStatus,
+} from './infoBoolean';
 
 export function showClick(e: Event): void {
   e.preventDefault();
   const elem = e.target as HTMLButtonElement;
   const form = elem.form as HTMLFormElement;
+
+  const formArray = Array.from(form.elements).filter(
+    (element) => element.tagName === 'INPUT',
+  ) as HTMLInputElement[];
+
+  fillObjectWithUniqueKeys(formArray);
+  console.log(profileBoolValidation);
   const name = form.elements.namedItem('Name') as HTMLInputElement;
   const lastName = form.elements.namedItem('Last Name') as HTMLInputElement;
   const date = form.elements.namedItem('Date') as HTMLInputElement;
