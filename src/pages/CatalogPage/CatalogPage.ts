@@ -61,12 +61,14 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     } else {
       filters[filterName].delete(value);
     }
+    console.log(`Updated Filters: ${filterName}`, filters[filterName]);
   };
 
   const renderProducts = (
     products: ProductProjection[],
     page: number,
     itemsPerPageCount: number): void => {
+    console.log('Rendering products:', products);
     clear(catalogContainer);
 
     const start = (page - 1) * itemsPerPageCount;
@@ -90,41 +92,47 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     addInnerComponent(paginationContainer, pagination);
   };
 
-  filterComponent.addEventListener('change', async (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    const filterName = target.classList[0].split('-')[0] as keyof Filters;
+filterComponent.addEventListener('change', async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const filterName = target.classList[0].split('-')[0] as keyof Filters;
 
-    updateFilters(filterName, target.value, target.checked);
+  updateFilters(filterName, target.value, target.checked);
 
-    const selectedFilters: string[] = [];
+  const selectedFilters: string[] = [];
 
-    const buildFilterString = (key: keyof Filters): string => {
-      if (filters[key].size > 0) {
+  const buildFilterString = (key: keyof Filters): string => {
+    if (filters[key].size > 0) {
+      if (key === 'category') {
+        const values = Array.from(filters[key]).map(value => `subtree("${value}")`).join(',');
+        return `categories.id: ${values}`;
+      } else {
         const values = Array.from(filters[key]).map(value => `"${value}"`).join(',');
-        return `variants.attributes.${key}:${values}`;
+        return `variants.attributes.${key}:(${values})`;
       }
-      return '';
-    };
-
-    const audienceFilter = buildFilterString('audience');
-    const categoryFilter = buildFilterString('category');
-    const sizeFilter = buildFilterString('size');
-
-    if (audienceFilter) selectedFilters.push(audienceFilter);
-    if (categoryFilter) selectedFilters.push(categoryFilter);
-    if (sizeFilter) selectedFilters.push(sizeFilter);
-
-    console.log('Selected Filters:', selectedFilters);
-
-    let filteredProducts: ProductProjection[] = [];
-    if (selectedFilters.length > 0) {
-      filteredProducts = await fetchFilteredProducts(selectedFilters);
-    } else {
-      filteredProducts = await fetchProducts();
     }
+    return '';
+  };
 
-    renderProducts(filteredProducts, 1, itemsPerPage);
-  });
+  const audienceFilter = buildFilterString('audience');
+  const categoryFilter = buildFilterString('category');
+  const sizeFilter = buildFilterString('size');
+
+  if (audienceFilter) selectedFilters.push(audienceFilter);
+  if (categoryFilter) selectedFilters.push(categoryFilter);
+  if (sizeFilter) selectedFilters.push(sizeFilter);
+
+  console.log('Selected Filters:', selectedFilters);
+
+  let filteredProducts: ProductProjection[] = [];
+  if (selectedFilters.length > 0) {
+    filteredProducts = await fetchFilteredProducts(selectedFilters);
+  } else {
+    filteredProducts = await fetchProducts();
+  }
+
+  console.log('Filtered Products:', filteredProducts);
+  renderProducts(filteredProducts, 1, itemsPerPage);
+});
 
   pageContainer.prepend(header);
   addInnerComponent(pageContainer, filterWrapper);
