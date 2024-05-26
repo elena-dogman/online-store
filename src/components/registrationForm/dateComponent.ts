@@ -14,6 +14,7 @@ export const dayDate = createElement({
     type: 'text',
     maxLength: '2',
     'data-validation-type': 'day',
+    hide: '',
   },
 });
 export const monthDate = createElement({
@@ -23,6 +24,7 @@ export const monthDate = createElement({
     type: 'text',
     maxLength: '2',
     'data-validation-type': 'month',
+    hide: '',
   },
 });
 export const yearDate = createElement({

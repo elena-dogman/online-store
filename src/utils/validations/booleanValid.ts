@@ -1,18 +1,6 @@
 import { authFormButton } from '../../components/registrationForm/registrationForm';
 
-export const validStatus = {
-  name: false,
-  lastName: false,
-  password: false,
-  mail: false,
-  date: false,
-  'post-billing': false,
-  'city-billing': false,
-  'street-billing': false,
-  'post-shipping': false,
-  'city-shipping': false,
-  'street-shipping': false,
-};
+export let validStatus: { [key: string]: boolean } = {};
 
 export function setValidStatus(
   field: keyof typeof validStatus,
@@ -30,10 +18,50 @@ export function checkAllInputs(): void {
     }
   } else if (window.location.href.includes('login')) {
     const submitButton = document.querySelector('.submit_button');
-    if (validStatus.mail && validStatus.password) {
+    if (Object.values(validStatus).every((value) => value)) {
       submitButton?.removeAttribute('disabled');
     } else {
       submitButton?.setAttribute('disabled', '');
     }
   }
+}
+export function fillObjectWithUniqueKeys(
+  form: HTMLFormElement,
+  value: boolean,
+  existingData: { [key: string]: boolean },
+): void {
+  const formArray = Array.from(form.elements).filter(
+    (element) =>
+      element.tagName === 'INPUT' &&
+      element.getAttribute('type') !== 'checkbox' &&
+      element.getAttribute('hide') !== '',
+  ) as HTMLInputElement[];
+
+  const obj = { ...existingData };
+  let counter: number = 1;
+
+  formArray.forEach((_, index) => {
+    let key: string = index.toString();
+
+    while (Object.prototype.hasOwnProperty.call(obj, key)) {
+      counter++;
+      key = index.toString() + counter;
+    }
+
+    if (!obj[key]) {
+      obj[key] = value;
+    }
+
+    counter = 1;
+  });
+
+  if (Object.keys(obj).length !== formArray.length) {
+    while (Object.keys(obj).length > formArray.length) {
+      delete obj[Object.keys(obj).pop()!];
+    }
+    while (Object.keys(obj).length < formArray.length) {
+      obj[Object.keys(obj).length.toString()] = true;
+    }
+  }
+  validStatus = obj;
 }

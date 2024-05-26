@@ -3,6 +3,7 @@ interface ValidationMap {
   [key: string]: (
     input: string,
     error: HTMLSpanElement | null,
+    indexOfInput?: number | null,
     type?: string | null,
     button?: HTMLButtonElement | null,
   ) => void;
@@ -30,17 +31,32 @@ function checkButton(
     return button[0];
   }
 }
-function checkInput(event: Event): number {
-  const elem = event.target as HTMLInputElement;
-  const form = elem.form as HTMLFormElement;
-  const formArray = Array.from(form.elements).filter(
-    (element) => element.tagName === 'INPUT',
-  ) as HTMLInputElement[];
-  const index = formArray.indexOf(elem);
-  return index;
+export function checkInputIndex(event: Event | HTMLInputElement): number {
+  if (event instanceof Event) {
+    const elem = event.target as HTMLInputElement;
+    const form = elem.form as HTMLFormElement;
+    const formArray = Array.from(form.elements).filter(
+      (element) =>
+        element.tagName === 'INPUT' &&
+        element.getAttribute('type') !== 'checkbox' &&
+        element.getAttribute('hide') !== '',
+    ) as HTMLInputElement[];
+    const index = formArray.indexOf(elem);
+    return index;
+  } else {
+    const form = event.form as HTMLFormElement;
+    const formArray = Array.from(form.elements).filter(
+      (element) =>
+        element.tagName === 'INPUT' &&
+        element.getAttribute('type') !== 'checkbox' &&
+        element.getAttribute('hide') !== '',
+    ) as HTMLInputElement[];
+    const index = formArray.indexOf(event);
+    return index;
+  }
 }
 export function validateInput(event: Event): boolean {
-  console.log(checkInput(event));
+  const indexOfInput = checkInputIndex(event);
   const element = event.target as HTMLInputElement;
   const value = element.value.trim();
   const error = checkError(element.parentElement?.children);
@@ -62,7 +78,7 @@ export function validateInput(event: Event): boolean {
     year: validationFunc.yearValidation,
   };
   if (attribute && validationMap[attribute]) {
-    validationMap[attribute](value, error, type, button);
+    validationMap[attribute](value, error, indexOfInput, type, button);
   }
   return true;
 }

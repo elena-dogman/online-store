@@ -112,7 +112,7 @@ function createAddressComponents(
   const inputCountry = createElement({
     tag: 'input',
     classNames: [`${type}__countries-input`, 'reg-input'],
-    attributes: { type: 'text', placeholder: 'Enter your country ' },
+    attributes: { type: 'text', placeholder: 'Enter your country', hide: '' },
   }) as HTMLInputElement;
   const countryWrapper = createElement({
     tag: 'div',

@@ -33,9 +33,8 @@ export function searchCountry(this: HTMLInputElement): void {
 export function addCountriesList(
   countriesWrap: HTMLElement,
   components: AddressComponents,
-  purpose: string,
 ): void {
-  disableLocation(components, purpose);
+  disableLocation(components);
   const countries = country.names().sort();
   const input = components.inputCountry;
   const post = components.inputPost;

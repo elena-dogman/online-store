@@ -12,8 +12,8 @@ import { submitRegData } from './submitRegData';
 import { addDefaultChecks } from './address/checkBoxes/checkBoxesComponents';
 import {
   fillObjectWithUniqueKeys,
-  profileBoolValidation,
-} from '../profileComponents/infoEdit/infoBoolean';
+  validStatus,
+} from '../../utils/validations/booleanValid';
 export const errorNameReg = errors.createErrorElement();
 export const errorLastNameReg = errors.createErrorElement();
 export const authSideForm = createElement({
@@ -48,7 +48,6 @@ export function createForm(): void {
   addInnerComponent(authSideForm, address);
   addInnerComponent(authSideForm, addDefaultChecks());
   addInnerComponent(authSideForm, authFormButton);
-  fillObjectWithUniqueKeys(authSideForm);
-  console.log(profileBoolValidation);
+  fillObjectWithUniqueKeys(authSideForm, false, validStatus);
   authFormButton.addEventListener('click', submitRegData);
 }

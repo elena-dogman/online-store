@@ -2,7 +2,7 @@ import { calculateAge, checkDaysInMonth } from '../ageAndTextChecks';
 import country from 'country-list-js';
 
 import * as dateComponents from '../../components/registrationForm/dateComponent';
-import { setValidStatus, checkAllInputs } from './booleanValid';
+import { setValidStatus, checkAllInputs, validStatus } from './booleanValid';
 import {
   AddressComponents,
   Components,
@@ -10,14 +10,12 @@ import {
   shippingComponents,
 } from '../../components/registrationForm/address/addressFactory';
 import * as postalCodes from 'postal-codes-js';
+import { checkInputIndex } from './validation';
 const components: Components = {
   billing: billingComponents,
   shipping: shippingComponents,
 };
 
-const dateDay = dateComponents.dayDate as HTMLInputElement;
-const dateMonth = dateComponents.monthDate as HTMLInputElement;
-const dateYear = dateComponents.yearDate as HTMLInputElement;
 export const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
   invalidEmail: 'Invalid email format',
@@ -58,18 +56,19 @@ function incorectValidation(
 export function mailValidation(
   value: string,
   err: HTMLSpanElement | null,
+  index?: number | null,
 ): boolean {
-  if (err) {
+  if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, ERROR_MESSAGES.invalidEmail);
-      setValidStatus('mail', false);
+      setValidStatus(index, false);
       checkAllInputs();
       return false;
     }
 
     if (!value.includes('@')) {
       incorectValidation(err, ERROR_MESSAGES.missingAtSymbol);
-      setValidStatus('mail', false);
+      setValidStatus(index, false);
       checkAllInputs();
       return false;
     }
@@ -78,20 +77,20 @@ export function mailValidation(
 
     if (!domainPart) {
       incorectValidation(err, ERROR_MESSAGES.missingDomain);
-      setValidStatus('mail', false);
+      setValidStatus(index, false);
       checkAllInputs();
       return false;
     }
 
     if (!REGEX.email.test(String(value).toLowerCase())) {
       incorectValidation(err, ERROR_MESSAGES.invalidEmail);
-      setValidStatus('mail', false);
+      setValidStatus(index, false);
       checkAllInputs();
       return false;
     }
 
     incorectValidation(err, '');
-    setValidStatus('mail', true);
+    setValidStatus(index, true);
     checkAllInputs();
     return true;
   }
@@ -113,27 +112,32 @@ export function validationBirth(
 export function nameValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
 ): boolean {
-  if (err) {
+  if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, '');
-      setValidStatus('name', false);
+      setValidStatus(index, false);
+      console.log(validStatus);
       checkAllInputs();
       return false;
     }
     if (value.length <= 1) {
       incorectValidation(err, ERROR_MESSAGES.shortInput);
-      setValidStatus('name', false);
+      setValidStatus(index, false);
+      console.log(validStatus);
       checkAllInputs();
       return false;
     }
     if (!REGEX.lettersOnly.test(value)) {
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-      setValidStatus('name', false);
+      setValidStatus(index, false);
+      console.log(validStatus);
       checkAllInputs();
       return false;
     }
-    setValidStatus('name', true);
+    setValidStatus(index, true);
+    console.log(validStatus);
     checkAllInputs();
     incorectValidation(err, '');
     return true;
@@ -144,27 +148,28 @@ export function nameValidation(
 export function lastNameValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
 ): boolean {
-  if (err) {
+  if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, '');
-      setValidStatus('lastName', false);
+      setValidStatus(index, false);
       checkAllInputs();
       return false;
     }
     if (value.length <= 1) {
       incorectValidation(err, ERROR_MESSAGES.shortInput);
-      setValidStatus('lastName', false);
+      setValidStatus(index, false);
       checkAllInputs();
       return false;
     }
     if (!REGEX.lettersOnly.test(value)) {
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-      setValidStatus('lastName', false);
+      setValidStatus(index, false);
       checkAllInputs();
       return false;
     }
-    setValidStatus('lastName', true);
+    setValidStatus(index, true);
     checkAllInputs();
     incorectValidation(err, '');
     return true;
@@ -175,19 +180,16 @@ export function lastNameValidation(
 export function cityValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
   type?: string | null,
 ): boolean {
-  if (err && type) {
-    const cityValid: 'city-shipping' | 'city-billing' =
-      type === 'shipping' ? 'city-shipping' : 'city-billing';
-    const streetValid: 'street-shipping' | 'street-billing' =
-      type === 'shipping' ? 'street-shipping' : 'street-billing';
+  if (err && type && index != null) {
     const streetErr = components[type].errorStreet;
     const billingStreet = components[type].inputStreet;
     if (value.length === 0) {
       if (billingStreet instanceof HTMLInputElement) {
-        setValidStatus(cityValid, false);
-        setValidStatus(streetValid, false);
+        setValidStatus(index, false);
+        setValidStatus(index + 1, false);
         checkAllInputs();
         billingStreet.value = '';
         incorectValidation(err, '');
@@ -198,8 +200,8 @@ export function cityValidation(
       if (billingStreet instanceof HTMLInputElement) {
         billingStreet.setAttribute('disabled', '');
         incorectValidation(err, ERROR_MESSAGES.shortInput);
-        setValidStatus(cityValid, false);
-        setValidStatus(streetValid, false);
+        setValidStatus(index, false);
+        setValidStatus(index + 1, false);
         checkAllInputs();
         streetErr.textContent = '';
         billingStreet.value = '';
@@ -208,8 +210,8 @@ export function cityValidation(
     }
     if (!REGEX.lettersAndSpacesAndHyphens.test(value)) {
       if (billingStreet instanceof HTMLInputElement) {
-        setValidStatus(cityValid, false);
-        setValidStatus(streetValid, false);
+        setValidStatus(index, false);
+        setValidStatus(index + 1, false);
         checkAllInputs();
         billingStreet.setAttribute('disabled', '');
         streetErr.textContent = '';
@@ -219,7 +221,7 @@ export function cityValidation(
       }
     }
     incorectValidation(err, '');
-    setValidStatus(cityValid, true);
+    setValidStatus(index, true);
     checkAllInputs();
     billingStreet.removeAttribute('disabled');
     return true;
@@ -230,30 +232,29 @@ export function cityValidation(
 export function streetValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
   type?: string | null,
 ): boolean {
-  if (err && type) {
-    const streetValid: 'street-shipping' | 'street-billing' =
-      type === 'shipping' ? 'street-shipping' : 'street-billing';
+  if (err && type && index != null) {
     if (value.length === 0) {
-      setValidStatus(streetValid, false);
+      setValidStatus(index, false);
       checkAllInputs();
       incorectValidation(err, '');
       return false;
     }
     if (value.length <= 1) {
-      setValidStatus(streetValid, false);
+      setValidStatus(index, false);
       checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.shortInput);
       return false;
     }
     if (!REGEX.lettersAndNumbersAndWhiteSpaces.test(value)) {
-      setValidStatus(streetValid, false);
+      setValidStatus(index, false);
       checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
       return false;
     }
-    setValidStatus(streetValid, true);
+    setValidStatus(index, true);
     checkAllInputs();
     incorectValidation(err, '');
     return true;
@@ -263,10 +264,11 @@ export function streetValidation(
 export function passwordValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
 ): boolean {
-  if (err) {
+  if (err && index != null) {
     if (/\s/.test(value)) {
-      setValidStatus('password', false);
+      setValidStatus(index, false);
       checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordNoSpaces);
       err.style.bottom = '0px';
@@ -274,7 +276,7 @@ export function passwordValidation(
     }
 
     if (value.length < 8) {
-      setValidStatus('password', false);
+      setValidStatus(index, false);
       checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
       err.style.bottom = '0px';
@@ -282,7 +284,7 @@ export function passwordValidation(
     }
 
     if (!/[A-Z]/.test(value)) {
-      setValidStatus('password', false);
+      setValidStatus(index, false);
       checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       err.style.bottom = '-4px';
@@ -290,7 +292,7 @@ export function passwordValidation(
     }
 
     if (!/[a-z]/.test(value)) {
-      setValidStatus('password', false);
+      setValidStatus(index, false);
       checkAllInputs();
       err.style.bottom = '0px';
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
@@ -298,14 +300,15 @@ export function passwordValidation(
     }
 
     if (!/\d/.test(value)) {
-      setValidStatus('password', false);
+      setValidStatus(index, false);
       checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       err.style.bottom = '0px';
       return false;
     }
 
-    setValidStatus('password', true);
+    setValidStatus(index, true);
+    console.log(validStatus);
     checkAllInputs();
     incorectValidation(err, '');
     err.style.bottom = '0px';
@@ -316,9 +319,12 @@ export function passwordValidation(
 export function dayValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
 ): number | undefined {
+  const dateMonth = dateComponents.monthDate as HTMLInputElement;
+  const dateYear = dateComponents.yearDate as HTMLInputElement;
   const daysInMonth = checkDaysInMonth(dateMonth.value, dateYear.value);
-  if (err) {
+  if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, '');
       return;
@@ -339,8 +345,9 @@ export function dayValidation(
 export function monthValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
 ): number | undefined {
-  if (err) {
+  if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, '');
       return;
@@ -361,8 +368,9 @@ export function monthValidation(
 export function yearValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
 ): number | undefined {
-  if (err) {
+  if (err && index != null) {
     const year = parseInt(value);
     if (isNaN(year)) {
       incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
@@ -379,8 +387,12 @@ export function yearValidation(
 
   return parseInt(value);
 }
-export function checkNumber(this: HTMLInputElement): void {
-  const parent = this.parentNode as HTMLLabelElement | null;
+export function checkNumber(event: Event): void {
+  const dateDay = dateComponents.dayDate as HTMLInputElement;
+  const dateMonth = dateComponents.monthDate as HTMLInputElement;
+  const dateYear = dateComponents.yearDate as HTMLInputElement;
+  const elem = event.target as HTMLInputElement;
+  const parent = elem.parentNode as HTMLLabelElement | null;
   const err = parent?.parentElement?.firstElementChild as HTMLSpanElement;
   const daysInMonth = checkDaysInMonth(dateMonth.value, dateYear.value);
   if (!parent) {
@@ -402,17 +414,17 @@ export function checkNumber(this: HTMLInputElement): void {
       if (calculateAge(age) < 13) {
         incorectValidation(err, ERROR_MESSAGES.ageRequirement);
       } else {
-        setValidStatus('date', true);
+        setValidStatus(4, true);
         checkAllInputs();
         incorectValidation(err, '');
       }
     } else {
-      setValidStatus('date', false);
+      setValidStatus(4, false);
       checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.incorrectData);
     }
   } else {
-    setValidStatus('date', false);
+    setValidStatus(4, false);
     checkAllInputs();
     incorectValidation(err, ERROR_MESSAGES.incorrectData);
   }
@@ -421,21 +433,15 @@ export function checkNumber(this: HTMLInputElement): void {
 export function postCodeValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
   type?: string | null,
 ): void {
-  if (err && type) {
+  if (err && type && index != null) {
     const countryNames = country.names();
     const countryIndex = countryNames.indexOf(
       components[type].listCountry.textContent || '',
     );
     const postCode = Object.keys(country.all)[countryIndex];
-
-    const cityValid: 'city-shipping' | 'city-billing' =
-      type === 'shipping' ? 'city-shipping' : 'city-billing';
-    const streetValid: 'street-shipping' | 'street-billing' =
-      type === 'shipping' ? 'street-shipping' : 'street-billing';
-    const postValid: 'post-shipping' | 'post-billing' =
-      type === 'shipping' ? 'post-shipping' : 'post-billing';
     const streetErr = components[type].errorStreet;
     const cityErr = components[type].errorCity;
     const billingStreet = components[type].inputStreet;
@@ -448,9 +454,9 @@ export function postCodeValidation(
         incorectValidation(err, '');
         billingCity.setAttribute('disabled', '');
         billingStreet.setAttribute('disabled', '');
-        setValidStatus(cityValid, false);
-        setValidStatus(postValid, false);
-        setValidStatus(streetValid, false);
+        setValidStatus(index, false);
+        setValidStatus(index + 1, false);
+        setValidStatus(index + 2, false);
         checkAllInputs();
         cityErr.textContent = '';
         streetErr.textContent = '';
@@ -463,7 +469,7 @@ export function postCodeValidation(
     if (postalCodes.validate(postCode, value) === true) {
       billingCity.removeAttribute('disabled');
       incorectValidation(err, '');
-      setValidStatus(postValid, true);
+      setValidStatus(index, true);
       checkAllInputs();
     } else {
       if (
@@ -472,9 +478,9 @@ export function postCodeValidation(
       ) {
         billingCity.setAttribute('disabled', '');
         billingStreet.setAttribute('disabled', '');
-        setValidStatus(cityValid, false);
-        setValidStatus(postValid, false);
-        setValidStatus(streetValid, false);
+        setValidStatus(index, false);
+        setValidStatus(index + 1, false);
+        setValidStatus(index + 1, false);
         checkAllInputs();
         cityErr.textContent = '';
         streetErr.textContent = '';
@@ -486,23 +492,23 @@ export function postCodeValidation(
   }
 }
 
-export function disableLocation(
-  adressComponents: AddressComponents,
-  purpose: string,
-): void {
+export function disableLocation(adressComponents: AddressComponents): void {
+  const city = adressComponents.inputCity;
+  const street = adressComponents.inputStreet;
+  const post = adressComponents.inputPost;
   adressComponents.errorCity.textContent = '';
   adressComponents.errorStreet.textContent = '';
   adressComponents.errorPost.textContent = '';
-  adressComponents.inputStreet.setAttribute('disabled', '');
-  adressComponents.inputCity.setAttribute('disabled', '');
-  const cityValid: 'city-shipping' | 'city-billing' =
-    purpose === 'shipping' ? 'city-shipping' : 'city-billing';
-  const streetValid: 'street-shipping' | 'street-billing' =
-    purpose === 'shipping' ? 'street-shipping' : 'street-billing';
-  setValidStatus(cityValid, false);
-  setValidStatus(streetValid, false);
+  street.setAttribute('disabled', '');
+  city.setAttribute('disabled', '');
+  const cityIndex = checkInputIndex(city);
+  const streetIndex = checkInputIndex(street);
+  const postIndex = checkInputIndex(street);
+  setValidStatus(cityIndex, false);
+  setValidStatus(streetIndex, false);
+  setValidStatus(postIndex, false);
   checkAllInputs();
-  adressComponents.inputStreet.value = '';
-  adressComponents.inputPost.value = '';
-  adressComponents.inputCity.value = '';
+  street.value = '';
+  post.value = '';
+  city.value = '';
 }

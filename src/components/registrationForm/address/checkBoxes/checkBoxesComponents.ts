@@ -3,11 +3,11 @@ import {
   addInnerComponent,
   createElement,
 } from '../../../../utils/baseComponent';
-import { checkAllInputs } from '../../../../utils/validations/booleanValid';
 import {
+  checkAllInputs,
   fillObjectWithUniqueKeys,
-  profileBoolValidation,
-} from '../../../profileComponents/infoEdit/infoBoolean';
+  validStatus,
+} from '../../../../utils/validations/booleanValid';
 import {
   addressesContainer,
   billingComponents,
@@ -21,9 +21,12 @@ export function joinChecked(): void {
     setValidStatusAddress('joinAdress', true);
     shippingComponents.container.classList.add('shipping__container--join');
     billingComponents.container.remove();
-    fillObjectWithUniqueKeys(shippingComponents.inputCountry.form);
-    console.log(profileBoolValidation);
-
+    fillObjectWithUniqueKeys(
+      shippingComponents.inputCountry.form,
+      false,
+      validStatus,
+    );
+    console.log(validStatus);
     checkAllInputs();
   }
 }
@@ -32,8 +35,12 @@ export function joinUnchecked(): void {
   if (shippingComponents.inputCountry.form) {
     shippingComponents.container.classList.remove('shipping__container--join');
     addressesContainer.append(billingComponents.container);
-    fillObjectWithUniqueKeys(shippingComponents.inputCountry.form);
-    console.log(profileBoolValidation);
+    fillObjectWithUniqueKeys(
+      shippingComponents.inputCountry.form,
+      false,
+      validStatus,
+    );
+    console.log(validStatus);
     setValidStatusAddress('joinAdress', false);
     checkAllInputs();
   }
