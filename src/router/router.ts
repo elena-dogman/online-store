@@ -56,7 +56,7 @@ function createRouter(routes: Routes): Router {
 
       const isLoggedIn = Boolean(localStorage.getItem('token'));
 
-      if (path === '/login' && isLoggedIn) {
+      if ((path === '/login' || path === '/register') && isLoggedIn) {
         this.navigate('/');
         return;
       }

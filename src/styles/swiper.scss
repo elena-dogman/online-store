@@ -1,14 +1,12 @@
 .swiper {
   width: 100%;
-  // height: 500px;
   max-width: 800px;
   margin: 0 auto;
   overflow: unset;
 }
 
 .swiper-container {
-  max-width: 100%;
-  // width: 500px;
+  width: 100%;
 }
 
 .swiper-slide {
@@ -40,13 +38,15 @@
   margin: 0 auto;
   position: relative;
 }
+
 .swiper-button-prev {
   left: var(--swiper-navigation-sides-offset, -5%);
-  color: $text-color-base;
+  color: #333;
 }
+
 .swiper-button-next {
   right: var(--swiper-navigation-sides-offset, -5%);
-  color: $text-color-base;
+  color: #333;
 }
 
 .swiper-button-prev-container,
@@ -87,8 +87,9 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   border: 2px solid #fff;
   width: calc(100% - 4px);
-  background: $text-color-base;
+  background: #333;
 }
+
 .swiper-horizontal > .swiper-scrollbar,
 .swiper-scrollbar.swiper-scrollbar-horizontal {
   height: auto;
@@ -96,17 +97,19 @@
   margin-top: 20px;
   bottom: var(--swiper-scrollbar-bottom, 1px);
 }
+
 .swiper-pagination-fraction,
 .swiper-pagination-custom,
 .swiper-horizontal > .swiper-pagination-bullets,
 .swiper-pagination-bullets.swiper-pagination-horizontal {
   bottom: var(--swiper-pagination-bottom, -7%);
 }
+
 .swiper-pagination-bullet {
   background: rgba(128, 128, 128);
   opacity: 1;
 }
 
 .swiper-pagination-bullet-active {
-  background: $text-color-base;
+  background: #333;
 }

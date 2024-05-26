@@ -203,7 +203,9 @@ export async function getDetailedProduct(
   }
 }
 
-export async function fetchProducts(sort?: string): Promise<ProductProjection[]> {
+export async function fetchProducts(
+  sort?: string,
+): Promise<ProductProjection[]> {
   try {
     let offset = 0;
     const limit = 500;
@@ -224,13 +226,16 @@ export async function fetchProducts(sort?: string): Promise<ProductProjection[]>
     }
 
     while (hasMore) {
-      const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
-        .productProjections()
-        .search()
-        .get({
-          queryArgs: queryArgs as unknown as { [key: string]: string | string[] | number },
-        })
-        .execute();
+      const response: ClientResponse<ProductProjectionPagedQueryResponse> =
+        await apiRoot
+          .productProjections()
+          .search()
+          .get({
+            queryArgs: queryArgs as unknown as {
+              [key: string]: string | string[] | number;
+            },
+          })
+          .execute();
 
       if (response.body.results.length === 0) {
         hasMore = false;
@@ -258,16 +263,17 @@ export async function fetchProductAttributes(): Promise<number[] | null> {
     let hasMore = true;
 
     while (hasMore) {
-      const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
-        .productProjections()
-        .search()
-        .get({
-          queryArgs: {
-            limit,
-            offset,
-          },
-        })
-        .execute();
+      const response: ClientResponse<ProductProjectionPagedQueryResponse> =
+        await apiRoot
+          .productProjections()
+          .search()
+          .get({
+            queryArgs: {
+              limit,
+              offset,
+            },
+          })
+          .execute();
 
       if (response.body.results.length === 0) {
         hasMore = false;
@@ -288,18 +294,22 @@ export async function fetchProductAttributes(): Promise<number[] | null> {
 
     const sizes: Set<number> = new Set();
 
-    allProducts.forEach(product => {
-      product.masterVariant.attributes?.forEach(attribute => {
+    allProducts.forEach((product) => {
+      product.masterVariant.attributes?.forEach((attribute) => {
         if (attribute.name === 'size') {
-          const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
+          const sizeValue = Array.isArray(attribute.value)
+            ? attribute.value[0]
+            : attribute.value;
           sizes.add(sizeValue as number);
         }
       });
 
-      product.variants.forEach(variant => {
-        variant.attributes?.forEach(attribute => {
+      product.variants.forEach((variant) => {
+        variant.attributes?.forEach((attribute) => {
           if (attribute.name === 'size') {
-            const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
+            const sizeValue = Array.isArray(attribute.value)
+              ? attribute.value[0]
+              : attribute.value;
             sizes.add(sizeValue as number);
           }
         });
@@ -319,10 +329,8 @@ export async function fetchProductAttributes(): Promise<number[] | null> {
 
 export async function fetchCategories(): Promise<Category[]> {
   try {
-    const response: ClientResponse<CategoryPagedQueryResponse> = await anonymousApiRoot
-      .categories()
-      .get()
-      .execute();
+    const response: ClientResponse<CategoryPagedQueryResponse> =
+      await anonymousApiRoot.categories().get().execute();
 
     const categories = response.body.results;
     console.log('Categories:', categories);
@@ -334,7 +342,10 @@ export async function fetchCategories(): Promise<Category[]> {
   }
 }
 
-export async function fetchFilteredProducts(filters: string[], sort?: string): Promise<ProductProjection[]> {
+export async function fetchFilteredProducts(
+  filters: string[],
+  sort?: string,
+): Promise<ProductProjection[]> {
   try {
     console.log('Filters being applied:', filters);
     console.log('Sort being applied:', sort);
@@ -352,13 +363,16 @@ export async function fetchFilteredProducts(filters: string[], sort?: string): P
       queryArgs.sort = [sort];
     }
 
-    const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
-      .productProjections()
-      .search()
-      .get({
-        queryArgs: queryArgs as unknown as { [key: string]: string | string[] },
-      })
-      .execute();
+    const response: ClientResponse<ProductProjectionPagedQueryResponse> =
+      await apiRoot
+        .productProjections()
+        .search()
+        .get({
+          queryArgs: queryArgs as unknown as {
+            [key: string]: string | string[];
+          },
+        })
+        .execute();
 
     console.log('Filtered products response:', response);
 

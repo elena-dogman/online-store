@@ -5,6 +5,8 @@
   font-family: $font-family-base;
   background-color: $card-background;
   height: 100%;
+  padding: 0 30px;
+  background-color: #fff;
 }
 .product_detailed_container {
   display: flex;
@@ -60,7 +62,7 @@
   text-wrap: nowrap;
 }
 .size_button_container {
-  width: 500px;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
