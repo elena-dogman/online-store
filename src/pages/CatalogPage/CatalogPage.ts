@@ -12,6 +12,24 @@ interface Filters {
   size: Set<string>;
 }
 
+function getFiltersFromURL(): Filters {
+  const params = new URLSearchParams(window.location.search);
+  const filters: Filters = {
+    audience: new Set(params.getAll('audience')),
+    category: new Set(params.getAll('category')),
+    size: new Set(params.getAll('size')),
+  };
+  return filters;
+}
+
+function updateURLWithFilters(filters: Filters): void {
+  const params = new URLSearchParams();
+  filters.audience.forEach(value => params.append('audience', value));
+  filters.category.forEach(value => params.append('category', value));
+  filters.size.forEach(value => params.append('size', value));
+  history.pushState(null, '', '?' + params.toString());
+}
+
 export async function createCatalogPage(): Promise<HTMLElement> {
   const pageContainerParams: ElementParams<'div'> = {
     tag: 'div',
@@ -49,11 +67,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   let currentPage = 1;
   const itemsPerPage = 8;
   const allProducts: ProductProjection[] = await fetchProducts();
-  const filters: Filters = {
-    audience: new Set<string>(),
-    category: new Set<string>(),
-    size: new Set<string>(),
-  };
+  const filters: Filters = getFiltersFromURL();
 
   const updateFilters = (filterName: keyof Filters, value: string, checked: boolean): void => {
     if (checked) {
@@ -61,6 +75,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     } else {
       filters[filterName].delete(value);
     }
+    updateURLWithFilters(filters);
     console.log(`Updated Filters: ${filterName}`, filters[filterName]);
   };
 
@@ -92,50 +107,47 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     addInnerComponent(paginationContainer, pagination);
   };
 
- filterComponent.addEventListener('change', async (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const filterName = target.classList[0].split('-')[0] as keyof Filters;
+  filterComponent.addEventListener('change', async (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const filterName = target.classList[0].split('-')[0] as keyof Filters;
 
-  updateFilters(filterName, target.value, target.checked);
+    updateFilters(filterName, target.value, target.checked);
 
-  const selectedFilters: string[] = [];
+    const selectedFilters: string[] = [];
 
-  const buildFilterString = (key: keyof Filters): string => {
-    if (filters[key].size > 0) {
-      if (key === 'category') {
-        const values = Array.from(filters[key]).map(value => `subtree("${value}")`).join(',');
-        return `categories.id: ${values}`;
-      } else if (key === 'size') {
-        const values = Array.from(filters[key]).map(value => `"${value}"`).join(',');
-        return `variants.attributes.size:${values}`;
-      } else {
-        const values = Array.from(filters[key]).map(value => `"${value}"`).join(',');
-        return `variants.attributes.${key}:${values}`;
+    const buildFilterString = (key: keyof Filters): string => {
+      if (filters[key].size > 0) {
+        if (key === 'category') {
+          const values = Array.from(filters[key]).map(value => `subtree("${value}")`).join(',');
+          return `categories.id: ${values}`;
+        } else {
+          const values = Array.from(filters[key]).map(value => `"${value}"`).join(',');
+          return `variants.attributes.${key}:(${values})`;
+        }
       }
+      return '';
+    };
+
+    const audienceFilter = buildFilterString('audience');
+    const categoryFilter = buildFilterString('category');
+    const sizeFilter = buildFilterString('size');
+
+    if (audienceFilter) selectedFilters.push(audienceFilter);
+    if (categoryFilter) selectedFilters.push(categoryFilter);
+    if (sizeFilter) selectedFilters.push(sizeFilter);
+
+    console.log('Selected Filters:', selectedFilters);
+
+    let filteredProducts: ProductProjection[] = [];
+    if (selectedFilters.length > 0) {
+      filteredProducts = await fetchFilteredProducts(selectedFilters);
+    } else {
+      filteredProducts = await fetchProducts();
     }
-    return '';
-  };
 
-  const audienceFilter = buildFilterString('audience');
-  const categoryFilter = buildFilterString('category');
-  const sizeFilter = buildFilterString('size');
-
-  if (audienceFilter) selectedFilters.push(audienceFilter);
-  if (categoryFilter) selectedFilters.push(categoryFilter);
-  if (sizeFilter) selectedFilters.push(sizeFilter);
-
-  console.log('Selected Filters:', selectedFilters);
-
-  let filteredProducts: ProductProjection[] = [];
-  if (selectedFilters.length > 0) {
-    filteredProducts = await fetchFilteredProducts(selectedFilters);
-  } else {
-    filteredProducts = await fetchProducts();
-  }
-
-  console.log('Filtered Products:', filteredProducts);
-  renderProducts(filteredProducts, 1, itemsPerPage);
-});
+    console.log('Filtered Products:', filteredProducts);
+    renderProducts(filteredProducts, 1, itemsPerPage);
+  });
 
   pageContainer.prepend(header);
   addInnerComponent(pageContainer, filterWrapper);
