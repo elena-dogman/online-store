@@ -92,7 +92,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     addInnerComponent(paginationContainer, pagination);
   };
 
-filterComponent.addEventListener('change', async (event: Event) => {
+ filterComponent.addEventListener('change', async (event: Event) => {
   const target = event.target as HTMLInputElement;
   const filterName = target.classList[0].split('-')[0] as keyof Filters;
 
@@ -105,9 +105,12 @@ filterComponent.addEventListener('change', async (event: Event) => {
       if (key === 'category') {
         const values = Array.from(filters[key]).map(value => `subtree("${value}")`).join(',');
         return `categories.id: ${values}`;
+      } else if (key === 'size') {
+        const values = Array.from(filters[key]).map(value => `"${value}"`).join(',');
+        return `variants.attributes.size:${values}`;
       } else {
         const values = Array.from(filters[key]).map(value => `"${value}"`).join(',');
-        return `variants.attributes.${key}:(${values})`;
+        return `variants.attributes.${key}:${values}`;
       }
     }
     return '';

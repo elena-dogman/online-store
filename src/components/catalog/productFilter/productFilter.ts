@@ -156,7 +156,6 @@ function createCategoryFilterGroup(category: Category, allCategories: Category[]
     }) as HTMLInputElement;
 
     checkbox.addEventListener('change', () => {
-      console.log('Checkbox changed:', { name: 'category', value: checkbox.value, checked: checkbox.checked });
       const event = new CustomEvent('filtersChanged', { detail: { name: 'category', value: checkbox.value, checked: checkbox.checked } });
       filterGroup.dispatchEvent(event);
     });
