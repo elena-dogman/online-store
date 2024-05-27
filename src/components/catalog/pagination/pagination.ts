@@ -1,4 +1,4 @@
-import { createElement, addInnerComponent,  ElementParams } from '../../../utils/baseComponent';
+import { createElement, addInnerComponent, ElementParams } from '../../../utils/baseComponent';
 
 interface PaginationProps {
   totalItems: number;
@@ -34,9 +34,65 @@ export function createPagination({ totalItems, itemsPerPage, currentPage, onPage
     return pageButton;
   };
 
+  // Создаем кнопку для перехода на предыдущую страницу
+  if (currentPage > 1) {
+    const prevButton = createElement({
+      tag: 'button',
+      classNames: ['pagination-arrow', 'prev'],
+      attributes: { type: 'button' },
+      callbacks: [
+        {
+          eventType: 'click',
+          callback: (): void => {
+            onPageChange(currentPage - 1);
+          },
+        },
+      ],
+    });
+
+    const prevImg = createElement({
+      tag: 'img',
+      attributes: {
+        src: '/assets/catalog/back.png',
+        alt: 'Previous',
+      },
+    });
+
+    addInnerComponent(prevButton, prevImg);
+    addInnerComponent(paginationContainer, prevButton);
+  }
+
   for (let i = 1; i <= totalPages; i++) {
     const pageButton = createPageButton(i);
     addInnerComponent(paginationContainer, pageButton);
+  }
+
+  // Создаем кнопку для перехода на следующую страницу
+  if (currentPage < totalPages) {
+    const nextButton = createElement({
+      tag: 'button',
+      classNames: ['pagination-arrow', 'next'],
+      attributes: { type: 'button' },
+      callbacks: [
+        {
+          eventType: 'click',
+          callback: (): void => {
+            onPageChange(currentPage + 1);
+          },
+        },
+      ],
+    });
+
+    const nextImg = createElement({
+      tag: 'img',
+      attributes: {
+        src: '/assets/catalog/forward.png',
+        alt: 'Next',
+      },
+    });
+
+    addInnerComponent(nextButton, nextImg);
+    addInnerComponent(paginationContainer, nextButton);
   }
 
   document.addEventListener('keydown', (event) => {
