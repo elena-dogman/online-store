@@ -351,12 +351,3 @@ export async function fetchFilteredProducts(filters: string[]): Promise<ProductP
     return [];
   }
 }
-
-
-
-
-
-
-
-
-

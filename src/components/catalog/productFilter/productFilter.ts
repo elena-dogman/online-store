@@ -15,10 +15,8 @@ export async function createFilterComponent(): Promise<HTMLElement> {
   if (categoriesResponse) {
     console.log('Categories Response:', categoriesResponse);
 
-    // Определяем порядок сортировки категорий
     const categoryOrder = ['men', 'women', 'unisex', 'kids'];
 
-    // Сортируем категории в соответствии с определенным порядком
     const sortedCategories = categoriesResponse.sort((a, b) => {
       const aIndex = categoryOrder.indexOf(a.slug['en-US']);
       const bIndex = categoryOrder.indexOf(b.slug['en-US']);
@@ -26,7 +24,7 @@ export async function createFilterComponent(): Promise<HTMLElement> {
     });
 
     sortedCategories.forEach(category => {
-      if (!category.parent) { // Только корневые категории
+      if (!category.parent) {
         const filterGroup = createCategoryFilterGroup(category, categoriesResponse);
         addInnerComponent(filterContainer, filterGroup);
       }
