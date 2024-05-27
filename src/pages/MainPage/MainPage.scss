@@ -14,11 +14,11 @@
   color: $not-active-color;
   font-family: $font-family-base;
 
-  @include hoverButton;
+  @include hoverLink;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .button-for-reviewer {
-    @include hoverButton;
+    @include hoverLink;
   }
 }

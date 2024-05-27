@@ -71,7 +71,7 @@
 .profile-header__btn-edit{
   width: 80px;
   height: 40px;
-  @include hoverButton;
+  @include hoverLink;
   border: 0;
   color:$text-color-contrast;
   border-radius:8px ;

@@ -14,6 +14,8 @@ import {
   ProductProjectionPagedQueryResponse,
   Product,
   ProductProjection,
+  CategoryPagedQueryResponse,
+  Category,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/eventEmitter';
@@ -237,7 +239,7 @@ export async function fetchProducts(): Promise<ProductProjection[]> {
   }
 }
 
-export async function fetchProductAttributes(): Promise<ProductAttributesResponse | null> {
+export async function fetchProductAttributes(): Promise<number[] | null> {
   try {
     let offset = 0;
     const limit = 500;
@@ -273,18 +275,10 @@ export async function fetchProductAttributes(): Promise<ProductAttributesRespons
 
     console.log('Products:', allProducts);
 
-    const audiences = new Set<string>();
     const sizes: Set<number> = new Set();
-    const categories = new Set<string>();
 
     allProducts.forEach(product => {
       product.masterVariant.attributes?.forEach(attribute => {
-        if (attribute.name === 'audience') {
-          audiences.add(attribute.value as string);
-        }
-        if (attribute.name === 'category') {
-          categories.add(attribute.value as string);
-        }
         if (attribute.name === 'size') {
           const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
           sizes.add(sizeValue as number);
@@ -293,12 +287,6 @@ export async function fetchProductAttributes(): Promise<ProductAttributesRespons
 
       product.variants.forEach(variant => {
         variant.attributes?.forEach(attribute => {
-          if (attribute.name === 'audience') {
-            audiences.add(attribute.value as string);
-          }
-          if (attribute.name === 'category') {
-            categories.add(attribute.value as string);
-          }
           if (attribute.name === 'size') {
             const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
             sizes.add(sizeValue as number);
@@ -311,21 +299,36 @@ export async function fetchProductAttributes(): Promise<ProductAttributesRespons
 
     console.log('Unique Sizes:', uniqueSizes);
 
-    return {
-      attributes: [
-        { name: 'audience', values: Array.from(audiences) },
-        { name: 'category', values: Array.from(categories) },
-        { name: 'size', values: uniqueSizes },
-      ],
-    };
+    return uniqueSizes;
   } catch (error) {
-    console.error('Error fetching product attributes:', error);
+    console.error('Error fetching product sizes:', error);
     return null;
   }
 }
 
+
+export async function fetchCategories(): Promise<Category[]> {
+  try {
+    const response: ClientResponse<CategoryPagedQueryResponse> = await anonymousApiRoot
+      .categories()
+      .get()
+      .execute();
+
+    const categories = response.body.results;
+    console.log('Categories:', categories);
+
+    return categories;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+}
+
+
 export async function fetchFilteredProducts(filters: string[]): Promise<ProductProjection[]> {
   try {
+    console.log('Filters being applied:', filters);
+
     const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
       .productProjections()
       .search()
@@ -336,12 +339,15 @@ export async function fetchFilteredProducts(filters: string[]): Promise<ProductP
       })
       .execute();
 
+    console.log('Filtered products response:', response);
+
+    if (response.body.results.length === 0) {
+      console.log('No products found for the applied filters.');
+    }
+
     return response.body.results;
   } catch (error) {
     console.error('Error fetching filtered products:', error);
     return [];
   }
 }
-
-
-
