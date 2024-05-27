@@ -147,8 +147,9 @@ export function createSwiper(ID: string): Promise<{
               clickable: true,
             },
             autoplay: {
-              delay: 30000,
-              disableOnInteraction: true,
+              delay: 300000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
             },
             scrollbar: {
               el: '.swiper-scrollbar',

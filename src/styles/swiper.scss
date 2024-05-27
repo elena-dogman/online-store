@@ -6,7 +6,7 @@
 }
 
 .swiper-container {
-  width: 100%;
+  width: 50%;
 }
 
 .swiper-slide {
@@ -14,8 +14,9 @@
   justify-content: center;
   align-items: center;
   background: #fff;
-  padding: 10px;
   box-sizing: border-box;
+  width: 100%;
+  padding: 0;
 }
 
 .swiper-zoom-container {

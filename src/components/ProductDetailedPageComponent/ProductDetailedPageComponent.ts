@@ -28,7 +28,7 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
         addInnerComponent(detailedProductContainer, swiperContainer);
 
         const productData = response.body.masterData.current;
-
+        console.log(productData);
         const descriptionContainerParams: ElementParams<'div'> = {
           tag: 'div',
           classNames: ['description_container'],
@@ -120,7 +120,9 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
         addInnerComponent(sizeContainer, sizeButtonContainer);
         const sizes: number[] = [];
         if (productData.masterVariant.attributes) {
-          const firstSize = productData.masterVariant.attributes[3].value;
+          const attributes = productData.masterVariant.attributes;
+          const sizeAttribute = attributes.find((attr) => attr.name === 'size');
+          const firstSize = sizeAttribute ? sizeAttribute.value : undefined;
           sizes.push(firstSize);
         }
 

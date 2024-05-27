@@ -166,6 +166,7 @@ export function createHeader(): HTMLElement {
   }
 
   async function updateAuthButton(isLoggedIn: boolean): Promise<void> {
+    console.log(isLoggedIn);
     registerButton.style.display = isLoggedIn ? 'none' : 'block';
     authButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
     authButton.setAttribute('href', isLoggedIn ? '#' : '/login');
@@ -182,12 +183,7 @@ export function createHeader(): HTMLElement {
     const isLoggedIn = checkLoginStatus();
     updateAuthButton(isLoggedIn);
   }
-  if (
-    document.readyState === 'complete' ||
-    document.readyState === 'interactive'
-  ) {
-    initializeAuthButtons();
-  }
+  initializeAuthButtons();
 
   appEvents.on('login', () => updateAuthButton(true));
   appEvents.on('logout', () => updateAuthButton(false));
