@@ -15,10 +15,8 @@ export async function createFilterComponent(): Promise<HTMLElement> {
   if (categoriesResponse) {
     console.log('Categories Response:', categoriesResponse);
 
-    // Определяем порядок сортировки категорий
     const categoryOrder = ['men', 'women', 'unisex', 'kids'];
 
-    // Сортируем категории в соответствии с определенным порядком
     const sortedCategories = categoriesResponse.sort((a, b) => {
       const aIndex = categoryOrder.indexOf(a.slug['en-US']);
       const bIndex = categoryOrder.indexOf(b.slug['en-US']);
@@ -26,7 +24,7 @@ export async function createFilterComponent(): Promise<HTMLElement> {
     });
 
     sortedCategories.forEach(category => {
-      if (!category.parent) { // Только корневые категории
+      if (!category.parent) {
         const filterGroup = createCategoryFilterGroup(category, categoriesResponse);
         addInnerComponent(filterContainer, filterGroup);
       }
@@ -89,8 +87,10 @@ function createCategoryFilterGroup(category: Category, allCategories: Category[]
     }) as HTMLInputElement;
 
     checkbox.addEventListener('change', () => {
-      console.log('Checkbox changed:', { name: 'category', value: checkbox.value, checked: checkbox.checked });
-      const event = new CustomEvent('filtersChanged', { detail: { name: 'category', value: checkbox.value, checked: checkbox.checked } });
+      const event = new CustomEvent(
+        'filtersChanged',
+        { detail: { name: 'category', value: checkbox.value, checked: checkbox.checked } },
+      );
       filterGroup.dispatchEvent(event);
     });
 
@@ -173,8 +173,10 @@ function createFilterGroup(name: string, values: (string | number)[]): HTMLEleme
     }) as HTMLInputElement;
 
     checkbox.addEventListener('change', () => {
-      console.log('Checkbox changed:', { name, value: checkbox.value, checked: checkbox.checked });
-      const event = new CustomEvent('filtersChanged', { detail: { name, value: checkbox.value, checked: checkbox.checked } });
+      const event = new CustomEvent(
+        'filtersChanged',
+        { detail: { name, value: checkbox.value, checked: checkbox.checked } },
+      );
       filterGroup.dispatchEvent(event);
     });
 

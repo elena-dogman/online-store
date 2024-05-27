@@ -34,7 +34,6 @@ export function createPagination({ totalItems, itemsPerPage, currentPage, onPage
     return pageButton;
   };
 
-  // Создаем кнопку для перехода на предыдущую страницу
   if (currentPage > 1) {
     const prevButton = createElement({
       tag: 'button',
@@ -67,7 +66,6 @@ export function createPagination({ totalItems, itemsPerPage, currentPage, onPage
     addInnerComponent(paginationContainer, pageButton);
   }
 
-  // Создаем кнопку для перехода на следующую страницу
   if (currentPage < totalPages) {
     const nextButton = createElement({
       tag: 'button',

@@ -83,7 +83,6 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     products: ProductProjection[],
     page: number,
     itemsPerPageCount: number): void => {
-    console.log('Rendering products:', products);
     clear(catalogContainer);
 
     const start = (page - 1) * itemsPerPageCount;
