@@ -317,7 +317,6 @@ export async function fetchProductAttributes(): Promise<number[] | null> {
   }
 }
 
-
 export async function fetchCategories(): Promise<Category[]> {
   try {
     const response: ClientResponse<CategoryPagedQueryResponse> = await anonymousApiRoot
@@ -347,6 +346,8 @@ export async function fetchFilteredProducts(filters: string[], sort?: string): P
       offset?: number;
     } = {
       filter: filters,
+      limit: 500,
+      offset: 0,
     };
 
     if (sort) {
@@ -357,7 +358,7 @@ export async function fetchFilteredProducts(filters: string[], sort?: string): P
       .productProjections()
       .search()
       .get({
-        queryArgs: queryArgs as unknown as { [key: string]: string | string[] },
+        queryArgs: queryArgs as unknown as { [key: string]: string | string[] | number },
       })
       .execute();
 
