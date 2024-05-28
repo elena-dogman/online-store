@@ -188,7 +188,7 @@
 }
 
 .size-checkbox-container label {
-margin-right: 20px;
+  margin-right: 20px;
 }
 
 .sort-container {
@@ -268,15 +268,17 @@ margin-right: 20px;
 }
 
 @media (hover: hover) and (pointer: fine) {
-.filter-label,
-.sort-label {
-  @include hoverOpacity(0.7);
-}
 
-.sort-options label:hover {
-  background-color: $card-background;
-}
-.pagination-button:hover {
-  box-shadow: $button-hover-box-shadow;
-}
+  .filter-label,
+  .sort-label {
+    @include hoverOpacity(0.7);
+  }
+
+  .sort-options label:hover {
+    background-color: $card-background;
+  }
+
+  .pagination-button:hover {
+    box-shadow: $button-hover-box-shadow;
+  }
 }
