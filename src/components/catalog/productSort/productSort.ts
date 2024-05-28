@@ -1,6 +1,5 @@
 import { ElementParams, createElement, addInnerComponent } from '../../../utils/baseComponent';
 
-
 export function createSortComponent(onSortChange: (sort: string) => void): HTMLElement {
   const sortContainerParams: ElementParams<'div'> = {
     tag: 'div',
@@ -8,40 +7,63 @@ export function createSortComponent(onSortChange: (sort: string) => void): HTMLE
   };
   const sortContainer = createElement(sortContainerParams);
 
-  const sortLabelParams: ElementParams<'label'> = {
-    tag: 'label',
+  const sortLabelParams: ElementParams<'div'> = {
+    tag: 'div',
     classNames: ['sort-label'],
-    textContent: 'Sort by: ',
+    textContent: 'Sort by ',
   };
   const sortLabel = createElement(sortLabelParams);
 
-  const sortSelectParams: ElementParams<'select'> = {
-    tag: 'select',
-    classNames: ['sort-select'],
+  const arrowParams: ElementParams<'span'> = {
+    tag: 'span',
+    classNames: ['triangle'],
   };
-  const sortSelect = createElement(sortSelectParams) as HTMLSelectElement;
+  const arrow = createElement(arrowParams);
 
-  const sortOptions = [
+  const sortOptionsParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['sort-options'],
+  };
+  const sortOptions = createElement(sortOptionsParams);
+
+  const sortOptionsData = [
     { value: 'price asc', text: 'Lowest price' },
     { value: 'price desc', text: 'Highest price' },
     { value: 'createdAt desc', text: 'Newest' },
   ];
 
-  sortOptions.forEach(option => {
-    const optionElement = createElement({
-      tag: 'option',
-      attributes: { value: option.value },
-      textContent: option.text,
-    }) as HTMLOptionElement;
-    sortSelect.appendChild(optionElement);
+  sortOptionsData.forEach(option => {
+    const labelParams: ElementParams<'label'> = {
+      tag: 'label',
+    };
+    const label = createElement(labelParams);
+
+    const inputParams: ElementParams<'input'> = {
+      tag: 'input',
+      attributes: { type: 'radio', name: 'sort', value: option.value },
+    };
+    const input = createElement(inputParams) as HTMLInputElement;
+
+    input.addEventListener('change', () => {
+      onSortChange(input.value);
+    });
+
+    const textNode = document.createTextNode(option.text);
+
+    label.append(input);
+    label.append(textNode);
+
+    sortOptions.append(label);
   });
 
-  sortSelect.addEventListener('change', () => {
-    onSortChange(sortSelect.value);
+  sortLabel.addEventListener('click', () => {
+    sortOptions.classList.toggle('show');
+    arrow.classList.toggle('open');
   });
 
+  addInnerComponent(sortLabel, arrow);
   addInnerComponent(sortContainer, sortLabel);
-  addInnerComponent(sortContainer, sortSelect);
+  addInnerComponent(sortContainer, sortOptions);
 
   return sortContainer;
 }

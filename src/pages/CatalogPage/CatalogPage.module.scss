@@ -10,7 +10,7 @@
   gap: 10px;
   width: 250px;
   padding: 20px;
-  margin-top: 60px;
+  margin-top: 80px;
 }
 
 .filter-container {
@@ -26,7 +26,6 @@
   flex-direction: column;
   gap: 20px;
   flex-grow: 1;
-  margin-top: 60px;
 }
 
 .catalog-grid {
@@ -122,12 +121,18 @@
   height: 24px;
 }
 
-.filter-label-wrapper {
+.size-filter {
+  margin-top: 10px;
+}
+
+.filter-label-wrapper,
+.sort-label {
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   gap: 5px;
+  font-weight: bold;
 }
 
 .triangle {
@@ -145,7 +150,6 @@
 
 .filter-label {
   cursor: pointer;
-  font-weight: bold;
 }
 
 .category-filter {
@@ -180,28 +184,66 @@ margin-right: 20px;
 }
 
 .sort-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  margin: 80px 0 10px 20px;
+}
+
+//  {
+//   font-size: $font-size-base;
+//   font-weight: bold;
+//   display: flex;
+//   align-items: center;
+//   gap: 5px;
+//   margin-top: 5px;
+// }
+
+.sort-container .arrow {
+  margin-left: 5px;
+}
+
+.sort-options {
+  display: none;
+  position: absolute;
+  background-color: white;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 15px 15px 5px;
+  z-index: 1;
+  border: 1px solid #ddd;
+  min-width: 160px;
+  top: 100%;
+}
+
+.sort-options label {
   display: flex;
   align-items: center;
-  margin-top: 60px;
+  margin-bottom: 8px;
+  cursor: pointer;
 }
 
-.sort-label {
-  margin-right: 0.5rem;
+.sort-options input[type="radio"] {
+  display: none;
 }
 
-.sort-select {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.sort-options.show {
+  display: block;
+}
+
+.sort-options.hidden {
+  display: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
-.filter-label {
+.filter-label,
+.sort-label {
   @include hoverOpacity(0.7);
+}
+
+.sort-options label:hover {
+  background-color: $card-background;
 }
 .pagination-button:hover {
   box-shadow: $button-hover-box-shadow;
 }
 }
-
-
