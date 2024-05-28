@@ -86,6 +86,14 @@
   margin: 10px 0;
 }
 
+.pagination-container {
+  visibility: hidden;
+}
+
+.pagination-container.visible {
+  visibility: visible;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -190,14 +198,6 @@ margin-right: 20px;
   margin: 80px 0 10px 20px;
 }
 
-//  {
-//   font-size: $font-size-base;
-//   font-weight: bold;
-//   display: flex;
-//   align-items: center;
-//   gap: 5px;
-//   margin-top: 5px;
-// }
 
 .sort-container .arrow {
   margin-left: 5px;
@@ -232,6 +232,39 @@ margin-right: 20px;
 
 .sort-options.hidden {
   display: none;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  display: none;
+}
+
+.loading-spinner {
+  border: 8px solid $card-background;
+  border-top: 8px solid $text-color-accent;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {

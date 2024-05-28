@@ -46,6 +46,22 @@ function updateURLWithFilters(filters: Filters): void {
   history.pushState(null, '', '?' + params.toString());
 }
 
+function createLoadingOverlay(): HTMLElement {
+  const overlay = createElement({
+    tag: 'div',
+    classNames: ['loading-overlay'],
+  });
+
+  const spinner = createElement({
+    tag: 'div',
+    classNames: ['loading-spinner'],
+  });
+
+  overlay.appendChild(spinner);
+
+  return overlay;
+}
+
 export async function createCatalogPage(): Promise<HTMLElement> {
   await fetchAndMapCategories();
 
@@ -81,6 +97,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
   const header = createHeader();
   const filterComponent = await createFilterComponent();
+  const loadingOverlay = createLoadingOverlay();
 
   let currentPage = 1;
   const itemsPerPage = 8;
@@ -98,8 +115,19 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     console.log(`Updated Filters: ${filterName}`, filters[filterName]);
   };
 
+  const showLoadingOverlay = (): void => {
+    loadingOverlay.style.display = 'flex';
+    paginationContainer.classList.remove('visible');
+  };
+
+  const hideLoadingOverlay = (): void => {
+    loadingOverlay.style.display = 'none';
+    paginationContainer.classList.add('visible');
+  };
+
   const renderProducts = async (page: number, itemsPerPageCount: number, sort: string): Promise<void> => {
     console.log('Rendering products with sort:', sort);
+    showLoadingOverlay();
     clear(catalogContainer);
 
     const selectedFilters: string[] = [];
@@ -151,6 +179,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
     clear(paginationContainer);
     addInnerComponent(paginationContainer, pagination);
+    hideLoadingOverlay();
   };
 
   filterComponent.addEventListener('change', async (event: Event) => {
@@ -162,10 +191,10 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     await renderProducts(1, itemsPerPage, currentSort);
   });
 
-const sortComponent = createSortComponent(async (sort: string) => {
-  currentSort = sort;
-  await renderProducts(1, itemsPerPage, currentSort);
-});
+  const sortComponent = createSortComponent(async (sort: string) => {
+    currentSort = sort;
+    await renderProducts(1, itemsPerPage, currentSort);
+  });
 
   pageContainer.prepend(header);
   addInnerComponent(pageContainer, filterWrapper);
@@ -174,6 +203,7 @@ const sortComponent = createSortComponent(async (sort: string) => {
   addInnerComponent(catalogContainerWrapper, sortComponent);
   addInnerComponent(catalogContainerWrapper, catalogContainer);
   addInnerComponent(catalogContainerWrapper, paginationContainer);
+  pageContainer.appendChild(loadingOverlay);
 
   await renderProducts(currentPage, itemsPerPage, currentSort);
 
