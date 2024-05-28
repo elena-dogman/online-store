@@ -2,7 +2,7 @@ import { createElement, addInnerComponent, clear, ElementParams } from '../../ut
 import { createHeader } from '../../components/header/header';
 import { createProductCatalog } from '../../components/catalog/productCatalog/productCatalog';
 import { createFilterComponent } from '../../components/catalog/productFilter/productFilter';
-import { fetchFilteredProducts, fetchProducts } from '../../api/apiService';
+import { fetchFilteredProducts, fetchProducts, fetchCategories } from '../../api/apiService';
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { createPagination } from '../../components/catalog/pagination/pagination';
 
@@ -12,11 +12,23 @@ interface Filters {
   size: Set<string>;
 }
 
+const categoriesMap: Record<string, string> = {};
+
+async function fetchAndMapCategories(): Promise<void> {
+  const categories = await fetchCategories();
+  categories.forEach(category => {
+    categoriesMap[category.id] = category.name['en-US'];
+  });
+}
+
 function getFiltersFromURL(): Filters {
   const params = new URLSearchParams(window.location.search);
   const filters: Filters = {
     audience: new Set(params.getAll('audience')),
-    category: new Set(params.getAll('category')),
+    category: new Set(
+      params.getAll('category')
+        .map(name => Object.keys(categoriesMap)
+          .find(id => categoriesMap[id] === name) || name)),
     size: new Set(params.getAll('size')),
   };
   return filters;
@@ -25,12 +37,17 @@ function getFiltersFromURL(): Filters {
 function updateURLWithFilters(filters: Filters): void {
   const params = new URLSearchParams();
   filters.audience.forEach(value => params.append('audience', value));
-  filters.category.forEach(value => params.append('category', value));
+  filters.category.forEach(value => {
+    const categoryName = categoriesMap[value] || value;
+    params.append('category', categoryName);
+  });
   filters.size.forEach(value => params.append('size', value));
   history.pushState(null, '', '?' + params.toString());
 }
 
 export async function createCatalogPage(): Promise<HTMLElement> {
+  await fetchAndMapCategories();
+
   const pageContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['catalog-page-container'],
@@ -83,6 +100,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     products: ProductProjection[],
     page: number,
     itemsPerPageCount: number): void => {
+    console.log('Rendering products:', products);
     clear(catalogContainer);
 
     const start = (page - 1) * itemsPerPageCount;
@@ -119,6 +137,9 @@ export async function createCatalogPage(): Promise<HTMLElement> {
         if (key === 'category') {
           const values = Array.from(filters[key]).map(value => `subtree("${value}")`).join(',');
           return `categories.id: ${values}`;
+        } else if (key === 'size') {
+          const values = Array.from(filters[key]).map(value => `"${value}"`).join(',');
+          return `variants.attributes.size:${values}`;
         } else {
           const values = Array.from(filters[key]).map(value => `"${value}"`).join(',');
           return `variants.attributes.${key}:(${values})`;
