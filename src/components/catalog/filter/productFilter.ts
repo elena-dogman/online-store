@@ -34,6 +34,7 @@ export async function createFilterComponent(): Promise<HTMLElement> {
   if (sizesResponse) {
     console.log('Sizes Response:', sizesResponse);
     const filterGroup = createFilterGroup('size', sizesResponse);
+     filterGroup.classList.add('size-filter-group');
     addInnerComponent(filterContainer, filterGroup);
   }
 
@@ -213,4 +214,3 @@ function createFilterGroup(name: string, values: (string | number)[]): HTMLEleme
 
   return filterGroup;
 }
-

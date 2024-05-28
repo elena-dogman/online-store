@@ -10,7 +10,7 @@
   gap: 10px;
   width: 250px;
   padding: 20px;
-  margin-top: 60px;
+  margin-top: 80px;
 }
 
 .filter-container {
@@ -26,7 +26,6 @@
   flex-direction: column;
   gap: 20px;
   flex-grow: 1;
-  margin-top: 60px;
 }
 
 .catalog-grid {
@@ -87,6 +86,14 @@
   margin: 10px 0;
 }
 
+.pagination-container {
+  visibility: hidden;
+}
+
+.pagination-container.visible {
+  visibility: visible;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -122,12 +129,18 @@
   height: 24px;
 }
 
-.filter-label-wrapper {
+.size-filter {
+  margin-top: 10px;
+}
+
+.filter-label-wrapper,
+.sort-label {
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   gap: 5px;
+  font-weight: bold;
 }
 
 .triangle {
@@ -145,7 +158,6 @@
 
 .filter-label {
   cursor: pointer;
-  font-weight: bold;
 }
 
 .category-filter {
@@ -176,16 +188,97 @@
 }
 
 .size-checkbox-container label {
-margin-right: 20px;
+  margin-right: 20px;
+}
+
+.sort-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  margin: 80px 0 10px 20px;
+}
+
+
+.sort-container .arrow {
+  margin-left: 5px;
+}
+
+.sort-options {
+  display: none;
+  position: absolute;
+  background-color: white;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 15px 15px 5px;
+  z-index: 1;
+  border: 1px solid #ddd;
+  min-width: 160px;
+  top: 100%;
+}
+
+.sort-options label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.sort-options input[type="radio"] {
+  display: none;
+}
+
+.sort-options.show {
+  display: block;
+}
+
+.sort-options.hidden {
+  display: none;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  display: none;
+}
+
+.loading-spinner {
+  border: 8px solid $card-background;
+  border-top: 8px solid $text-color-accent;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
-.filter-label {
-  @include hoverOpacity(0.7);
-}
-.pagination-button:hover {
-  box-shadow: $button-hover-box-shadow;
-}
-}
 
+  .filter-label,
+  .sort-label {
+    @include hoverOpacity(0.7);
+  }
 
+  .sort-options label:hover {
+    background-color: $card-background;
+  }
+
+  .pagination-button:hover {
+    box-shadow: $button-hover-box-shadow;
+  }
+}

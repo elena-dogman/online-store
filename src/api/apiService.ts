@@ -30,6 +30,7 @@ export interface ProductAttributesResponse {
     values: (string | number)[];
   }[];
 }
+
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
 });
@@ -202,24 +203,34 @@ export async function getDetailedProduct(
   }
 }
 
-export async function fetchProducts(): Promise<ProductProjection[]> {
+export async function fetchProducts(sort?: string): Promise<ProductProjection[]> {
   try {
     let offset = 0;
     const limit = 500;
     let allProducts: ProductProjection[] = [];
     let hasMore = true;
 
+    const queryArgs: {
+      limit: number;
+      offset: number;
+      sort?: string[];
+    } = {
+      limit,
+      offset,
+    };
+
+    if (sort) {
+      queryArgs.sort = [sort];
+    }
+
     while (hasMore) {
-      const response: ClientResponse<ProductProjectionPagedQueryResponse> =
-        await apiRoot
-          .productProjections()
-          .get({
-            queryArgs: {
-              limit,
-              offset,
-            },
-          })
-          .execute();
+      const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
+        .productProjections()
+        .search()
+        .get({
+          queryArgs: queryArgs as unknown as { [key: string]: string | string[] | number },
+        })
+        .execute();
 
       if (response.body.results.length === 0) {
         hasMore = false;
@@ -324,26 +335,33 @@ export async function fetchCategories(): Promise<Category[]> {
   }
 }
 
-
-export async function fetchFilteredProducts(filters: string[]): Promise<ProductProjection[]> {
+export async function fetchFilteredProducts(filters: string[], sort?: string): Promise<ProductProjection[]> {
   try {
     console.log('Filters being applied:', filters);
+    console.log('Sort being applied:', sort);
+
+    const queryArgs: {
+      filter: string[];
+      sort?: string[];
+      limit?: number;
+      offset?: number;
+    } = {
+      filter: filters,
+    };
+
+    if (sort) {
+      queryArgs.sort = [sort];
+    }
 
     const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
       .productProjections()
       .search()
       .get({
-        queryArgs: {
-          filter: filters,
-        },
+        queryArgs: queryArgs as unknown as { [key: string]: string | string[] },
       })
       .execute();
 
     console.log('Filtered products response:', response);
-
-    if (response.body.results.length === 0) {
-      console.log('No products found for the applied filters.');
-    }
 
     return response.body.results;
   } catch (error) {
