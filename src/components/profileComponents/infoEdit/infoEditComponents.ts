@@ -14,29 +14,18 @@ export function showClick(e: Event): void {
   const name = form.elements.namedItem('Name') as HTMLInputElement;
   const lastName = form.elements.namedItem('Last Name') as HTMLInputElement;
   const date = form.elements.namedItem('Date') as HTMLInputElement;
-  const country = Array.from(
-    form.elements.namedItem('Country') as RadioNodeList,
-  ) as HTMLInputElement[];
   const post = Array.from(
-    form.elements.namedItem('Postal Code') as RadioNodeList,
+    form.elements.namedItem('post') as RadioNodeList,
   ) as HTMLInputElement[];
   const city = Array.from(
-    form.elements.namedItem('City') as RadioNodeList,
+    form.elements.namedItem('city') as RadioNodeList,
   ) as HTMLInputElement[];
   const street = Array.from(
-    form.elements.namedItem('Street') as RadioNodeList,
+    form.elements.namedItem('street') as RadioNodeList,
   ) as HTMLInputElement[];
   elem.classList.toggle('btn-edit--active');
-  if (name && lastName && date && country && post && city && street) {
-    toogleReadOnly(
-      name,
-      lastName,
-      date,
-      ...country,
-      ...post,
-      ...city,
-      ...street,
-    );
+  if (name && lastName && date && post && city && street) {
+    toogleReadOnly(name, lastName, date, ...post, ...city, ...street);
   }
   changeText(elem);
 }

@@ -3,14 +3,13 @@ import {
   addInnerComponent,
   createElement,
 } from '../../../../../utils/baseComponent';
-import { createInput } from '../../../../../utils/createInput';
 export function buildProfileCountry(
   currentId: string | undefined,
   billingId: string | undefined,
   shippingId: string | undefined,
   defaultBillingId: string | undefined,
   defaultShippingId: string | undefined,
-): [HTMLElement, HTMLInputElement] {
+): [HTMLElement, HTMLElement] {
   const countryContainerParam: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['address-prof__country-container'],
@@ -21,16 +20,18 @@ export function buildProfileCountry(
   };
   const countryIndicator = createElement(countryIndicatorParams);
   const countryContainer = createElement(countryContainerParam);
-  const [countryLabel, countryInput] = createInput(
-    'Country',
-    [
-      ['address-prof__country-label', 'prof-label'],
-      ['address-prof__country-input', 'prof-input'],
-    ],
-    'country',
-  );
-  countryInput.setAttribute('readonly', '');
-  // countryInput.addEventListener('input', checkInput);
+  const countriesListParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['address-prof__countries-list', 'countries-list'],
+  };
+  const countriesInpunParams: ElementParams<'input'> = {
+    tag: 'input',
+    classNames: ['address-prof-input', 'reg-input'],
+    attributes: { type: 'text', placeholder: 'Enter your country', hide: '' },
+  };
+
+  const countriesInput = createElement(countriesInpunParams);
+  const countriesList = createElement(countriesListParams);
   if (currentId === billingId) {
     addInnerComponent(countryContainer, countryIndicator);
     countryIndicator.textContent = 'Billing Address';
@@ -45,7 +46,7 @@ export function buildProfileCountry(
       countryIndicator.textContent = ' Default Shipping Address';
     }
   }
-  addInnerComponent(countryContainer, countryLabel);
-  addInnerComponent(countryLabel, countryInput);
-  return [countryContainer, countryInput];
+  addInnerComponent(countryContainer, countriesList);
+  addInnerComponent(countryContainer, countriesInput);
+  return [countryContainer, countriesList];
 }

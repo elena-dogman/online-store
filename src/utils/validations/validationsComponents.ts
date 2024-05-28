@@ -3,18 +3,8 @@ import country from 'country-list-js';
 
 import * as dateComponents from '../../components/registrationForm/dateComponent';
 import { setValidStatus, checkAllInputs, validStatus } from './booleanValid';
-import {
-  AddressComponents,
-  Components,
-  billingComponents,
-  shippingComponents,
-} from '../../components/registrationForm/address/addressFactory';
 import * as postalCodes from 'postal-codes-js';
-import { checkInputIndex } from './validation';
-const components: Components = {
-  billing: billingComponents,
-  shipping: shippingComponents,
-};
+import { checkError, checkInputIndex } from './validation';
 
 export const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
@@ -181,50 +171,53 @@ export function cityValidation(
   value: string,
   err?: HTMLSpanElement | null,
   index?: number | null,
-  type?: string | null,
+  form?: HTMLFormElement | null,
 ): boolean {
-  if (err && type && index != null) {
-    const streetErr = components[type].errorStreet;
-    const billingStreet = components[type].inputStreet;
-    if (value.length === 0) {
-      if (billingStreet instanceof HTMLInputElement) {
-        setValidStatus(index, false);
-        setValidStatus(index + 1, false);
-        checkAllInputs();
-        billingStreet.value = '';
-        incorectValidation(err, '');
-        return false;
+  if (err && form && index != null) {
+    const filterArr = filterArray(form);
+    const street = filterArr[index + 1];
+    const streetErr = checkError(street.parentElement?.children);
+    if (streetErr) {
+      if (value.length === 0) {
+        if (street instanceof HTMLInputElement) {
+          setValidStatus(index, false);
+          setValidStatus(index + 1, false);
+          checkAllInputs();
+          street.value = '';
+          incorectValidation(err, '');
+          return false;
+        }
       }
-    }
-    if (value.length <= 1) {
-      if (billingStreet instanceof HTMLInputElement) {
-        billingStreet.setAttribute('disabled', '');
-        incorectValidation(err, ERROR_MESSAGES.shortInput);
-        setValidStatus(index, false);
-        setValidStatus(index + 1, false);
-        checkAllInputs();
-        streetErr.textContent = '';
-        billingStreet.value = '';
-        return false;
+      if (value.length <= 1) {
+        if (street instanceof HTMLInputElement) {
+          street.setAttribute('disabled', '');
+          incorectValidation(err, ERROR_MESSAGES.shortInput);
+          setValidStatus(index, false);
+          setValidStatus(index + 1, false);
+          checkAllInputs();
+          streetErr.textContent = '';
+          street.value = '';
+          return false;
+        }
       }
-    }
-    if (!REGEX.lettersAndSpacesAndHyphens.test(value)) {
-      if (billingStreet instanceof HTMLInputElement) {
-        setValidStatus(index, false);
-        setValidStatus(index + 1, false);
-        checkAllInputs();
-        billingStreet.setAttribute('disabled', '');
-        streetErr.textContent = '';
-        billingStreet.value = '';
-        incorectValidation(err, ERROR_MESSAGES.incorrectData);
-        return false;
+      if (!REGEX.lettersAndSpacesAndHyphens.test(value)) {
+        if (street instanceof HTMLInputElement) {
+          setValidStatus(index, false);
+          setValidStatus(index + 1, false);
+          checkAllInputs();
+          street.setAttribute('disabled', '');
+          streetErr.textContent = '';
+          street.value = '';
+          incorectValidation(err, ERROR_MESSAGES.incorrectData);
+          return false;
+        }
       }
+      incorectValidation(err, '');
+      setValidStatus(index, true);
+      checkAllInputs();
+      street.removeAttribute('disabled');
+      return true;
     }
-    incorectValidation(err, '');
-    setValidStatus(index, true);
-    checkAllInputs();
-    billingStreet.removeAttribute('disabled');
-    return true;
   }
   return true;
 }
@@ -233,9 +226,9 @@ export function streetValidation(
   value: string,
   err?: HTMLSpanElement | null,
   index?: number | null,
-  type?: string | null,
 ): boolean {
-  if (err && type && index != null) {
+  console.log(err, index);
+  if (err && index != null) {
     if (value.length === 0) {
       setValidStatus(index, false);
       checkAllInputs();
@@ -434,81 +427,130 @@ export function postCodeValidation(
   value: string,
   err?: HTMLSpanElement | null,
   index?: number | null,
-  type?: string | null,
+  form?: HTMLFormElement | null,
 ): void {
-  if (err && type && index != null) {
+  if (err && form && index != null) {
+    const filterArr = filterArray(form);
+    const city = filterArr[index + 1];
+    const container = city.parentElement?.parentElement as HTMLElement;
+    const contryWrapper = searchElement(
+      container,
+      'country-wrapper',
+    ) as HTMLElement;
+    const contryList = searchElement(
+      contryWrapper,
+      'countries-list',
+    ) as HTMLElement;
     const countryNames = country.names();
-    const countryIndex = countryNames.indexOf(
-      components[type].listCountry.textContent || '',
-    );
-    const postCode = Object.keys(country.all)[countryIndex];
-    const streetErr = components[type].errorStreet;
-    const cityErr = components[type].errorCity;
-    const billingStreet = components[type].inputStreet;
-    const billingCity = components[type].inputCity;
-    if (value.length === 0) {
-      if (
-        billingStreet instanceof HTMLInputElement &&
-        billingCity instanceof HTMLInputElement
-      ) {
-        incorectValidation(err, '');
-        billingCity.setAttribute('disabled', '');
-        billingStreet.setAttribute('disabled', '');
-        setValidStatus(index, false);
-        setValidStatus(index + 1, false);
-        setValidStatus(index + 2, false);
-        checkAllInputs();
-        cityErr.textContent = '';
-        streetErr.textContent = '';
-        billingStreet.value = '';
-        billingCity.value = '';
-        return;
+    const countryIndex = countryNames.indexOf(contryList.textContent || '');
+    const street = filterArr[index + 2];
+    const streetErr = checkError(street.parentElement?.children);
+    const cityErr = checkError(city.parentElement?.children);
+    if (streetErr && cityErr) {
+      const postCode = Object.keys(country.all)[countryIndex];
+      if (value.length === 0) {
+        if (
+          street instanceof HTMLInputElement &&
+          city instanceof HTMLInputElement
+        ) {
+          incorectValidation(err, '');
+          city.setAttribute('disabled', '');
+          street.setAttribute('disabled', '');
+          setValidStatus(index, false);
+          setValidStatus(index + 1, false);
+          setValidStatus(index + 2, false);
+          checkAllInputs();
+          cityErr.textContent = '';
+          streetErr.textContent = '';
+          city.value = '';
+          street.value = '';
+          return;
+        }
       }
-    }
 
-    if (postalCodes.validate(postCode, value) === true) {
-      billingCity.removeAttribute('disabled');
-      incorectValidation(err, '');
-      setValidStatus(index, true);
-      checkAllInputs();
-    } else {
-      if (
-        billingStreet instanceof HTMLInputElement &&
-        billingCity instanceof HTMLInputElement
-      ) {
-        billingCity.setAttribute('disabled', '');
-        billingStreet.setAttribute('disabled', '');
-        setValidStatus(index, false);
-        setValidStatus(index + 1, false);
-        setValidStatus(index + 1, false);
+      if (postalCodes.validate(postCode, value) === true) {
+        city.removeAttribute('disabled');
+        incorectValidation(err, '');
+        setValidStatus(index, true);
         checkAllInputs();
-        cityErr.textContent = '';
-        streetErr.textContent = '';
-        billingStreet.value = '';
-        billingCity.value = '';
-        incorectValidation(err, ERROR_MESSAGES.incorrectData);
+      } else {
+        if (
+          city instanceof HTMLInputElement &&
+          street instanceof HTMLInputElement
+        ) {
+          city.setAttribute('disabled', '');
+          street.setAttribute('disabled', '');
+          setValidStatus(index, false);
+          setValidStatus(index + 1, false);
+          setValidStatus(index + 2, false);
+          checkAllInputs();
+          cityErr.textContent = '';
+          streetErr.textContent = '';
+          city.value = '';
+          street.value = '';
+          incorectValidation(err, ERROR_MESSAGES.incorrectData);
+        }
       }
     }
   }
 }
-
-export function disableLocation(adressComponents: AddressComponents): void {
-  const city = adressComponents.inputCity;
-  const street = adressComponents.inputStreet;
-  const post = adressComponents.inputPost;
-  adressComponents.errorCity.textContent = '';
-  adressComponents.errorStreet.textContent = '';
-  adressComponents.errorPost.textContent = '';
-  street.setAttribute('disabled', '');
-  city.setAttribute('disabled', '');
-  const cityIndex = checkInputIndex(city);
-  const streetIndex = checkInputIndex(street);
-  const postIndex = checkInputIndex(street);
-  setValidStatus(cityIndex, false);
-  setValidStatus(streetIndex, false);
-  setValidStatus(postIndex, false);
-  checkAllInputs();
-  street.value = '';
-  post.value = '';
-  city.value = '';
+function searchElement(
+  addressParent: Element,
+  searchElem: string,
+): HTMLLabelElement | undefined {
+  const addressContainer = Array.from(addressParent?.children);
+  let result;
+  addressContainer.forEach((e) => {
+    if (e.classList.contains(searchElem)) {
+      result = e;
+    }
+  });
+  return result;
+}
+function searchInput(addressParent: Element): HTMLInputElement | undefined {
+  const addressContainer = Array.from(addressParent?.children);
+  let result;
+  addressContainer.forEach((e) => {
+    if (e.tagName === 'INPUT') {
+      result = e;
+    }
+  });
+  return result;
+}
+export function disableLocation(wrapper: HTMLElement): void {
+  const parent = wrapper.parentElement?.parentElement as HTMLElement;
+  const postLabel = searchElement(parent, 'label-post') as HTMLLabelElement;
+  const cityLabel = searchElement(parent, 'label-city') as HTMLLabelElement;
+  const streetLabel = searchElement(parent, 'label-street') as HTMLLabelElement;
+  const post = searchInput(postLabel) as HTMLInputElement;
+  const city = searchInput(cityLabel) as HTMLInputElement;
+  const street = searchInput(streetLabel) as HTMLInputElement;
+  const postErr = checkError(postLabel.children);
+  const cityErr = checkError(cityLabel.children);
+  const streetErr = checkError(streetLabel.children);
+  if (postErr && cityErr && streetErr) {
+    postErr.textContent = '';
+    cityErr.textContent = '';
+    streetErr.textContent = '';
+    street.setAttribute('disabled', '');
+    city.setAttribute('disabled', '');
+    const cityIndex = checkInputIndex(city);
+    const streetIndex = checkInputIndex(street);
+    const postIndex = checkInputIndex(street);
+    setValidStatus(cityIndex, false);
+    setValidStatus(streetIndex, false);
+    setValidStatus(postIndex, false);
+    checkAllInputs();
+    street.value = '';
+    post.value = '';
+    city.value = '';
+  }
+}
+export function filterArray(form: HTMLFormElement): HTMLInputElement[] {
+  return Array.from(form.elements).filter(
+    (element) =>
+      element.tagName === 'INPUT' &&
+      element.getAttribute('type') !== 'checkbox' &&
+      element.getAttribute('hide') !== '',
+  ) as HTMLInputElement[];
 }

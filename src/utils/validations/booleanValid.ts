@@ -1,4 +1,5 @@
 import { authFormButton } from '../../components/registrationForm/registrationForm';
+import { filterArray } from './validationsComponents';
 
 export let validStatus: { [key: string]: boolean } = {};
 
@@ -23,6 +24,13 @@ export function checkAllInputs(): void {
     } else {
       submitButton?.setAttribute('disabled', '');
     }
+  } else if (window.location.href.includes('profile')) {
+    const edit = document.querySelector('.profile-header__btn-edit');
+    if (Object.values(validStatus).every((value) => value)) {
+      edit?.removeAttribute('disabled');
+    } else {
+      edit?.setAttribute('disabled', '');
+    }
   }
 }
 export function fillObjectWithUniqueKeys(
@@ -30,12 +38,7 @@ export function fillObjectWithUniqueKeys(
   value: boolean,
   existingData: { [key: string]: boolean },
 ): void {
-  const formArray = Array.from(form.elements).filter(
-    (element) =>
-      element.tagName === 'INPUT' &&
-      element.getAttribute('type') !== 'checkbox' &&
-      element.getAttribute('hide') !== '',
-  ) as HTMLInputElement[];
+  const formArray = filterArray(form);
 
   const obj = { ...existingData };
   let counter: number = 1;

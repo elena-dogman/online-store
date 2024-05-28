@@ -32,8 +32,8 @@
   padding: 20px;
 }
 .profile-container__profile-wrapper{
-  overflow-y: auto;
   max-width: 800px;
+  height: 640px;
   width: 80vw;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
@@ -71,12 +71,22 @@
 .profile-header__btn-edit{
   width: 80px;
   height: 40px;
-  @include hoverLink;
   border: 0;
   color:$text-color-contrast;
   border-radius:8px ;
   background:$text-color-accent;
   transition:all 0.5s ease; 
+  transition: all 0.5s ease;
+}
+.profile-header__btn-edit {
+  cursor: pointer;
+  &:hover:not(:disabled) {
+    box-shadow: $button-hover-box-shadow;
+  }
+  &:disabled {
+    background-color: $button-disabled-background;
+    cursor: not-allowed;
+  }
 }
 .btn-edit--active{
   background: $text-color-base;
@@ -104,13 +114,74 @@ width: 50%;
 .profile-form__personal-prof-container{
   width: 50%;
 }
+
+.countries-list.address-prof__countries-list{
+  top: 12px;
+}
+.address-prof__country-container{
+  position: relative;
+}
 .address-prof__country-indicator{
   font-size: 10rem;
 }
 .prof-label{
+  position: relative;
   display: flex;
   flex-direction: column;
   row-gap:5px ;
+}
+.profile-form__countries-container-list{
+  position: relative;
+  overflow: hidden;
+}
+.countries-container-list--expand{
+  overflow:initial;
+}
+.profile-form__countries-search{
+  border: none;
+  transition: all 0.5s ease;
+  width: 0%;
+  opacity: 0;
+}
+.profile__countries-item{
+    color: black;
+    padding: 3px 0 0 10px;
+    border-bottom: 1px solid black;
+    display: none;
+}
+.profile__countries-item--expand{
+  display: block;
+}
+.countries-search--expand{
+  opacity: 1;
+  width: 100%;
+}
+.profile__countries-list{
+  position: absolute;
+  top: 0;
+  color: white;
+  width: 100%;
+  height: 20px;
+  transition: all 0.5s ease;
+  border-radius: 10px;
+  padding-left: 5px;
+  border: 1px solid black;
+  z-index: -1;
+  opacity: 0;
+}
+.profile__countries-list--expand{
+  top: 20px;
+  height: 186px;
+  opacity: 1;
+  border-radius: 10px 0 0 10px;
+  overflow-y: auto;
+  background: white;
+  z-index: 10;
+}
+.address-prof-input{
+  transition: all 0.5s ease;
+  width: 0%;
+  opacity: 0;
 }
 .prof-input {
   border: none;

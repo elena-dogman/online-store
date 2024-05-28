@@ -6,10 +6,8 @@ import {
 } from '../../../../utils/baseComponent';
 import { buildProfileCountry } from './addressComponents/buildProfileCountry';
 import countrys from 'country-list-js';
-import {
-  buildCountriesList,
-  buildProfileAddressLoyalt,
-} from './addressComponents/addressList';
+import { buildProfileAddressLoyalt } from './addressComponents/addressList';
+import { addCountriesList } from '../../../registrationForm/address/addressComponents';
 export function buildAddressProfile(): HTMLElement {
   const addressInfoContainerParams: ElementParams<'div'> = {
     tag: 'div',
@@ -34,7 +32,7 @@ export function buildAddressProfile(): HTMLElement {
             classNames: ['address-prof-container__address-wrapper'],
           };
           const addressInfWrapper = createElement(addressInfWrapperParams);
-          const [countryContainer, countryInput] = buildProfileCountry(
+          const [countriesContainer, countriesList] = buildProfileCountry(
             currentId,
             bullingId,
             shippingId,
@@ -51,10 +49,11 @@ export function buildAddressProfile(): HTMLElement {
           ] = buildProfileAddressLoyalt();
           cityInput.value = city;
           postInput.value = post;
-          countryInput.value = country.name;
+          countriesList.textContent = country.name;
+          countriesList.addEventListener('click', addCountriesList);
           streetInput.value = street;
           addInnerComponent(addressInfoContainer, addressInfWrapper);
-          addInnerComponent(addressInfWrapper, countryContainer);
+          addInnerComponent(addressInfWrapper, countriesContainer);
           addInnerComponent(addressInfWrapper, postLabel);
           addInnerComponent(addressInfWrapper, cityLabel);
           addInnerComponent(addressInfWrapper, streetLabel);
@@ -64,6 +63,5 @@ export function buildAddressProfile(): HTMLElement {
     .catch((eror) => {
       console.log(eror);
     });
-  buildCountriesList();
   return addressInfoContainer;
 }

@@ -5,6 +5,7 @@ import {
   createElement,
 } from '../../../utils/baseComponent';
 import { createInput } from '../../../utils/createInput';
+import { validateInput } from '../../../utils/validations/validation';
 import { createErrorElement } from '../../../utils/validations/validationsErrors';
 
 export function buildPersonalProfile(): HTMLElement {
@@ -29,6 +30,7 @@ export function buildPersonalProfile(): HTMLElement {
   addInnerComponent(infoLabelName, infoInputName);
   addInnerComponent(infoLabelName, infoNameError);
   infoInputName.setAttribute('readonly', '');
+  infoInputName.addEventListener('input', validateInput);
   const [infoLabelLastName, infoInputLastName] = createInput(
     'Last Name',
     [
@@ -44,6 +46,7 @@ export function buildPersonalProfile(): HTMLElement {
   addInnerComponent(infoLabelLastName, infoLastNameError);
 
   infoInputLastName.setAttribute('readonly', '');
+  infoInputLastName.addEventListener('input', validateInput);
   const [infoLabelDate, infoInputDate] = createInput(
     'Date',
     [
@@ -52,6 +55,7 @@ export function buildPersonalProfile(): HTMLElement {
     ],
     'name',
   );
+
   getUserData()
     .then((userData) => {
       if (userData) {
