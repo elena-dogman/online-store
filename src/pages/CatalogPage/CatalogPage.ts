@@ -162,10 +162,10 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     await renderProducts(1, itemsPerPage, currentSort);
   });
 
-  const sortComponent = createSortComponent(async (sort: string) => {
-    currentSort = sort;
-    await renderProducts(1, itemsPerPage, currentSort);
-  });
+const sortComponent = createSortComponent(async (sort: string) => {
+  currentSort = sort;
+  await renderProducts(1, itemsPerPage, currentSort);
+});
 
   pageContainer.prepend(header);
   addInnerComponent(pageContainer, filterWrapper);

@@ -24,6 +24,7 @@ export function createSortComponent(onSortChange: (sort: string) => void): HTMLE
   const sortOptions = [
     { value: 'price asc', text: 'Lowest price' },
     { value: 'price desc', text: 'Highest price' },
+    { value: 'createdAt desc', text: 'Newest' },
   ];
 
   sortOptions.forEach(option => {

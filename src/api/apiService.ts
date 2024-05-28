@@ -250,7 +250,6 @@ export async function fetchProducts(sort?: string): Promise<ProductProjection[]>
   }
 }
 
-
 export async function fetchProductAttributes(): Promise<number[] | null> {
   try {
     let offset = 0;
