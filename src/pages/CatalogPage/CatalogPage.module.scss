@@ -179,6 +179,22 @@
 margin-right: 20px;
 }
 
+.sort-container {
+  display: flex;
+  align-items: center;
+  margin-top: 60px;
+}
+
+.sort-label {
+  margin-right: 0.5rem;
+}
+
+.sort-select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 @media (hover: hover) and (pointer: fine) {
 .filter-label {
   @include hoverOpacity(0.7);

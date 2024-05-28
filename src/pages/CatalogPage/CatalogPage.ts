@@ -2,6 +2,7 @@ import { createElement, addInnerComponent, clear, ElementParams } from '../../ut
 import { createHeader } from '../../components/header/header';
 import { createProductCatalog } from '../../components/catalog/productCatalog/productCatalog';
 import { createFilterComponent } from '../../components/catalog/productFilter/productFilter';
+import { createSortComponent } from '../../components/catalog/productSort/productSort';
 import { fetchFilteredProducts, fetchProducts, fetchCategories } from '../../api/apiService';
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { createPagination } from '../../components/catalog/pagination/pagination';
@@ -83,7 +84,8 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
   let currentPage = 1;
   const itemsPerPage = 8;
-  const allProducts: ProductProjection[] = await fetchProducts();
+  let currentSort = 'price asc';
+
   const filters: Filters = getFiltersFromURL();
 
   const updateFilters = (filterName: keyof Filters, value: string, checked: boolean): void => {
@@ -96,39 +98,9 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     console.log(`Updated Filters: ${filterName}`, filters[filterName]);
   };
 
-  const renderProducts = (
-    products: ProductProjection[],
-    page: number,
-    itemsPerPageCount: number): void => {
-    console.log('Rendering products:', products);
+  const renderProducts = async (page: number, itemsPerPageCount: number, sort: string): Promise<void> => {
+    console.log('Rendering products with sort:', sort);
     clear(catalogContainer);
-
-    const start = (page - 1) * itemsPerPageCount;
-    const end = start + itemsPerPageCount;
-    const paginatedProducts = products.slice(start, end);
-
-    const productCatalog = createProductCatalog(paginatedProducts);
-    addInnerComponent(catalogContainer, productCatalog);
-
-    const pagination = createPagination({
-      totalItems: products.length,
-      itemsPerPage: itemsPerPageCount,
-      currentPage: page,
-      onPageChange: (newPage) => {
-        currentPage = newPage;
-        renderProducts(products, currentPage, itemsPerPageCount);
-      },
-    });
-
-    clear(paginationContainer);
-    addInnerComponent(paginationContainer, pagination);
-  };
-
-  filterComponent.addEventListener('change', async (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    const filterName = target.classList[0].split('-')[0] as keyof Filters;
-
-    updateFilters(filterName, target.value, target.checked);
 
     const selectedFilters: string[] = [];
 
@@ -137,9 +109,6 @@ export async function createCatalogPage(): Promise<HTMLElement> {
         if (key === 'category') {
           const values = Array.from(filters[key]).map(value => `subtree("${value}")`).join(',');
           return `categories.id: ${values}`;
-        } else if (key === 'size') {
-          const values = Array.from(filters[key]).map(value => `"${value}"`).join(',');
-          return `variants.attributes.size:${values}`;
         } else {
           const values = Array.from(filters[key]).map(value => `"${value}"`).join(',');
           return `variants.attributes.${key}:(${values})`;
@@ -156,27 +125,57 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     if (categoryFilter) selectedFilters.push(categoryFilter);
     if (sizeFilter) selectedFilters.push(sizeFilter);
 
-    console.log('Selected Filters:', selectedFilters);
-
-    let filteredProducts: ProductProjection[] = [];
+    let products: ProductProjection[] = [];
     if (selectedFilters.length > 0) {
-      filteredProducts = await fetchFilteredProducts(selectedFilters);
+      products = await fetchFilteredProducts(selectedFilters, sort);
     } else {
-      filteredProducts = await fetchProducts();
+      products = await fetchProducts(sort);
     }
 
-    console.log('Filtered Products:', filteredProducts);
-    renderProducts(filteredProducts, 1, itemsPerPage);
+    const start = (page - 1) * itemsPerPageCount;
+    const end = start + itemsPerPageCount;
+    const paginatedProducts = products.slice(start, end);
+
+    const productCatalog = createProductCatalog(paginatedProducts);
+    addInnerComponent(catalogContainer, productCatalog);
+
+    const pagination = createPagination({
+      totalItems: products.length,
+      itemsPerPage: itemsPerPageCount,
+      currentPage: page,
+      onPageChange: (newPage) => {
+        currentPage = newPage;
+        renderProducts(currentPage, itemsPerPageCount, currentSort);
+      },
+    });
+
+    clear(paginationContainer);
+    addInnerComponent(paginationContainer, pagination);
+  };
+
+  filterComponent.addEventListener('change', async (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const filterName = target.classList[0].split('-')[0] as keyof Filters;
+
+    updateFilters(filterName, target.value, target.checked);
+
+    await renderProducts(1, itemsPerPage, currentSort);
+  });
+
+  const sortComponent = createSortComponent(async (sort: string) => {
+    currentSort = sort;
+    await renderProducts(1, itemsPerPage, currentSort);
   });
 
   pageContainer.prepend(header);
   addInnerComponent(pageContainer, filterWrapper);
   addInnerComponent(filterWrapper, filterComponent);
   addInnerComponent(pageContainer, catalogContainerWrapper);
+  addInnerComponent(catalogContainerWrapper, sortComponent);
   addInnerComponent(catalogContainerWrapper, catalogContainer);
   addInnerComponent(catalogContainerWrapper, paginationContainer);
 
-  renderProducts(allProducts, currentPage, itemsPerPage);
+  await renderProducts(currentPage, itemsPerPage, currentSort);
 
   return pageContainer;
 }
