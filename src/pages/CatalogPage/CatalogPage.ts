@@ -1,66 +1,19 @@
 import { createElement, addInnerComponent, clear, ElementParams } from '../../utils/baseComponent';
 import { createHeader } from '../../components/header/header';
 import { createProductCatalog } from '../../components/catalog/productCatalog/productCatalog';
-import { createFilterComponent } from '../../components/catalog/productFilter/productFilter';
 import { createSortComponent } from '../../components/catalog/productSort/productSort';
-import { fetchFilteredProducts, fetchProducts, fetchCategories } from '../../api/apiService';
-import { ProductProjection } from '@commercetools/platform-sdk';
+import { fetchFilteredProducts, fetchProducts } from '../../api/apiService';
 import { createPagination } from '../../components/catalog/pagination/pagination';
+import { ProductProjection } from '@commercetools/platform-sdk';
+import {
+  fetchAndMapCategories,
+  Filters,
+  getFiltersFromURL,
+  updateURLWithFilters,
+} from '../../components/catalog/filter/filters';
+import { createFilterComponent } from '../../components/catalog/filter/productFilter';
+import { createLoadingOverlay } from '../../components/catalog/overlay/loadingOverlay';
 
-interface Filters {
-  audience: Set<string>;
-  category: Set<string>;
-  size: Set<string>;
-}
-
-const categoriesMap: Record<string, string> = {};
-
-async function fetchAndMapCategories(): Promise<void> {
-  const categories = await fetchCategories();
-  categories.forEach(category => {
-    categoriesMap[category.id] = category.name['en-US'];
-  });
-}
-
-function getFiltersFromURL(): Filters {
-  const params = new URLSearchParams(window.location.search);
-  const filters: Filters = {
-    audience: new Set(params.getAll('audience')),
-    category: new Set(
-      params.getAll('category')
-        .map(name => Object.keys(categoriesMap)
-          .find(id => categoriesMap[id] === name) || name)),
-    size: new Set(params.getAll('size')),
-  };
-  return filters;
-}
-
-function updateURLWithFilters(filters: Filters): void {
-  const params = new URLSearchParams();
-  filters.audience.forEach(value => params.append('audience', value));
-  filters.category.forEach(value => {
-    const categoryName = categoriesMap[value] || value;
-    params.append('category', categoryName);
-  });
-  filters.size.forEach(value => params.append('size', value));
-  history.pushState(null, '', '?' + params.toString());
-}
-
-function createLoadingOverlay(): HTMLElement {
-  const overlay = createElement({
-    tag: 'div',
-    classNames: ['loading-overlay'],
-  });
-
-  const spinner = createElement({
-    tag: 'div',
-    classNames: ['loading-spinner'],
-  });
-
-  overlay.appendChild(spinner);
-
-  return overlay;
-}
 
 export async function createCatalogPage(): Promise<HTMLElement> {
   await fetchAndMapCategories();
@@ -203,7 +156,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   addInnerComponent(catalogContainerWrapper, sortComponent);
   addInnerComponent(catalogContainerWrapper, catalogContainer);
   addInnerComponent(catalogContainerWrapper, paginationContainer);
-  pageContainer.appendChild(loadingOverlay);
+  pageContainer.append(loadingOverlay);
 
   await renderProducts(currentPage, itemsPerPage, currentSort);
 
