@@ -46,6 +46,8 @@ export function createSortComponent(onSortChange: (sort: string) => void): HTMLE
 
     input.addEventListener('change', () => {
       onSortChange(input.value);
+      sortOptions.classList.remove('show');
+      arrow.classList.remove('open');
     });
 
     const textNode = document.createTextNode(option.text);
