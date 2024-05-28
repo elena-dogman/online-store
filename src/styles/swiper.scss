@@ -62,9 +62,9 @@
   cursor: pointer;
   z-index: 10;
   transition: background-color 0.3s ease;
-  &:hover {
-    background-color: rgba(128, 128, 128, 0.2);
-  }
+  // &:hover {
+  //   background-color: rgba(128, 128, 128, 0.2);
+  // }
 }
 
 .swiper-button-prev-container {

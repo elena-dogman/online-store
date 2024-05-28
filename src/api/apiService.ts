@@ -382,3 +382,6 @@ export async function fetchFilteredProducts(
     return [];
   }
 }
+// export async function getCategoriesById(ID:string) {
+
+// }

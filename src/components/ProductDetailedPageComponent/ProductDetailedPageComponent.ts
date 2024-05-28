@@ -15,6 +15,10 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
   const detailedProductContainer = createElement(
     detailedProductContainerParams,
   );
+  const breadCrumbsContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['breadcrumbs_container'],
+  };
 
   createSwiper(ID)
     .then(
@@ -25,10 +29,23 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
         swiperContainer: HTMLElement;
         response: ClientResponse<Product>;
       }) => {
-        addInnerComponent(detailedProductContainer, swiperContainer);
-
         const productData = response.body.masterData.current;
-        console.log(productData);
+        const breadCrumbsContainer = createElement(breadCrumbsContainerParams);
+        addInnerComponent(detailedProductContainer, breadCrumbsContainer);
+        addInnerComponent(detailedProductContainer, swiperContainer);
+        ///breadcrumbs
+        // const dividerParams: ElementParams<'span'> = {
+        //   tag: 'span',
+        //   classNames: ['divider'],
+        //   textContent: '/',
+        // };
+        // const category = attributes?.find((attr) => attr.name === 'category');
+        // const audience = attributes?.find((attr) => attr.name === 'audience');
+        ///
+
+        const attributes = productData.masterVariant.attributes;
+
+        console.log(response);
         const descriptionContainerParams: ElementParams<'div'> = {
           tag: 'div',
           classNames: ['description_container'],
@@ -120,8 +137,9 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
         addInnerComponent(sizeContainer, sizeButtonContainer);
         const sizes: number[] = [];
         if (productData.masterVariant.attributes) {
-          const attributes = productData.masterVariant.attributes;
-          const sizeAttribute = attributes.find((attr) => attr.name === 'size');
+          const sizeAttribute = attributes?.find(
+            (attr) => attr.name === 'size',
+          );
           const firstSize = sizeAttribute ? sizeAttribute.value : undefined;
           sizes.push(firstSize);
         }
