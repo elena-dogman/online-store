@@ -126,16 +126,7 @@ function createCategoryFilterGroup(
       radio.dispatchEvent(event);
     });
 
-    const customRadioParams: ElementParams<'span'> = {
-      tag: 'span',
-      classNames: ['custom-radio'],
-    };
-    const customRadio = createElement(customRadioParams);
-
-    // addInnerComponent(radioWrapper, radio);
-    // addInnerComponent(radioWrapper, customRadio);
-    addInnerComponent(radioLabel, radio);
-    addInnerComponent(radioLabel, customRadio);
+    addInnerComponent(radioWrapper, radio);
     addInnerComponent(radioWrapper, radioLabel);
 
     addInnerComponent(radioContainer, radioWrapper);

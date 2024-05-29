@@ -14,21 +14,16 @@ import Swiper from 'swiper';
 Swiper.use([Pagination, Autoplay, Mousewheel, Navigation, Keyboard]);
 
 export function modalSwiper(url: string[]): HTMLElement {
-  console.log(url, '111111');
-
-  // Create modal overlay
   const modalOverlayParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['modal-overlay'],
   };
 
-  // Create modal container
   const modalContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['modal-container'],
   };
 
-  // Create close button
   const closeButtonParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['close-button'],
@@ -38,7 +33,6 @@ export function modalSwiper(url: string[]): HTMLElement {
     textContent: '×',
   };
 
-  // Create swiper container
   const swiperParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['swiper-container-modal'],
