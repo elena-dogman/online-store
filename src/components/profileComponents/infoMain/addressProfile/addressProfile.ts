@@ -4,16 +4,13 @@ import {
   addInnerComponent,
   createElement,
 } from '../../../../utils/baseComponent';
-import {
-  buildCountysList,
-  buildProfileAddressLoyalt,
-  buildProfileCountry,
-} from './addressComponents';
+import { buildProfileCountry } from './addressComponents/buildProfileCountry';
 import countrys from 'country-list-js';
+import { buildProfileAddressLoyalt } from './addressComponents/addressList';
 export function buildAddressProfile(): HTMLElement {
   const addressInfoContainerParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['profile-main__address-prof-container'],
+    classNames: ['profile-form__address-prof-container'],
   };
   const addressInfoContainer = createElement(addressInfoContainerParams);
   getUserData()
@@ -23,8 +20,8 @@ export function buildAddressProfile(): HTMLElement {
           const currentId = e.id;
           const bullingId = userData.body.billingAddressIds?.toString();
           const shippingId = userData.body.shippingAddressIds?.toString();
-          const shippingDefaultId = userData.body.defaultShippingAddressId;
-          const billingDefaultId = userData.body.defaultBillingAddressId;
+          const shippingDefaultId = userData.body.defaultBillingAddressId;
+          const billingDefaultId = userData.body.defaultShippingAddressId;
           const city = e.city ? e.city : '';
           const post = e.postalCode ? e.postalCode : '';
           const country = countrys.findByIso2(e.country);
@@ -34,7 +31,7 @@ export function buildAddressProfile(): HTMLElement {
             classNames: ['address-prof-container__address-wrapper'],
           };
           const addressInfWrapper = createElement(addressInfWrapperParams);
-          const [countryContainer, countryInput] = buildProfileCountry(
+          const [countriesContainer, countriesList] = buildProfileCountry(
             currentId,
             bullingId,
             shippingId,
@@ -49,13 +46,12 @@ export function buildAddressProfile(): HTMLElement {
             cityInput,
             postInput,
           ] = buildProfileAddressLoyalt();
-          console.log(cityInput);
           cityInput.value = city;
           postInput.value = post;
-          countryInput.value = country.name;
+          countriesList.textContent = country.name;
           streetInput.value = street;
           addInnerComponent(addressInfoContainer, addressInfWrapper);
-          addInnerComponent(addressInfWrapper, countryContainer);
+          addInnerComponent(addressInfWrapper, countriesContainer);
           addInnerComponent(addressInfWrapper, postLabel);
           addInnerComponent(addressInfWrapper, cityLabel);
           addInnerComponent(addressInfWrapper, streetLabel);
@@ -65,6 +61,5 @@ export function buildAddressProfile(): HTMLElement {
     .catch((eror) => {
       console.log(eror);
     });
-  buildCountysList();
   return addressInfoContainer;
 }

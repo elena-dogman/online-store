@@ -4,6 +4,10 @@ import {
   addInnerComponent,
 } from '../../utils/baseComponent';
 import { createInput } from '../../utils/createInput';
+import {
+  fillObjectWithUniqueKeys,
+  validStatus,
+} from '../../utils/validations/booleanValid';
 import { commonFormCompontens } from '../registrationForm/nameMailForm';
 export function createAuthForm(): HTMLElement[] {
   const formContainerParams: ElementParams<'form'> = {
@@ -19,8 +23,7 @@ export function createAuthForm(): HTMLElement[] {
     },
     classNames: ['submit_button'],
   };
-  const authForm = createElement(formContainerParams);
-
+  const authForm = createElement(formContainerParams) as HTMLFormElement;
   const authFormHeaderParams: ElementParams<'h2'> = {
     tag: 'h2',
     textContent: 'Sign in & choose your best felt boots!',
@@ -78,6 +81,7 @@ export function createAuthForm(): HTMLElement[] {
     'email',
     [['form-label'], ['form-input']],
     'email',
+    'email',
   );
   const [passwordLabel, passwordInput] = createInput(
     'password',
@@ -101,6 +105,7 @@ export function createAuthForm(): HTMLElement[] {
   addInnerComponent(authForm, passwordContainer);
   addInnerComponent(authForm, submitButton);
   addInnerComponent(authForm, authFormFooter);
-
+  fillObjectWithUniqueKeys(authForm, false, validStatus);
+  console.log(validStatus);
   return [authForm, emailInput, passwordInput, passwordIcon, submitButton];
 }
