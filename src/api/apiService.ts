@@ -317,7 +317,6 @@ export async function fetchProductAttributes(): Promise<number[] | null> {
   }
 }
 
-
 export async function fetchCategories(): Promise<Category[]> {
   try {
     const response: ClientResponse<CategoryPagedQueryResponse> = await anonymousApiRoot

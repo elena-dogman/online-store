@@ -3,7 +3,7 @@ import { fetchCategories } from '../../../api/apiService';
 
 export interface Filters {
   audience: Set<string>;
-  category: Set<string>;
+  category: string | null;
   size: Set<string>;
 }
 
@@ -20,10 +20,7 @@ function getFiltersFromURL(): Filters {
   const params = new URLSearchParams(window.location.search);
   const filters: Filters = {
     audience: new Set(params.getAll('audience')),
-    category: new Set(
-      params.getAll('category')
-        .map(name => Object.keys(categoriesMap)
-          .find(id => categoriesMap[id] === name) || name)),
+    category: Object.keys(categoriesMap).find(id => categoriesMap[id] === params.get('category')!) || null,
     size: new Set(params.getAll('size')),
   };
   return filters;
@@ -32,10 +29,10 @@ function getFiltersFromURL(): Filters {
 function updateURLWithFilters(filters: Filters): void {
   const params = new URLSearchParams();
   filters.audience.forEach(value => params.append('audience', value));
-  filters.category.forEach(value => {
-    const categoryName = categoriesMap[value] || value;
+  if (filters.category) {
+    const categoryName = categoriesMap[filters.category] || filters.category;
     params.append('category', categoryName);
-  });
+  }
   filters.size.forEach(value => params.append('size', value));
   history.pushState(null, '', '?' + params.toString());
 }

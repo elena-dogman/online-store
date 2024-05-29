@@ -34,7 +34,7 @@ export async function createFilterComponent(): Promise<HTMLElement> {
   if (sizesResponse) {
     console.log('Sizes Response:', sizesResponse);
     const filterGroup = createFilterGroup('size', sizesResponse);
-     filterGroup.classList.add('size-filter-group');
+    filterGroup.classList.add('size-filter-group');
     addInnerComponent(filterContainer, filterGroup);
   }
 
@@ -67,64 +67,59 @@ function createCategoryFilterGroup(category: Category, allCategories: Category[]
   };
   const triangle = createElement(triangleParams);
 
-  const checkboxContainerParams: ElementParams<'div'> = {
+  const radioContainerParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['checkbox-container', 'hidden', `${category.id}-checkbox-container`],
+    classNames: ['radio-container', 'hidden', `${category.id}-radio-container`],
   };
-  const checkboxContainer = createElement(checkboxContainerParams);
+  const radioContainer = createElement(radioContainerParams);
 
   const subCategories = allCategories.filter(cat => cat.parent && cat.parent.id === category.id);
 
   subCategories.forEach(subCategory => {
-    const checkboxWrapper = createElement({
+    const radioWrapper = createElement({
       tag: 'div',
-      classNames: ['checkbox-wrapper'],
+      classNames: ['radio-wrapper'],
     });
 
-    const checkbox = createElement({
+    const radio = createElement({
       tag: 'input',
-      attributes: { type: 'checkbox', value: subCategory.id },
+      attributes: { type: 'radio', name: 'category', value: subCategory.id },
       classNames: ['category-filter'],
     }) as HTMLInputElement;
 
-    checkbox.addEventListener('change', () => {
+    radio.addEventListener('change', () => {
       const event = new CustomEvent(
         'filtersChanged',
-        { detail: { name: 'category', value: checkbox.value, checked: checkbox.checked } },
+        { detail: { name: 'category', value: radio.value, checked: radio.checked } },
       );
       filterGroup.dispatchEvent(event);
     });
 
-    const checkboxLabel = createElement({
+    const radioLabel = createElement({
       tag: 'label',
       textContent: subCategory.name['en-US'],
     });
 
-    checkboxLabel.addEventListener('click', () => {
-      checkbox.checked = !checkbox.checked;
+    radioLabel.addEventListener('click', () => {
+      radio.checked = true;
       const event = new Event('change', { bubbles: true });
-      checkbox.dispatchEvent(event);
+      radio.dispatchEvent(event);
     });
 
-    addInnerComponent(checkboxWrapper, checkbox);
-    addInnerComponent(checkboxWrapper, checkboxLabel);
-    addInnerComponent(checkboxContainer, checkboxWrapper);
+    addInnerComponent(radioWrapper, radio);
+    addInnerComponent(radioWrapper, radioLabel);
+    addInnerComponent(radioContainer, radioWrapper);
   });
 
   filterLabel.addEventListener('click', () => {
-    checkboxContainer.classList.toggle('hidden');
-    triangle.classList.toggle('open');
-  });
-
-  triangle.addEventListener('click', () => {
-    checkboxContainer.classList.toggle('hidden');
+    radioContainer.classList.toggle('hidden');
     triangle.classList.toggle('open');
   });
 
   addInnerComponent(filterLabelWrapper, filterLabel);
   addInnerComponent(filterLabelWrapper, triangle);
   addInnerComponent(filterGroup, filterLabelWrapper);
-  addInnerComponent(filterGroup, checkboxContainer);
+  addInnerComponent(filterGroup, radioContainer);
 
   return filterGroup;
 }

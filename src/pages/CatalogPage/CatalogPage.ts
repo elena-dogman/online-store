@@ -14,7 +14,6 @@ import {
 import { createFilterComponent } from '../../components/catalog/filter/productFilter';
 import { createLoadingOverlay } from '../../components/catalog/overlay/loadingOverlay';
 
-
 export async function createCatalogPage(): Promise<HTMLElement> {
   await fetchAndMapCategories();
 
@@ -59,10 +58,14 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   const filters: Filters = getFiltersFromURL();
 
   const updateFilters = (filterName: keyof Filters, value: string, checked: boolean): void => {
-    if (checked) {
-      filters[filterName].add(value);
+    if (filterName === 'category') {
+      filters.category = checked ? value : '';
     } else {
-      filters[filterName].delete(value);
+      if (checked) {
+        filters[filterName].add(value);
+      } else {
+        filters[filterName].delete(value);
+      }
     }
     updateURLWithFilters(filters);
     console.log(`Updated Filters: ${filterName}`, filters[filterName]);
@@ -86,14 +89,11 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     const selectedFilters: string[] = [];
 
     const buildFilterString = (key: keyof Filters): string => {
-      if (filters[key].size > 0) {
-        if (key === 'category') {
-          const values = Array.from(filters[key]).map(value => `subtree("${value}")`).join(',');
-          return `categories.id: ${values}`;
-        } else {
-          const values = Array.from(filters[key]).map(value => `"${value}"`).join(',');
-          return `variants.attributes.${key}:(${values})`;
-        }
+      if (key === 'category') {
+        return filters.category ? `categories.id: subtree("${filters.category}")` : '';
+      } else if (filters[key].size > 0) {
+        const values = Array.from(filters[key]).map(value => `${value}`).join(',');
+        return `variants.attributes.${key}:${values}`;
       }
       return '';
     };
@@ -140,7 +140,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     const filterName = target.classList[0].split('-')[0] as keyof Filters;
 
     updateFilters(filterName, target.value, target.checked);
-
+    clear(catalogContainer);
     await renderProducts(1, itemsPerPage, currentSort);
   });
 
