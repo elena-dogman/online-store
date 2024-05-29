@@ -64,7 +64,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
   const filters: Filters = getFiltersFromURL();
 
-  const updateFilters = (filterName: keyof Filters, value: string, checked: boolean): void => {
+  const updateFilters = async (filterName: keyof Filters, value: string, checked: boolean): Promise<void> => {
     if (filterName === 'category') {
       filters.category = checked ? value : '';
     } else {
@@ -76,6 +76,13 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     }
     updateURLWithFilters(filters);
     console.log(`Updated Filters: ${filterName}`, filters[filterName]);
+
+    if (filterName === 'category') {
+      const breadcrumbs = await buildBreadcrumbs(value);
+      const breadcrumbLinks = generateBreadcrumbLinks(breadcrumbs);
+      clear(breadcrumbContainer);
+      addInnerComponent(breadcrumbContainer, breadcrumbLinks);
+    }
   };
 
   const showLoadingOverlay = (): void => {
@@ -146,15 +153,9 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     const target = event.target as HTMLInputElement;
     const filterName = target.classList[0].split('-')[0] as keyof Filters;
 
-    updateFilters(filterName, target.value, target.checked);
+    await updateFilters(filterName, target.value, target.checked);
+    clear(catalogContainer);
     await renderProducts(1, itemsPerPage, currentSort);
-
-    if (filterName === 'category') {
-      const breadcrumbs = await buildBreadcrumbs(target.value);
-      const breadcrumbLinks = generateBreadcrumbLinks(breadcrumbs);
-      clear(breadcrumbContainer);
-      addInnerComponent(breadcrumbContainer, breadcrumbLinks);
-    }
   });
 
   const sortComponent = createSortComponent(async (sort: string) => {

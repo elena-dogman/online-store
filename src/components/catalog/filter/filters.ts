@@ -34,7 +34,7 @@ function updateURLWithFilters(filters: Filters): void {
     params.append('category', categoryName);
   }
   filters.size.forEach(value => params.append('size', value));
-  history.pushState(null, '', '?' + params.toString());
+  history.pushState(null, '', '/catalog?' + params.toString());
 }
 
 export { fetchAndMapCategories, getFiltersFromURL, updateURLWithFilters };
