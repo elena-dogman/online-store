@@ -116,11 +116,6 @@ function createCategoryFilterGroup(category: Category, allCategories: Category[]
     triangle.classList.toggle('open');
   });
 
-  triangle.addEventListener('click', () => {
-    radioContainer.classList.toggle('hidden');
-    triangle.classList.toggle('open');
-  });
-
   addInnerComponent(filterLabelWrapper, filterLabel);
   addInnerComponent(filterLabelWrapper, triangle);
   addInnerComponent(filterGroup, filterLabelWrapper);
