@@ -5,6 +5,8 @@ import * as dateComponents from '../../components/registrationForm/dateComponent
 import { setValidStatus, checkAllInputs, validStatus } from './booleanValid';
 import * as postalCodes from 'postal-codes-js';
 import { checkError, checkInputIndex } from './validation';
+import { searchElement, searchInput } from '../searchElem';
+import { filterArray } from '../filterElem';
 
 export const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
@@ -441,6 +443,7 @@ export function postCodeValidation(
       contryWrapper,
       'countries-list',
     ) as HTMLElement;
+    console.log(contryList);
     const countryNames = country.names();
     const countryIndex = countryNames.indexOf(contryList.textContent || '');
     const street = filterArr[index + 2];
@@ -494,29 +497,7 @@ export function postCodeValidation(
     }
   }
 }
-function searchElement(
-  addressParent: Element,
-  searchElem: string,
-): HTMLLabelElement | undefined {
-  const addressContainer = Array.from(addressParent?.children);
-  let result;
-  addressContainer.forEach((e) => {
-    if (e.classList.contains(searchElem)) {
-      result = e;
-    }
-  });
-  return result;
-}
-function searchInput(addressParent: Element): HTMLInputElement | undefined {
-  const addressContainer = Array.from(addressParent?.children);
-  let result;
-  addressContainer.forEach((e) => {
-    if (e.tagName === 'INPUT') {
-      result = e;
-    }
-  });
-  return result;
-}
+
 export function disableLocation(wrapper: HTMLElement): void {
   const parent = wrapper.parentElement?.parentElement as HTMLElement;
   const postLabel = searchElement(parent, 'label-post') as HTMLLabelElement;
@@ -545,12 +526,4 @@ export function disableLocation(wrapper: HTMLElement): void {
     post.value = '';
     city.value = '';
   }
-}
-export function filterArray(form: HTMLFormElement): HTMLInputElement[] {
-  return Array.from(form.elements).filter(
-    (element) =>
-      element.tagName === 'INPUT' &&
-      element.getAttribute('type') !== 'checkbox' &&
-      element.getAttribute('hide') !== '',
-  ) as HTMLInputElement[];
 }

@@ -1,3 +1,4 @@
+import { filterArray } from '../filterElem';
 import * as validationFunc from './validationsComponents';
 interface ValidationMap {
   [key: string]: (
@@ -34,7 +35,7 @@ export function checkInputIndex(event: Event | HTMLInputElement): number {
     return index;
   } else {
     const form = event.form as HTMLFormElement;
-    const formArray = validationFunc.filterArray(form);
+    const formArray = filterArray(form);
     const index = formArray.indexOf(event);
     return index;
   }

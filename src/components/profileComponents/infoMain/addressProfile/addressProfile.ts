@@ -7,7 +7,6 @@ import {
 import { buildProfileCountry } from './addressComponents/buildProfileCountry';
 import countrys from 'country-list-js';
 import { buildProfileAddressLoyalt } from './addressComponents/addressList';
-import { addCountriesList } from '../../../registrationForm/address/addressComponents';
 export function buildAddressProfile(): HTMLElement {
   const addressInfoContainerParams: ElementParams<'div'> = {
     tag: 'div',
@@ -50,7 +49,6 @@ export function buildAddressProfile(): HTMLElement {
           cityInput.value = city;
           postInput.value = post;
           countriesList.textContent = country.name;
-          countriesList.addEventListener('click', addCountriesList);
           streetInput.value = street;
           addInnerComponent(addressInfoContainer, addressInfWrapper);
           addInnerComponent(addressInfWrapper, countriesContainer);

@@ -1,5 +1,5 @@
 import { authFormButton } from '../../components/registrationForm/registrationForm';
-import { filterArray } from './validationsComponents';
+import { filterArray } from '../filterElem';
 
 export let validStatus: { [key: string]: boolean } = {};
 

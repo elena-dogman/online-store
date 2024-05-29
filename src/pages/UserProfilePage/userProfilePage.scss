@@ -114,7 +114,11 @@ width: 50%;
 .profile-form__personal-prof-container{
   width: 50%;
 }
-
+.countries-list.readonly{
+  color: $text-color-contrast;
+  background: black;
+  border-radius: 50px;
+}
 .countries-list.address-prof__countries-list{
   top: 12px;
 }

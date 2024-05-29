@@ -12,7 +12,7 @@ export function buildProfileCountry(
 ): [HTMLElement, HTMLElement] {
   const countryContainerParam: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['address-prof__country-container'],
+    classNames: ['address-prof__country-container', 'country-wrapper'],
   };
   const countryIndicatorParams: ElementParams<'div'> = {
     tag: 'div',
@@ -22,7 +22,7 @@ export function buildProfileCountry(
   const countryContainer = createElement(countryContainerParam);
   const countriesListParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['address-prof__countries-list', 'countries-list'],
+    classNames: ['address-prof__countries-list', 'countries-list', 'readonly'],
   };
   const countriesInpunParams: ElementParams<'input'> = {
     tag: 'input',
