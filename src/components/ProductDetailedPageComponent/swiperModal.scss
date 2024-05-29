@@ -35,7 +35,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #000;
+  color: #fff;
   transition: background-color 0.3s;
   &:hover {
     background-color: $text-color-accent;
@@ -67,7 +67,7 @@ modal {
   text-align: center;
   transition: 300ms opacity;
   transform: translate3d(0, 0, 0);
-  bottom: -20% !important;
+  bottom: -10% !important;
   z-index: 10;
 }
 
@@ -95,22 +95,37 @@ modal {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
   cursor: pointer;
   z-index: 10;
   transition: background-color 0.3s ease;
 }
 
-.swiper-button-prev-container-modal:hover,
-.swiper-button-next-container-modal:hover {
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.5);
+@media (hover: hover) {
+  .swiper-button-prev-container-modal:hover,
+  .swiper-button-next-container-modal:hover {
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .swiper-button-prev-container-modal:hover .swiper-button-prev,
+  .swiper-button-next-container-modal:hover .swiper-button-next {
+    color: #333;
+  }
 }
 
-.swiper-button-prev-container-modal:hover .swiper-button-prev,
-.swiper-button-next-container-modal:hover .swiper-button-next {
-  color: #333;
-}
+@media (hover: none) {
+  .swiper-button-prev-container-modal:active,
+  .swiper-button-next-container-modal:active {
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
 
+  .swiper-button-prev-container-modal:active .swiper-button-prev,
+  .swiper-button-next-container-modal:active .swiper-button-next {
+    color: #333;
+  }
+}
 .swiper-button-next-container-modal > .swiper-button-next {
   color: #fff;
 }
@@ -142,4 +157,91 @@ modal {
 .swiper-pagination-modal > .swiper-pagination-bullet-active {
   background: #fff;
   margin: 0 20px !important;
+}
+@media (max-width: 1290px) {
+  .swiper-button-prev-container-modal {
+    left: -5%;
+  }
+
+  .swiper-button-next-container-modal {
+    right: -5%;
+  }
+  .swiper-button-prev-container-modal,
+  .swiper-button-next-container-modal {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+  }
+}
+
+@media (max-height: 1000px) {
+  .modal-container {
+    height: 60vh;
+  }
+  .close-button {
+    top: 10%;
+  }
+}
+
+@media (max-width: 970px) {
+  .swiper-button-prev-container-modal,
+  .swiper-button-next-container-modal {
+    display: none;
+  }
+  .modal-container {
+    max-width: none;
+    width: 80%;
+  }
+  .close-button {
+    font-size: 80rem;
+    width: 60px;
+    height: 60px;
+    color: #fff;
+  }
+  .swiper-pagination-modal {
+    bottom: -10% !important;
+  }
+  @media (max-height: 500px) {
+    .modal-container {
+      height: 100vh;
+      width: 100%;
+    }
+    .close-button {
+      z-index: 2;
+      top: 15%;
+      color: #fff;
+    }
+    .img-slide-modal {
+      object-fit: fill;
+    }
+  }
+}
+@media (max-width: 768px) {
+  .modal-container {
+    width: 100%;
+  }
+  .img-slide-modal {
+    object-fit: cover;
+  }
+  @media (max-height: 500px) {
+    .modal-container {
+      height: 100vh;
+      width: 100%;
+    }
+    .close-button {
+      z-index: 2;
+      top: 15%;
+      color: #fff;
+    }
+    .img-slide-modal {
+      object-fit: fill;
+    }
+  }
 }

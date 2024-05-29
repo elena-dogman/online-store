@@ -113,10 +113,21 @@
   color: $text-color-base;
   transition: background-color 0.3s ease;
   cursor: pointer;
-  &:hover {
-    box-shadow: $button-hover-box-shadow;
-    background-color: $text-color-base;
-    color: $text-color-contrast;
+
+  @media (hover: hover) {
+    &:hover {
+      box-shadow: $button-hover-box-shadow;
+      background-color: $text-color-base;
+      color: $text-color-contrast;
+    }
+  }
+
+  @media (hover: none) {
+    &:active {
+      box-shadow: $button-hover-box-shadow;
+      background-color: $text-color-base;
+      color: $text-color-contrast;
+    }
   }
 }
 .icons_container {
@@ -200,5 +211,18 @@
   }
   .swiper-scrollbar {
     display: none;
+  }
+}
+@media (max-width: 550px) {
+  .icons_container {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .swiper-horizontal > .swiper-pagination-bullets,
+  .swiper-pagination-bullets.swiper-pagination-horizontal {
+    bottom: var(--swiper-pagination-bottom, -10%);
+  }
+  .size_container {
+    flex-wrap: wrap;
   }
 }

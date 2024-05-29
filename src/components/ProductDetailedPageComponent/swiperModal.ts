@@ -105,7 +105,6 @@ export function modalSwiper(url: string[]): HTMLElement {
   addInnerComponent(swiperMain, swiperNavigationPrevContainer);
   addInnerComponent(swiperMain, swiperNavigationNextContainer);
 
-  // Create modal components
   const modalOverlay = createElement(modalOverlayParams);
   const modalContainer = createElement(modalContainerParams);
   const closeButton = createElement(closeButtonParams);
@@ -114,9 +113,9 @@ export function modalSwiper(url: string[]): HTMLElement {
   addInnerComponent(modalContainer, swiperMain);
   addInnerComponent(modalOverlay, modalContainer);
 
-  // Close modal on button click
   closeButton.addEventListener('click', () => {
     modalOverlay.style.visibility = 'hidden';
+    document.body.style.overflow = 'auto';
   });
 
   setTimeout(() => {

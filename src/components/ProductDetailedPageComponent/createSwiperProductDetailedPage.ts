@@ -172,6 +172,7 @@ export function createSwiper(ID: string): Promise<{
         swiperWrapper.addEventListener('click', (e) => {
           e.preventDefault();
           modalOverlay.style.visibility = 'visible';
+          document.body.style.overflow = 'hidden';
         });
         return { swiperContainer, response };
       } else {
