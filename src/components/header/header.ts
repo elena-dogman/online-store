@@ -159,6 +159,8 @@ export function createHeader(): HTMLElement {
 
   window.addEventListener('resize', moveNavLinks);
   document.addEventListener('DOMContentLoaded', moveNavLinks);
+  window.addEventListener('load', moveNavLinks);
+  moveNavLinks();
 
   async function handleLogout(): Promise<void> {
     await logoutUser();

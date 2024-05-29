@@ -19,6 +19,7 @@
   gap: 10px;
   width: 250px;
   padding: 20px;
+  position: fixed;
 }
 
 .catalog-container {
@@ -26,6 +27,10 @@
   flex-direction: column;
   gap: 20px;
   flex-grow: 1;
+  padding: 0 0 0 20px;
+}
+.catalog-container-wrapper {
+  padding: 0;
 }
 
 .catalog-grid {
@@ -36,13 +41,40 @@
 }
 
 .product-card {
+  position: relative;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 10px;
   margin: 10px;
   text-align: center;
   background-color: $card-background;
   border-radius: 5px;
-  box-sizing: border-box;
+  overflow: hidden;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    border-radius: 5px;
+    transform: scale(0);
+    transform-origin: top left;
+    transition: transform 1s ease;
+    z-index: 0;
+  }
+
+  &:hover::before {
+    transform: scale(1);
+  }
+  & * {
+    position: relative;
+    z-index: 1;
+    transition: color 1s ease;
+  }
+  &:hover {
+    color: white;
+  }
 }
 
 .product-image {
@@ -159,11 +191,68 @@
 .filter-label {
   cursor: pointer;
 }
+.radio-wrapper {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  font-size: 16px;
+  user-select: none; // Запрещаем выделение текста при клике
 
-.category-filter {
-  cursor: pointer;
+  label {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 30px; // Отступ для кастомной радио-кнопки
+    cursor: pointer;
+  }
+
+  .category-filter {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .custom-radio {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #f0f0f0;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    transition:
+      background-color 0.3s,
+      border-color 0.3s;
+    transform: translateY(-50%);
+  }
+
+  label:hover .custom-radio {
+    background-color: #e0e0e0;
+  }
+
+  .category-filter:checked + .custom-radio {
+    background-color: #333;
+    border-color: #333;
+  }
+
+  .custom-radio::after {
+    content: '';
+    position: absolute;
+    display: none;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .category-filter:checked + .custom-radio::after {
+    display: block;
+  }
 }
-
 .checkbox-container {
   padding-left: 20px;
   display: flex;
@@ -216,7 +305,7 @@
   cursor: pointer;
 }
 
-.sort-options input[type="radio"] {
+.sort-options input[type='radio'] {
   display: none;
 }
 
@@ -262,7 +351,6 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-
   .filter-label,
   .sort-label {
     @include hoverOpacity(0.7);
@@ -274,5 +362,10 @@
 
   .pagination-button:hover {
     box-shadow: $button-hover-box-shadow;
+  }
+}
+@media (max-width: 1150px) {
+  .catalog-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
 }

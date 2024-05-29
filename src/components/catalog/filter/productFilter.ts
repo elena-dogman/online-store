@@ -1,6 +1,13 @@
 import { Category } from '@commercetools/platform-sdk';
-import { createElement, addInnerComponent, ElementParams } from '../../../utils/baseComponent';
-import { fetchProductAttributes, fetchCategories } from '../../../api/apiService';
+import {
+  createElement,
+  addInnerComponent,
+  ElementParams,
+} from '../../../utils/baseComponent';
+import {
+  fetchProductAttributes,
+  fetchCategories,
+} from '../../../api/apiService';
 
 export async function createFilterComponent(): Promise<HTMLElement> {
   const filterContainerParams: ElementParams<'div'> = {
@@ -23,9 +30,12 @@ export async function createFilterComponent(): Promise<HTMLElement> {
       return aIndex - bIndex;
     });
 
-    sortedCategories.forEach(category => {
+    sortedCategories.forEach((category) => {
       if (!category.parent) {
-        const filterGroup = createCategoryFilterGroup(category, categoriesResponse);
+        const filterGroup = createCategoryFilterGroup(
+          category,
+          categoriesResponse,
+        );
         addInnerComponent(filterContainer, filterGroup);
       }
     });
@@ -41,7 +51,10 @@ export async function createFilterComponent(): Promise<HTMLElement> {
   return filterContainer;
 }
 
-function createCategoryFilterGroup(category: Category, allCategories: Category[]): HTMLElement {
+function createCategoryFilterGroup(
+  category: Category,
+  allCategories: Category[],
+): HTMLElement {
   const filterGroupParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['filter-group'],
@@ -57,7 +70,9 @@ function createCategoryFilterGroup(category: Category, allCategories: Category[]
   const filterLabelParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['filter-label'],
-    textContent: category.name['en-US'].charAt(0).toUpperCase() + category.name['en-US'].slice(1),
+    textContent:
+      category.name['en-US'].charAt(0).toUpperCase() +
+      category.name['en-US'].slice(1),
   };
   const filterLabel = createElement(filterLabelParams);
 
@@ -73,9 +88,11 @@ function createCategoryFilterGroup(category: Category, allCategories: Category[]
   };
   const radioContainer = createElement(radioContainerParams);
 
-  const subCategories = allCategories.filter(cat => cat.parent && cat.parent.id === category.id);
+  const subCategories = allCategories.filter(
+    (cat) => cat.parent && cat.parent.id === category.id,
+  );
 
-  subCategories.forEach(subCategory => {
+  subCategories.forEach((subCategory) => {
     const radioWrapper = createElement({
       tag: 'div',
       classNames: ['radio-wrapper'],
@@ -88,10 +105,13 @@ function createCategoryFilterGroup(category: Category, allCategories: Category[]
     }) as HTMLInputElement;
 
     radio.addEventListener('change', () => {
-      const event = new CustomEvent(
-        'filtersChanged',
-        { detail: { name: 'category', value: radio.value, checked: radio.checked } },
-      );
+      const event = new CustomEvent('filtersChanged', {
+        detail: {
+          name: 'category',
+          value: radio.value,
+          checked: radio.checked,
+        },
+      });
       filterGroup.dispatchEvent(event);
     });
 
@@ -106,8 +126,18 @@ function createCategoryFilterGroup(category: Category, allCategories: Category[]
       radio.dispatchEvent(event);
     });
 
-    addInnerComponent(radioWrapper, radio);
+    const customRadioParams: ElementParams<'span'> = {
+      tag: 'span',
+      classNames: ['custom-radio'],
+    };
+    const customRadio = createElement(customRadioParams);
+
+    // addInnerComponent(radioWrapper, radio);
+    // addInnerComponent(radioWrapper, customRadio);
+    addInnerComponent(radioLabel, radio);
+    addInnerComponent(radioLabel, customRadio);
     addInnerComponent(radioWrapper, radioLabel);
+
     addInnerComponent(radioContainer, radioWrapper);
   });
 
@@ -124,7 +154,10 @@ function createCategoryFilterGroup(category: Category, allCategories: Category[]
   return filterGroup;
 }
 
-function createFilterGroup(name: string, values: (string | number)[]): HTMLElement {
+function createFilterGroup(
+  name: string,
+  values: (string | number)[],
+): HTMLElement {
   const filterGroupParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['filter-group'],
@@ -156,7 +189,7 @@ function createFilterGroup(name: string, values: (string | number)[]): HTMLEleme
   };
   const checkboxContainer = createElement(checkboxContainerParams);
 
-  values.forEach(value => {
+  values.forEach((value) => {
     const checkboxWrapper = createElement({
       tag: 'div',
       classNames: ['checkbox-wrapper'],
@@ -169,10 +202,9 @@ function createFilterGroup(name: string, values: (string | number)[]): HTMLEleme
     }) as HTMLInputElement;
 
     checkbox.addEventListener('change', () => {
-      const event = new CustomEvent(
-        'filtersChanged',
-        { detail: { name, value: checkbox.value, checked: checkbox.checked } },
-      );
+      const event = new CustomEvent('filtersChanged', {
+        detail: { name, value: checkbox.value, checked: checkbox.checked },
+      });
       filterGroup.dispatchEvent(event);
     });
 

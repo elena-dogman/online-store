@@ -1,6 +1,12 @@
-import { ElementParams, createElement, addInnerComponent } from '../../../utils/baseComponent';
+import {
+  ElementParams,
+  createElement,
+  addInnerComponent,
+} from '../../../utils/baseComponent';
 
-export function createSortComponent(onSortChange: (sort: string) => void): HTMLElement {
+export function createSortComponent(
+  onSortChange: (sort: string) => void,
+): HTMLElement {
   const sortContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['sort-container'],
@@ -32,7 +38,7 @@ export function createSortComponent(onSortChange: (sort: string) => void): HTMLE
     { value: 'createdAt desc', text: 'Newest' },
   ];
 
-  sortOptionsData.forEach(option => {
+  sortOptionsData.forEach((option) => {
     const labelParams: ElementParams<'label'> = {
       tag: 'label',
     };
@@ -43,7 +49,6 @@ export function createSortComponent(onSortChange: (sort: string) => void): HTMLE
       attributes: { type: 'radio', name: 'sort', value: option.value },
     };
     const input = createElement(inputParams) as HTMLInputElement;
-
     input.addEventListener('change', () => {
       onSortChange(input.value);
       sortOptions.classList.remove('show');
