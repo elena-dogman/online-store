@@ -13,6 +13,7 @@ import {
 } from '../../components/catalog/filter/filters';
 import { createFilterComponent } from '../../components/catalog/filter/productFilter';
 import { createLoadingOverlay } from '../../components/catalog/overlay/loadingOverlay';
+import { buildBreadcrumbs, generateBreadcrumbLinks } from '../../components/breadcrumbs/breadcrumbs';
 
 export async function createCatalogPage(): Promise<HTMLElement> {
   await fetchAndMapCategories();
@@ -22,6 +23,12 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     classNames: ['catalog-page-container'],
   };
   const pageContainer = createElement(pageContainerParams);
+
+  const breadcrumbContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['breadcrumb-container'],
+  };
+  const breadcrumbContainer = createElement(breadcrumbContainerParams);
 
   const filterWrapperParams: ElementParams<'div'> = {
     tag: 'div',
@@ -140,8 +147,14 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     const filterName = target.classList[0].split('-')[0] as keyof Filters;
 
     updateFilters(filterName, target.value, target.checked);
-    clear(catalogContainer);
     await renderProducts(1, itemsPerPage, currentSort);
+
+    if (filterName === 'category') {
+      const breadcrumbs = await buildBreadcrumbs(target.value);
+      const breadcrumbLinks = generateBreadcrumbLinks(breadcrumbs);
+      clear(breadcrumbContainer);
+      addInnerComponent(breadcrumbContainer, breadcrumbLinks);
+    }
   });
 
   const sortComponent = createSortComponent(async (sort: string) => {
@@ -149,7 +162,15 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     await renderProducts(1, itemsPerPage, currentSort);
   });
 
+  const initialBreadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: 'Catalog', url: '/catalog' },
+  ];
+  const initialBreadcrumbLinks = generateBreadcrumbLinks(initialBreadcrumbs);
+  addInnerComponent(breadcrumbContainer, initialBreadcrumbLinks);
+
   pageContainer.prepend(header);
+  pageContainer.appendChild(breadcrumbContainer);
   addInnerComponent(pageContainer, filterWrapper);
   addInnerComponent(filterWrapper, filterComponent);
   addInnerComponent(pageContainer, catalogContainerWrapper);
