@@ -59,16 +59,12 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
   const updateFilters = (filterName: keyof Filters, value: string, checked: boolean): void => {
     if (filterName === 'category') {
-      if (checked) {
-        filters.category = value;
-      } else {
-        filters.category = '';
-      }
+      filters.category = checked ? value : '';
     } else {
       if (checked) {
-        filters[filterName]?.add(value);
+        filters[filterName].add(value);
       } else {
-        filters[filterName]?.delete(value);
+        filters[filterName].delete(value);
       }
     }
     updateURLWithFilters(filters);
@@ -93,11 +89,11 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     const selectedFilters: string[] = [];
 
     const buildFilterString = (key: keyof Filters): string => {
-      if (key === 'category' && filters[key]) {
-        return `categories.id: subtree("${filters[key]}")`;
-      } else if (filters[key] && (filters[key] as Set<string>).size > 0) {
-        const values = Array.from(filters[key] as Set<string>).map(value => `"${value}"`).join(',');
-        return `variants.attributes.${key}:(${values})`;
+      if (key === 'category') {
+        return filters.category ? `categories.id: subtree("${filters.category}")` : '';
+      } else if (filters[key].size > 0) {
+        const values = Array.from(filters[key]).map(value => `${value}`).join(',');
+        return `variants.attributes.${key}:${values}`;
       }
       return '';
     };

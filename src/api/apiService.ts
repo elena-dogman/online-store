@@ -346,8 +346,6 @@ export async function fetchFilteredProducts(filters: string[], sort?: string): P
       offset?: number;
     } = {
       filter: filters,
-      limit: 500,
-      offset: 0,
     };
 
     if (sort) {
@@ -358,7 +356,7 @@ export async function fetchFilteredProducts(filters: string[], sort?: string): P
       .productProjections()
       .search()
       .get({
-        queryArgs: queryArgs as unknown as { [key: string]: string | string[] | number },
+        queryArgs: queryArgs as unknown as { [key: string]: string | string[] },
       })
       .execute();
 
