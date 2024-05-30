@@ -1,4 +1,4 @@
-import { getUserData } from '../../../api/apiService';
+import { Customer } from '@commercetools/platform-sdk';
 import {
   ElementParams,
   addInnerComponent,
@@ -8,7 +8,7 @@ import { createInput } from '../../../utils/createInput';
 import { validateInput } from '../../../utils/validations/validation';
 import { createErrorElement } from '../../../utils/validations/validationsErrors';
 
-export function buildPersonalProfile(): HTMLElement {
+export function buildPersonalProfile(userData: Customer): HTMLElement {
   const infoPersonalInfContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['profile-form__personal-prof-container'],
@@ -56,20 +56,14 @@ export function buildPersonalProfile(): HTMLElement {
     'name',
   );
 
-  getUserData()
-    .then((userData) => {
-      if (userData) {
-        const name = userData.body.firstName ? userData.body.firstName : '';
-        const lastName = userData.body.lastName ? userData.body.lastName : '';
-        const date = userData.body.dateOfBirth ? userData.body.dateOfBirth : '';
-        infoInputName.value = name;
-        infoInputLastName.value = lastName;
-        infoInputDate.value = date;
-      }
-    })
-    .catch((erorr) => {
-      console.log(erorr);
-    });
+  if (userData) {
+    const name = userData.firstName ? userData.firstName : '';
+    const lastName = userData.lastName ? userData.lastName : '';
+    const date = userData.dateOfBirth ? userData.dateOfBirth : '';
+    infoInputName.value = name;
+    infoInputLastName.value = lastName;
+    infoInputDate.value = date;
+  }
   const infoLastDateError = createErrorElement();
   addInnerComponent(infoPersonalInfContainer, infoLabelDate);
   addInnerComponent(infoLabelDate, infoInputDate);

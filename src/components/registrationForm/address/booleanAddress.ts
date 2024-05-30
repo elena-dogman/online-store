@@ -1,7 +1,7 @@
 export const validStatusAddress = {
   shippingIsDefault: false,
   billingIsDefault: false,
-  joinAdress: false,
+  joinAddress: false,
 };
 
 export function setValidStatusAddress(

@@ -1,3 +1,4 @@
+import { Customer } from '@commercetools/platform-sdk';
 import {
   ElementParams,
   addInnerComponent,
@@ -6,17 +7,21 @@ import {
 
 import { buildAddressProfile } from './addressProfile/addressProfile';
 import { buildPersonalProfile } from './personalProfile';
-export async function buildProfileForm(): Promise<HTMLElement> {
+export async function buildProfileForm(
+  data: Customer,
+): Promise<HTMLElement | undefined> {
   const infoFormParams: ElementParams<'form'> = {
     tag: 'form',
     classNames: ['profile-container__profile-form'],
     attributes: { id: 'profile-form' },
   };
 
-  const addressProfile = await buildAddressProfile();
-  const personalProfile = await buildPersonalProfile();
+  const addressProfile = buildAddressProfile(data);
+  const personalProfile = buildPersonalProfile(data);
+
   const infoForm = createElement(infoFormParams);
   addInnerComponent(infoForm, personalProfile);
   addInnerComponent(infoForm, addressProfile);
+
   return infoForm;
 }

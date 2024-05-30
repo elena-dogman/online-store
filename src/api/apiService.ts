@@ -16,19 +16,17 @@ import {
   ProductProjection,
   CategoryPagedQueryResponse,
   Category,
+  MyCustomerUpdateAction,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/eventEmitter';
 import { RegistrationData } from '../components/registrationForm/regDataInterface';
 import { showToast } from '../components/toast/toast';
 import { isCustomError } from '../utils/customError';
-// import { U } from 'vitest/dist/reporters-yx5ZTtEV.js';
 
-export interface ProductAttributesResponse {
-  attributes: {
-    name: string;
-    values: (string | number)[];
-  }[];
+export interface CustomerUpdateBody {
+  version: number;
+  actions: MyCustomerUpdateAction[];
 }
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
@@ -106,7 +104,7 @@ export async function isUserLogined(): Promise<ClientResponse<Customer> | void> 
   }
 }
 
-export async function getUserData(): Promise<ClientResponse<Customer> | void> {
+export async function getUserData(): Promise<Customer> {
   if (localStorage.getItem('token')) {
     const unparsedToken = JSON.parse(localStorage.getItem('token') as string);
     const refreshToken = unparsedToken.refreshToken;
@@ -115,10 +113,16 @@ export async function getUserData(): Promise<ClientResponse<Customer> | void> {
     ).withProjectKey({
       projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
     });
+
     try {
-      const userData = await refreshFlowClient.me().get().execute();
+      const response = await refreshFlowClient.me().get().execute();
+      if (!response.body) {
+        throw new Error('No user data found');
+      }
+      const userData: Customer = response.body;
       return userData;
     } catch (error: unknown) {
+      // Handle known error types
       if (isCustomError(error)) {
         showToast(error.body.message);
       } else if (error instanceof Error) {
@@ -126,8 +130,27 @@ export async function getUserData(): Promise<ClientResponse<Customer> | void> {
       } else {
         showToast('An unknown error occurred');
       }
-      return undefined;
+      // Rethrow the error to be handled by the caller
+      throw error;
     }
+  } else {
+    throw new Error('No token found');
+  }
+}
+export async function updateCustomer(bodya: CustomerUpdateBody): Promise<void> {
+  const unparsedToken = localStorage.getItem('token');
+  if (!unparsedToken) {
+    throw new Error('No token found in local storage');
+  }
+  const token = JSON.parse(unparsedToken);
+  const refreshToken = token.refreshToken;
+  const refreshFlowClient = createApiBuilderFromCtpClient(
+    createRefreshTokenClient(refreshToken),
+  ).withProjectKey({ projectKey: import.meta.env.VITE_CTP_PROJECT_KEY });
+  try {
+    await refreshFlowClient.me().post({ body: bodya }).execute();
+  } catch (err) {
+    return;
   }
 }
 
@@ -163,13 +186,16 @@ export async function regUser(
       password: regData.password,
       dateOfBirth: regData.DOB,
       addresses: addresses,
-      ...(regData.shippingAddress.isDefault && { defaultShippingAddress: 0 }),
-      ...(regData.billingAddress.isDefault && { defaultBillingAddress: 1 }),
+      ...(regData.shippingAddress.isDefault
+        ? { defaultShippingAddress: 0 }
+        : {}),
+      ...(regData.billingAddress.isDefault ? { defaultBillingAddress: 1 } : {}),
     };
+
     await apiRoot
       .customers()
       .post({
-        body: requestBody as CustomerDraft,
+        body: requestBody,
       })
       .execute();
 
@@ -382,6 +408,3 @@ export async function fetchFilteredProducts(
     return [];
   }
 }
-// export async function getCategoriesById(ID:string) {
-
-// }

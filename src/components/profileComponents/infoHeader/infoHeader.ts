@@ -1,4 +1,4 @@
-import { getUserData } from '../../../api/apiService';
+import { Customer } from '@commercetools/platform-sdk';
 import {
   ElementParams,
   addInnerComponent,
@@ -7,7 +7,7 @@ import {
 import { createEdit } from '../infoEdit/infoEdit';
 import { checkLength } from './infoComponents';
 
-export function buildProfileHeader(): HTMLElement {
+export function buildProfileHeader(userData: Customer): HTMLElement {
   const profileHeaderParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['profile__header'],
@@ -42,7 +42,7 @@ export function buildProfileHeader(): HTMLElement {
   const logoUserContainer = createElement(logoUserContainerParams);
   const logoUserTitle = createElement(logoUserTitleParams);
   const logoUserLink = createElement(logoUserLinkParams);
-  const editbutton = createEdit();
+  const editbutton = createEdit(userData);
   addInnerComponent(profileHeader, profileLogoContainer);
   addInnerComponent(profileLogoContainer, profileLogoImg);
   addInnerComponent(profileLogoContainer, logoUserContainer);
@@ -50,24 +50,16 @@ export function buildProfileHeader(): HTMLElement {
   addInnerComponent(logoUserContainer, logoUserLink);
   addInnerComponent(profileHeader, editbutton);
 
-  getUserData()
-    .then((userData) => {
-      if (userData) {
-        let name = userData.body.firstName ? userData.body.firstName : '';
-        let lastName = userData.body.lastName ? userData.body.lastName : '';
-        let mail = userData.body.email ? userData.body.email : '';
-        profileLogoImg.innerHTML = `${name[0]}${lastName[0]}`;
-        logoUserTitle.innerHTML = `${name} ${lastName}`;
-        logoUserLink.innerHTML = mail;
-        logoUserTitle.innerHTML = checkLength(logoUserTitle.innerHTML);
-        logoUserLink.innerHTML = checkLength(logoUserLink.innerHTML);
-        name = checkLength(name);
-        lastName = checkLength(lastName);
-        mail = checkLength(mail);
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  let name = userData.firstName ? userData.firstName : '';
+  let lastName = userData.lastName ? userData.lastName : '';
+  let mail = userData.email ? userData.email : '';
+  profileLogoImg.innerHTML = `${name[0]}${lastName[0]}`;
+  logoUserTitle.innerHTML = `${name} ${lastName}`;
+  logoUserLink.innerHTML = mail;
+  logoUserTitle.innerHTML = checkLength(logoUserTitle.innerHTML);
+  logoUserLink.innerHTML = checkLength(logoUserLink.innerHTML);
+  name = checkLength(name);
+  lastName = checkLength(lastName);
+  mail = checkLength(mail);
   return profileHeader;
 }

@@ -1,3 +1,10 @@
+import {
+  Customer,
+  MyCustomerChangeEmailAction,
+  MyCustomerSetFirstNameAction,
+  MyCustomerSetLastNameAction,
+} from '@commercetools/platform-sdk';
+import { CustomerUpdateBody, updateCustomer } from '../../../api/apiService';
 import { searchElement } from '../../../utils/searchElem';
 import {
   fillObjectWithUniqueKeys,
@@ -7,8 +14,9 @@ import {
 import { addCountriesList } from '../../registrationForm/address/addressComponents';
 import { infoReadvalidStatus, setInfoReadvalidStatus } from './infoBoolean';
 
-export function showClick(e: Event): void {
+export function showClick(e: Event, data: Customer): void {
   e.preventDefault();
+  console.log(data);
   const elem = e.target as HTMLButtonElement;
   const form = elem.form as HTMLFormElement;
   fillObjectWithUniqueKeys(form, true, validStatus);
@@ -28,7 +36,8 @@ export function showClick(e: Event): void {
   const countries = Array.from(getCountriesList(post));
 
   if (name && lastName && date && post && city && street) {
-    toogleReadOnly(
+    toggleReadOnly(
+      data,
       countries,
       name,
       lastName,
@@ -49,7 +58,8 @@ function changeText(text: HTMLButtonElement): void {
   }
 }
 
-function toogleReadOnly(
+function toggleReadOnly(
+  data: Customer,
   countries: HTMLElement[],
   ...args: HTMLInputElement[]
 ): void {
@@ -63,16 +73,43 @@ function toogleReadOnly(
     });
     setInfoReadvalidStatus('name', false);
   } else {
+    const body: CustomerUpdateBody = {
+      version: data.version,
+      actions: [],
+    };
+    const actions = body.actions;
     args.flat().forEach((e) => {
       e.setAttribute('readonly', '');
+      if (e.getAttribute('name') === 'Name') {
+        const setFirstName: MyCustomerSetFirstNameAction = {
+          action: 'setFirstName',
+          firstName: e.value,
+        };
+        actions.push(setFirstName);
+      } else if (e.getAttribute('name') === 'Last Name') {
+        const setLastName: MyCustomerSetLastNameAction = {
+          action: 'setLastName',
+          lastName: e.value,
+        };
+        actions.push(setLastName);
+      } else if (e.getAttribute('name') === 'Email') {
+        const setEmail: MyCustomerChangeEmailAction = {
+          action: 'changeEmail',
+          email: 'email@example.com',
+        };
+        actions.push(setEmail);
+      }
     });
+
     countries.forEach((e) => {
       e.classList.add('readonly');
       e.removeEventListener('click', addCountriesList, true);
     });
+    updateCustomer(body);
     setInfoReadvalidStatus('name', true);
   }
 }
+
 export function getCountriesList(elements: HTMLInputElement[]): HTMLElement[] {
   return elements
     .map((element) => {
