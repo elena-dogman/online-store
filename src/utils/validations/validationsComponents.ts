@@ -2,22 +2,12 @@ import { calculateAge, checkDaysInMonth } from '../ageAndTextChecks';
 import country from 'country-list-js';
 
 import * as dateComponents from '../../components/registrationForm/dateComponent';
-import * as booleanValid from './booleanValid';
-import {
-  AddressComponents,
-  Components,
-  billingComponents,
-  shippingComponents,
-} from '../../components/registrationForm/address/addressFactory';
+import { setValidStatus, checkAllInputs, validStatus } from './booleanValid';
 import * as postalCodes from 'postal-codes-js';
-const components: Components = {
-  billing: billingComponents,
-  shipping: shippingComponents,
-};
+import { checkError, checkInputIndex } from './validation';
+import { searchElement, searchInput } from '../searchElem';
+import { filterArray } from '../filterElem';
 
-const dateDay = dateComponents.dayDate as HTMLInputElement;
-const dateMonth = dateComponents.monthDate as HTMLInputElement;
-const dateYear = dateComponents.yearDate as HTMLInputElement;
 export const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
   invalidEmail: 'Invalid email format',
@@ -55,19 +45,23 @@ function incorectValidation(
 ): void {
   errorSpan.textContent = errorMessage;
 }
-export function mailValidation(value: string, err: HTMLSpanElement | null): boolean {
-  if (err) {
+export function mailValidation(
+  value: string,
+  err: HTMLSpanElement | null,
+  index?: number | null,
+): boolean {
+  if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, ERROR_MESSAGES.invalidEmail);
-      booleanValid.setValidStatus('mail', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       return false;
     }
 
     if (!value.includes('@')) {
       incorectValidation(err, ERROR_MESSAGES.missingAtSymbol);
-      booleanValid.setValidStatus('mail', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       return false;
     }
 
@@ -75,21 +69,21 @@ export function mailValidation(value: string, err: HTMLSpanElement | null): bool
 
     if (!domainPart) {
       incorectValidation(err, ERROR_MESSAGES.missingDomain);
-      booleanValid.setValidStatus('mail', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       return false;
     }
 
     if (!REGEX.email.test(String(value).toLowerCase())) {
       incorectValidation(err, ERROR_MESSAGES.invalidEmail);
-      booleanValid.setValidStatus('mail', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       return false;
     }
 
     incorectValidation(err, '');
-    booleanValid.setValidStatus('mail', true);
-    booleanValid.checkAllInputs();
+    setValidStatus(index, true);
+    checkAllInputs();
     return true;
   }
   return true;
@@ -110,28 +104,33 @@ export function validationBirth(
 export function nameValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
 ): boolean {
-  if (err) {
+  if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, '');
-      booleanValid.setValidStatus('name', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      console.log(validStatus);
+      checkAllInputs();
       return false;
     }
     if (value.length <= 1) {
       incorectValidation(err, ERROR_MESSAGES.shortInput);
-      booleanValid.setValidStatus('name', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      console.log(validStatus);
+      checkAllInputs();
       return false;
     }
     if (!REGEX.lettersOnly.test(value)) {
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-      booleanValid.setValidStatus('name', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      console.log(validStatus);
+      checkAllInputs();
       return false;
     }
-    booleanValid.setValidStatus('name', true);
-    booleanValid.checkAllInputs();
+    setValidStatus(index, true);
+    console.log(validStatus);
+    checkAllInputs();
     incorectValidation(err, '');
     return true;
   }
@@ -141,28 +140,29 @@ export function nameValidation(
 export function lastNameValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
 ): boolean {
-  if (err) {
+  if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, '');
-      booleanValid.setValidStatus('lastName', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       return false;
     }
     if (value.length <= 1) {
       incorectValidation(err, ERROR_MESSAGES.shortInput);
-      booleanValid.setValidStatus('lastName', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       return false;
     }
     if (!REGEX.lettersOnly.test(value)) {
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
-      booleanValid.setValidStatus('lastName', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       return false;
     }
-    booleanValid.setValidStatus('lastName', true);
-    booleanValid.checkAllInputs();
+    setValidStatus(index, true);
+    checkAllInputs();
     incorectValidation(err, '');
     return true;
   }
@@ -172,54 +172,54 @@ export function lastNameValidation(
 export function cityValidation(
   value: string,
   err?: HTMLSpanElement | null,
-  type?: string | null,
+  index?: number | null,
+  form?: HTMLFormElement | null,
 ): boolean {
-  if (err && type) {
-    const cityValid: 'city-shipping' | 'city-billing' =
-      type === 'shipping' ? 'city-shipping' : 'city-billing';
-    const streetValid: 'street-shipping' | 'street-billing' =
-      type === 'shipping' ? 'street-shipping' : 'street-billing';
-    const streetErr = components[type].errorStreet;
-    const billingStreet = components[type].inputStreet;
-    if (value.length === 0) {
-      if (billingStreet instanceof HTMLInputElement) {
-        booleanValid.setValidStatus(cityValid, false);
-        booleanValid.setValidStatus(streetValid, false);
-        booleanValid.checkAllInputs();
-        billingStreet.value = '';
-        incorectValidation(err, '');
-        return false;
+  if (err && form && index != null) {
+    const filterArr = filterArray(form);
+    const street = filterArr[index + 1];
+    const streetErr = checkError(street.parentElement?.children);
+    if (streetErr) {
+      if (value.length === 0) {
+        if (street instanceof HTMLInputElement) {
+          setValidStatus(index, false);
+          setValidStatus(index + 1, false);
+          checkAllInputs();
+          street.value = '';
+          incorectValidation(err, '');
+          return false;
+        }
       }
-    }
-    if (value.length <= 1) {
-      if (billingStreet instanceof HTMLInputElement) {
-        billingStreet.setAttribute('disabled', '');
-        incorectValidation(err, ERROR_MESSAGES.shortInput);
-        booleanValid.setValidStatus(cityValid, false);
-        booleanValid.setValidStatus(streetValid, false);
-        booleanValid.checkAllInputs();
-        streetErr.textContent = '';
-        billingStreet.value = '';
-        return false;
+      if (value.length <= 1) {
+        if (street instanceof HTMLInputElement) {
+          street.setAttribute('disabled', '');
+          incorectValidation(err, ERROR_MESSAGES.shortInput);
+          setValidStatus(index, false);
+          setValidStatus(index + 1, false);
+          checkAllInputs();
+          streetErr.textContent = '';
+          street.value = '';
+          return false;
+        }
       }
-    }
-    if (!REGEX.lettersAndSpacesAndHyphens.test(value)) {
-      if (billingStreet instanceof HTMLInputElement) {
-        booleanValid.setValidStatus(cityValid, false);
-        booleanValid.setValidStatus(streetValid, false);
-        booleanValid.checkAllInputs();
-        billingStreet.setAttribute('disabled', '');
-        streetErr.textContent = '';
-        billingStreet.value = '';
-        incorectValidation(err, ERROR_MESSAGES.incorrectData);
-        return false;
+      if (!REGEX.lettersAndSpacesAndHyphens.test(value)) {
+        if (street instanceof HTMLInputElement) {
+          setValidStatus(index, false);
+          setValidStatus(index + 1, false);
+          checkAllInputs();
+          street.setAttribute('disabled', '');
+          streetErr.textContent = '';
+          street.value = '';
+          incorectValidation(err, ERROR_MESSAGES.incorrectData);
+          return false;
+        }
       }
+      incorectValidation(err, '');
+      setValidStatus(index, true);
+      checkAllInputs();
+      street.removeAttribute('disabled');
+      return true;
     }
-    incorectValidation(err, '');
-    booleanValid.setValidStatus(cityValid, true);
-    booleanValid.checkAllInputs();
-    billingStreet.removeAttribute('disabled');
-    return true;
   }
   return true;
 }
@@ -227,31 +227,30 @@ export function cityValidation(
 export function streetValidation(
   value: string,
   err?: HTMLSpanElement | null,
-  type?: string | null,
+  index?: number | null,
 ): boolean {
-  if (err && type) {
-    const streetValid: 'street-shipping' | 'street-billing' =
-      type === 'shipping' ? 'street-shipping' : 'street-billing';
+  console.log(err, index);
+  if (err && index != null) {
     if (value.length === 0) {
-      booleanValid.setValidStatus(streetValid, false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       incorectValidation(err, '');
       return false;
     }
     if (value.length <= 1) {
-      booleanValid.setValidStatus(streetValid, false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.shortInput);
       return false;
     }
     if (!REGEX.lettersAndNumbersAndWhiteSpaces.test(value)) {
-      booleanValid.setValidStatus(streetValid, false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
       return false;
     }
-    booleanValid.setValidStatus(streetValid, true);
-    booleanValid.checkAllInputs();
+    setValidStatus(index, true);
+    checkAllInputs();
     incorectValidation(err, '');
     return true;
   }
@@ -260,50 +259,52 @@ export function streetValidation(
 export function passwordValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
 ): boolean {
-  if (err) {
+  if (err && index != null) {
     if (/\s/.test(value)) {
-      booleanValid.setValidStatus('password', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordNoSpaces);
       err.style.bottom = '0px';
       return false;
     }
 
     if (value.length < 8) {
-      booleanValid.setValidStatus('password', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
       err.style.bottom = '0px';
       return false;
     }
 
     if (!/[A-Z]/.test(value)) {
-      booleanValid.setValidStatus('password', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       err.style.bottom = '-4px';
       return false;
     }
 
     if (!/[a-z]/.test(value)) {
-      booleanValid.setValidStatus('password', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       err.style.bottom = '0px';
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       return false;
     }
 
     if (!/\d/.test(value)) {
-      booleanValid.setValidStatus('password', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(index, false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       err.style.bottom = '0px';
       return false;
     }
 
-    booleanValid.setValidStatus('password', true);
-    booleanValid.checkAllInputs();
+    setValidStatus(index, true);
+    console.log(validStatus);
+    checkAllInputs();
     incorectValidation(err, '');
     err.style.bottom = '0px';
     return true;
@@ -313,9 +314,12 @@ export function passwordValidation(
 export function dayValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
 ): number | undefined {
+  const dateMonth = dateComponents.monthDate as HTMLInputElement;
+  const dateYear = dateComponents.yearDate as HTMLInputElement;
   const daysInMonth = checkDaysInMonth(dateMonth.value, dateYear.value);
-  if (err) {
+  if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, '');
       return;
@@ -336,8 +340,9 @@ export function dayValidation(
 export function monthValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
 ): number | undefined {
-  if (err) {
+  if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, '');
       return;
@@ -358,8 +363,9 @@ export function monthValidation(
 export function yearValidation(
   value: string,
   err?: HTMLSpanElement | null,
+  index?: number | null,
 ): number | undefined {
-  if (err) {
+  if (err && index != null) {
     const year = parseInt(value);
     if (isNaN(year)) {
       incorectValidation(err, ERROR_MESSAGES.mustBeNumber);
@@ -376,8 +382,12 @@ export function yearValidation(
 
   return parseInt(value);
 }
-export function checkNumber(this: HTMLInputElement): void {
-  const parent = this.parentNode as HTMLLabelElement | null;
+export function checkNumber(event: Event): void {
+  const dateDay = dateComponents.dayDate as HTMLInputElement;
+  const dateMonth = dateComponents.monthDate as HTMLInputElement;
+  const dateYear = dateComponents.yearDate as HTMLInputElement;
+  const elem = event.target as HTMLInputElement;
+  const parent = elem.parentNode as HTMLLabelElement | null;
   const err = parent?.parentElement?.firstElementChild as HTMLSpanElement;
   const daysInMonth = checkDaysInMonth(dateMonth.value, dateYear.value);
   if (!parent) {
@@ -399,18 +409,18 @@ export function checkNumber(this: HTMLInputElement): void {
       if (calculateAge(age) < 13) {
         incorectValidation(err, ERROR_MESSAGES.ageRequirement);
       } else {
-        booleanValid.setValidStatus('date', true);
-        booleanValid.checkAllInputs();
+        setValidStatus(4, true);
+        checkAllInputs();
         incorectValidation(err, '');
       }
     } else {
-      booleanValid.setValidStatus('date', false);
-      booleanValid.checkAllInputs();
+      setValidStatus(4, false);
+      checkAllInputs();
       incorectValidation(err, ERROR_MESSAGES.incorrectData);
     }
   } else {
-    booleanValid.setValidStatus('date', false);
-    booleanValid.checkAllInputs();
+    setValidStatus(4, false);
+    checkAllInputs();
     incorectValidation(err, ERROR_MESSAGES.incorrectData);
   }
 }
@@ -418,88 +428,102 @@ export function checkNumber(this: HTMLInputElement): void {
 export function postCodeValidation(
   value: string,
   err?: HTMLSpanElement | null,
-  type?: string | null,
+  index?: number | null,
+  form?: HTMLFormElement | null,
 ): void {
-  if (err && type) {
+  if (err && form && index != null) {
+    const filterArr = filterArray(form);
+    const city = filterArr[index + 1];
+    const container = city.parentElement?.parentElement as HTMLElement;
+    const contryWrapper = searchElement(
+      container,
+      'country-wrapper',
+    ) as HTMLElement;
+    const contryList = searchElement(
+      contryWrapper,
+      'countries-list',
+    ) as HTMLElement;
+    console.log(contryList);
     const countryNames = country.names();
-    const countryIndex = countryNames.indexOf(
-      components[type].listCountry.textContent || '',
-    );
-    const postCode = Object.keys(country.all)[countryIndex];
-
-    const cityValid: 'city-shipping' | 'city-billing' =
-      type === 'shipping' ? 'city-shipping' : 'city-billing';
-    const streetValid: 'street-shipping' | 'street-billing' =
-      type === 'shipping' ? 'street-shipping' : 'street-billing';
-    const postValid: 'post-shipping' | 'post-billing' =
-      type === 'shipping' ? 'post-shipping' : 'post-billing';
-    const streetErr = components[type].errorStreet;
-    const cityErr = components[type].errorCity;
-    const billingStreet = components[type].inputStreet;
-    const billingCity = components[type].inputCity;
-    if (value.length === 0) {
-      if (
-        billingStreet instanceof HTMLInputElement &&
-        billingCity instanceof HTMLInputElement
-      ) {
-        incorectValidation(err, '');
-        billingCity.setAttribute('disabled', '');
-        billingStreet.setAttribute('disabled', '');
-        booleanValid.setValidStatus(cityValid, false);
-        booleanValid.setValidStatus(postValid, false);
-        booleanValid.setValidStatus(streetValid, false);
-        booleanValid.checkAllInputs();
-        cityErr.textContent = '';
-        streetErr.textContent = '';
-        billingStreet.value = '';
-        billingCity.value = '';
-        return;
+    const countryIndex = countryNames.indexOf(contryList.textContent || '');
+    const street = filterArr[index + 2];
+    const streetErr = checkError(street.parentElement?.children);
+    const cityErr = checkError(city.parentElement?.children);
+    if (streetErr && cityErr) {
+      const postCode = Object.keys(country.all)[countryIndex];
+      if (value.length === 0) {
+        if (
+          street instanceof HTMLInputElement &&
+          city instanceof HTMLInputElement
+        ) {
+          incorectValidation(err, '');
+          city.setAttribute('disabled', '');
+          street.setAttribute('disabled', '');
+          setValidStatus(index, false);
+          setValidStatus(index + 1, false);
+          setValidStatus(index + 2, false);
+          checkAllInputs();
+          cityErr.textContent = '';
+          streetErr.textContent = '';
+          city.value = '';
+          street.value = '';
+          return;
+        }
       }
-    }
 
-    if (postalCodes.validate(postCode, value) === true) {
-      billingCity.removeAttribute('disabled');
-      incorectValidation(err, '');
-      booleanValid.setValidStatus(postValid, true);
-      booleanValid.checkAllInputs();
-    } else {
-      if (
-        billingStreet instanceof HTMLInputElement &&
-        billingCity instanceof HTMLInputElement
-      ) {
-        billingCity.setAttribute('disabled', '');
-        billingStreet.setAttribute('disabled', '');
-        booleanValid.setValidStatus(cityValid, false);
-        booleanValid.setValidStatus(postValid, false);
-        booleanValid.setValidStatus(streetValid, false);
-        booleanValid.checkAllInputs();
-        cityErr.textContent = '';
-        streetErr.textContent = '';
-        billingStreet.value = '';
-        billingCity.value = '';
-        incorectValidation(err, ERROR_MESSAGES.incorrectData);
+      if (postalCodes.validate(postCode, value) === true) {
+        city.removeAttribute('disabled');
+        incorectValidation(err, '');
+        setValidStatus(index, true);
+        checkAllInputs();
+      } else {
+        if (
+          city instanceof HTMLInputElement &&
+          street instanceof HTMLInputElement
+        ) {
+          city.setAttribute('disabled', '');
+          street.setAttribute('disabled', '');
+          setValidStatus(index, false);
+          setValidStatus(index + 1, false);
+          setValidStatus(index + 2, false);
+          checkAllInputs();
+          cityErr.textContent = '';
+          streetErr.textContent = '';
+          city.value = '';
+          street.value = '';
+          incorectValidation(err, ERROR_MESSAGES.incorrectData);
+        }
       }
     }
   }
 }
 
-export function disableLocation(
-  adressComponents: AddressComponents,
-  purpose: string,
-): void {
-  adressComponents.errorCity.textContent = '';
-  adressComponents.errorStreet.textContent = '';
-  adressComponents.errorPost.textContent = '';
-  adressComponents.inputStreet.setAttribute('disabled', '');
-  adressComponents.inputCity.setAttribute('disabled', '');
-  const cityValid: 'city-shipping' | 'city-billing' =
-    purpose === 'shipping' ? 'city-shipping' : 'city-billing';
-  const streetValid: 'street-shipping' | 'street-billing' =
-    purpose === 'shipping' ? 'street-shipping' : 'street-billing';
-  booleanValid.setValidStatus(cityValid, false);
-  booleanValid.setValidStatus(streetValid, false);
-  booleanValid.checkAllInputs();
-  adressComponents.inputStreet.value = '';
-  adressComponents.inputPost.value = '';
-  adressComponents.inputCity.value = '';
+export function disableLocation(wrapper: HTMLElement): void {
+  const parent = wrapper.parentElement?.parentElement as HTMLElement;
+  const postLabel = searchElement(parent, 'label-post') as HTMLLabelElement;
+  const cityLabel = searchElement(parent, 'label-city') as HTMLLabelElement;
+  const streetLabel = searchElement(parent, 'label-street') as HTMLLabelElement;
+  const post = searchInput(postLabel) as HTMLInputElement;
+  const city = searchInput(cityLabel) as HTMLInputElement;
+  const street = searchInput(streetLabel) as HTMLInputElement;
+  const postErr = checkError(postLabel.children);
+  const cityErr = checkError(cityLabel.children);
+  const streetErr = checkError(streetLabel.children);
+  if (postErr && cityErr && streetErr) {
+    postErr.textContent = '';
+    cityErr.textContent = '';
+    streetErr.textContent = '';
+    street.setAttribute('disabled', '');
+    city.setAttribute('disabled', '');
+    const cityIndex = checkInputIndex(city);
+    const streetIndex = checkInputIndex(street);
+    const postIndex = checkInputIndex(street);
+    setValidStatus(cityIndex, false);
+    setValidStatus(streetIndex, false);
+    setValidStatus(postIndex, false);
+    checkAllInputs();
+    street.value = '';
+    post.value = '';
+    city.value = '';
+  }
 }

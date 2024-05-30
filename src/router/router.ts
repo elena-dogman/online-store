@@ -56,11 +56,10 @@ function createRouter(routes: Routes): Router {
 
       const isLoggedIn = Boolean(localStorage.getItem('token'));
 
-      if (path === '/login' && isLoggedIn) {
+      if ((path === '/login' || path === '/register') && isLoggedIn) {
         this.navigate('/');
         return;
       }
-
       const routeKeys = Object.keys(this.routes);
       let handler: RouteHandler | null = null;
       let params: Record<string, string> = {};

@@ -6,7 +6,7 @@ import {
   createElement,
 } from '../../utils/baseComponent';
 
-export function buildUserProfilePage(): HTMLElement {
+export async function buildUserProfilePage(): Promise<HTMLElement> {
   const userProfilePageParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['user-profile-page'],
@@ -25,6 +25,6 @@ export function buildUserProfilePage(): HTMLElement {
   const header = createHeader();
   addInnerComponent(userProfilePage, header);
   addInnerComponent(userProfilePage, profileImg);
-  addInnerComponent(userProfilePage, infoContainer);
+  addInnerComponent(userProfilePage, await infoContainer);
   return userProfilePage;
 }
