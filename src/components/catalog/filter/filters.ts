@@ -3,38 +3,66 @@ import { fetchCategories } from '../../../api/apiService';
 
 export interface Filters {
   audience: Set<string>;
-  category: string | null;
+  category: string;
   size: Set<string>;
 }
 
-const categoriesMap: Record<string, string> = {};
+const categoriesMap: Record<string, { name: string, parent?: string }> = {};
 
-async function fetchAndMapCategories(): Promise<void> {
+export async function fetchAndMapCategories(): Promise<void> {
   const categories = await fetchCategories();
   categories.forEach((category: Category) => {
-    categoriesMap[category.id] = category.name['en-US'];
+    categoriesMap[category.id] = { name: category.name['en-US'], parent: category.parent?.id };
   });
 }
 
-function getFiltersFromURL(): Filters {
+
+export function getFiltersFromURL(): Filters {
   const params = new URLSearchParams(window.location.search);
   const filters: Filters = {
     audience: new Set(params.getAll('audience')),
-    category: Object.keys(categoriesMap).find(id => categoriesMap[id] === params.get('category')!) || null,
+    category: Object.keys(categoriesMap).find(id => categoriesMap[id].name === params.get('category')) || '',
     size: new Set(params.getAll('size')),
   };
   return filters;
 }
 
-function updateURLWithFilters(filters: Filters): void {
-  const params = new URLSearchParams();
-  filters.audience.forEach(value => params.append('audience', value));
+export function updateURLWithFilters(filters: Filters): void {
+  const url = new URL(window.location.href);
+
+  url.searchParams.forEach((_, key) => {
+    url.searchParams.delete(key);
+  });
+
   if (filters.category) {
-    const categoryName = categoriesMap[filters.category] || filters.category;
-    params.append('category', categoryName);
+    url.searchParams.append('category', categoriesMap[filters.category]?.name || '');
   }
-  filters.size.forEach(value => params.append('size', value));
-  history.pushState(null, '', '?' + params.toString());
+
+  if (filters.audience.size > 0) {
+    url.searchParams.set('audience', Array.from(filters.audience).join(','));
+  }
+
+  if (filters.size.size > 0) {
+    url.searchParams.set('size', Array.from(filters.size).join(','));
+  }
+
+  history.pushState({}, '', url.toString());
 }
 
-export { fetchAndMapCategories, getFiltersFromURL, updateURLWithFilters };
+
+export function buildCategoryPath(categoryId: string): { id: string, name: string }[] {
+  const path: { id: string, name: string }[] = [];
+  let currentCategory = categoriesMap[categoryId];
+  while (currentCategory) {
+    path.unshift({ id: categoryId, name: currentCategory.name });
+    if (currentCategory.parent) {
+      categoryId = currentCategory.parent;
+      currentCategory = categoriesMap[categoryId];
+    } else {
+      break;
+    }
+  }
+  return path;
+}
+
+export { categoriesMap };

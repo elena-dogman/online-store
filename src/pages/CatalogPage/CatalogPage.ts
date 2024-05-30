@@ -1,9 +1,4 @@
-import {
-  createElement,
-  addInnerComponent,
-  clear,
-  ElementParams,
-} from '../../utils/baseComponent';
+import { createElement, addInnerComponent, clear, ElementParams } from '../../utils/baseComponent';
 import { createHeader } from '../../components/header/header';
 import { createProductCatalog } from '../../components/catalog/productCatalog/productCatalog';
 import { createSortComponent } from '../../components/catalog/productSort/productSort';
@@ -12,12 +7,40 @@ import { createPagination } from '../../components/catalog/pagination/pagination
 import { ProductProjection } from '@commercetools/platform-sdk';
 import {
   fetchAndMapCategories,
-  Filters,
   getFiltersFromURL,
   updateURLWithFilters,
+  buildCategoryPath,
+  categoriesMap,
+  Filters,
 } from '../../components/catalog/filter/filters';
 import { createFilterComponent } from '../../components/catalog/filter/productFilter';
 import { createLoadingOverlay } from '../../components/catalog/overlay/loadingOverlay';
+import { generateBreadcrumbLinks } from '../../components/breadcrumbs/breadcrumbs';
+
+export async function buildBreadcrumbsFromUrl(): Promise<{ name: string; url: string }[]> {
+  const url = new URL(window.location.href);
+  const categoryName = url.searchParams.get('category');
+
+  const breadcrumbs = [{ name: 'Home', url: '/' }, { name: 'Catalog', url: '/catalog' }];
+  if (!categoryName) {
+    return breadcrumbs;
+  }
+
+  const categoryId = Object.keys(categoriesMap).find(id => categoriesMap[id].name === categoryName);
+  if (!categoryId) {
+    return breadcrumbs;
+  }
+
+  const categoryPath = buildCategoryPath(categoryId);
+  categoryPath.forEach(category => {
+    breadcrumbs.push({
+      name: category.name,
+      url: `/catalog?category=${category.name}`,
+    });
+  });
+
+  return breadcrumbs;
+}
 
 export async function createCatalogPage(): Promise<HTMLElement> {
   await fetchAndMapCategories();
@@ -27,6 +50,12 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     classNames: ['catalog-page-container'],
   };
   const pageContainer = createElement(pageContainerParams);
+
+  const breadcrumbContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['breadcrumb-container'],
+  };
+  const breadcrumbContainer = createElement(breadcrumbContainerParams);
 
   const filterWrapperParams: ElementParams<'div'> = {
     tag: 'div',
@@ -60,13 +89,16 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   const itemsPerPage = 8;
   let currentSort = 'price asc';
 
-  const filters: Filters = getFiltersFromURL();
+  const filters = getFiltersFromURL();
 
-  const updateFilters = (
-    filterName: keyof Filters,
-    value: string,
-    checked: boolean,
-  ): void => {
+  const updateBreadcrumbs = async (): Promise<void> => {
+    const breadcrumbs = await buildBreadcrumbsFromUrl();
+    const breadcrumbLinks = generateBreadcrumbLinks(breadcrumbs);
+    clear(breadcrumbContainer);
+    addInnerComponent(breadcrumbContainer, breadcrumbLinks);
+  };
+
+  const updateFilters = async (filterName: keyof Filters, value: string, checked: boolean): Promise<void> => {
     if (filterName === 'category') {
       filters.category = checked ? value : '';
     } else {
@@ -77,7 +109,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
       }
     }
     updateURLWithFilters(filters);
-    console.log(`Updated Filters: ${filterName}`, filters[filterName]);
+    await updateBreadcrumbs();
   };
 
   const showLoadingOverlay = (): void => {
@@ -90,12 +122,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     paginationContainer.classList.add('visible');
   };
 
-  const renderProducts = async (
-    page: number,
-    itemsPerPageCount: number,
-    sort: string,
-  ): Promise<void> => {
-    console.log('Rendering products with sort:', sort);
+  const renderProducts = async (page: number, itemsPerPageCount: number, sort: string): Promise<void> => {
     showLoadingOverlay();
     clear(catalogContainer);
 
@@ -103,13 +130,9 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
     const buildFilterString = (key: keyof Filters): string => {
       if (key === 'category') {
-        return filters.category
-          ? `categories.id: subtree("${filters.category}")`
-          : '';
+        return filters.category ? `categories.id: subtree("${filters.category}")` : '';
       } else if (filters[key].size > 0) {
-        const values = Array.from(filters[key])
-          .map((value) => `${value}`)
-          .join(',');
+        const values = Array.from(filters[key]).map(value => `${value}`).join(',');
         return `variants.attributes.${key}:${values}`;
       }
       return '';
@@ -156,7 +179,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     const target = event.target as HTMLInputElement;
     const filterName = target.classList[0].split('-')[0] as keyof Filters;
 
-    updateFilters(filterName, target.value, target.checked);
+    await updateFilters(filterName, target.value, target.checked);
     clear(catalogContainer);
     await renderProducts(1, itemsPerPage, currentSort);
   });
@@ -166,7 +189,12 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     await renderProducts(1, itemsPerPage, currentSort);
   });
 
+  const initialBreadcrumbs = await buildBreadcrumbsFromUrl();
+  const initialBreadcrumbLinks = generateBreadcrumbLinks(initialBreadcrumbs);
+  addInnerComponent(breadcrumbContainer, initialBreadcrumbLinks);
+
   pageContainer.prepend(header);
+  pageContainer.appendChild(breadcrumbContainer);
   addInnerComponent(pageContainer, filterWrapper);
   addInnerComponent(filterWrapper, filterComponent);
   addInnerComponent(pageContainer, catalogContainerWrapper);
@@ -176,6 +204,11 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   pageContainer.append(loadingOverlay);
 
   await renderProducts(currentPage, itemsPerPage, currentSort);
+
+  window.addEventListener('popstate', async () => {
+    await updateBreadcrumbs();
+    await renderProducts(currentPage, itemsPerPage, currentSort);
+  });
 
   return pageContainer;
 }
