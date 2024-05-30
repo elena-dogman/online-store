@@ -1,4 +1,9 @@
-import { createElement, addInnerComponent, clear, ElementParams } from '../../utils/baseComponent';
+import {
+  createElement,
+  addInnerComponent,
+  clear,
+  ElementParams,
+} from '../../utils/baseComponent';
 import { createHeader } from '../../components/header/header';
 import { createProductCatalog } from '../../components/catalog/productCatalog/productCatalog';
 import { createSortComponent } from '../../components/catalog/productSort/productSort';
@@ -57,7 +62,11 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
   const filters: Filters = getFiltersFromURL();
 
-  const updateFilters = (filterName: keyof Filters, value: string, checked: boolean): void => {
+  const updateFilters = (
+    filterName: keyof Filters,
+    value: string,
+    checked: boolean,
+  ): void => {
     if (filterName === 'category') {
       filters.category = checked ? value : '';
     } else {
@@ -81,7 +90,11 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     paginationContainer.classList.add('visible');
   };
 
-  const renderProducts = async (page: number, itemsPerPageCount: number, sort: string): Promise<void> => {
+  const renderProducts = async (
+    page: number,
+    itemsPerPageCount: number,
+    sort: string,
+  ): Promise<void> => {
     console.log('Rendering products with sort:', sort);
     showLoadingOverlay();
     clear(catalogContainer);
@@ -90,9 +103,13 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
     const buildFilterString = (key: keyof Filters): string => {
       if (key === 'category') {
-        return filters.category ? `categories.id: subtree("${filters.category}")` : '';
+        return filters.category
+          ? `categories.id: subtree("${filters.category}")`
+          : '';
       } else if (filters[key].size > 0) {
-        const values = Array.from(filters[key]).map(value => `${value}`).join(',');
+        const values = Array.from(filters[key])
+          .map((value) => `${value}`)
+          .join(',');
         return `variants.attributes.${key}:${values}`;
       }
       return '';

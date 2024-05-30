@@ -15,7 +15,7 @@ import {
   Keyboard,
 } from 'swiper/modules';
 import { ClientResponse, Product } from '@commercetools/platform-sdk';
-
+import { modalSwiper } from './swiperModal';
 Swiper.use([
   Pagination,
   Autoplay,
@@ -84,7 +84,7 @@ export function createSwiper(ID: string): Promise<{
   );
   const swiperWrapper = createElement(swiperWrapperParams);
   const swiperMain = createElement(swiperParams);
-
+  const imgArray: string[] = [];
   return getDetailedProduct(ID)
     .then((response: ClientResponse<Product> | undefined) => {
       if (response && response.body) {
@@ -107,6 +107,8 @@ export function createSwiper(ID: string): Promise<{
               },
               classNames: ['img-slide'],
             };
+
+            imgArray.push(image.url);
             const imgSlide = createElement(imgSlideParams);
 
             addInnerComponent(swiperZoomContainer, imgSlide);
@@ -114,7 +116,8 @@ export function createSwiper(ID: string): Promise<{
             addInnerComponent(swiperWrapper, swiperSlide);
           },
         );
-
+        const modalOverlay = modalSwiper(imgArray);
+        document.querySelector('#app')?.append(modalOverlay);
         addInnerComponent(swiperMain, swiperWrapper);
         addInnerComponent(swiperMain, swiperPagination);
         addInnerComponent(swiperNavigationPrevContainer, swiperNavigationPrev);
@@ -131,8 +134,8 @@ export function createSwiper(ID: string): Promise<{
             speed: 1000,
             preventClicks: true,
             keyboard: {
-              enabled: true,
-              onlyInViewport: false,
+              enabled: false,
+              onlyInViewport: true,
             },
             effect: 'cube',
             cubeEffect: {
@@ -147,8 +150,9 @@ export function createSwiper(ID: string): Promise<{
               clickable: true,
             },
             autoplay: {
-              delay: 30000,
-              disableOnInteraction: true,
+              delay: 300000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
             },
             scrollbar: {
               el: '.swiper-scrollbar',
@@ -159,9 +163,17 @@ export function createSwiper(ID: string): Promise<{
               eventsTarget: '.swiper',
             },
             updateOnWindowResize: true,
+            preventClicksPropagation: true,
+            simulateTouch: true,
+            resizeObserver: true,
+            grabCursor: true,
           });
         }, 0);
-
+        swiperWrapper.addEventListener('click', (e) => {
+          e.preventDefault();
+          modalOverlay.style.visibility = 'visible';
+          document.body.style.overflow = 'hidden';
+        });
         return { swiperContainer, response };
       } else {
         throw new Error('No product details found');
