@@ -57,6 +57,7 @@ export function buildPersonalProfile(userData: Customer): HTMLElement {
   const dateContainerParam: ElementParams<'label'> = {
     tag: 'label',
     classNames: ['profile-form__date-container', 'prof-label'],
+    attributes: { for: 'Date' },
   };
   const dateContainer = createElement(dateContainerParam);
   const dayParam: ElementParams<'input'> = {
@@ -67,6 +68,7 @@ export function buildPersonalProfile(userData: Customer): HTMLElement {
       maxLength: '2',
       'data-validation-type': 'day',
       hide: '',
+      readonly: '',
     },
   };
   const monthParam: ElementParams<'input'> = {
@@ -77,6 +79,7 @@ export function buildPersonalProfile(userData: Customer): HTMLElement {
       maxLength: '2',
       'data-validation-type': 'month',
       hide: '',
+      readonly: '',
     },
   };
   const yearParam: ElementParams<'input'> = {
@@ -86,33 +89,40 @@ export function buildPersonalProfile(userData: Customer): HTMLElement {
       type: 'text',
       maxLength: '4',
       'data-validation-type': 'year',
+      readonly: '',
+      id: 'Date',
+      name: 'Date',
     },
   };
 
-  const day = createElement(dayParam);
-  const month = createElement(monthParam);
-  const year = createElement(yearParam);
-
-  day.addEventListener('input', checkNumber);
-  month.addEventListener('input', checkNumber);
-  year.addEventListener('input', checkNumber);
+  const day = createElement(dayParam) as HTMLInputElement;
+  const month = createElement(monthParam) as HTMLInputElement;
+  const year = createElement(yearParam) as HTMLInputElement;
   day.addEventListener('input', checkNumber);
   month.addEventListener('input', checkNumber);
   year.addEventListener('input', checkNumber);
   if (userData) {
     const name = userData.firstName ? userData.firstName : '';
     const lastName = userData.lastName ? userData.lastName : '';
-    // const date = userData.dateOfBirth ? userData.dateOfBirth : '';
+    const date = userData.dateOfBirth ? userData.dateOfBirth : '';
     infoInputName.value = name;
     infoInputLastName.value = lastName;
     // infoInputDate.value = date;
+    const yearDate = date.slice(0, 4);
+    const dayDate = date.slice(8, 12);
+    const monthDate = date.slice(5, 7);
+    console.log(dayDate, monthDate, yearDate);
+    const infoDateError = createErrorElement();
+    infoDateError.classList.add('error-date');
+    day.value = dayDate;
+    month.value = monthDate;
+    year.value = yearDate;
+    addInnerComponent(infoPersonalInfContainer, dateLabelContainer);
+    addInnerComponent(dateLabelContainer, infoDateError);
+    addInnerComponent(dateLabelContainer, dateContainer);
+    addInnerComponent(dateContainer, day);
+    addInnerComponent(dateContainer, month);
+    addInnerComponent(dateContainer, year);
   }
-  const infoLastDateError = createErrorElement();
-  addInnerComponent(infoPersonalInfContainer, dateLabelContainer);
-  addInnerComponent(dateLabelContainer, infoLastDateError);
-  addInnerComponent(dateLabelContainer, dateContainer);
-  addInnerComponent(dateContainer, day);
-  addInnerComponent(dateContainer, month);
-  addInnerComponent(dateContainer, year);
   return infoPersonalInfContainer;
 }

@@ -1,5 +1,5 @@
 import { Customer, MyCustomerUpdateAction } from '@commercetools/platform-sdk';
-import { CustomerUpdateBody } from '../../../api/apiService';
+import { CustomerUpdateBody, updateCustomer } from '../../../api/apiService';
 import { searchElement } from '../../../utils/searchElem';
 import {
   fillObjectWithUniqueKeys,
@@ -59,6 +59,7 @@ function toggleReadOnly(
   if (infoReadvalidStatus.name) {
     args.flat().forEach((e) => {
       e.removeAttribute('readonly');
+      dateToggleReadonly(e);
     });
     countries.forEach((e) => {
       e.classList.remove('readonly');
@@ -72,6 +73,7 @@ function toggleReadOnly(
     };
     const actions = body.actions;
     args.flat().forEach((e) => {
+      dateToggleReadonly(e);
       const act = checkInput(e);
       if (act) {
         actions.push(act);
@@ -83,7 +85,7 @@ function toggleReadOnly(
       e.removeEventListener('click', addCountriesList, true);
     });
     console.log(body);
-    // updateCustomer(body);
+    updateCustomer(body);
     setInfoReadvalidStatus('name', true);
   }
 }
@@ -126,6 +128,27 @@ function checkInput(
       action: 'changeEmail',
       email: elem.value,
     } as MyCustomerUpdateAction;
+  } else if (elem.getAttribute('name') === 'Date') {
+    const month = elem.previousSibling as HTMLInputElement;
+    const day = month?.previousSibling as HTMLInputElement;
+    const result = `${elem.value.padStart(4, '0')}-${month.value.padStart(2, '0')}-${day.value.padStart(2, '0')}`;
+    return {
+      action: 'setDateOfBirth',
+      dateOfBirth: result,
+    } as MyCustomerUpdateAction;
   }
   return;
+}
+function dateToggleReadonly(e: HTMLInputElement): void {
+  if (e.classList.contains('date__year')) {
+    const month = e.previousSibling as HTMLInputElement;
+    const day = month?.previousSibling as HTMLInputElement;
+    if (infoReadvalidStatus.name) {
+      month?.removeAttribute('readonly');
+      day?.removeAttribute('readonly');
+    } else {
+      month?.setAttribute('readonly', '');
+      day?.setAttribute('readonly', '');
+    }
+  }
 }
