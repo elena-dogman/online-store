@@ -16,6 +16,7 @@ export function showClick(e: Event, data: Customer): void {
   const name = form.elements.namedItem('Name') as HTMLInputElement;
   const lastName = form.elements.namedItem('Last Name') as HTMLInputElement;
   const date = form.elements.namedItem('Date') as HTMLInputElement;
+  const email = form.elements.namedItem('Email') as HTMLInputElement;
   const post = Array.from(
     form.elements.namedItem('post') as RadioNodeList,
   ) as HTMLInputElement[];
@@ -28,13 +29,14 @@ export function showClick(e: Event, data: Customer): void {
   elem.classList.toggle('btn-edit--active');
   const countries = Array.from(getCountriesList(post));
 
-  if (name && lastName && date && post && city && street) {
+  if (name && lastName && date && post && city && street && email) {
     toggleReadOnly(
       data,
       countries,
       name,
       lastName,
       date,
+      email,
       ...post,
       ...city,
       ...street,

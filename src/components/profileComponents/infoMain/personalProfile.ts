@@ -101,18 +101,37 @@ export function buildPersonalProfile(userData: Customer): HTMLElement {
   day.addEventListener('input', checkNumber);
   month.addEventListener('input', checkNumber);
   year.addEventListener('input', checkNumber);
+
+  const [infoLabelMail, infoInputMail] = createInput(
+    'Email',
+    [
+      ['profile-form__email-label', 'prof-label'],
+      ['profile-form__email-input', 'prof-input'],
+    ],
+    'Email',
+  );
+
+  const infoMailError = createErrorElement();
+  addInnerComponent(infoPersonalInfContainer, infoLabelMail);
+  addInnerComponent(infoLabelMail, infoInputMail);
+  addInnerComponent(infoLabelMail, infoMailError);
+
+  infoInputMail.setAttribute('readonly', '');
+  infoInputMail.addEventListener('input', validateInput);
+
   if (userData) {
     const name = userData.firstName ? userData.firstName : '';
     const lastName = userData.lastName ? userData.lastName : '';
     const date = userData.dateOfBirth ? userData.dateOfBirth : '';
+    const email = userData.email ? userData.email : '';
     infoInputName.value = name;
     infoInputLastName.value = lastName;
-    // infoInputDate.value = date;
     const yearDate = date.slice(0, 4);
     const dayDate = date.slice(8, 12);
     const monthDate = date.slice(5, 7);
     console.log(dayDate, monthDate, yearDate);
     const infoDateError = createErrorElement();
+    infoInputMail.value = email;
     infoDateError.classList.add('error-date');
     day.value = dayDate;
     month.value = monthDate;
