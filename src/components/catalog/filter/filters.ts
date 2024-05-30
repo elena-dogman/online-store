@@ -34,25 +34,21 @@ export function updateURLWithFilters(filters: Filters): void {
     url.searchParams.delete(key);
   });
 
-  Object.keys(filters).forEach(key => {
-    const filterKey = key as keyof Filters;
-    if (filterKey === 'category' && filters[filterKey]) {
-      const categoryPath = filters[filterKey].split(',').map(categoryName => {
-        return { id: categoryName, name: categoriesMap[categoryName].name };
-      });
-      categoryPath.forEach(category => {
-        url.searchParams.append('category', category.name);
-      });
-    } else if (filters[filterKey] instanceof Set) {
-      const values = Array.from(filters[filterKey] as Set<string>);
-      if (values.length > 0) {
-        url.searchParams.set(filterKey, values.join(','));
-      }
-    }
-  });
+  if (filters.category) {
+    url.searchParams.append('category', categoriesMap[filters.category]?.name || '');
+  }
+
+  if (filters.audience.size > 0) {
+    url.searchParams.set('audience', Array.from(filters.audience).join(','));
+  }
+
+  if (filters.size.size > 0) {
+    url.searchParams.set('size', Array.from(filters.size).join(','));
+  }
 
   history.pushState({}, '', url.toString());
 }
+
 
 export function buildCategoryPath(categoryId: string): { id: string, name: string }[] {
   const path: { id: string, name: string }[] = [];

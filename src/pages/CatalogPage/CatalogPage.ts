@@ -9,12 +9,38 @@ import {
   fetchAndMapCategories,
   getFiltersFromURL,
   updateURLWithFilters,
+  buildCategoryPath,
   categoriesMap,
   Filters,
 } from '../../components/catalog/filter/filters';
 import { createFilterComponent } from '../../components/catalog/filter/productFilter';
 import { createLoadingOverlay } from '../../components/catalog/overlay/loadingOverlay';
-import { buildBreadcrumbsFromUrl, generateBreadcrumbLinks } from '../../components/breadcrumbs/breadcrumbs';
+import { generateBreadcrumbLinks } from '../../components/breadcrumbs/breadcrumbs';
+
+export async function buildBreadcrumbsFromUrl(): Promise<{ name: string; url: string }[]> {
+  const url = new URL(window.location.href);
+  const categoryName = url.searchParams.get('category');
+
+  const breadcrumbs = [{ name: 'Home', url: '/' }, { name: 'Catalog', url: '/catalog' }];
+  if (!categoryName) {
+    return breadcrumbs;
+  }
+
+  const categoryId = Object.keys(categoriesMap).find(id => categoriesMap[id].name === categoryName);
+  if (!categoryId) {
+    return breadcrumbs;
+  }
+
+  const categoryPath = buildCategoryPath(categoryId);
+  categoryPath.forEach(category => {
+    breadcrumbs.push({
+      name: category.name,
+      url: `/catalog?category=${category.name}`,
+    });
+  });
+
+  return breadcrumbs;
+}
 
 export async function createCatalogPage(): Promise<HTMLElement> {
   await fetchAndMapCategories();
@@ -74,11 +100,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
   const updateFilters = async (filterName: keyof Filters, value: string, checked: boolean): Promise<void> => {
     if (filterName === 'category') {
-      if (checked) {
-        filters.category = value;
-      } else {
-        filters.category = '';
-      }
+      filters.category = checked ? value : '';
     } else {
       if (checked) {
         filters[filterName].add(value);
@@ -108,10 +130,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
     const buildFilterString = (key: keyof Filters): string => {
       if (key === 'category') {
-        const categoryIds = filters.category.split(',').map(name => {
-          return Object.keys(categoriesMap).find(id => categoriesMap[id].name === name) || '';
-        }).filter(Boolean);
-        return categoryIds.length > 0 ? `categories.id: subtree("${categoryIds.join('","')}")` : '';
+        return filters.category ? `categories.id: subtree("${filters.category}")` : '';
       } else if (filters[key].size > 0) {
         const values = Array.from(filters[key]).map(value => `${value}`).join(',');
         return `variants.attributes.${key}:${values}`;
