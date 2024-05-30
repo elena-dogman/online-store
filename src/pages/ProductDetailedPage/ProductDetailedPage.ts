@@ -24,8 +24,8 @@ export function createDetailedProductPage(
   };
   const productContainer = createElement(productContainerParams);
   const header = createHeader();
-  const productDetailedContainer = productDetailedPageComponent(params.id);
   productContainer.prepend(header);
+  const productDetailedContainer = productDetailedPageComponent(params.id);
   addInnerComponent(productContainer, productDetailedContainer);
   return productContainer;
 }

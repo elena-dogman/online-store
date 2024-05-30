@@ -133,7 +133,10 @@ export function createHeader(): HTMLElement {
   };
 
   const closeBurgerMenu = (event: MouseEvent): void => {
-    if (!header.contains(event.target as Node) && authNavContainer.classList.contains('open')) {
+    if (
+      !header.contains(event.target as Node) &&
+      authNavContainer.classList.contains('open')
+    ) {
       authNavContainer.classList.remove('open');
       burgerMenu.classList.remove('change');
     }
@@ -156,6 +159,8 @@ export function createHeader(): HTMLElement {
 
   window.addEventListener('resize', moveNavLinks);
   document.addEventListener('DOMContentLoaded', moveNavLinks);
+  window.addEventListener('load', moveNavLinks);
+  moveNavLinks();
 
   async function handleLogout(): Promise<void> {
     await logoutUser();
@@ -163,21 +168,24 @@ export function createHeader(): HTMLElement {
   }
 
   async function updateAuthButton(isLoggedIn: boolean): Promise<void> {
+    console.log(isLoggedIn);
     registerButton.style.display = isLoggedIn ? 'none' : 'block';
     authButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
     authButton.setAttribute('href', isLoggedIn ? '#' : '/login');
     authButton.onclick = isLoggedIn
       ? async (): Promise<void> => {
-        await handleLogout();
-        appEvents.emit('logout', undefined);
-      }
+          await handleLogout();
+          appEvents.emit('logout', undefined);
+        }
       : null;
   }
 
-  document.addEventListener('DOMContentLoaded', async () => {
+  document.addEventListener('DOMContentLoaded', initializeAuthButtons);
+  function initializeAuthButtons(): void {
     const isLoggedIn = checkLoginStatus();
     updateAuthButton(isLoggedIn);
-  });
+  }
+  initializeAuthButtons();
 
   appEvents.on('login', () => updateAuthButton(true));
   appEvents.on('logout', () => updateAuthButton(false));

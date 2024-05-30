@@ -32,8 +32,8 @@
   padding: 20px;
 }
 .profile-container__profile-wrapper{
-  overflow-y: auto;
   max-width: 800px;
+  height: 640px;
   width: 80vw;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
@@ -71,42 +71,121 @@
 .profile-header__btn-edit{
   width: 80px;
   height: 40px;
-  @include hoverLink;
   border: 0;
   color:$text-color-contrast;
   border-radius:8px ;
-  background:$text-color-accent
+  background:$text-color-accent;
+  transition:all 0.5s ease; 
+  transition: all 0.5s ease;
+}
+.profile-header__btn-edit {
+  cursor: pointer;
+  &:hover:not(:disabled) {
+    box-shadow: $button-hover-box-shadow;
+  }
+  &:disabled {
+    background-color: $button-disabled-background;
+    cursor: not-allowed;
+  }
+}
+.btn-edit--active{
+  background: $text-color-base;
+  color: $text-color-accent;
 }
 .profile-main__personal-profile-container{
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.profile-container__profile-main{
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 1fr;
+.profile-container__profile-form{
+  display: flex;
+  justify-content: space-around;
   grid-column-gap: 20px;  
   margin-top: 40px;
   padding: 0 20px;
-  
 }
-.profile-main__personal-prof-container{
-  grid-area: 1 / 1 / 2 / 2;
-}
-.profile-main__address-prof-container{
+.profile-form__address-prof-container{
+width: 50%;
   overflow-y: auto;
-  grid-area: 1 / 2 / 2 / 3;
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+.profile-form__personal-prof-container{
+  width: 50%;
+}
+.countries-list.readonly{
+  color: $text-color-contrast;
+  background: black;
+  border-radius: 50px;
+}
+.countries-list.address-prof__countries-list{
+  top: 12px;
+}
+.address-prof__country-container{
+  position: relative;
 }
 .address-prof__country-indicator{
   font-size: 10rem;
 }
 .prof-label{
+  position: relative;
   display: flex;
   flex-direction: column;
+  row-gap:5px ;
+}
+.profile-form__countries-container-list{
+  position: relative;
+  overflow: hidden;
+}
+.countries-container-list--expand{
+  overflow:initial;
+}
+.profile-form__countries-search{
+  border: none;
+  transition: all 0.5s ease;
+  width: 0%;
+  opacity: 0;
+}
+.profile__countries-item{
+    color: black;
+    padding: 3px 0 0 10px;
+    border-bottom: 1px solid black;
+    display: none;
+}
+.profile__countries-item--expand{
+  display: block;
+}
+.countries-search--expand{
+  opacity: 1;
+  width: 100%;
+}
+.profile__countries-list{
+  position: absolute;
+  top: 0;
+  color: white;
+  width: 100%;
+  height: 20px;
+  transition: all 0.5s ease;
+  border-radius: 10px;
+  padding-left: 5px;
+  border: 1px solid black;
+  z-index: -1;
+  opacity: 0;
+}
+.profile__countries-list--expand{
+  top: 20px;
+  height: 186px;
+  opacity: 1;
+  border-radius: 10px 0 0 10px;
+  overflow-y: auto;
+  background: white;
+  z-index: 10;
+}
+.address-prof-input{
+  transition: all 0.5s ease;
+  width: 0%;
+  opacity: 0;
 }
 .prof-input {
   border: none;
@@ -114,6 +193,20 @@
   border-bottom: 1px solid black;
   margin-bottom: 18px;
   padding: 0 0 1px 5px;
+  &:focus {
+    color: black;
+    border-bottom: 1px solid #86b7fe;
+    outline: 0;
+  }
+  @include inputDisabled;
+}
+.prof-input[readonly] {
+  color: $text-color-contrast;
+  background: black;
+  border-radius: 50px;
+}
+.prof-input[readonly]:focus {
+  border-bottom: 1px solid black;
 }
 .profile-address-label{
   display: flex;
