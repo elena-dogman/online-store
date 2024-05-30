@@ -1,0 +1,17 @@
+.breadcrumb-container {
+  display: flex;
+  gap: 5px;
+  margin-top: 40px;
+  margin-left: 20px;
+  font-size: 14px;
+}
+
+.breadcrumb-item {
+  text-decoration: none;
+  color: black;
+}
+
+.breadcrumb-item:hover {
+  text-decoration: underline;
+}
+
