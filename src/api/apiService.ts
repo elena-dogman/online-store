@@ -28,7 +28,22 @@ export interface CustomerUpdateBody {
   version: number;
   actions: MyCustomerUpdateAction[];
 }
-
+export async function updateCustomer(bodya: CustomerUpdateBody): Promise<void> {
+  const unparsedToken = localStorage.getItem('token');
+  if (!unparsedToken) {
+    throw new Error('No token found in local storage');
+  }
+  const token = JSON.parse(unparsedToken);
+  const refreshToken = token.refreshToken;
+  const refreshFlowClient = createApiBuilderFromCtpClient(
+    createRefreshTokenClient(refreshToken),
+  ).withProjectKey({ projectKey: import.meta.env.VITE_CTP_PROJECT_KEY });
+  try {
+    await refreshFlowClient.me().post({ body: bodya }).execute();
+  } catch (err) {
+    return;
+  }
+}
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
 });
@@ -122,7 +137,6 @@ export async function getUserData(): Promise<Customer> {
       const userData: Customer = response.body;
       return userData;
     } catch (error: unknown) {
-      // Handle known error types
       if (isCustomError(error)) {
         showToast(error.body.message);
       } else if (error instanceof Error) {
@@ -135,22 +149,6 @@ export async function getUserData(): Promise<Customer> {
     }
   } else {
     throw new Error('No token found');
-  }
-}
-export async function updateCustomer(bodya: CustomerUpdateBody): Promise<void> {
-  const unparsedToken = localStorage.getItem('token');
-  if (!unparsedToken) {
-    throw new Error('No token found in local storage');
-  }
-  const token = JSON.parse(unparsedToken);
-  const refreshToken = token.refreshToken;
-  const refreshFlowClient = createApiBuilderFromCtpClient(
-    createRefreshTokenClient(refreshToken),
-  ).withProjectKey({ projectKey: import.meta.env.VITE_CTP_PROJECT_KEY });
-  try {
-    await refreshFlowClient.me().post({ body: bodya }).execute();
-  } catch (err) {
-    return;
   }
 }
 

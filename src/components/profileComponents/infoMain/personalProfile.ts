@@ -7,6 +7,7 @@ import {
 import { createInput } from '../../../utils/createInput';
 import { validateInput } from '../../../utils/validations/validation';
 import { createErrorElement } from '../../../utils/validations/validationsErrors';
+import { checkNumber } from '../../../utils/validations/validationsComponents';
 
 export function buildPersonalProfile(userData: Customer): HTMLElement {
   const infoPersonalInfContainerParams: ElementParams<'div'> = {
@@ -47,27 +48,71 @@ export function buildPersonalProfile(userData: Customer): HTMLElement {
 
   infoInputLastName.setAttribute('readonly', '');
   infoInputLastName.addEventListener('input', validateInput);
-  const [infoLabelDate, infoInputDate] = createInput(
-    'Date',
-    [
-      ['profile-form__last-date-label', 'prof-label'],
-      ['profile-form__last-date-input', 'prof-input'],
-    ],
-    'name',
-  );
+  const dateLabelContainerParam: ElementParams<'label'> = {
+    tag: 'label',
+    classNames: ['profile-form__date-label', 'prof-label'],
+    textContent: 'Date of Birth',
+  };
+  const dateLabelContainer = createElement(dateLabelContainerParam);
+  const dateContainerParam: ElementParams<'label'> = {
+    tag: 'label',
+    classNames: ['profile-form__date-container', 'prof-label'],
+  };
+  const dateContainer = createElement(dateContainerParam);
+  const dayParam: ElementParams<'input'> = {
+    tag: 'input',
+    classNames: ['date__day', 'prof-input', 'date-input'],
+    attributes: {
+      type: 'text',
+      maxLength: '2',
+      'data-validation-type': 'day',
+      hide: '',
+    },
+  };
+  const monthParam: ElementParams<'input'> = {
+    tag: 'input',
+    classNames: ['date__month', 'prof-input', 'date-input'],
+    attributes: {
+      type: 'text',
+      maxLength: '2',
+      'data-validation-type': 'month',
+      hide: '',
+    },
+  };
+  const yearParam: ElementParams<'input'> = {
+    tag: 'input',
+    classNames: ['date__year', 'prof-input', 'date-input'],
+    attributes: {
+      type: 'text',
+      maxLength: '4',
+      'data-validation-type': 'year',
+    },
+  };
 
+  const day = createElement(dayParam);
+  const month = createElement(monthParam);
+  const year = createElement(yearParam);
+
+  day.addEventListener('input', checkNumber);
+  month.addEventListener('input', checkNumber);
+  year.addEventListener('input', checkNumber);
+  day.addEventListener('input', checkNumber);
+  month.addEventListener('input', checkNumber);
+  year.addEventListener('input', checkNumber);
   if (userData) {
     const name = userData.firstName ? userData.firstName : '';
     const lastName = userData.lastName ? userData.lastName : '';
-    const date = userData.dateOfBirth ? userData.dateOfBirth : '';
+    // const date = userData.dateOfBirth ? userData.dateOfBirth : '';
     infoInputName.value = name;
     infoInputLastName.value = lastName;
-    infoInputDate.value = date;
+    // infoInputDate.value = date;
   }
   const infoLastDateError = createErrorElement();
-  addInnerComponent(infoPersonalInfContainer, infoLabelDate);
-  addInnerComponent(infoLabelDate, infoInputDate);
-  addInnerComponent(infoLabelDate, infoLastDateError);
-  infoInputDate.setAttribute('readonly', '');
+  addInnerComponent(infoPersonalInfContainer, dateLabelContainer);
+  addInnerComponent(dateLabelContainer, infoLastDateError);
+  addInnerComponent(dateLabelContainer, dateContainer);
+  addInnerComponent(dateContainer, day);
+  addInnerComponent(dateContainer, month);
+  addInnerComponent(dateContainer, year);
   return infoPersonalInfContainer;
 }
