@@ -31,8 +31,8 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
         const replaceDashWithPlus = (text: string): string =>
           text.replace(/-/g, '+');
         const breadcrumbs = [
-          { name: 'Home', url: '/' },
-          { name: 'Catalog', url: '/catalog' },
+          { name: 'home', url: '/' },
+          { name: 'catalog', url: '/catalog' },
         ];
 
         if (categoryResponses.length > 0) {

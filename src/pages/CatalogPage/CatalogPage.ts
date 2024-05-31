@@ -1,4 +1,9 @@
-import { createElement, addInnerComponent, clear, ElementParams } from '../../utils/baseComponent';
+import {
+  createElement,
+  addInnerComponent,
+  clear,
+  ElementParams,
+} from '../../utils/baseComponent';
 import { createHeader } from '../../components/header/header';
 import { createProductCatalog } from '../../components/catalog/productCatalog/productCatalog';
 import { createSortComponent } from '../../components/catalog/productSort/productSort';
@@ -17,22 +22,29 @@ import { createFilterComponent } from '../../components/catalog/filter/productFi
 import { createLoadingOverlay } from '../../components/catalog/overlay/loadingOverlay';
 import { generateBreadcrumbLinks } from '../../components/breadcrumbs/breadcrumbs';
 
-export async function buildBreadcrumbsFromUrl(): Promise<{ name: string; url: string }[]> {
+export async function buildBreadcrumbsFromUrl(): Promise<
+  { name: string; url: string }[]
+> {
   const url = new URL(window.location.href);
   const categoryName = url.searchParams.get('category');
 
-  const breadcrumbs = [{ name: 'Home', url: '/' }, { name: 'Catalog', url: '/catalog' }];
+  const breadcrumbs = [
+    { name: 'home', url: '/' },
+    { name: 'catalog', url: '/catalog' },
+  ];
   if (!categoryName) {
     return breadcrumbs;
   }
 
-  const categoryId = Object.keys(categoriesMap).find(id => categoriesMap[id].name === categoryName);
+  const categoryId = Object.keys(categoriesMap).find(
+    (id) => categoriesMap[id].name === categoryName,
+  );
   if (!categoryId) {
     return breadcrumbs;
   }
 
   const categoryPath = buildCategoryPath(categoryId);
-  categoryPath.forEach(category => {
+  categoryPath.forEach((category) => {
     breadcrumbs.push({
       name: category.name,
       url: `/catalog?category=${category.name}`,
@@ -61,8 +73,24 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     tag: 'div',
     classNames: ['filter-wrapper'],
   };
+  const filterIconContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['filter-icon-container'],
+    textContent: 'Filters',
+  };
   const filterWrapper = createElement(filterWrapperParams);
+  const filterIconContainer = createElement(filterIconContainerParams);
+  const filterIconParams: ElementParams<'img'> = {
+    tag: 'img',
+    classNames: ['filter-icon'],
+    attributes: {
+      src: '../assets/catalog/filtericon.png',
+      alt: 'Filters Icon',
+    },
+  };
 
+  const filterIcon = createElement(filterIconParams);
+  addInnerComponent(filterIconContainer, filterIcon);
   const catalogContainerWrapperParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['catalog-container-wrapper'],
@@ -98,7 +126,11 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     addInnerComponent(breadcrumbContainer, breadcrumbLinks);
   };
 
-  const updateFilters = async (filterName: keyof Filters, value: string, checked: boolean): Promise<void> => {
+  const updateFilters = async (
+    filterName: keyof Filters,
+    value: string,
+    checked: boolean,
+  ): Promise<void> => {
     if (filterName === 'category') {
       filters.category = checked ? value : '';
     } else {
@@ -122,7 +154,11 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     paginationContainer.classList.add('visible');
   };
 
-  const renderProducts = async (page: number, itemsPerPageCount: number, sort: string): Promise<void> => {
+  const renderProducts = async (
+    page: number,
+    itemsPerPageCount: number,
+    sort: string,
+  ): Promise<void> => {
     showLoadingOverlay();
     clear(catalogContainer);
 
@@ -130,13 +166,25 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
     const buildFilterString = (key: keyof Filters): string => {
       if (key === 'category') {
-        return filters.category ? `categories.id: subtree("${filters.category}")` : '';
+        return filters.category
+          ? `categories.id: subtree("${filters.category}")`
+          : '';
       } else if (filters[key].size > 0) {
-        const values = Array.from(filters[key]).map(value => `${value}`).join(',');
+        const values = Array.from(filters[key])
+          .map((value) => `${value}`)
+          .join(',');
         return `variants.attributes.${key}:${values}`;
       }
       return '';
     };
+
+    const emptyRequestParams: ElementParams<'div'> = {
+      tag: 'div',
+      textContent:
+        'Sorry, there is nothing to show for your request, try another options!',
+      classNames: ['empty-request'],
+    };
+    const emptyRequest = createElement(emptyRequestParams);
 
     const audienceFilter = buildFilterString('audience');
     const categoryFilter = buildFilterString('category');
@@ -149,6 +197,12 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     let products: ProductProjection[] = [];
     if (selectedFilters.length > 0) {
       products = await fetchFilteredProducts(selectedFilters, sort);
+      ///
+      if (products.length <= 0) {
+        clear(catalogContainer);
+        addInnerComponent(catalogContainer, emptyRequest);
+      }
+      ///
     } else {
       products = await fetchProducts(sort);
     }
@@ -196,6 +250,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   pageContainer.prepend(header);
   pageContainer.appendChild(breadcrumbContainer);
   addInnerComponent(pageContainer, filterWrapper);
+  addInnerComponent(filterWrapper, filterIconContainer);
   addInnerComponent(filterWrapper, filterComponent);
   addInnerComponent(pageContainer, catalogContainerWrapper);
   addInnerComponent(catalogContainerWrapper, sortComponent);
@@ -203,8 +258,46 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   addInnerComponent(catalogContainerWrapper, paginationContainer);
   pageContainer.append(loadingOverlay);
 
-  await renderProducts(currentPage, itemsPerPage, currentSort);
+  const filterContainer = filterWrapper.querySelector('.filter-container');
+  filterIconContainer.addEventListener('click', (e) => {
+    e.preventDefault();
+    const catalogPage = document.querySelector('.catalog-page-container');
+    filterContainer?.classList.toggle('open');
+    catalogPage?.classList.toggle('hidden');
+  });
 
+  const setupFilterContainer = (): void => {
+    if (window.innerWidth <= 800) {
+      filterContainer?.addEventListener('click', handleFilterClick);
+    } else {
+      filterContainer?.removeEventListener('click', handleFilterClick);
+    }
+  };
+  const handleFilterClick = (event: Event): void => {
+    const catalogPage = document.querySelector('.catalog-page-container');
+    const target = event.target as HTMLElement;
+    if (target.classList.contains('filter-label')) {
+      return;
+    }
+    if (target.tagName === 'LABEL') {
+      if (target.closest('.checkbox-wrapper')) return;
+      filterContainer?.classList.remove('open');
+    }
+    const parent = target.closest('.filter-group');
+    const triangle = parent?.querySelector('.triangle');
+    const radioContainer =
+      parent?.querySelector('.radio-container') ||
+      parent?.querySelector('.checkbox-container');
+    triangle?.classList.toggle('open');
+    radioContainer?.classList.toggle('hidden');
+    if (catalogPage?.classList.contains('hidden')) {
+      catalogPage.classList.remove('hidden');
+    }
+  };
+  setupFilterContainer();
+  window.addEventListener('resize', setupFilterContainer);
+
+  await renderProducts(currentPage, itemsPerPage, currentSort);
   window.addEventListener('popstate', async () => {
     await updateBreadcrumbs();
     await renderProducts(currentPage, itemsPerPage, currentSort);
