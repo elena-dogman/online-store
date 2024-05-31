@@ -2,7 +2,7 @@ import { calculateAge, checkDaysInMonth } from '../ageAndTextChecks';
 import country from 'country-list-js';
 
 import * as dateComponents from '../../components/registrationForm/dateComponent';
-import { setValidStatus, checkAllInputs, validStatus } from './booleanValid';
+import { setValidStatus, checkAllInputs } from './booleanValid';
 import * as postalCodes from 'postal-codes-js';
 import { checkError, checkInputIndex } from './validation';
 import { searchElement, searchInput } from '../searchElem';
@@ -110,26 +110,22 @@ export function nameValidation(
     if (value.length === 0) {
       incorectValidation(err, '');
       setValidStatus(index, false);
-      console.log(validStatus);
       checkAllInputs();
       return false;
     }
     if (value.length <= 1) {
       incorectValidation(err, ERROR_MESSAGES.shortInput);
       setValidStatus(index, false);
-      console.log(validStatus);
       checkAllInputs();
       return false;
     }
     if (!REGEX.lettersOnly.test(value)) {
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
       setValidStatus(index, false);
-      console.log(validStatus);
       checkAllInputs();
       return false;
     }
     setValidStatus(index, true);
-    console.log(validStatus);
     checkAllInputs();
     incorectValidation(err, '');
     return true;
@@ -229,7 +225,6 @@ export function streetValidation(
   err?: HTMLSpanElement | null,
   index?: number | null,
 ): boolean {
-  console.log(err, index);
   if (err && index != null) {
     if (value.length === 0) {
       setValidStatus(index, false);
@@ -303,7 +298,6 @@ export function passwordValidation(
     }
 
     setValidStatus(index, true);
-    console.log(validStatus);
     checkAllInputs();
     incorectValidation(err, '');
     err.style.bottom = '0px';
@@ -443,7 +437,6 @@ export function postCodeValidation(
       contryWrapper,
       'countries-list',
     ) as HTMLElement;
-    console.log(contryList);
     const countryNames = country.names();
     const countryIndex = countryNames.indexOf(contryList.textContent || '');
     const street = filterArr[index + 2];

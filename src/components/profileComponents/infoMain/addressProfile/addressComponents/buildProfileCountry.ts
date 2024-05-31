@@ -46,7 +46,7 @@ export function buildProfileCountry(
       countryIndicator.textContent = ' Default Shipping Address';
     }
   }
-  addInnerComponent(countryContainer, countriesList);
   addInnerComponent(countryContainer, countriesInput);
+  addInnerComponent(countryContainer, countriesList);
   return [countryContainer, countriesList];
 }

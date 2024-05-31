@@ -52,6 +52,7 @@
   display: flex;
   gap: 15px;
 }
+
 .profile-logo__logo-img{
   display: flex;
   justify-content: center;
@@ -119,11 +120,11 @@ width: 50%;
   background: black;
   border-radius: 50px;
 }
-.countries-list.address-prof__countries-list{
-  top: 12px;
-}
 .address-prof__country-container{
   position: relative;
+}
+.address-prof__countries-list.--expanded{
+  height: 191px;
 }
 .address-prof__country-indicator{
   font-size: 10rem;

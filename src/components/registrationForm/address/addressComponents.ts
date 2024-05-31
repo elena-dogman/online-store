@@ -27,22 +27,21 @@ export function searchCountry(this: HTMLInputElement): void {
 }
 export function addCountriesList(this: HTMLElement): void {
   const countries = country.names().sort();
+  console.log(this);
   const wrapperText = this.textContent as string;
   const input = this.previousSibling as HTMLInputElement;
   const post = this.parentElement?.nextElementSibling
     ?.firstElementChild as HTMLInputElement;
   this.textContent = '';
-
   this.classList.add('--expanded');
   input.classList.add('countries-input--expanded');
   input.addEventListener('input', searchCountry);
+
   const clickHandler = (e: Event): void => {
     outClick(e, this, post, input, clickHandler, wrapperText);
   };
   if (this.classList.contains('--expanded')) {
-    document.addEventListener('click', clickHandler);
-  } else if (!this.classList.contains('--expanded')) {
-    console.log(1);
+    document.addEventListener('click', clickHandler, true);
   }
   countries.forEach((e) => {
     const countriesItem = createElement({
