@@ -215,13 +215,25 @@ export async function regUser(
 
 export async function getDetailedProduct(
   ID: string,
-): Promise<ClientResponse<Product> | undefined> {
+): Promise<
+  | {
+      productResponse: ClientResponse<Product>;
+      categoryResponses: ClientResponse<Category>[];
+    }
+  | undefined
+> {
   try {
     const response = await apiRoot.products().withId({ ID }).get().execute();
-    const productImages =
-      response?.body.masterData.current.masterVariant.images;
-    console.log(productImages);
-    return response;
+    const categories = response.body.masterData.current.categories;
+    const categoryIds = categories.map((category) => category.id);
+
+    const categoryPromises = categoryIds.map((categoryID) =>
+      apiRoot.categories().withId({ ID: categoryID }).get().execute(),
+    );
+
+    const categoryResponses = await Promise.all(categoryPromises);
+    console.log(categoryResponses);
+    return { productResponse: response, categoryResponses: categoryResponses };
   } catch (error: unknown) {
     return undefined;
   }
