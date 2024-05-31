@@ -18,7 +18,7 @@ import { setValidStatusAddress } from '../booleanAddress';
 
 export function joinChecked(): void {
   if (shippingComponents.inputCountry.form) {
-    setValidStatusAddress('joinAdress', true);
+    setValidStatusAddress('joinAddress', true);
     shippingComponents.container.classList.add('shipping__container--join');
     billingComponents.container.remove();
     fillObjectWithUniqueKeys(
@@ -41,7 +41,7 @@ export function joinUnchecked(): void {
       validStatus,
     );
     console.log(validStatus);
-    setValidStatusAddress('joinAdress', false);
+    setValidStatusAddress('joinAddress', false);
     checkAllInputs();
   }
 }

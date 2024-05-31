@@ -314,12 +314,11 @@ export function passwordValidation(
 export function dayValidation(
   value: string,
   err?: HTMLSpanElement | null,
-  index?: number | null,
 ): number | undefined {
   const dateMonth = dateComponents.monthDate as HTMLInputElement;
   const dateYear = dateComponents.yearDate as HTMLInputElement;
   const daysInMonth = checkDaysInMonth(dateMonth.value, dateYear.value);
-  if (err && index != null) {
+  if (err) {
     if (value.length === 0) {
       incorectValidation(err, '');
       return;
@@ -383,12 +382,13 @@ export function yearValidation(
   return parseInt(value);
 }
 export function checkNumber(event: Event): void {
-  const dateDay = dateComponents.dayDate as HTMLInputElement;
-  const dateMonth = dateComponents.monthDate as HTMLInputElement;
-  const dateYear = dateComponents.yearDate as HTMLInputElement;
   const elem = event.target as HTMLInputElement;
   const parent = elem.parentNode as HTMLLabelElement | null;
-  const err = parent?.parentElement?.firstElementChild as HTMLSpanElement;
+  const form = elem.form;
+  const err = checkError(parent?.parentElement?.children) as HTMLSpanElement;
+  const dateDay = form?.querySelector('.date__day') as HTMLInputElement;
+  const dateMonth = form?.querySelector('.date__month') as HTMLInputElement;
+  const dateYear = form?.querySelector('.date__year') as HTMLInputElement;
   const daysInMonth = checkDaysInMonth(dateMonth.value, dateYear.value);
   if (!parent) {
     return;

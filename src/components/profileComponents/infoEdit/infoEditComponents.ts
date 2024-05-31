@@ -1,13 +1,14 @@
+import { Customer, MyCustomerUpdateAction } from '@commercetools/platform-sdk';
+import { CustomerUpdateBody, updateCustomer } from '../../../api/apiService';
 import { searchElement } from '../../../utils/searchElem';
 import {
   fillObjectWithUniqueKeys,
   validStatus,
-  // validStatus,
 } from '../../../utils/validations/booleanValid';
 import { addCountriesList } from '../../registrationForm/address/addressComponents';
 import { infoReadvalidStatus, setInfoReadvalidStatus } from './infoBoolean';
 
-export function showClick(e: Event): void {
+export function showClick(e: Event, data: Customer): void {
   e.preventDefault();
   const elem = e.target as HTMLButtonElement;
   const form = elem.form as HTMLFormElement;
@@ -15,6 +16,7 @@ export function showClick(e: Event): void {
   const name = form.elements.namedItem('Name') as HTMLInputElement;
   const lastName = form.elements.namedItem('Last Name') as HTMLInputElement;
   const date = form.elements.namedItem('Date') as HTMLInputElement;
+  const email = form.elements.namedItem('Email') as HTMLInputElement;
   const post = Array.from(
     form.elements.namedItem('post') as RadioNodeList,
   ) as HTMLInputElement[];
@@ -27,12 +29,14 @@ export function showClick(e: Event): void {
   elem.classList.toggle('btn-edit--active');
   const countries = Array.from(getCountriesList(post));
 
-  if (name && lastName && date && post && city && street) {
-    toogleReadOnly(
+  if (name && lastName && date && post && city && street && email) {
+    toggleReadOnly(
+      data,
       countries,
       name,
       lastName,
       date,
+      email,
       ...post,
       ...city,
       ...street,
@@ -49,13 +53,15 @@ function changeText(text: HTMLButtonElement): void {
   }
 }
 
-function toogleReadOnly(
+function toggleReadOnly(
+  data: Customer,
   countries: HTMLElement[],
   ...args: HTMLInputElement[]
 ): void {
   if (infoReadvalidStatus.name) {
     args.flat().forEach((e) => {
       e.removeAttribute('readonly');
+      dateToggleReadonly(e);
     });
     countries.forEach((e) => {
       e.classList.remove('readonly');
@@ -63,13 +69,25 @@ function toogleReadOnly(
     });
     setInfoReadvalidStatus('name', false);
   } else {
+    const body: CustomerUpdateBody = {
+      version: data.version,
+      actions: [],
+    };
+    const actions = body.actions;
     args.flat().forEach((e) => {
+      dateToggleReadonly(e);
+      const act = checkInput(e);
+      if (act) {
+        actions.push(act);
+      }
       e.setAttribute('readonly', '');
     });
     countries.forEach((e) => {
       e.classList.add('readonly');
       e.removeEventListener('click', addCountriesList, true);
     });
+    console.log(body);
+    updateCustomer(body);
     setInfoReadvalidStatus('name', true);
   }
 }
@@ -93,4 +111,46 @@ export function getCountriesList(elements: HTMLInputElement[]): HTMLElement[] {
       return wrapper ? [wrapper] : [];
     })
     .filter((elem): elem is HTMLElement => elem !== undefined);
+}
+function checkInput(
+  elem: HTMLInputElement,
+): MyCustomerUpdateAction | undefined {
+  if (elem.getAttribute('name') === 'Name') {
+    return {
+      action: 'setFirstName',
+      firstName: elem.value,
+    } as MyCustomerUpdateAction;
+  } else if (elem.getAttribute('name') === 'Last Name') {
+    return {
+      action: 'setLastName',
+      lastName: elem.value,
+    } as MyCustomerUpdateAction;
+  } else if (elem.getAttribute('name') === 'Email') {
+    return {
+      action: 'changeEmail',
+      email: elem.value,
+    } as MyCustomerUpdateAction;
+  } else if (elem.getAttribute('name') === 'Date') {
+    const month = elem.previousSibling as HTMLInputElement;
+    const day = month?.previousSibling as HTMLInputElement;
+    const result = `${elem.value.padStart(4, '0')}-${month.value.padStart(2, '0')}-${day.value.padStart(2, '0')}`;
+    return {
+      action: 'setDateOfBirth',
+      dateOfBirth: result,
+    } as MyCustomerUpdateAction;
+  }
+  return;
+}
+function dateToggleReadonly(e: HTMLInputElement): void {
+  if (e.classList.contains('date__year')) {
+    const month = e.previousSibling as HTMLInputElement;
+    const day = month?.previousSibling as HTMLInputElement;
+    if (infoReadvalidStatus.name) {
+      month?.removeAttribute('readonly');
+      day?.removeAttribute('readonly');
+    } else {
+      month?.setAttribute('readonly', '');
+      day?.setAttribute('readonly', '');
+    }
+  }
 }

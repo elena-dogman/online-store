@@ -1,3 +1,4 @@
+import { getUserData } from '../../api/apiService';
 import {
   ElementParams,
   addInnerComponent,
@@ -6,7 +7,7 @@ import {
 import { buildProfileHeader } from './infoHeader/infoHeader';
 import { buildProfileForm } from './infoMain/profileForm';
 
-export async function createInfo(): Promise<HTMLElement> {
+export async function createInfo(): Promise<HTMLElement | undefined> {
   const profileContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['profile-container'],
@@ -16,11 +17,18 @@ export async function createInfo(): Promise<HTMLElement> {
     tag: 'div',
     classNames: ['profile-container__profile-wrapper'],
   };
-  const profileWrapper = createElement(profileWrapperParams);
-  const header = await buildProfileHeader();
-  const form = await buildProfileForm();
-  addInnerComponent(profileContainer, profileWrapper);
-  addInnerComponent(profileWrapper, header);
-  addInnerComponent(profileWrapper, form);
-  return profileContainer;
+  try {
+    const userData = await getUserData();
+    const profileWrapper = createElement(profileWrapperParams);
+    const header = await buildProfileHeader(userData);
+    const form = await buildProfileForm(userData);
+    if (form) {
+      addInnerComponent(profileContainer, profileWrapper);
+      addInnerComponent(profileWrapper, header);
+      addInnerComponent(profileWrapper, form);
+    }
+    return profileContainer;
+  } catch (err) {
+    return;
+  }
 }

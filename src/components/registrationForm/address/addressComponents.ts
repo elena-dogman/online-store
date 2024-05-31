@@ -71,11 +71,9 @@ function outClick(
   clickHandler: (e: Event) => void,
   text: string,
 ): void {
-  console.log(3);
-  console.log(wrapper);
   if (e.target !== wrapper) {
     if (e.target == input) {
-      console.log(1);
+      return;
     } else if (wrapper.classList.contains('--expanded')) {
       wrapper.removeEventListener('click', addCountriesList);
       document.removeEventListener('click', clickHandler);

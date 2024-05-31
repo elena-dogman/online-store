@@ -134,6 +134,11 @@ width: 50%;
   flex-direction: column;
   row-gap:5px ;
 }
+.profile-form__date-container{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
 .profile-form__countries-container-list{
   position: relative;
   overflow: hidden;
@@ -211,4 +216,7 @@ width: 50%;
 .profile-address-label{
   display: flex;
   flex-direction: column;
+}
+.reg-form__shipping-checkbox.default__label{
+  order: -1;
 }

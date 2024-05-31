@@ -35,7 +35,7 @@ export async function submitRegData(): Promise<void> {
   );
   let billingPostCode = Object.keys(country.all)[countryBillingIndex];
   const shippingPostCode = Object.keys(country.all)[countryShippingIndex];
-  if (validStatusAddress.joinAdress) {
+  if (validStatusAddress.joinAddress) {
     billingPostCode = shippingPostCode;
     streetBilling.value = streetShipping.value;
     cityBilling.value = cityShipping.value;

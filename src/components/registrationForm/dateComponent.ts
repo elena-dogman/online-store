@@ -7,6 +7,7 @@ const containerForDate = createElement({
   classNames: ['reg-form__date-container'],
 });
 export const errorDateReg = errors.createErrorElement();
+errorDateReg.classList.add('error-date');
 export const dayDate = createElement({
   tag: 'input',
   classNames: ['date__day', 'reg-input', 'date-input'],
