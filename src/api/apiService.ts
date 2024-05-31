@@ -406,3 +406,22 @@ export async function fetchFilteredProducts(
     return [];
   }
 }
+
+export async function searchProducts(searchText: string): Promise<ProductProjectionPagedQueryResponse> {
+  try {
+    const response: ClientResponse<ProductProjectionPagedQueryResponse> = await apiRoot
+      .productProjections()
+      .search()
+      .get({
+        queryArgs: {
+          'text.en': searchText,
+        },
+      })
+      .execute();
+
+    return response.body;
+  } catch (error) {
+    console.error('Error searching products:', error);
+    throw error;
+  }
+}
