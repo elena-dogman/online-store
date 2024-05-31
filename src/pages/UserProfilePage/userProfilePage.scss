@@ -69,7 +69,11 @@
   flex-direction: column;
   gap: 10px;
 }
-.profile-header__btn-edit{
+.profile-header__buttons-container{
+  display: flex;
+  gap: 20px;
+}
+.profile-btn{
   width: 80px;
   height: 40px;
   border: 0;
@@ -79,7 +83,7 @@
   transition:all 0.5s ease; 
   transition: all 0.5s ease;
 }
-.profile-header__btn-edit {
+.profile-btn {
   cursor: pointer;
   &:hover:not(:disabled) {
     box-shadow: $button-hover-box-shadow;
@@ -102,8 +106,7 @@
   display: flex;
   justify-content: space-around;
   grid-column-gap: 20px;  
-  margin-top: 40px;
-  padding: 0 20px;
+  padding: 40px 20px 0;
 }
 .profile-form__address-prof-container{
 width: 50%;
@@ -123,8 +126,12 @@ width: 50%;
 .address-prof__country-container{
   position: relative;
 }
+.address-prof__countries-list.countries-list{
+  top: 15px;
+}
 .address-prof__countries-list.--expanded{
   height: 191px;
+  top: 32px;
 }
 .address-prof__country-indicator{
   font-size: 10rem;

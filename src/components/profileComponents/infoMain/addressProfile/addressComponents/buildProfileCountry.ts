@@ -38,13 +38,16 @@ export function buildProfileCountry(
     if (currentId === defaultBillingId) {
       countryIndicator.textContent = ' Default Billing Address';
     }
-  }
-  if (currentId === shippingId) {
+  } else if (currentId === shippingId) {
     addInnerComponent(countryContainer, countryIndicator);
     countryIndicator.textContent = 'Shipping Address';
     if (currentId === defaultShippingId) {
       countryIndicator.textContent = ' Default Shipping Address';
     }
+  } else if (currentId !== shippingId || currentId !== billingId) {
+    console.log(1);
+    addInnerComponent(countryContainer, countryIndicator);
+    countryIndicator.textContent = 'Address';
   }
   addInnerComponent(countryContainer, countriesInput);
   addInnerComponent(countryContainer, countriesList);
