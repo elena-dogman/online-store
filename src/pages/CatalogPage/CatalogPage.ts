@@ -89,13 +89,30 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   const itemsPerPage = 8;
   let currentSort = 'price asc';
 
-  const filters = getFiltersFromURL();
+  let filters = getFiltersFromURL();
 
   const updateBreadcrumbs = async (): Promise<void> => {
     const breadcrumbs = await buildBreadcrumbsFromUrl();
     const breadcrumbLinks = generateBreadcrumbLinks(breadcrumbs);
     clear(breadcrumbContainer);
     addInnerComponent(breadcrumbContainer, breadcrumbLinks);
+
+    breadcrumbContainer.querySelectorAll('a').forEach(anchor => {
+      anchor.addEventListener('click', async (event: Event) => {
+        event.preventDefault();
+        const target = event.currentTarget as HTMLAnchorElement;
+        const url = new URL(target.href);
+        const params = new URLSearchParams(url.search);
+        filters = {
+          ...filters,
+          category: params.get('category') || '',
+        };
+        updateURLWithFilters(filters);
+        history.pushState({}, '', url.toString());
+        await updateBreadcrumbs();
+        await renderProducts(1, itemsPerPage, currentSort);
+      });
+    });
   };
 
   const updateFilters = async (filterName: keyof Filters, value: string, checked: boolean): Promise<void> => {
@@ -192,6 +209,23 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   const initialBreadcrumbs = await buildBreadcrumbsFromUrl();
   const initialBreadcrumbLinks = generateBreadcrumbLinks(initialBreadcrumbs);
   addInnerComponent(breadcrumbContainer, initialBreadcrumbLinks);
+
+  breadcrumbContainer.querySelectorAll('a').forEach(anchor => {
+    anchor.addEventListener('click', async (event: Event) => {
+      event.preventDefault();
+      const target = event.currentTarget as HTMLAnchorElement;
+      const url = new URL(target.href);
+      const params = new URLSearchParams(url.search);
+      filters = {
+        ...filters,
+        category: params.get('category') || '',
+      };
+      updateURLWithFilters(filters);
+      history.pushState({}, '', url.toString());
+      await updateBreadcrumbs();
+      await renderProducts(1, itemsPerPage, currentSort);
+    });
+  });
 
   pageContainer.prepend(header);
   pageContainer.appendChild(breadcrumbContainer);

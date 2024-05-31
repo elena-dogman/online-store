@@ -49,7 +49,6 @@ export function updateURLWithFilters(filters: Filters): void {
   history.pushState({}, '', url.toString());
 }
 
-
 export function buildCategoryPath(categoryId: string): { id: string, name: string }[] {
   const path: { id: string, name: string }[] = [];
   let currentCategory = categoriesMap[categoryId];
