@@ -17,9 +17,9 @@
     content: '';
     position: absolute;
     width: 100%;
-    height: 2px; /* Толщина подчеркивания */
+    height: 2px;
     background-color: black;
-    bottom: -3px; /* Расстояние ниже текста */
+    bottom: -3px;
     left: 0;
     transform: scaleX(0);
     transform-origin: bottom right;
