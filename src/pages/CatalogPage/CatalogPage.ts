@@ -228,7 +228,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   });
 
   pageContainer.prepend(header);
-  pageContainer.appendChild(breadcrumbContainer);
+  addInnerComponent(pageContainer, breadcrumbContainer);
   addInnerComponent(pageContainer, filterWrapper);
   addInnerComponent(filterWrapper, filterComponent);
   addInnerComponent(pageContainer, catalogContainerWrapper);

@@ -5,6 +5,7 @@ import {
 } from '../../utils/baseComponent';
 import { appEvents } from '../../utils/eventEmitter';
 import { checkLoginStatus, logoutUser } from '../../api/apiService';
+import { createSearchComponent } from './search/productSearch';
 
 export function createHeader(): HTMLElement {
   const headerParams: ElementParams<'div'> = {
@@ -24,6 +25,19 @@ export function createHeader(): HTMLElement {
     textContent: '・valenki store・',
   });
   addInnerComponent(logoLink, logo);
+
+  // Создаем новый контейнер для логотипа и поиска
+  const logoSearchContainer = createElement({
+    tag: 'div',
+    classNames: ['header__logo-search-container'],
+  });
+
+  // Создаем компонент поиска
+  const searchComponent = createSearchComponent();
+
+  // Добавляем логотип и компонент поиска в новый контейнер
+  addInnerComponent(logoSearchContainer, logoLink);
+  addInnerComponent(logoSearchContainer, searchComponent);
 
   const navContainer = createElement({
     tag: 'div',
@@ -111,7 +125,7 @@ export function createHeader(): HTMLElement {
   addInnerComponent(rightContainer, iconsContainer);
   addInnerComponent(rightContainer, authNavContainer);
 
-  addInnerComponent(header, logoLink);
+  addInnerComponent(header, logoSearchContainer); // Добавляем новый контейнер в header
   addInnerComponent(header, navContainer);
   addInnerComponent(header, rightContainer);
 
@@ -144,8 +158,9 @@ export function createHeader(): HTMLElement {
 
   document.addEventListener('click', closeBurgerMenu);
 
+  const tabletScreenWidthInPx = 870;
   const moveNavLinks = (): void => {
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = window.innerWidth <= tabletScreenWidthInPx;
     if (isMobile) {
       addInnerComponent(authNavContainer, navContainer);
     } else {
