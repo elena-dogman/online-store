@@ -4,7 +4,7 @@ import { createProductCatalog } from '../../components/catalog/productCatalog/pr
 import { createSortComponent } from '../../components/catalog/productSort/productSort';
 import { fetchFilteredProducts, fetchProducts } from '../../api/apiService';
 import { createPagination } from '../../components/catalog/pagination/pagination';
-import { ProductProjection } from '@commercetools/platform-sdk';
+import { ProductProjection, ProductProjectionPagedQueryResponse } from '@commercetools/platform-sdk';
 import {
   fetchAndMapCategories,
   getFiltersFromURL,
@@ -236,6 +236,29 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   addInnerComponent(catalogContainerWrapper, catalogContainer);
   addInnerComponent(catalogContainerWrapper, paginationContainer);
   pageContainer.append(loadingOverlay);
+
+ document.addEventListener('searchResults', (event) => {
+    const customEvent = event as CustomEvent;
+    const searchResults = customEvent.detail as ProductProjectionPagedQueryResponse;
+    displaySearchResults(searchResults);
+  });
+
+  const displaySearchResults = (searchResults: ProductProjectionPagedQueryResponse): void => {
+    const products = searchResults.results;
+    clear(catalogContainer);
+
+    if (products.length > 0) {
+      const productCatalog = createProductCatalog(products);
+      addInnerComponent(catalogContainer, productCatalog);
+    } else {
+      const noResultsMessage = createElement({
+        tag: 'div',
+        classNames: ['no-results-message'],
+        textContent: 'No products found.',
+      });
+      addInnerComponent(catalogContainer, noResultsMessage);
+    }
+  };
 
   await renderProducts(currentPage, itemsPerPage, currentSort);
 

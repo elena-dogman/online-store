@@ -125,7 +125,7 @@ export function createHeader(): HTMLElement {
   addInnerComponent(rightContainer, iconsContainer);
   addInnerComponent(rightContainer, authNavContainer);
 
-  addInnerComponent(header, logoSearchContainer); // Добавляем новый контейнер в header
+  addInnerComponent(header, logoSearchContainer);
   addInnerComponent(header, navContainer);
   addInnerComponent(header, rightContainer);
 
@@ -183,7 +183,6 @@ export function createHeader(): HTMLElement {
   }
 
   async function updateAuthButton(isLoggedIn: boolean): Promise<void> {
-    console.log(isLoggedIn);
     registerButton.style.display = isLoggedIn ? 'none' : 'block';
     authButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
     authButton.setAttribute('href', isLoggedIn ? '#' : '/login');

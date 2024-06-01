@@ -1,3 +1,5 @@
+
+import { searchProducts } from '../../../api/apiService';
 import { addInnerComponent, createElement, ElementParams } from '../../../utils/baseComponent';
 
 export function createSearchComponent(): HTMLElement {
@@ -12,7 +14,7 @@ export function createSearchComponent(): HTMLElement {
     classNames: ['search__input'],
     attributes: { placeholder: 'Search' },
   };
-  const searchInput = createElement(searchInputParams);
+  const searchInput = createElement(searchInputParams) as HTMLInputElement;
 
   const searchButtonParams: ElementParams<'button'> = {
     tag: 'button',
@@ -30,8 +32,31 @@ export function createSearchComponent(): HTMLElement {
   });
   addInnerComponent(searchButton, searchIcon);
 
-  addInnerComponent(searchWrapper, searchButton);
-  addInnerComponent(searchWrapper, searchInput);
+  const searchFormParams: ElementParams<'form'> = {
+    tag: 'form',
+    classNames: ['search__form'],
+  };
+  const searchForm = createElement(searchFormParams);
+
+  addInnerComponent(searchForm, searchInput);
+  addInnerComponent(searchForm, searchButton);
+  addInnerComponent(searchWrapper, searchForm);
+
+  searchForm.addEventListener('submit', async (event: Event) => {
+    event.preventDefault();
+    const searchText = searchInput.value.trim();
+    if (searchText) {
+      try {
+        const searchResults = await searchProducts(searchText);
+        const customEvent = new CustomEvent('searchResults', {
+          detail: searchResults,
+        });
+        document.dispatchEvent(customEvent);
+      } catch (error) {
+        console.error('Search error:', error);
+      }
+    }
+  });
 
   return searchWrapper;
 }
