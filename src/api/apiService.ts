@@ -17,12 +17,22 @@ import {
   CategoryPagedQueryResponse,
   Category,
   MyCustomerUpdateAction,
+  ProductProjectionPagedSearchResponse,
+  QueryParam,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/eventEmitter';
 import { RegistrationData } from '../components/registrationForm/regDataInterface';
 import { showToast } from '../components/toast/toast';
 import { isCustomError } from '../utils/customError';
+
+interface SearchQueryArgs {
+  'text.en-US': string;
+  fuzzy?: boolean;
+  fuzzyLevel?: number;
+  markMatchingVariants?: boolean;
+  [key: string]: QueryParam;
+}
 
 export interface CustomerUpdateBody {
   version: number;
@@ -354,8 +364,6 @@ export async function fetchProductAttributes(): Promise<number[] | null> {
 
     const uniqueSizes = Array.from(sizes).sort((a, b) => a - b);
 
-    console.log('Unique Sizes:', uniqueSizes);
-
     return uniqueSizes;
   } catch (error) {
     console.error('Error fetching product sizes:', error);
@@ -369,7 +377,6 @@ export async function fetchCategories(): Promise<Category[]> {
       await anonymousApiRoot.categories().get().execute();
 
     const categories = response.body.results;
-    console.log('Categories:', categories);
 
     return categories;
   } catch (error) {
@@ -410,11 +417,34 @@ export async function fetchFilteredProducts(
         })
         .execute();
 
-    console.log('Filtered products response:', response);
-
     return response.body.results;
   } catch (error) {
     console.error('Error fetching filtered products:', error);
     return [];
+  }
+}
+
+export async function searchProducts(
+  searchText: string,
+): Promise<ProductProjectionPagedSearchResponse> {
+  try {
+    const queryArgs: SearchQueryArgs = {
+      'text.en-US': searchText,
+      fuzzy: true,
+    };
+
+    console.log('query args:', JSON.stringify(queryArgs));
+
+    const response = await apiRoot.productProjections().search().get({ queryArgs }).execute();
+    console.log('response:', JSON.stringify(response.body));
+
+    if (response.body.count === 0) {
+      console.log('No products found for the search query:', searchText);
+    }
+
+    return response.body;
+  } catch (error) {
+    console.error('Error during product search:', error);
+    throw error;
   }
 }

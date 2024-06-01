@@ -83,8 +83,10 @@ export function removeClass(
   return newElement;
 }
 
-export function clear(element: HTMLElement): void {
-  element.innerHTML = '';
+export function clear(element: HTMLElement | null): void {
+  if (element) {
+    element.innerHTML = '';
+  }
 }
 
 export function setDisabled(
