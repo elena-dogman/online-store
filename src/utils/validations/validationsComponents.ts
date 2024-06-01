@@ -80,7 +80,6 @@ export function mailValidation(
       checkAllInputs();
       return false;
     }
-
     incorectValidation(err, '');
     setValidStatus(index, true);
     checkAllInputs();
@@ -255,11 +254,12 @@ export function passwordValidation(
   value: string,
   err?: HTMLSpanElement | null,
   index?: number | null,
+  form?: HTMLFormElement | null,
 ): boolean {
-  if (err && index != null) {
+  if (err && index != null && form) {
     if (/\s/.test(value)) {
       setValidStatus(index, false);
-      checkAllInputs();
+      checkAllInputs(form);
       incorectValidation(err, ERROR_MESSAGES.passwordNoSpaces);
       err.style.bottom = '0px';
       return false;
@@ -267,7 +267,7 @@ export function passwordValidation(
 
     if (value.length < 8) {
       setValidStatus(index, false);
-      checkAllInputs();
+      checkAllInputs(form);
       incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
       err.style.bottom = '0px';
       return false;
@@ -275,7 +275,7 @@ export function passwordValidation(
 
     if (!/[A-Z]/.test(value)) {
       setValidStatus(index, false);
-      checkAllInputs();
+      checkAllInputs(form);
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       err.style.bottom = '-4px';
       return false;
@@ -283,7 +283,7 @@ export function passwordValidation(
 
     if (!/[a-z]/.test(value)) {
       setValidStatus(index, false);
-      checkAllInputs();
+      checkAllInputs(form);
       err.style.bottom = '0px';
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       return false;
@@ -291,14 +291,14 @@ export function passwordValidation(
 
     if (!/\d/.test(value)) {
       setValidStatus(index, false);
-      checkAllInputs();
+      checkAllInputs(form);
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       err.style.bottom = '0px';
       return false;
     }
 
     setValidStatus(index, true);
-    checkAllInputs();
+    checkAllInputs(form);
     incorectValidation(err, '');
     err.style.bottom = '0px';
     return true;
