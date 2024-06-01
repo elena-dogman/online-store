@@ -106,6 +106,5 @@ export function createAuthForm(): HTMLElement[] {
   addInnerComponent(authForm, submitButton);
   addInnerComponent(authForm, authFormFooter);
   fillObjectWithUniqueKeys(authForm, false, validStatus);
-  console.log(validStatus);
   return [authForm, emailInput, passwordInput, passwordIcon, submitButton];
 }

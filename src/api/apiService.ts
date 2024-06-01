@@ -64,8 +64,8 @@ export async function updateCustomer(bodya: CustomerUpdateBody): Promise<void> {
   }
 }
 export async function changePassword(
-  data: Customer,
-  bodya: CustomerChangePassword,
+  dataCustomer: Customer,
+  customerPassword: CustomerChangePassword,
 ): Promise<void> {
   const unparsedToken = localStorage.getItem('token');
   if (!unparsedToken) {
@@ -77,9 +77,16 @@ export async function changePassword(
     createRefreshTokenClient(refreshToken),
   ).withProjectKey({ projectKey: import.meta.env.VITE_CTP_PROJECT_KEY });
   try {
-    const body = { email: data.email, password: bodya.newPassword };
-    await refreshFlowClient.me().password().post({ body: bodya }).execute();
-    await logoutUserPassword();
+    const body = {
+      email: dataCustomer.email,
+      password: customerPassword.newPassword,
+    };
+    await refreshFlowClient
+      .me()
+      .password()
+      .post({ body: customerPassword })
+      .execute();
+    localStorage.removeItem('token');
     await loginStayUser(body);
   } catch (error: unknown) {
     if (isCustomError(error)) {
@@ -89,7 +96,6 @@ export async function changePassword(
     } else {
       showToast('An unknown error occurred');
     }
-    // Rethrow the error to be handled by the caller
     throw error;
   }
 }
@@ -129,7 +135,6 @@ export const loginUser = async (body: {
     } else {
       showToast('An unknown error occurred');
     }
-    // Rethrow the error to be handled by the caller
     throw error;
   }
 };

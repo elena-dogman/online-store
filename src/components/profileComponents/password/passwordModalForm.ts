@@ -12,6 +12,7 @@ import {
   fillObjectWithUniqueKeys,
   validStatus,
 } from '../../../utils/validations/booleanValid';
+import { searchInput } from '../../../utils/searchElem';
 
 export function addPasswordModal(userData: Customer): HTMLElement {
   const app = document.querySelector('#app') as HTMLElement;
@@ -45,6 +46,20 @@ export function addPasswordModal(userData: Customer): HTMLElement {
     'password',
     'password',
   );
+  const currentPasswordIconParams: ElementParams<'img'> = {
+    tag: 'img',
+    attributes: {
+      src: '/assets/authpage/hide.png',
+      alt: 'make your password visible/hide',
+      title: 'Click to make your password visible',
+    },
+    classNames: ['password_icon', 'change-password-icon'],
+  };
+
+  const currentPasswordIcon = createElement(
+    currentPasswordIconParams,
+  ) as HTMLImageElement;
+  currentPasswordIcon.addEventListener('click', showPassword);
   const currentPasswordError = createErrorElement();
   currentPasswordInput.addEventListener('input', validateInput);
   currentPasswordLabel.textContent = 'Current Password';
@@ -57,6 +72,20 @@ export function addPasswordModal(userData: Customer): HTMLElement {
     'password',
     'password',
   );
+  const newPasswordIconParams: ElementParams<'img'> = {
+    tag: 'img',
+    attributes: {
+      src: '/assets/authpage/hide.png',
+      alt: 'make your password visible/hide',
+      title: 'Click to make your password visible',
+    },
+    classNames: ['password_icon', 'change-password-icon'],
+  };
+
+  const newPasswordIcon = createElement(
+    newPasswordIconParams,
+  ) as HTMLImageElement;
+  newPasswordIcon.addEventListener('click', showPassword);
   newPasswordLabel.textContent = 'New Password';
   newPasswordInput.addEventListener('input', validateInput);
   const newPasswordError = createErrorElement();
@@ -104,11 +133,28 @@ export function addPasswordModal(userData: Customer): HTMLElement {
     addInnerComponent(passwordForm, currentPasswordLabel);
     addInnerComponent(currentPasswordLabel, currentPasswordInput);
     addInnerComponent(currentPasswordLabel, currentPasswordError);
+    addInnerComponent(currentPasswordLabel, newPasswordIcon);
     addInnerComponent(passwordForm, newPasswordLabel);
     addInnerComponent(newPasswordLabel, newPasswordInput);
     addInnerComponent(newPasswordLabel, newPasswordError);
+    addInnerComponent(newPasswordLabel, currentPasswordIcon);
     addInnerComponent(passwordForm, buttonsContainer);
     fillObjectWithUniqueKeys(passwordForm, false, validStatus, true);
   }
   return passwordModal;
+}
+function showPassword(e: Event): void {
+  e.preventDefault();
+  const elem = e.target as HTMLElement;
+  const lable = elem.parentElement as HTMLElement;
+  const input = searchInput(lable) as HTMLInputElement;
+  if (input.getAttribute('type') === 'password') {
+    input.setAttribute('type', 'text');
+    elem.setAttribute('src', '/assets/authpage/show.png');
+    elem.setAttribute('title', 'Click to hide your password');
+  } else {
+    input.setAttribute('type', 'password');
+    elem.setAttribute('src', '/assets/authpage/hide.png');
+    elem.setAttribute('title', 'Click to make your password visible');
+  }
 }

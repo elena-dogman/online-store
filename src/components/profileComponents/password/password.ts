@@ -6,7 +6,7 @@ export function buildPasswordBtn(userData: Customer): HTMLElement {
   const passwordButtonParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['profile-header__btn-password', 'profile-btn'],
-    textContent: 'Password Edit',
+    textContent: 'Password Change',
   };
   const passwordButton = createElement(passwordButtonParams);
   const addPasswordModalHandler = (): void => {
