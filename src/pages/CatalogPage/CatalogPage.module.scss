@@ -13,7 +13,6 @@
   top: 15px;
   width: max-content;
   background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 10px 0;
   font-size: 18rem;
   text-align: center;
@@ -346,12 +345,8 @@
   margin: 80px 0 10px 20px;
   position: fixed;
   top: 20px;
-
   background-color: white;
   padding: 10px 10px 10px 0px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
 }
 
@@ -447,22 +442,19 @@
   }
 }
 .empty-request {
-  border: 0.5px solid #6666;
   position: absolute;
   top: 50%;
   left: 60%;
   max-width: 60%;
   transform: translate(-50%, -50%);
-  font-size: 40rem;
+  font-size: $font-size-subtitle;
+  color: $button-disabled-background;
   text-align: center;
   border-radius: 8px;
   padding: 40px;
   width: 80%;
-  box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.2),
-    0 6px 30px rgba(0, 0, 0, 0.15),
-    0 8px 40px rgba(0, 0, 0, 0.1);
 }
+
 @media (max-width: 1150px) {
   .catalog-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -487,14 +479,12 @@
     align-items: center;
     justify-content: center;
     position: fixed;
-
     right: 20px;
     background-color: #fff;
     padding: 10px;
     border-radius: 5px;
     cursor: pointer;
     z-index: 101;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   }
 
   .filter-icon {
@@ -595,7 +585,7 @@
     margin-left: 20px;
   }
   .catalog-page-container > .breadcrumb-container > .breadcrumb-container {
-    font-size: 14rem;
+    font-size: $font-size-small;
     margin-left: 0px;
   }
   .breadcrumb-item {

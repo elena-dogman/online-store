@@ -198,7 +198,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     const emptyRequestParams: ElementParams<'div'> = {
       tag: 'div',
       textContent:
-        'Sorry, there is nothing to show for your request, try another options!',
+        'Sorry, there are no results for your request. Please try another option 📭 ',
       classNames: ['empty-request'],
     };
     const emptyRequest = createElement(emptyRequestParams);
@@ -214,12 +214,10 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     let products: ProductProjection[] = [];
     if (selectedFilters.length > 0) {
       products = await fetchFilteredProducts(selectedFilters, sort);
-      ///
       if (products.length <= 0) {
         clear(catalogContainer);
         addInnerComponent(catalogContainer, emptyRequest);
       }
-      ///
     } else {
       products = await fetchProducts(sort);
     }
@@ -264,22 +262,23 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   const initialBreadcrumbLinks = generateBreadcrumbLinks(initialBreadcrumbs);
   addInnerComponent(breadcrumbContainer, initialBreadcrumbLinks);
 
-  breadcrumbContainer.querySelectorAll('a').forEach(anchor => {
-    anchor.addEventListener('click', async (event: Event) => {
-      event.preventDefault();
-      const target = event.currentTarget as HTMLAnchorElement;
-      const url = new URL(target.href);
-      const params = new URLSearchParams(url.search);
-      filters = {
-        ...filters,
-        category: params.get('category') || '',
-      };
-      updateURLWithFilters(filters);
-      history.replaceState({}, '', url.toString());
-      await updateBreadcrumbs();
-      await renderProducts(1, itemsPerPage, currentSort);
-    });
+breadcrumbContainer.querySelectorAll('a').forEach(anchor => {
+  anchor.addEventListener('click', async (event: Event) => {
+    event.preventDefault();
+    const target = event.currentTarget as HTMLAnchorElement;
+    const url = new URL(target.href);
+    const params = new URLSearchParams(url.search);
+    filters = {
+      ...filters,
+      category: params.get('category') || '',
+    };
+    console.log('Filters after Breadcrumb Click:', filters);
+    updateURLWithFilters(filters);
+    history.replaceState({}, '', url.toString());
+    await updateBreadcrumbs();
+    await renderProducts(1, itemsPerPage, currentSort);
   });
+});
 
   pageContainer.prepend(header);
   addInnerComponent(pageContainer, breadcrumbContainer);
