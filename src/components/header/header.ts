@@ -31,7 +31,7 @@ export function createHeader(): HTMLElement {
     classNames: ['header__logo-search-container'],
   });
 
-    addInnerComponent(logoSearchContainer, logoLink);
+  addInnerComponent(logoSearchContainer, logoLink);
 
   const isCatalogPage = window.location.pathname === '/catalog';
 
@@ -44,20 +44,23 @@ export function createHeader(): HTMLElement {
     tag: 'div',
     classNames: ['header__nav-links'],
   });
-  const homeLink = createElement({
-    tag: 'a',
-    attributes: { href: '/' },
-    classNames: ['header__nav-link'],
-    textContent: 'Home',
-  });
-  const aboutLink = createElement({
-    tag: 'a',
-    attributes: { href: '/catalog' },
-    classNames: ['header__nav-link'],
-    textContent: 'Catalog',
-  });
-  addInnerComponent(navContainer, homeLink);
-  addInnerComponent(navContainer, aboutLink);
+
+  if (!isCatalogPage) {
+    const homeLink = createElement({
+      tag: 'a',
+      attributes: { href: '/' },
+      classNames: ['header__nav-link'],
+      textContent: 'Home',
+    });
+    const aboutLink = createElement({
+      tag: 'a',
+      attributes: { href: '/catalog' },
+      classNames: ['header__nav-link'],
+      textContent: 'Catalog',
+    });
+    addInnerComponent(navContainer, homeLink);
+    addInnerComponent(navContainer, aboutLink);
+  }
 
   const rightContainer = createElement({
     tag: 'div',
@@ -127,7 +130,9 @@ export function createHeader(): HTMLElement {
   addInnerComponent(rightContainer, authNavContainer);
 
   addInnerComponent(header, logoSearchContainer);
-  addInnerComponent(header, navContainer);
+  if (!isCatalogPage) {
+    addInnerComponent(header, navContainer);
+  }
   addInnerComponent(header, rightContainer);
 
   const burgerMenu = createElement({
@@ -162,9 +167,9 @@ export function createHeader(): HTMLElement {
   const tabletScreenWidthInPx = 870;
   const moveNavLinks = (): void => {
     const isMobile = window.innerWidth <= tabletScreenWidthInPx;
-    if (isMobile) {
+    if (isMobile && !isCatalogPage) {
       addInnerComponent(authNavContainer, navContainer);
-    } else {
+    } else if (!isCatalogPage) {
       if (authNavContainer.classList.contains('open')) {
         authNavContainer.classList.remove('open');
         burgerMenu.classList.remove('change');

@@ -17,6 +17,8 @@
   font-size: 18rem;
   text-align: center;
   z-index: 101;
+  width: 100%;
+  justify-content: center;
 }
 
 .catalog-page-container
@@ -344,9 +346,7 @@
   cursor: pointer;
   margin: 40px 0 10px 20px;
   top: 20px;
-  background-color: white;
   padding: 10px 10px 10px 0px;
-  z-index: 1000;
 }
 
 .sort-container .arrow {
