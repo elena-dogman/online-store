@@ -5,6 +5,7 @@ import {
 } from '../../utils/baseComponent';
 import { appEvents } from '../../utils/eventEmitter';
 import { checkLoginStatus, logoutUser } from '../../api/apiService';
+import { createSearchComponent } from './search/productSearch';
 
 export function createHeader(): HTMLElement {
   const headerParams: ElementParams<'div'> = {
@@ -24,6 +25,20 @@ export function createHeader(): HTMLElement {
     textContent: '・valenki store・',
   });
   addInnerComponent(logoLink, logo);
+
+  const logoSearchContainer = createElement({
+    tag: 'div',
+    classNames: ['header__logo-search-container'],
+  });
+
+    addInnerComponent(logoSearchContainer, logoLink);
+
+  const isCatalogPage = window.location.pathname === '/catalog';
+
+  if (isCatalogPage) {
+    const searchComponent = createSearchComponent();
+    addInnerComponent(logoSearchContainer, searchComponent);
+  }
 
   const navContainer = createElement({
     tag: 'div',
@@ -111,7 +126,7 @@ export function createHeader(): HTMLElement {
   addInnerComponent(rightContainer, iconsContainer);
   addInnerComponent(rightContainer, authNavContainer);
 
-  addInnerComponent(header, logoLink);
+  addInnerComponent(header, logoSearchContainer);
   addInnerComponent(header, navContainer);
   addInnerComponent(header, rightContainer);
 
@@ -144,8 +159,9 @@ export function createHeader(): HTMLElement {
 
   document.addEventListener('click', closeBurgerMenu);
 
+  const tabletScreenWidthInPx = 870;
   const moveNavLinks = (): void => {
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = window.innerWidth <= tabletScreenWidthInPx;
     if (isMobile) {
       addInnerComponent(authNavContainer, navContainer);
     } else {
@@ -168,7 +184,6 @@ export function createHeader(): HTMLElement {
   }
 
   async function updateAuthButton(isLoggedIn: boolean): Promise<void> {
-    console.log(isLoggedIn);
     registerButton.style.display = isLoggedIn ? 'none' : 'block';
     authButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
     authButton.setAttribute('href', isLoggedIn ? '#' : '/login');
