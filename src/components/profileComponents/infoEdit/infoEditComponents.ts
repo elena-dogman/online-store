@@ -86,7 +86,6 @@ function toggleReadOnly(
       e.classList.add('readonly');
       e.removeEventListener('click', addCountriesList, true);
     });
-    console.log(body);
     updateCustomer(body);
     setInfoReadvalidStatus('name', true);
   }

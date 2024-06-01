@@ -1,11 +1,13 @@
+import { Customer, CustomerChangePassword } from '@commercetools/platform-sdk';
 import {
   ElementParams,
   addInnerComponent,
   createElement,
 } from '../../../utils/baseComponent';
 import { createInput } from '../../../utils/createInput';
+import { changePassword } from '../../../api/apiService';
 
-export function addPasswordModal(): HTMLElement {
+export function addPasswordModal(userData: Customer): HTMLElement {
   const app = document.querySelector('#app') as HTMLElement;
   const passwordModalParams: ElementParams<'div'> = {
     tag: 'div',
@@ -16,6 +18,7 @@ export function addPasswordModal(): HTMLElement {
   const passwordFormParams: ElementParams<'form'> = {
     tag: 'form',
     classNames: ['modal__password-form'],
+    attributes: { id: 'change-password-form' },
   };
   const formTitleParams: ElementParams<'h2'> = {
     tag: 'h2',
@@ -23,30 +26,31 @@ export function addPasswordModal(): HTMLElement {
     textContent: 'Enter your new Password',
   };
   const formTitle = createElement(formTitleParams);
-  const passwrodForm = createElement(passwordFormParams);
-  const [newPasswordLabel, newPassordInput] = createInput(
-    'password',
+  const passwordForm = createElement(passwordFormParams);
+  const [currentPasswordLabel, currentPasswordInput] = createInput(
+    'current-password',
+    [
+      ['current-password-label', 'prof-label'],
+      ['current-passwrod-input', 'prof-input'],
+    ],
+    'text',
+    'text',
+  );
+  currentPasswordLabel.textContent = 'Current password';
+  const [newPasswordLabel, newPasswordInput] = createInput(
+    'confirm-password',
     [
       ['new-password-label', 'prof-label'],
       ['new-passwrod-input', 'prof-input'],
     ],
-    'password',
-    'password',
+    'text',
+    'text',
   );
-  const [confirmPasswordLabel, confirmPassordInput] = createInput(
-    'password',
-    [
-      ['confirm-password-label', 'prof-label'],
-      ['confirm-passwrod-input', 'prof-input'],
-    ],
-    'password',
-    'password',
-  );
+  newPasswordLabel.textContent = 'new Password';
   const buttonsContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['password-form__btn-container'],
   };
-
   const buttonCloseParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['password-form__close', 'profile-btn'],
@@ -56,24 +60,36 @@ export function addPasswordModal(): HTMLElement {
     tag: 'button',
     classNames: ['password-form__save', 'profile-btn'],
     textContent: 'Save',
+    attributes: { form: 'change-password-form' },
   };
   const buttonsContainer = createElement(buttonsContainerParams);
   const buttonClose = createElement(buttonCloseParams);
+  const buttonSave = createElement(buttonSaveParams);
   buttonClose.addEventListener('click', () => {
     passwordModal.remove();
+    console.log(userData.password);
   });
-  const buttonSave = createElement(buttonSaveParams);
+  buttonSave.addEventListener('click', () => {
+    passwordModal.remove();
+    const body: CustomerChangePassword = {
+      id: userData.id,
+      version: userData.version,
+      currentPassword: currentPasswordInput.value,
+      newPassword: newPasswordInput.value,
+    };
+    changePassword(userData, body);
+  });
   addInnerComponent(buttonsContainer, buttonClose);
   addInnerComponent(buttonsContainer, buttonSave);
   if (app) {
     addInnerComponent(app, passwordModal);
-    addInnerComponent(passwordModal, passwrodForm);
-    addInnerComponent(passwrodForm, formTitle);
-    addInnerComponent(passwrodForm, newPasswordLabel);
-    addInnerComponent(newPasswordLabel, newPassordInput);
-    addInnerComponent(passwrodForm, confirmPasswordLabel);
-    addInnerComponent(confirmPasswordLabel, confirmPassordInput);
-    addInnerComponent(passwrodForm, buttonsContainer);
+    addInnerComponent(passwordModal, passwordForm);
+    addInnerComponent(passwordForm, formTitle);
+    addInnerComponent(passwordForm, currentPasswordLabel);
+    addInnerComponent(currentPasswordLabel, currentPasswordInput);
+    addInnerComponent(passwordForm, newPasswordLabel);
+    addInnerComponent(newPasswordLabel, newPasswordInput);
+    addInnerComponent(passwordForm, buttonsContainer);
   }
   return passwordModal;
 }

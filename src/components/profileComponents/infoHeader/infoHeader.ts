@@ -48,7 +48,7 @@ export function buildProfileHeader(userData: Customer): HTMLElement {
   const logoUserTitle = createElement(logoUserTitleParams);
   const logoUserLink = createElement(logoUserLinkParams);
   const editbutton = createEdit(userData);
-  const passwrodButton = buildPasswordBtn();
+  const passwrodButton = buildPasswordBtn(userData);
   addInnerComponent(profileHeader, profileLogoContainer);
   addInnerComponent(profileLogoContainer, profileLogoImg);
   addInnerComponent(profileLogoContainer, logoUserContainer);
