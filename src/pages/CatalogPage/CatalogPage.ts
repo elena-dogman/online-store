@@ -135,6 +135,14 @@ export async function createCatalogPage(): Promise<HTMLElement> {
           ...filters,
           category: params.get('category') || '',
         };
+        if (filters.category) {
+          const categoryId = Object.keys(categoriesMap).find(
+            (id) => categoriesMap[id].name === filters.category,
+          );
+          if (categoryId) {
+            filters.category = categoryId;
+          }
+        }
         updateURLWithFilters(filters);
         history.replaceState({}, '', url.toString());
         await updateBreadcrumbs();
@@ -211,36 +219,49 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     if (categoryFilter) selectedFilters.push(categoryFilter);
     if (sizeFilter) selectedFilters.push(sizeFilter);
 
+    console.log('Selected Filters:', selectedFilters);
+
     let products: ProductProjection[] = [];
     if (selectedFilters.length > 0) {
+      console.log('Fetching filtered products with:', selectedFilters);
       products = await fetchFilteredProducts(selectedFilters, sort);
+      console.log('Fetched Filtered Products:', products);
       if (products.length <= 0) {
         clear(catalogContainer);
         addInnerComponent(catalogContainer, emptyRequest);
+        clear(paginationContainer);
       }
     } else {
+      console.log('Fetching all products with sort:', sort);
       products = await fetchProducts(sort);
+      console.log('Fetched All Products:', products);
     }
 
-    const start = (page - 1) * itemsPerPageCount;
-    const end = start + itemsPerPageCount;
-    const paginatedProducts = products.slice(start, end);
+    if (products.length > 0) {
+      const start = (page - 1) * itemsPerPageCount;
+      const end = start + itemsPerPageCount;
+      const paginatedProducts = products.slice(start, end);
 
-    const productCatalog = createProductCatalog(paginatedProducts);
-    addInnerComponent(catalogContainer, productCatalog);
+      const productCatalog = createProductCatalog(paginatedProducts);
+      addInnerComponent(catalogContainer, productCatalog);
 
-    const pagination = createPagination({
-      totalItems: products.length,
-      itemsPerPage: itemsPerPageCount,
-      currentPage: page,
-      onPageChange: (newPage) => {
-        currentPage = newPage;
-        renderProducts(currentPage, itemsPerPageCount, currentSort);
-      },
-    });
+      const pagination = createPagination({
+        totalItems: products.length,
+        itemsPerPage: itemsPerPageCount,
+        currentPage: page,
+        onPageChange: (newPage) => {
+          currentPage = newPage;
+          renderProducts(currentPage, itemsPerPageCount, currentSort);
+        },
+      });
 
-    clear(paginationContainer);
-    addInnerComponent(paginationContainer, pagination);
+      clear(paginationContainer);
+      addInnerComponent(paginationContainer, pagination);
+    } else {
+      clear(paginationContainer);
+      addInnerComponent(catalogContainer, emptyRequest);
+    }
+
     hideLoadingOverlay();
   };
 
@@ -262,23 +283,30 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   const initialBreadcrumbLinks = generateBreadcrumbLinks(initialBreadcrumbs);
   addInnerComponent(breadcrumbContainer, initialBreadcrumbLinks);
 
-breadcrumbContainer.querySelectorAll('a').forEach(anchor => {
-  anchor.addEventListener('click', async (event: Event) => {
-    event.preventDefault();
-    const target = event.currentTarget as HTMLAnchorElement;
-    const url = new URL(target.href);
-    const params = new URLSearchParams(url.search);
-    filters = {
-      ...filters,
-      category: params.get('category') || '',
-    };
-    console.log('Filters after Breadcrumb Click:', filters);
-    updateURLWithFilters(filters);
-    history.replaceState({}, '', url.toString());
-    await updateBreadcrumbs();
-    await renderProducts(1, itemsPerPage, currentSort);
+  breadcrumbContainer.querySelectorAll('a').forEach(anchor => {
+    anchor.addEventListener('click', async (event: Event) => {
+      event.preventDefault();
+      const target = event.currentTarget as HTMLAnchorElement;
+      const url = new URL(target.href);
+      const params = new URLSearchParams(url.search);
+      filters = {
+        ...filters,
+        category: params.get('category') || '',
+      };
+      if (filters.category) {
+        const categoryId = Object.keys(categoriesMap).find(
+          (id) => categoriesMap[id].name === filters.category,
+        );
+        if (categoryId) {
+          filters.category = categoryId;
+        }
+      }
+      updateURLWithFilters(filters);
+      history.replaceState({}, '', url.toString());
+      await updateBreadcrumbs();
+      await renderProducts(1, itemsPerPage, currentSort);
+    });
   });
-});
 
   pageContainer.prepend(header);
   addInnerComponent(pageContainer, breadcrumbContainer);
@@ -312,7 +340,21 @@ breadcrumbContainer.querySelectorAll('a').forEach(anchor => {
     if (products.length > 0) {
       const productCatalog = createProductCatalog(products);
       addInnerComponent(catalogContainer, productCatalog);
+
+      const pagination = createPagination({
+        totalItems: products.length,
+        itemsPerPage: itemsPerPage,
+        currentPage: currentPage,
+        onPageChange: (newPage) => {
+          currentPage = newPage;
+          renderProducts(currentPage, itemsPerPage, currentSort);
+        },
+      });
+
+      clear(paginationContainer);
+      addInnerComponent(paginationContainer, pagination);
     } else {
+      clear(paginationContainer);
       const noResultsMessage = createElement({
         tag: 'div',
         classNames: ['no-results-message'],
@@ -320,19 +362,6 @@ breadcrumbContainer.querySelectorAll('a').forEach(anchor => {
       });
       addInnerComponent(catalogContainer, noResultsMessage);
     }
-
-    const pagination = createPagination({
-      totalItems: products.length,
-      itemsPerPage: itemsPerPage,
-      currentPage: currentPage,
-      onPageChange: (newPage) => {
-        currentPage = newPage;
-        renderProducts(currentPage, itemsPerPage, currentSort);
-      },
-    });
-
-    clear(paginationContainer);
-    addInnerComponent(paginationContainer, pagination);
   };
 
   const setupFilterContainer = (): void => {
