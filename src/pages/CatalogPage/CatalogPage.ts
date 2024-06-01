@@ -237,7 +237,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   addInnerComponent(catalogContainerWrapper, paginationContainer);
   pageContainer.append(loadingOverlay);
 
- document.addEventListener('searchResults', (event) => {
+  document.addEventListener('searchResults', (event) => {
     const customEvent = event as CustomEvent;
     const searchResults = customEvent.detail as ProductProjectionPagedQueryResponse;
     displaySearchResults(searchResults);
@@ -258,6 +258,19 @@ export async function createCatalogPage(): Promise<HTMLElement> {
       });
       addInnerComponent(catalogContainer, noResultsMessage);
     }
+
+    const pagination = createPagination({
+      totalItems: products.length,
+      itemsPerPage: itemsPerPage,
+      currentPage: currentPage,
+      onPageChange: (newPage) => {
+        currentPage = newPage;
+        renderProducts(currentPage, itemsPerPage, currentSort);
+      },
+    });
+
+    clear(paginationContainer);
+    addInnerComponent(paginationContainer, pagination);
   };
 
   await renderProducts(currentPage, itemsPerPage, currentSort);

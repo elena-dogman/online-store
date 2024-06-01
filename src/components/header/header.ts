@@ -26,18 +26,19 @@ export function createHeader(): HTMLElement {
   });
   addInnerComponent(logoLink, logo);
 
-  // Создаем новый контейнер для логотипа и поиска
   const logoSearchContainer = createElement({
     tag: 'div',
     classNames: ['header__logo-search-container'],
   });
 
-  // Создаем компонент поиска
-  const searchComponent = createSearchComponent();
+    addInnerComponent(logoSearchContainer, logoLink);
 
-  // Добавляем логотип и компонент поиска в новый контейнер
-  addInnerComponent(logoSearchContainer, logoLink);
-  addInnerComponent(logoSearchContainer, searchComponent);
+  const isCatalogPage = window.location.pathname === '/catalog';
+
+  if (isCatalogPage) {
+    const searchComponent = createSearchComponent();
+    addInnerComponent(logoSearchContainer, searchComponent);
+  }
 
   const navContainer = createElement({
     tag: 'div',
