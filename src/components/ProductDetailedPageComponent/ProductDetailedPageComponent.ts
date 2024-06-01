@@ -5,8 +5,8 @@ import {
 } from '../../utils/baseComponent';
 import { createSwiper } from './createSwiperProductDetailedPage';
 import { createIconContainer } from '../../utils/createIconContainer';
-import { ClientResponse, Product } from '@commercetools/platform-sdk';
-
+import { Category, ClientResponse, Product } from '@commercetools/platform-sdk';
+import { generateBreadcrumbLinks } from '../breadcrumbs/breadcrumbs';
 export function productDetailedPageComponent(ID: string): HTMLElement {
   const detailedProductContainerParams: ElementParams<'section'> = {
     tag: 'section',
@@ -15,33 +15,45 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
   const detailedProductContainer = createElement(
     detailedProductContainerParams,
   );
-  const breadCrumbsContainerParams: ElementParams<'div'> = {
-    tag: 'div',
-    classNames: ['breadcrumbs_container'],
-  };
 
   createSwiper(ID)
     .then(
       ({
         swiperContainer,
         response,
+        categoryResponses,
       }: {
         swiperContainer: HTMLElement;
         response: ClientResponse<Product>;
+        categoryResponses: ClientResponse<Category>[];
       }) => {
+        console.log(categoryResponses[0].body.slug['en-US']);
+        const replaceDashWithPlus = (text: string): string =>
+          text.replace(/-/g, '+');
+        const breadcrumbs = [
+          { name: 'home', url: '/' },
+          { name: 'catalog', url: '/catalog' },
+        ];
+
+        if (categoryResponses.length > 0) {
+          breadcrumbs.push({
+            name: categoryResponses[0].body.name['en-US'],
+            url: `/catalog?category=${replaceDashWithPlus(categoryResponses[0].body.name['en-US'])}`,
+          });
+        }
+
+        if (categoryResponses.length > 1) {
+          breadcrumbs.push({
+            name: categoryResponses[1].body.name['en-US'],
+            url: `/catalog?category=${replaceDashWithPlus(categoryResponses[1].body.name['en-US'])}`,
+          });
+        }
+        const breadCrumbsContainer = generateBreadcrumbLinks(breadcrumbs);
+
         const productData = response.body.masterData.current;
-        const breadCrumbsContainer = createElement(breadCrumbsContainerParams);
+
         addInnerComponent(detailedProductContainer, breadCrumbsContainer);
         addInnerComponent(detailedProductContainer, swiperContainer);
-        ///breadcrumbs
-        // const dividerParams: ElementParams<'span'> = {
-        //   tag: 'span',
-        //   classNames: ['divider'],
-        //   textContent: '/',
-        // };
-        // const category = attributes?.find((attr) => attr.name === 'category');
-        // const audience = attributes?.find((attr) => attr.name === 'audience');
-        ///
 
         const attributes = productData.masterVariant.attributes;
 

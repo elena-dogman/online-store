@@ -8,20 +8,24 @@
   padding: 0 30px;
   background-color: #fff;
 }
-.breadcrumbs_container {
-  position: absolute;
-  top: -10%;
-  left: 6%;
-}
+
 .product_detailed_container {
   display: flex;
-  padding: 80px;
+  padding: 25px 80px;
   gap: 50px;
   position: relative;
   top: 10%;
   align-items: center;
   width: 100%;
   justify-content: space-evenly;
+}
+.product_detailed_container > .breadcrumb-container {
+  position: fixed;
+  font-size: 18rem;
+  top: 0%;
+  left: 4%;
+  padding-top: 20px;
+  z-index: 10;
 }
 .description_container {
   display: flex;
@@ -35,7 +39,7 @@
 }
 .product_title {
   text-align: center;
-  font-size: $font-size-big-heading;
+  font-size: 48rem;
   margin-bottom: 20px;
 }
 .price_container {
@@ -98,7 +102,9 @@
 .product_description {
   all: unset;
   font-style: italic;
-  font-size: $font-size-large-text;
+  font-size: 22rem;
+  padding-left: 30px;
+  line-height: 1.5;
   margin-bottom: 20px;
   text-align: justify;
 }
@@ -135,6 +141,7 @@
   width: 100%;
   justify-content: space-between;
   gap: 10px;
+  padding-left: 30px;
 }
 .icon_container {
   display: flex;
@@ -152,18 +159,29 @@
 .text_bottom {
   color: $text-color-base;
 }
+@media (max-height: 550px) {
+  .product_detailed_container {
+    padding: 50px 80px;
+  }
+}
 @media (max-width: 1200px) {
   .product_detailed_container {
     flex-direction: column;
     padding: 0px;
     top: 5%;
   }
+  .product_detailed_container > .breadcrumb-container {
+    position: relative;
+    font-size: 18rem;
+    left: -25%;
+    top: 0;
+  }
 
   .size_container {
     flex-wrap: nowrap;
   }
   .swiper-container {
-    width: 70%;
+    width: 60%;
   }
   .swiper-button-prev-container {
     left: -20%;
@@ -182,6 +200,13 @@
     padding: 0px;
     top: 5%;
   }
+  .product_detailed_container > .breadcrumb-container {
+    position: relative;
+    font-size: 14rem;
+    left: -10%;
+    top: 0;
+  }
+
   .product_container {
     padding: 0 10px;
   }
@@ -208,9 +233,13 @@
   }
   .product_description {
     font-size: 16rem;
+    padding-left: 0px;
   }
   .swiper-scrollbar {
     display: none;
+  }
+  .icons_container {
+    padding-left: 0px;
   }
 }
 @media (max-width: 550px) {
@@ -224,5 +253,9 @@
   }
   .size_container {
     flex-wrap: wrap;
+  }
+  .product_description {
+    font-size: 16rem;
+    padding-left: 0px;
   }
 }
