@@ -6,6 +6,8 @@ import {
   addInnerComponent,
   ElementParams,
 } from '../../utils/baseComponent';
+import { navigateTo } from '../../router/router';
+
 
 export async function fetchCategoryTree(): Promise<Category[]> {
   const categories = await fetchCategories();
@@ -66,6 +68,11 @@ export function generateBreadcrumbLinks(
       attributes: { href: breadcrumb.url },
     };
     const breadcrumbItem = createElement(breadcrumbItemParams);
+
+    breadcrumbItem.addEventListener('click', (event) => {
+      event.preventDefault();
+      navigateTo(breadcrumb.url);
+    });
 
     addInnerComponent(breadcrumbContainer, breadcrumbItem);
 

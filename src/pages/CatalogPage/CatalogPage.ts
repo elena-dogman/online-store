@@ -76,7 +76,6 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   const filterIconContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['filter-icon-container'],
-    textContent: 'Filters',
   };
   const filterWrapper = createElement(filterWrapperParams);
   const filterIconContainer = createElement(filterIconContainerParams);
