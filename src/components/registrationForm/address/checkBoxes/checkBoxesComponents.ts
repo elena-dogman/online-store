@@ -26,7 +26,6 @@ export function joinChecked(): void {
       false,
       validStatus,
     );
-    console.log(validStatus);
     checkAllInputs();
   }
 }
@@ -40,7 +39,6 @@ export function joinUnchecked(): void {
       false,
       validStatus,
     );
-    console.log(validStatus);
     setValidStatusAddress('joinAddress', false);
     checkAllInputs();
   }
@@ -89,7 +87,7 @@ export function addDefaultChecks(): HTMLElement {
   ) as HTMLInputElement;
 
   defaultShippingCheck.addEventListener('click', () => {
-    if (defaultBillingCheck.checked) {
+    if (defaultShippingCheck.checked) {
       setValidStatusAddress('shippingIsDefault', true);
     } else {
       setValidStatusAddress('shippingIsDefault', false);

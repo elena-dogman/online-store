@@ -38,6 +38,9 @@ export function buildProfileCountry(
     if (currentId === defaultBillingId) {
       countryIndicator.textContent = ' Default Billing Address';
     }
+  } else if (currentId !== shippingId || currentId !== billingId) {
+    addInnerComponent(countryContainer, countryIndicator);
+    countryIndicator.textContent = 'Address';
   }
   if (currentId === shippingId) {
     addInnerComponent(countryContainer, countryIndicator);
@@ -45,8 +48,11 @@ export function buildProfileCountry(
     if (currentId === defaultShippingId) {
       countryIndicator.textContent = ' Default Shipping Address';
     }
+  } else if (currentId !== shippingId || currentId !== billingId) {
+    addInnerComponent(countryContainer, countryIndicator);
+    countryIndicator.textContent = 'Address';
   }
-  addInnerComponent(countryContainer, countriesList);
   addInnerComponent(countryContainer, countriesInput);
+  addInnerComponent(countryContainer, countriesList);
   return [countryContainer, countriesList];
 }

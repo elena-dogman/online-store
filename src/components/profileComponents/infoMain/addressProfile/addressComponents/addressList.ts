@@ -3,7 +3,6 @@ import {
   addInnerComponent,
   createElement,
 } from '../../../../../utils/baseComponent';
-import { createInput } from '../../../../../utils/createInput';
 import countries from 'country-list-js';
 import { validateInput } from '../../../../../utils/validations/validation';
 import { createErrorElement } from '../../../../../utils/validations/validationsErrors';
@@ -34,42 +33,59 @@ export function buildProfileAddressLoyalt(): [
   HTMLInputElement,
   HTMLInputElement,
 ] {
-  const [cityLabel, cityInput] = createInput(
-    'city',
-    [
-      ['profile-form__city-label', 'prof-label', 'label-city'],
-      ['profile-form__city-input', 'prof-input', 'input-city'],
-    ],
-    'city',
-  );
+  const cityLabelParams: ElementParams<'label'> = {
+    tag: 'label',
+    classNames: ['profile-form__city-label', 'prof-label', 'label-city'],
+    attributes: { name: 'city', 'data-validation-type': 'city' },
+    textContent: 'City',
+  };
+  const cityInputParams: ElementParams<'input'> = {
+    tag: 'input',
+    classNames: ['profile-form__city-input', 'prof-input', 'input-city'],
+    attributes: { name: 'city', 'data-validation-type': 'city', readonly: '' },
+  };
+  const cityLabel = createElement(cityLabelParams) as HTMLLabelElement;
+  const cityInput = createElement(cityInputParams) as HTMLInputElement;
   const profileCityError = createErrorElement();
   addInnerComponent(cityLabel, cityInput);
   addInnerComponent(cityLabel, profileCityError);
-  cityInput.setAttribute('readonly', '');
   cityInput.addEventListener('input', validateInput);
-  const [postLabel, postInput] = createInput(
-    'post',
-    [
-      ['profile-form__post-label', 'prof-label', 'label-post'],
-      ['profile-form__post-input', 'prof-input', 'input-post'],
-    ],
-    'post',
-  );
+
+  const postLabelParams: ElementParams<'label'> = {
+    tag: 'label',
+    classNames: ['profile-form__post-label', 'prof-label', 'label-post'],
+    attributes: { name: 'post', 'data-validation-type': 'post' },
+    textContent: 'Post',
+  };
+  const postInputParams: ElementParams<'input'> = {
+    tag: 'input',
+    classNames: ['profile-form__post-input', 'prof-input', 'input-post'],
+    attributes: { name: 'post', 'data-validation-type': 'post', readonly: '' },
+  };
+  const postLabel = createElement(postLabelParams) as HTMLLabelElement;
+  const postInput = createElement(postInputParams) as HTMLInputElement;
   const profilePostError = createErrorElement();
   addInnerComponent(postLabel, postInput);
   addInnerComponent(postLabel, profilePostError);
-  postInput.setAttribute('readonly', '');
-  postInput.addEventListener('input', validateInput);
-  const [streetLabel, streetInput] = createInput(
-    'street',
-    [
-      ['profile-form__street-label', 'prof-label', 'label-street'],
-      ['profile-form__street-input', 'prof-input', 'input-street'],
-    ],
-    'street',
-  );
-  streetInput.setAttribute('readonly', '');
+  const streetLabelParams: ElementParams<'label'> = {
+    tag: 'label',
+    classNames: ['profile-form__street-label', 'prof-label', 'label-street'],
+    attributes: { name: 'street', 'data-validation-type': 'street' },
+    textContent: 'Street',
+  };
+  const streetInputParams: ElementParams<'input'> = {
+    tag: 'input',
+    classNames: ['profile-form__street-input', 'prof-input', 'input-street'],
+    attributes: {
+      name: 'street',
+      'data-validation-type': 'street',
+      readonly: '',
+    },
+  };
+  const streetLabel = createElement(streetLabelParams) as HTMLLabelElement;
+  const streetInput = createElement(streetInputParams) as HTMLInputElement;
   streetInput.addEventListener('input', validateInput);
+
   const profileStreetError = createErrorElement();
   addInnerComponent(streetLabel, streetInput);
   addInnerComponent(streetLabel, profileStreetError);

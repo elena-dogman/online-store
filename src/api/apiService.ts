@@ -19,6 +19,7 @@ import {
   MyCustomerUpdateAction,
   ProductProjectionPagedSearchResponse,
   QueryParam,
+  CustomerChangePassword,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/eventEmitter';
@@ -50,8 +51,52 @@ export async function updateCustomer(bodya: CustomerUpdateBody): Promise<void> {
   ).withProjectKey({ projectKey: import.meta.env.VITE_CTP_PROJECT_KEY });
   try {
     await refreshFlowClient.me().post({ body: bodya }).execute();
-  } catch (err) {
-    return;
+  } catch (error: unknown) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
+    // Rethrow the error to be handled by the caller
+    throw error;
+  }
+}
+export async function changePassword(
+  dataCustomer: Customer,
+  customerPassword: CustomerChangePassword,
+): Promise<void> {
+  const unparsedToken = localStorage.getItem('token');
+  if (!unparsedToken) {
+    throw new Error('No token found in local storage');
+  }
+  const token = JSON.parse(unparsedToken);
+  const refreshToken = token.refreshToken;
+  const refreshFlowClient = createApiBuilderFromCtpClient(
+    createRefreshTokenClient(refreshToken),
+  ).withProjectKey({ projectKey: import.meta.env.VITE_CTP_PROJECT_KEY });
+  try {
+    const body = {
+      email: dataCustomer.email,
+      password: customerPassword.newPassword,
+    };
+    await refreshFlowClient
+      .me()
+      .password()
+      .post({ body: customerPassword })
+      .execute();
+    localStorage.removeItem('token');
+    await loginStayUser(body);
+  } catch (error: unknown) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
+    throw error;
   }
 }
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
@@ -82,8 +127,39 @@ export const loginUser = async (body: {
     router.navigate('/');
     appEvents.emit('login', undefined);
     return data;
-  } catch (error) {
-    return error;
+  } catch (error: unknown) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
+    throw error;
+  }
+};
+export const loginStayUser = async (body: {
+  email: string;
+  password: string;
+}): Promise<ClientResponse<CustomerSignInResult> | undefined | unknown> => {
+  try {
+    const passFlowClient = createApiBuilderFromCtpClient(
+      createPasswordFlowClient({ email: body.email, password: body.password }),
+    ).withProjectKey({
+      projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
+    });
+    const data = await passFlowClient.login().post({ body }).execute();
+    return data;
+  } catch (error: unknown) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
+    // Rethrow the error to be handled by the caller
+    throw error;
   }
 };
 
@@ -103,7 +179,20 @@ export const logoutUser = async (): Promise<void> => {
     }
   }
 };
-
+export const logoutUserPassword = async (): Promise<void> => {
+  try {
+    localStorage.removeItem('token');
+    await anonymousApiRoot.get().execute();
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
+  }
+};
 export async function isUserLogined(): Promise<ClientResponse<Customer> | void> {
   if (localStorage.getItem('token')) {
     const unparsedToken = JSON.parse(localStorage.getItem('token') as string);
@@ -223,9 +312,7 @@ export async function regUser(
   }
 }
 
-export async function getDetailedProduct(
-  ID: string,
-): Promise<
+export async function getDetailedProduct(ID: string): Promise<
   | {
       productResponse: ClientResponse<Product>;
       categoryResponses: ClientResponse<Category>[];
@@ -435,7 +522,11 @@ export async function searchProducts(
 
     console.log('query args:', JSON.stringify(queryArgs));
 
-    const response = await apiRoot.productProjections().search().get({ queryArgs }).execute();
+    const response = await apiRoot
+      .productProjections()
+      .search()
+      .get({ queryArgs })
+      .execute();
     console.log('response:', JSON.stringify(response.body));
 
     if (response.body.count === 0) {

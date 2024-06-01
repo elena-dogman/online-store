@@ -10,7 +10,7 @@ export function setValidStatus(
   validStatus[field] = value;
 }
 
-export function checkAllInputs(): void {
+export function checkAllInputs(form: HTMLFormElement | null = null): void {
   if (window.location.href.includes('register')) {
     if (Object.values(validStatus).every((value) => value)) {
       authFormButton.removeAttribute('disabled');
@@ -26,10 +26,19 @@ export function checkAllInputs(): void {
     }
   } else if (window.location.href.includes('profile')) {
     const edit = document.querySelector('.profile-header__btn-edit');
-    if (Object.values(validStatus).every((value) => value)) {
-      edit?.removeAttribute('disabled');
+    const save = document.querySelector('.password-form__save');
+    if (!form?.classList.contains('modal__password-form')) {
+      if (Object.values(validStatus).every((value) => value)) {
+        edit?.removeAttribute('disabled');
+      } else {
+        edit?.setAttribute('disabled', '');
+      }
     } else {
-      edit?.setAttribute('disabled', '');
+      if (Object.values(validStatus).every((value) => value)) {
+        save?.removeAttribute('disabled');
+      } else {
+        save?.setAttribute('disabled', '');
+      }
     }
   }
 }
@@ -37,9 +46,13 @@ export function fillObjectWithUniqueKeys(
   form: HTMLFormElement,
   value: boolean,
   existingData: { [key: string]: boolean },
+  clearPrevious: boolean = false,
 ): void {
-  const formArray = filterArray(form);
+  if (clearPrevious) {
+    existingData = {}; // Очистка прежних значений
+  }
 
+  const formArray = filterArray(form);
   const obj = { ...existingData };
   let counter: number = 1;
 
@@ -66,5 +79,6 @@ export function fillObjectWithUniqueKeys(
       obj[Object.keys(obj).length.toString()] = true;
     }
   }
+
   validStatus = obj;
 }

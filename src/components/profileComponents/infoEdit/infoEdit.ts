@@ -6,7 +6,7 @@ export function createEdit(userData: Customer): HTMLElement {
   console.log(userData);
   const infoHeaderButtonParams: ElementParams<'button'> = {
     tag: 'button',
-    classNames: ['profile-header__btn-edit'],
+    classNames: ['profile-header__btn-edit', 'profile-btn'],
     textContent: 'Edit',
     attributes: { form: 'profile-form' },
   };

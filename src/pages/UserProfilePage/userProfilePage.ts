@@ -21,10 +21,12 @@ export async function buildUserProfilePage(): Promise<HTMLElement> {
   };
   const profileImg = createElement(profileImgParams);
   const userProfilePage = createElement(userProfilePageParams);
-  const infoContainer = createInfo();
+  const infoContainer = await createInfo();
   const header = createHeader();
-  addInnerComponent(userProfilePage, header);
-  addInnerComponent(userProfilePage, profileImg);
-  addInnerComponent(userProfilePage, await infoContainer);
+  if (infoContainer) {
+    addInnerComponent(userProfilePage, header);
+    addInnerComponent(userProfilePage, profileImg);
+    addInnerComponent(userProfilePage, infoContainer);
+  }
   return userProfilePage;
 }

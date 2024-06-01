@@ -2,7 +2,7 @@ import { calculateAge, checkDaysInMonth } from '../ageAndTextChecks';
 import country from 'country-list-js';
 
 import * as dateComponents from '../../components/registrationForm/dateComponent';
-import { setValidStatus, checkAllInputs, validStatus } from './booleanValid';
+import { setValidStatus, checkAllInputs } from './booleanValid';
 import * as postalCodes from 'postal-codes-js';
 import { checkError, checkInputIndex } from './validation';
 import { searchElement, searchInput } from '../searchElem';
@@ -80,7 +80,6 @@ export function mailValidation(
       checkAllInputs();
       return false;
     }
-
     incorectValidation(err, '');
     setValidStatus(index, true);
     checkAllInputs();
@@ -110,26 +109,22 @@ export function nameValidation(
     if (value.length === 0) {
       incorectValidation(err, '');
       setValidStatus(index, false);
-      console.log(validStatus);
       checkAllInputs();
       return false;
     }
     if (value.length <= 1) {
       incorectValidation(err, ERROR_MESSAGES.shortInput);
       setValidStatus(index, false);
-      console.log(validStatus);
       checkAllInputs();
       return false;
     }
     if (!REGEX.lettersOnly.test(value)) {
       incorectValidation(err, ERROR_MESSAGES.onlyEnglishLetters);
       setValidStatus(index, false);
-      console.log(validStatus);
       checkAllInputs();
       return false;
     }
     setValidStatus(index, true);
-    console.log(validStatus);
     checkAllInputs();
     incorectValidation(err, '');
     return true;
@@ -229,7 +224,6 @@ export function streetValidation(
   err?: HTMLSpanElement | null,
   index?: number | null,
 ): boolean {
-  console.log(err, index);
   if (err && index != null) {
     if (value.length === 0) {
       setValidStatus(index, false);
@@ -260,11 +254,12 @@ export function passwordValidation(
   value: string,
   err?: HTMLSpanElement | null,
   index?: number | null,
+  form?: HTMLFormElement | null,
 ): boolean {
-  if (err && index != null) {
+  if (err && index != null && form) {
     if (/\s/.test(value)) {
       setValidStatus(index, false);
-      checkAllInputs();
+      checkAllInputs(form);
       incorectValidation(err, ERROR_MESSAGES.passwordNoSpaces);
       err.style.bottom = '0px';
       return false;
@@ -272,7 +267,7 @@ export function passwordValidation(
 
     if (value.length < 8) {
       setValidStatus(index, false);
-      checkAllInputs();
+      checkAllInputs(form);
       incorectValidation(err, ERROR_MESSAGES.atLeast8Characters);
       err.style.bottom = '0px';
       return false;
@@ -280,7 +275,7 @@ export function passwordValidation(
 
     if (!/[A-Z]/.test(value)) {
       setValidStatus(index, false);
-      checkAllInputs();
+      checkAllInputs(form);
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       err.style.bottom = '-4px';
       return false;
@@ -288,7 +283,7 @@ export function passwordValidation(
 
     if (!/[a-z]/.test(value)) {
       setValidStatus(index, false);
-      checkAllInputs();
+      checkAllInputs(form);
       err.style.bottom = '0px';
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       return false;
@@ -296,15 +291,14 @@ export function passwordValidation(
 
     if (!/\d/.test(value)) {
       setValidStatus(index, false);
-      checkAllInputs();
+      checkAllInputs(form);
       incorectValidation(err, ERROR_MESSAGES.passwordDetails);
       err.style.bottom = '0px';
       return false;
     }
 
     setValidStatus(index, true);
-    console.log(validStatus);
-    checkAllInputs();
+    checkAllInputs(form);
     incorectValidation(err, '');
     err.style.bottom = '0px';
     return true;
@@ -443,7 +437,6 @@ export function postCodeValidation(
       contryWrapper,
       'countries-list',
     ) as HTMLElement;
-    console.log(contryList);
     const countryNames = country.names();
     const countryIndex = countryNames.indexOf(contryList.textContent || '');
     const street = filterArr[index + 2];

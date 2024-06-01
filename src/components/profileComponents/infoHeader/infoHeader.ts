@@ -6,6 +6,7 @@ import {
 } from '../../../utils/baseComponent';
 import { createEdit } from '../infoEdit/infoEdit';
 import { checkLength } from './infoComponents';
+import { buildPasswordBtn } from '../password/password';
 
 export function buildProfileHeader(userData: Customer): HTMLElement {
   const profileHeaderParams: ElementParams<'div'> = {
@@ -35,7 +36,11 @@ export function buildProfileHeader(userData: Customer): HTMLElement {
     classNames: ['profile-logo__user-link', 'link'],
     textContent: 'alexarawles@gmail.com',
   };
-
+  const buttonContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['profile-header__buttons-container'],
+  };
+  const buttonContainer = createElement(buttonContainerParams);
   const profileHeader = createElement(profileHeaderParams);
   const profileLogoContainer = createElement(profileLogoContainerParams);
   const profileLogoImg = createElement(profileLogoImgParams);
@@ -43,12 +48,15 @@ export function buildProfileHeader(userData: Customer): HTMLElement {
   const logoUserTitle = createElement(logoUserTitleParams);
   const logoUserLink = createElement(logoUserLinkParams);
   const editbutton = createEdit(userData);
+  const passwrodButton = buildPasswordBtn(userData);
   addInnerComponent(profileHeader, profileLogoContainer);
   addInnerComponent(profileLogoContainer, profileLogoImg);
   addInnerComponent(profileLogoContainer, logoUserContainer);
   addInnerComponent(logoUserContainer, logoUserTitle);
   addInnerComponent(logoUserContainer, logoUserLink);
-  addInnerComponent(profileHeader, editbutton);
+  addInnerComponent(profileHeader, buttonContainer);
+  addInnerComponent(buttonContainer, editbutton);
+  addInnerComponent(buttonContainer, passwrodButton);
 
   let name = userData.firstName ? userData.firstName : '';
   let lastName = userData.lastName ? userData.lastName : '';
