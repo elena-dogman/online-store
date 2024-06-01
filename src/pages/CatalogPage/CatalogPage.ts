@@ -108,7 +108,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
           category: params.get('category') || '',
         };
         updateURLWithFilters(filters);
-        history.pushState({}, '', url.toString());
+        history.replaceState({}, '', url.toString());
         await updateBreadcrumbs();
         await renderProducts(1, itemsPerPage, currentSort);
       });
@@ -221,7 +221,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
         category: params.get('category') || '',
       };
       updateURLWithFilters(filters);
-      history.pushState({}, '', url.toString());
+      history.replaceState({}, '', url.toString());
       await updateBreadcrumbs();
       await renderProducts(1, itemsPerPage, currentSort);
     });
