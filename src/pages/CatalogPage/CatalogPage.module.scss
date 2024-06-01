@@ -75,7 +75,7 @@
   flex-direction: column;
   gap: 20px;
   flex-grow: 1;
-  padding: 100px 0 0 20px;
+  padding: 0 0 0 20px;
 }
 .catalog-container-wrapper {
   padding-left: 20px;
@@ -342,8 +342,7 @@
   position: relative;
   display: inline-block;
   cursor: pointer;
-  margin: 80px 0 10px 20px;
-  position: fixed;
+  margin: 40px 0 10px 20px;
   top: 20px;
   background-color: white;
   padding: 10px 10px 10px 0px;
@@ -465,7 +464,7 @@
     gap: 0px;
   }
   .catalog-container {
-    padding: 100px 0 0 0;
+    padding: 0;
   }
   .filter-wrapper {
     position: fixed;

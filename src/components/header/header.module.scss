@@ -221,6 +221,12 @@
   }
 }
 
+@media (max-width: 575px) {
+.header__logo-search-container {
+    display: flex;
+    flex-direction: column;
+  }
+}
 @media (max-width: 410px) {
   .header__logo {
     font-size: $font-size-button-text;
