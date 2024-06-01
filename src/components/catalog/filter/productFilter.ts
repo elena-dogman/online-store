@@ -132,10 +132,13 @@ function createCategoryFilterGroup(
     addInnerComponent(radioContainer, radioWrapper);
   });
 
-  filterLabel.addEventListener('click', () => {
+  const toggleMenu = (): void => {
     radioContainer.classList.toggle('hidden');
     triangle.classList.toggle('open');
-  });
+  };
+
+  filterLabel.addEventListener('click', toggleMenu);
+  triangle.addEventListener('click', toggleMenu);
 
   addInnerComponent(filterLabelWrapper, filterLabel);
   addInnerComponent(filterLabelWrapper, triangle);
@@ -215,15 +218,14 @@ function createFilterGroup(
     addInnerComponent(checkboxContainer, checkboxWrapper);
   });
 
-  filterLabel.addEventListener('click', () => {
-    checkboxContainer.classList.toggle('hidden');
-    triangle.classList.toggle('open');
-  });
 
-  triangle.addEventListener('click', () => {
+  const toggleMenu = (): void => {
     checkboxContainer.classList.toggle('hidden');
     triangle.classList.toggle('open');
-  });
+  };
+
+  filterLabel.addEventListener('click', toggleMenu);
+  triangle.addEventListener('click', toggleMenu);
 
   addInnerComponent(filterLabelWrapper, filterLabel);
   addInnerComponent(filterLabelWrapper, triangle);

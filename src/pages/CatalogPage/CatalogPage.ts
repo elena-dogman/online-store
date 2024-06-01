@@ -76,7 +76,6 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   const filterIconContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['filter-icon-container'],
-    textContent: 'Filters',
   };
   const filterWrapper = createElement(filterWrapperParams);
   const filterIconContainer = createElement(filterIconContainerParams);
@@ -135,6 +134,14 @@ export async function createCatalogPage(): Promise<HTMLElement> {
           ...filters,
           category: params.get('category') || '',
         };
+        if (filters.category) {
+          const categoryId = Object.keys(categoriesMap).find(
+            (id) => categoriesMap[id].name === filters.category,
+          );
+          if (categoryId) {
+            filters.category = categoryId;
+          }
+        }
         updateURLWithFilters(filters);
         history.replaceState({}, '', url.toString());
         await updateBreadcrumbs();
@@ -198,7 +205,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     const emptyRequestParams: ElementParams<'div'> = {
       tag: 'div',
       textContent:
-        'Sorry, there is nothing to show for your request, try another options!',
+        'Sorry, there are no results for your request. Please try another option 📭 ',
       classNames: ['empty-request'],
     };
     const emptyRequest = createElement(emptyRequestParams);
@@ -211,38 +218,49 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     if (categoryFilter) selectedFilters.push(categoryFilter);
     if (sizeFilter) selectedFilters.push(sizeFilter);
 
+    console.log('Selected Filters:', selectedFilters);
+
     let products: ProductProjection[] = [];
     if (selectedFilters.length > 0) {
+      console.log('Fetching filtered products with:', selectedFilters);
       products = await fetchFilteredProducts(selectedFilters, sort);
-      ///
+      console.log('Fetched Filtered Products:', products);
       if (products.length <= 0) {
         clear(catalogContainer);
         addInnerComponent(catalogContainer, emptyRequest);
+        clear(paginationContainer);
       }
-      ///
     } else {
+      console.log('Fetching all products with sort:', sort);
       products = await fetchProducts(sort);
+      console.log('Fetched All Products:', products);
     }
 
-    const start = (page - 1) * itemsPerPageCount;
-    const end = start + itemsPerPageCount;
-    const paginatedProducts = products.slice(start, end);
+    if (products.length > 0) {
+      const start = (page - 1) * itemsPerPageCount;
+      const end = start + itemsPerPageCount;
+      const paginatedProducts = products.slice(start, end);
 
-    const productCatalog = createProductCatalog(paginatedProducts);
-    addInnerComponent(catalogContainer, productCatalog);
+      const productCatalog = createProductCatalog(paginatedProducts);
+      addInnerComponent(catalogContainer, productCatalog);
 
-    const pagination = createPagination({
-      totalItems: products.length,
-      itemsPerPage: itemsPerPageCount,
-      currentPage: page,
-      onPageChange: (newPage) => {
-        currentPage = newPage;
-        renderProducts(currentPage, itemsPerPageCount, currentSort);
-      },
-    });
+      const pagination = createPagination({
+        totalItems: products.length,
+        itemsPerPage: itemsPerPageCount,
+        currentPage: page,
+        onPageChange: (newPage) => {
+          currentPage = newPage;
+          renderProducts(currentPage, itemsPerPageCount, currentSort);
+        },
+      });
 
-    clear(paginationContainer);
-    addInnerComponent(paginationContainer, pagination);
+      clear(paginationContainer);
+      addInnerComponent(paginationContainer, pagination);
+    } else {
+      clear(paginationContainer);
+      addInnerComponent(catalogContainer, emptyRequest);
+    }
+
     hideLoadingOverlay();
   };
 
@@ -274,6 +292,14 @@ export async function createCatalogPage(): Promise<HTMLElement> {
         ...filters,
         category: params.get('category') || '',
       };
+      if (filters.category) {
+        const categoryId = Object.keys(categoriesMap).find(
+          (id) => categoriesMap[id].name === filters.category,
+        );
+        if (categoryId) {
+          filters.category = categoryId;
+        }
+      }
       updateURLWithFilters(filters);
       history.replaceState({}, '', url.toString());
       await updateBreadcrumbs();
@@ -313,7 +339,21 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     if (products.length > 0) {
       const productCatalog = createProductCatalog(products);
       addInnerComponent(catalogContainer, productCatalog);
+
+      const pagination = createPagination({
+        totalItems: products.length,
+        itemsPerPage: itemsPerPage,
+        currentPage: currentPage,
+        onPageChange: (newPage) => {
+          currentPage = newPage;
+          renderProducts(currentPage, itemsPerPage, currentSort);
+        },
+      });
+
+      clear(paginationContainer);
+      addInnerComponent(paginationContainer, pagination);
     } else {
+      clear(paginationContainer);
       const noResultsMessage = createElement({
         tag: 'div',
         classNames: ['no-results-message'],
@@ -321,19 +361,6 @@ export async function createCatalogPage(): Promise<HTMLElement> {
       });
       addInnerComponent(catalogContainer, noResultsMessage);
     }
-
-    const pagination = createPagination({
-      totalItems: products.length,
-      itemsPerPage: itemsPerPage,
-      currentPage: currentPage,
-      onPageChange: (newPage) => {
-        currentPage = newPage;
-        renderProducts(currentPage, itemsPerPage, currentSort);
-      },
-    });
-
-    clear(paginationContainer);
-    addInnerComponent(paginationContainer, pagination);
   };
 
   const setupFilterContainer = (): void => {

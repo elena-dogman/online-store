@@ -7,6 +7,8 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
+let keyDownListener: ((event: KeyboardEvent) => void) | null = null;
+
 export function createPagination({ totalItems, itemsPerPage, currentPage, onPageChange }: PaginationProps): HTMLElement {
   const paginationContainerParams: ElementParams<'div'> = {
     tag: 'div',
@@ -93,13 +95,20 @@ export function createPagination({ totalItems, itemsPerPage, currentPage, onPage
     addInnerComponent(paginationContainer, nextButton);
   }
 
-  document.addEventListener('keydown', (event) => {
+  const handleKeyDown = (event: KeyboardEvent): void => {
     if (event.key === 'ArrowLeft' && currentPage > 1) {
       onPageChange(currentPage - 1);
     } else if (event.key === 'ArrowRight' && currentPage < totalPages) {
       onPageChange(currentPage + 1);
     }
-  });
+  };
+
+  if (keyDownListener) {
+    document.removeEventListener('keydown', keyDownListener);
+  }
+
+  keyDownListener = handleKeyDown;
+  document.addEventListener('keydown', keyDownListener);
 
   return paginationContainer;
 }
