@@ -1,16 +1,22 @@
 import { navigateTo } from '../../../router/router';
-import { createElement, addInnerComponent } from '../../../utils/baseComponent';
+import {
+  createElement,
+  addInnerComponent,
+} from '../../../utils/usefullFunctions/baseComponent';
 import { ProductProjection } from '@commercetools/platform-sdk';
 
-export function createProductCatalog(products: ProductProjection[]): HTMLElement {
+export function createProductCatalog(
+  products: ProductProjection[],
+): HTMLElement {
   const catalogContainer = createElement({
     tag: 'div',
     classNames: ['catalog-grid'],
   });
 
-  products.forEach(product => {
+  products.forEach((product) => {
     const productName = product.name?.['en-US'] ?? 'No name';
-    const productDescription = product.description?.['en-US'] ?? 'No description';
+    const productDescription =
+      product.description?.['en-US'] ?? 'No description';
     const productImage = product.masterVariant.images?.[0]?.url ?? 'No image';
 
     let price: string | undefined = undefined;
@@ -27,12 +33,12 @@ export function createProductCatalog(products: ProductProjection[]): HTMLElement
     const productCard = createElement({
       tag: 'div',
       classNames: ['product-card'],
-              callbacks: [
-          {
-            eventType: 'click',
-            callback: (): void => navigateTo(`/product/${product.id}`),
-          },
-        ],
+      callbacks: [
+        {
+          eventType: 'click',
+          callback: (): void => navigateTo(`/product/${product.id}`),
+        },
+      ],
     });
 
     const imageElement = createElement({

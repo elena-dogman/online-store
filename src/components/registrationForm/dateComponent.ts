@@ -1,4 +1,7 @@
-import { ElementParams, createElement } from '../../utils/baseComponent';
+import {
+  ElementParams,
+  createElement,
+} from '../../utils/usefullFunctions/baseComponent';
 import * as errors from '..//..//utils/validations/validationsErrors';
 import * as validationFunc from '../../utils/validations/validationsComponents';
 import { validateInput } from '../../utils/validations/validation';

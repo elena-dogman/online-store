@@ -1,4 +1,7 @@
-import { createElement, addInnerComponent } from '../../utils/baseComponent';
+import {
+  createElement,
+  addInnerComponent,
+} from '../../utils/usefullFunctions/baseComponent';
 import '../../utils/validations/validation';
 import * as formComponent from '../../components/registrationForm/registrationForm';
 import router from '../../router/router';
@@ -40,9 +43,9 @@ export function createRegistrationComponent(): HTMLElement {
     textContent: 'Sign in',
   });
 
-signInButton.addEventListener('click', () => {
+  signInButton.addEventListener('click', () => {
     router.navigate('/login');
-});
+  });
 
   addInnerComponent(wrapper, authSide);
   addInnerComponent(authSide, authSideTitle);

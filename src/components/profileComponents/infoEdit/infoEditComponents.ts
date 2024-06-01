@@ -1,6 +1,6 @@
 import { Customer, MyCustomerUpdateAction } from '@commercetools/platform-sdk';
 import { CustomerUpdateBody, updateCustomer } from '../../../api/apiService';
-import { searchElement } from '../../../utils/searchElem';
+import { searchElement } from '../../../utils/usefullFunctions/searchElem';
 import {
   fillObjectWithUniqueKeys,
   validStatus,

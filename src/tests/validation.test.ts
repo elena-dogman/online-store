@@ -1,9 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ERROR_MESSAGES, validationBirth, yearValidation } from '../utils/validations/validationsComponents';
-import { calculateAge } from '../utils/ageAndTextChecks';
+import {
+  ERROR_MESSAGES,
+  validationBirth,
+  yearValidation,
+} from '../utils/validations/validationsComponents';
+import { calculateAge } from '../utils/usefullFunctions/ageAndTextChecks';
 
 describe('validationBirth', () => {
-
   it('returns true if the date matches the format', () => {
     const result = validationBirth('12.05.2024');
     expect(result).toBe(true);

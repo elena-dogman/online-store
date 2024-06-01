@@ -22,10 +22,10 @@ import {
   CustomerChangePassword,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
-import { appEvents } from '../utils/eventEmitter';
+import { appEvents } from '../utils/usefullFunctions/eventEmitter';
 import { RegistrationData } from '../components/registrationForm/regDataInterface';
 import { showToast } from '../components/toast/toast';
-import { isCustomError } from '../utils/customError';
+import { isCustomError } from '../utils/usefullFunctions/customError';
 
 interface SearchQueryArgs {
   'text.en-US': string;

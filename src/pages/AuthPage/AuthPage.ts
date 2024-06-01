@@ -3,7 +3,7 @@ import {
   createElement,
   ElementParams,
   addInnerComponent,
-} from '../../utils/baseComponent';
+} from '../../utils/usefullFunctions/baseComponent';
 import { ClientResponse } from '@commercetools/platform-sdk';
 import { createHeader } from '../../components/header/header';
 import { validateInput } from '../../utils/validations/validation';

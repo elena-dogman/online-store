@@ -3,7 +3,7 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../utils/baseComponent';
+} from '../../utils/usefullFunctions/baseComponent';
 
 interface CommonFormComponents {
   container: HTMLDivElement;

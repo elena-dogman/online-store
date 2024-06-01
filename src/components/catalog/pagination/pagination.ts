@@ -1,4 +1,8 @@
-import { createElement, addInnerComponent, ElementParams } from '../../../utils/baseComponent';
+import {
+  createElement,
+  addInnerComponent,
+  ElementParams,
+} from '../../../utils/usefullFunctions/baseComponent';
 
 interface PaginationProps {
   totalItems: number;
@@ -9,7 +13,12 @@ interface PaginationProps {
 
 let keyDownListener: ((event: KeyboardEvent) => void) | null = null;
 
-export function createPagination({ totalItems, itemsPerPage, currentPage, onPageChange }: PaginationProps): HTMLElement {
+export function createPagination({
+  totalItems,
+  itemsPerPage,
+  currentPage,
+  onPageChange,
+}: PaginationProps): HTMLElement {
   const paginationContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['pagination'],
@@ -22,7 +31,10 @@ export function createPagination({ totalItems, itemsPerPage, currentPage, onPage
     const pageButton = createElement({
       tag: 'button',
       textContent: pageNumber.toString(),
-      classNames: pageNumber === currentPage ? ['pagination-button', 'active'] : ['pagination-button'],
+      classNames:
+        pageNumber === currentPage
+          ? ['pagination-button', 'active']
+          : ['pagination-button'],
       callbacks: [
         {
           eventType: 'click',

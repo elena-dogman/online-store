@@ -2,7 +2,7 @@ import {
   createElement,
   ElementParams,
   addInnerComponent,
-} from '../../utils/baseComponent';
+} from '../../utils/usefullFunctions/baseComponent';
 import { getDetailedProduct } from '../../api/apiService';
 import Swiper from 'swiper';
 import {

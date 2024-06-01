@@ -2,7 +2,7 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../../../../utils/baseComponent';
+} from '../../../../../utils/usefullFunctions/baseComponent';
 import countries from 'country-list-js';
 import { validateInput } from '../../../../../utils/validations/validation';
 import { createErrorElement } from '../../../../../utils/validations/validationsErrors';

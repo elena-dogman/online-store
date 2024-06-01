@@ -1,4 +1,8 @@
-import { addInnerComponent, createElement, ElementParams } from '../../utils/baseComponent';
+import {
+  addInnerComponent,
+  createElement,
+  ElementParams,
+} from '../../utils/usefullFunctions/baseComponent';
 import { createHeader } from '../../components/header/header';
 
 export function createMainPage(): HTMLElement {
@@ -36,4 +40,3 @@ export function createMainPage(): HTMLElement {
 
   return container;
 }
-

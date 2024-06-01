@@ -2,9 +2,9 @@ import {
   createElement,
   ElementParams,
   addInnerComponent,
-} from '../../utils/baseComponent';
+} from '../../utils/usefullFunctions/baseComponent';
 import { createSwiper } from './createSwiperProductDetailedPage';
-import { createIconContainer } from '../../utils/createIconContainer';
+import { createIconContainer } from '../../utils/usefullFunctions/createIconContainer';
 import { Category, ClientResponse, Product } from '@commercetools/platform-sdk';
 import { generateBreadcrumbLinks } from '../breadcrumbs/breadcrumbs';
 import { isCustomError } from '../../utils/customError';

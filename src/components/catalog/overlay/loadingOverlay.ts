@@ -1,5 +1,4 @@
-import { createElement } from '../../../utils/baseComponent';
-
+import { createElement } from '../../../utils/usefullFunctions/baseComponent';
 
 export function createLoadingOverlay(): HTMLElement {
   const overlay = createElement({

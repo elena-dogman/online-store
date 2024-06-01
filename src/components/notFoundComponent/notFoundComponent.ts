@@ -1,4 +1,9 @@
-import { createElement, addInnerComponent, EventCallback, ElementParams } from '../../utils/baseComponent';
+import {
+  createElement,
+  addInnerComponent,
+  EventCallback,
+  ElementParams,
+} from '../../utils/usefullFunctions/baseComponent';
 
 export function createNotFoundPage(): HTMLElement {
   const containerParams: ElementParams<'div'> = {
@@ -18,7 +23,10 @@ export function createNotFoundPage(): HTMLElement {
   };
   const image = createElement(imageParams);
 
-  const contentContainer = createElement({ tag: 'div', classNames: ['not-found-content'] });
+  const contentContainer = createElement({
+    tag: 'div',
+    classNames: ['not-found-content'],
+  });
 
   const headingParams: ElementParams<'h1'> = {
     tag: 'h1',
@@ -36,7 +44,7 @@ export function createNotFoundPage(): HTMLElement {
 
   const backHomeCallback: EventCallback = {
     eventType: 'click',
-    callback: () => window.location.href = '/',
+    callback: () => (window.location.href = '/'),
   };
   const buttonParams: ElementParams<'button'> = {
     tag: 'button',
@@ -55,4 +63,3 @@ export function createNotFoundPage(): HTMLElement {
 
   return container;
 }
-

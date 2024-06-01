@@ -3,8 +3,8 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../../utils/baseComponent';
-import { createInput } from '../../../utils/createInput';
+} from '../../../utils/usefullFunctions/baseComponent';
+import { createInput } from '../../../utils/usefullFunctions/createInput';
 import { changePassword } from '../../../api/apiService';
 import { createErrorElement } from '../../../utils/validations/validationsErrors';
 import { validateInput } from '../../../utils/validations/validation';
@@ -12,7 +12,7 @@ import {
   fillObjectWithUniqueKeys,
   validStatus,
 } from '../../../utils/validations/booleanValid';
-import { searchInput } from '../../../utils/searchElem';
+import { searchInput } from '../../../utils/usefullFunctions/searchElem';
 
 export function addPasswordModal(userData: Customer): HTMLElement {
   const app = document.querySelector('#app') as HTMLElement;

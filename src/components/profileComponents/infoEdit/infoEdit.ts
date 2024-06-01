@@ -1,5 +1,8 @@
 import { Customer } from '@commercetools/platform-sdk';
-import { ElementParams, createElement } from '../../../utils/baseComponent';
+import {
+  ElementParams,
+  createElement,
+} from '../../../utils/usefullFunctions/baseComponent';
 import { showClick } from './infoEditComponents';
 
 export function createEdit(userData: Customer): HTMLElement {

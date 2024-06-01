@@ -2,8 +2,8 @@ import {
   addInnerComponent,
   createElement,
   ElementParams,
-} from '../../utils/baseComponent';
-import { appEvents } from '../../utils/eventEmitter';
+} from '../../utils/usefullFunctions/baseComponent';
+import { appEvents } from '../../utils/usefullFunctions/eventEmitter';
 import { checkLoginStatus, logoutUser } from '../../api/apiService';
 import { createSearchComponent } from './search/productSearch';
 

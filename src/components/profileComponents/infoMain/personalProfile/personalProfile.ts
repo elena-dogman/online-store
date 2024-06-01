@@ -3,11 +3,11 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../../utils/baseComponent';
-import { createInput } from '../../../utils/createInput';
-import { validateInput } from '../../../utils/validations/validation';
-import { createErrorElement } from '../../../utils/validations/validationsErrors';
-import { checkNumber } from '../../../utils/validations/validationsComponents';
+} from '../../../../utils/usefullFunctions/baseComponent';
+import { createInput } from '../../../../utils/usefullFunctions/createInput';
+import { validateInput } from '../../../../utils/validations/validation';
+import { createErrorElement } from '../../../../utils/validations/validationsErrors';
+import { checkNumber } from '../../../../utils/validations/validationsComponents';
 
 export function buildPersonalProfile(userData: Customer): HTMLElement {
   const infoPersonalInfContainerParams: ElementParams<'div'> = {

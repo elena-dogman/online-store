@@ -2,8 +2,8 @@ import {
   createElement,
   ElementParams,
   addInnerComponent,
-} from '../../utils/baseComponent';
-import { createInput } from '../../utils/createInput';
+} from '../../utils/usefullFunctions/baseComponent';
+import { createInput } from '../../utils/usefullFunctions/createInput';
 import {
   fillObjectWithUniqueKeys,
   validStatus,

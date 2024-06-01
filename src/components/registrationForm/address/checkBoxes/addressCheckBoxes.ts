@@ -2,7 +2,7 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../../../utils/baseComponent';
+} from '../../../../utils/usefullFunctions/baseComponent';
 import { joinChecked, joinUnchecked } from './checkBoxesComponents';
 
 export function createDefaultCheck(): HTMLElement[] {

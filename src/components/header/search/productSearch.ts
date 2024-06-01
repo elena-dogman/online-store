@@ -1,6 +1,9 @@
-
 import { searchProducts } from '../../../api/apiService';
-import { addInnerComponent, createElement, ElementParams } from '../../../utils/baseComponent';
+import {
+  addInnerComponent,
+  createElement,
+  ElementParams,
+} from '../../../utils/usefullFunctions/baseComponent';
 
 export function createSearchComponent(): HTMLElement {
   const searchWrapperParams: ElementParams<'div'> = {

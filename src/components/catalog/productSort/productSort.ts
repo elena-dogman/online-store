@@ -2,7 +2,7 @@ import {
   ElementParams,
   createElement,
   addInnerComponent,
-} from '../../../utils/baseComponent';
+} from '../../../utils/usefullFunctions/baseComponent';
 
 export function createSortComponent(
   onSortChange: (sort: string) => void,
