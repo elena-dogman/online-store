@@ -9,9 +9,10 @@ import {
   Mousewheel,
   Navigation,
   Keyboard,
+  Zoom,
 } from 'swiper/modules';
 import Swiper from 'swiper';
-Swiper.use([Pagination, Autoplay, Mousewheel, Navigation, Keyboard]);
+Swiper.use([Pagination, Autoplay, Mousewheel, Navigation, Keyboard, Zoom]);
 
 export function modalSwiper(url: string[]): HTMLElement {
   const modalOverlayParams: ElementParams<'div'> = {
@@ -87,9 +88,18 @@ export function modalSwiper(url: string[]): HTMLElement {
       },
       classNames: ['img-slide-modal'],
     };
+
+    const swiperZoomContainerParams: ElementParams<'div'> = {
+      tag: 'div',
+      classNames: ['swiper-zoom-container'],
+    };
+    const swiperZoomContainer = createElement(swiperZoomContainerParams);
+
     const swiperSlide = createElement(swiperSlideParams);
     const imgSlide = createElement(imgSlideParams);
-    addInnerComponent(swiperSlide, imgSlide);
+
+    addInnerComponent(swiperZoomContainer, imgSlide);
+    addInnerComponent(swiperSlide, swiperZoomContainer);
     addInnerComponent(swiperWrapper, swiperSlide);
   });
   addInnerComponent(swiperMain, swiperWrapper);
@@ -107,16 +117,11 @@ export function modalSwiper(url: string[]): HTMLElement {
   addInnerComponent(modalContainer, swiperMain);
   addInnerComponent(modalOverlay, modalContainer);
 
-  closeButton.addEventListener('click', () => {
-    modalOverlay.style.visibility = 'hidden';
-    document.body.style.overflow = 'auto';
-  });
-
   setTimeout(() => {
-    new Swiper('.swiper-container-modal', {
+    const swiper = new Swiper('.swiper-container-modal', {
       direction: 'horizontal',
       loop: true,
-      speed: 1000,
+      speed: 2000,
       preventClicks: true,
       keyboard: {
         enabled: true,
@@ -131,7 +136,7 @@ export function modalSwiper(url: string[]): HTMLElement {
         clickable: true,
       },
       autoplay: {
-        delay: 30000,
+        delay: 1500,
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
       },
@@ -139,7 +144,66 @@ export function modalSwiper(url: string[]): HTMLElement {
         enabled: true,
         eventsTarget: '.modal-overlay',
       },
+      zoom: {
+        maxRatio: 2,
+      },
       updateOnWindowResize: true,
+    });
+    document
+      .querySelectorAll('.swiper-zoom-container')
+      .forEach((zoomContainer) => {
+        zoomContainer.addEventListener('click', (event) => {
+          event.stopPropagation();
+          if (swiper.zoom.scale !== 1) {
+            swiper.zoom.out();
+          } else {
+            swiper.zoom.in();
+          }
+        });
+      });
+    modalContainer.addEventListener('classChange', () => {
+      if (modalContainer.classList.contains('zoomed')) {
+        closeButton.style.zIndex = '0';
+      } else {
+        closeButton.style.zIndex = '';
+      }
+    });
+
+    function triggerClassChange(): void {
+      const event = new Event('classChange');
+      modalContainer.dispatchEvent(event);
+    }
+
+    swiper.on('zoomChange', () => {
+      if (swiper.zoom.scale !== 1) {
+        modalContainer.classList.remove('zoomed');
+        triggerClassChange();
+        swiper.autoplay.start();
+        swiper.allowSlidePrev = true;
+        swiper.allowSlideNext = true;
+        swiper.allowTouchMove = true;
+      } else {
+        modalContainer.classList.add('zoomed');
+        triggerClassChange();
+        swiper.autoplay.stop();
+        swiper.allowSlidePrev = false;
+        swiper.allowSlideNext = false;
+        swiper.allowTouchMove = false;
+      }
+    });
+    closeButton.addEventListener('click', () => {
+      if (swiper) {
+        swiper.autoplay.stop();
+      }
+      modalOverlay.classList.add('hidden');
+      modalContainer.classList.add('hidden');
+      document.body.style.overflow = 'auto';
+      const transitionEndHandler = (): void => {
+        modalOverlay.style.visibility = 'hidden';
+        modalOverlay.classList.remove('hidden');
+        modalOverlay.removeEventListener('transitionend', transitionEndHandler);
+      };
+      modalOverlay.addEventListener('transitionend', transitionEndHandler);
     });
   }, 0);
 

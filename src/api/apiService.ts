@@ -243,7 +243,6 @@ export async function getUserData(): Promise<Customer> {
       } else {
         showToast('An unknown error occurred');
       }
-      // Rethrow the error to be handled by the caller
       throw error;
     }
   } else {
@@ -329,9 +328,15 @@ export async function getDetailedProduct(ID: string): Promise<
     );
 
     const categoryResponses = await Promise.all(categoryPromises);
-    console.log(categoryResponses);
     return { productResponse: response, categoryResponses: categoryResponses };
   } catch (error: unknown) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
     return undefined;
   }
 }
@@ -383,7 +388,13 @@ export async function fetchProducts(
 
     return allProducts;
   } catch (error) {
-    console.error('Error fetching products:', error);
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
     return [];
   }
 }
@@ -423,8 +434,6 @@ export async function fetchProductAttributes(): Promise<number[] | null> {
       return null;
     }
 
-    console.log('Products:', allProducts);
-
     const sizes: Set<number> = new Set();
 
     allProducts.forEach((product) => {
@@ -453,12 +462,20 @@ export async function fetchProductAttributes(): Promise<number[] | null> {
 
     return uniqueSizes;
   } catch (error) {
-    console.error('Error fetching product sizes:', error);
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
     return null;
   }
 }
 
-export async function fetchSizesForCategory(categoryId: string): Promise<number[]> {
+export async function fetchSizesForCategory(
+  categoryId: string,
+): Promise<number[]> {
   try {
     const response = await apiRoot
       .productProjections()
@@ -498,7 +515,13 @@ export async function fetchSizesForCategory(categoryId: string): Promise<number[
 
     return Array.from(sizes).sort((a, b) => a - b);
   } catch (error) {
-    console.error('Error fetching sizes for category:', error);
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
     return [];
   }
 }
@@ -512,7 +535,13 @@ export async function fetchCategories(): Promise<Category[]> {
 
     return categories;
   } catch (error) {
-    console.error('Error fetching categories:', error);
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
     return [];
   }
 }
@@ -522,9 +551,6 @@ export async function fetchFilteredProducts(
   sort?: string,
 ): Promise<ProductProjection[]> {
   try {
-    console.log('Filters being applied:', filters);
-    console.log('Sort being applied:', sort);
-
     const queryArgs: {
       filter: string[];
       sort?: string[];
@@ -551,7 +577,13 @@ export async function fetchFilteredProducts(
 
     return response.body.results;
   } catch (error) {
-    console.error('Error fetching filtered products:', error);
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
     return [];
   }
 }
@@ -565,19 +597,11 @@ export async function searchProducts(
       fuzzy: true,
     };
 
-    console.log('query args:', JSON.stringify(queryArgs));
-
     const response = await apiRoot
       .productProjections()
       .search()
       .get({ queryArgs })
       .execute();
-    console.log('response:', JSON.stringify(response.body));
-
-    if (response.body.count === 0) {
-      console.log('No products found for the search query:', searchText);
-    }
-
     return response.body;
   } catch (error) {
     console.error('Error during product search:', error);

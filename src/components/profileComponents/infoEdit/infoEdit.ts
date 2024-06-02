@@ -3,7 +3,6 @@ import { ElementParams, createElement } from '../../../utils/baseComponent';
 import { showClick } from './infoEditComponents';
 
 export function createEdit(userData: Customer): HTMLElement {
-  console.log(userData);
   const infoHeaderButtonParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['profile-header__btn-edit', 'profile-btn'],

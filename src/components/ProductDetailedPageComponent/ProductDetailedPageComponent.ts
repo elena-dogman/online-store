@@ -7,6 +7,8 @@ import { createSwiper } from './createSwiperProductDetailedPage';
 import { createIconContainer } from '../../utils/createIconContainer';
 import { Category, ClientResponse, Product } from '@commercetools/platform-sdk';
 import { generateBreadcrumbLinks } from '../breadcrumbs/breadcrumbs';
+import { isCustomError } from '../../utils/customError';
+import { showToast } from '../toast/toast';
 export function productDetailedPageComponent(ID: string): HTMLElement {
   const detailedProductContainerParams: ElementParams<'section'> = {
     tag: 'section',
@@ -27,7 +29,6 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
         response: ClientResponse<Product>;
         categoryResponses: ClientResponse<Category>[];
       }) => {
-        console.log(categoryResponses[0].body.slug['en-US']);
         const replaceDashWithPlus = (text: string): string =>
           text.replace(/-/g, '+');
         const breadcrumbs = [
@@ -56,8 +57,6 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
         addInnerComponent(detailedProductContainer, swiperContainer);
 
         const attributes = productData.masterVariant.attributes;
-
-        console.log(response);
         const descriptionContainerParams: ElementParams<'div'> = {
           tag: 'div',
           classNames: ['description_container'],
@@ -267,7 +266,14 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
       },
     )
     .catch((error) => {
-      console.error('Error creating swiper:', error);
+      if (isCustomError(error)) {
+        showToast(error.body.message);
+      } else if (error instanceof Error) {
+        showToast(error.message);
+      } else {
+        showToast('An unknown error occurred');
+      }
+      throw error;
     });
 
   return detailedProductContainer;
