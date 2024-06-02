@@ -198,11 +198,18 @@ export function modalSwiper(url: string[]): HTMLElement {
       modalOverlay.classList.add('hidden');
       modalContainer.classList.add('hidden');
       document.body.style.overflow = 'auto';
+
       const transitionEndHandler = (): void => {
         modalOverlay.style.visibility = 'hidden';
         modalOverlay.classList.remove('hidden');
+        modalContainer.classList.remove('hidden');
+        modalContainer.removeEventListener(
+          'transitionend',
+          transitionEndHandler,
+        );
         modalOverlay.removeEventListener('transitionend', transitionEndHandler);
       };
+      modalContainer.addEventListener('transitionend', transitionEndHandler);
       modalOverlay.addEventListener('transitionend', transitionEndHandler);
     });
   }, 0);
