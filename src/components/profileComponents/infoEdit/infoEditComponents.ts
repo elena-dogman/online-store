@@ -12,6 +12,9 @@ export function showClick(e: Event, data: Customer): void {
   e.preventDefault();
   let elem = e.target as HTMLButtonElement;
   if (!elem.classList.contains('profile-header__btn-edit')) {
+    if (infoReadvalidStatus) {
+      console.log(1);
+    }
     const parent = elem.parentElement as HTMLElement;
     elem = findElement(parent, 'profile-header__btn-edit') as HTMLButtonElement;
     elem.setAttribute('disabled', '');

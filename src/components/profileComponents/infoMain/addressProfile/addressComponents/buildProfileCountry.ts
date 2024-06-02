@@ -37,23 +37,18 @@ export function buildProfileCountry(
     classNames: ['address-prof__country-indicator'],
   };
   const countryIndicator = createElement(countryIndicatorParams);
-  // radioContainer,
-  // defaultShippingRadio,
-  // defaultShippingRadio,
-  // shippingRadio,
-  // billingRadio,
   const [
     radioContainer,
-    defaultShippingRadio,
-    defultBillingRadio,
-    shippingRadio,
-    billingRadio,
+    defaultShippingCheckBox,
+    defaltBillingCheckBox,
+    shippingCheckBox,
+    billingCheckBox,
   ] = buildRadioCountry();
   console.log(
-    defaultShippingRadio,
-    defultBillingRadio,
-    shippingRadio,
-    billingRadio,
+    defaultShippingCheckBox,
+    defaltBillingCheckBox,
+    shippingCheckBox,
+    billingCheckBox,
   );
   addInnerComponent(countryContainer, countryIndicatorContainer);
   addInnerComponent(countryIndicatorContainer, countryIndicator);
@@ -62,13 +57,21 @@ export function buildProfileCountry(
   const countriesList = createElement(countriesListParams);
   if (currentId !== undefined) {
     if (currentId === billingId) {
+      billingCheckBox.setAttribute('checked', '');
+      defaltBillingCheckBox.removeAttribute('checked');
       countryIndicator.textContent = 'Billing Address';
       if (currentId === defaultBillingId) {
+        defaltBillingCheckBox.setAttribute('checked', '');
+        billingCheckBox.removeAttribute('checked');
         countryIndicator.textContent = ' Default Billing Address';
       }
     } else if (currentId === shippingId) {
+      shippingCheckBox.setAttribute('checked', '');
+      defaultShippingCheckBox.removeAttribute('checked');
       countryIndicator.textContent = 'Shipping Address';
       if (currentId === defaultShippingId) {
+        defaultShippingCheckBox.setAttribute('checked', '');
+        shippingCheckBox.removeAttribute('checked');
         countryIndicator.textContent = ' Default Shipping Address';
       }
     } else {
