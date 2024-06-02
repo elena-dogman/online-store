@@ -20,7 +20,7 @@ export async function buildProfileForm(
     attributes: { id: 'profile-form' },
   };
 
-  const addressProfile = buildAddressProfile(data);
+  const addressProfile = await buildAddressProfile(data);
   const personalProfile = buildPersonalProfile(data);
 
   const infoForm = createElement(infoFormParams) as HTMLFormElement;
