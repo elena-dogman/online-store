@@ -26,17 +26,37 @@ export function searchInput(
 export function findElement(
   element: Element,
   searchElem: string,
-): HTMLElement | undefined {
+  getAllMatches: boolean = false,
+): HTMLElement | HTMLElement[] | undefined {
+  const matches: HTMLElement[] = [];
+
   if (element.classList.contains(searchElem)) {
-    return element as HTMLElement;
-  } else {
-    const children = element.children;
-    for (let i = 0; i < children.length; i++) {
-      const result = findElement(children[i], searchElem);
-      if (result) {
-        return result;
+    if (getAllMatches) {
+      matches.push(element as HTMLElement);
+    } else {
+      return element as HTMLElement;
+    }
+  }
+
+  const children = element.children;
+  for (let i = 0; i < children.length; i++) {
+    const result = findElement(children[i], searchElem, getAllMatches);
+    if (result) {
+      if (Array.isArray(result)) {
+        matches.push(...result);
+      } else {
+        if (getAllMatches) {
+          matches.push(result);
+        } else {
+          return result;
+        }
       }
     }
   }
+
+  if (matches.length > 0) {
+    return matches;
+  }
+
   return;
 }

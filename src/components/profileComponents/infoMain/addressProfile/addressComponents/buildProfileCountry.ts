@@ -3,7 +3,7 @@ import {
   addInnerComponent,
   createElement,
 } from '../../../../../utils/general/baseComponent';
-import { buildRadioCountry } from './addressRadio';
+import { buildRadioCountry } from './addressCheckBox';
 export function buildProfileCountry(
   currentId: string | undefined,
   billingId: string | undefined,

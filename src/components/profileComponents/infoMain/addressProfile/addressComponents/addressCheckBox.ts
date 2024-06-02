@@ -4,6 +4,7 @@ import {
   createElement,
 } from '../../../../../utils/general/baseComponent';
 import { createInput } from '../../../../../utils/general/createInput';
+import { findElement } from '../../../../../utils/general/searchElem';
 
 export function buildRadioCountry(): [
   HTMLElement,
@@ -91,6 +92,10 @@ export function buildRadioCountry(): [
   defaultBillingCheckBox.setAttribute('hide', '');
   shippingCheckBox.setAttribute('hide', '');
   billingCheckBox.setAttribute('hide', '');
+  defaultShippingCheckBox.addEventListener('click', toggleCheckBox);
+  defaultBillingCheckBox.addEventListener('click', toggleCheckBox);
+  shippingCheckBox.addEventListener('click', toggleCheckBox);
+  billingCheckBox.addEventListener('click', toggleCheckBox);
   return [
     checkBoxContainer,
     defaultShippingCheckBox,
@@ -98,4 +103,19 @@ export function buildRadioCountry(): [
     shippingCheckBox,
     billingCheckBox,
   ];
+}
+
+function toggleCheckBox(e: Event): void {
+  const elem = e.target as HTMLInputElement;
+  const ancestor = elem.parentElement?.parentElement as HTMLElement;
+  const checkBoxes = findElement(
+    ancestor,
+    'address-checkbox',
+    true,
+  ) as HTMLInputElement[];
+  for (let i = 0; i < checkBoxes.length; i++) {
+    if (elem !== checkBoxes[i]) {
+      checkBoxes[i].checked = false;
+    }
+  }
 }
