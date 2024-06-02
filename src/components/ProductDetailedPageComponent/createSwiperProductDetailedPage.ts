@@ -16,6 +16,9 @@ import {
 } from 'swiper/modules';
 import { Category, ClientResponse, Product } from '@commercetools/platform-sdk';
 import { modalSwiper } from './swiperModal';
+import { showToast } from '../toast/toast';
+import { isCustomError } from '../../utils/customError';
+
 Swiper.use([
   Pagination,
   Autoplay,
@@ -90,21 +93,10 @@ export function createSwiper(ID: string): Promise<{
     .then((result) => {
       if (result !== undefined) {
         const { productResponse, categoryResponses } = result;
-
-        console.log(productResponse); // Логируем ответ продукта
-        console.log(categoryResponses); // Логируем ответы категорий
-
         if (productResponse.body) {
           productResponse.body.masterData.current.masterVariant.images?.forEach(
             (image) => {
               const swiperSlide = createElement(swiperSlideParams);
-              const swiperZoomContainerParams: ElementParams<'div'> = {
-                tag: 'div',
-                classNames: ['swiper-zoom-container'],
-              };
-              const swiperZoomContainer = createElement(
-                swiperZoomContainerParams,
-              );
 
               const imgSlideParams: ElementParams<'img'> = {
                 tag: 'img',
@@ -118,8 +110,7 @@ export function createSwiper(ID: string): Promise<{
               imgArray.push(image.url);
               const imgSlide = createElement(imgSlideParams);
 
-              addInnerComponent(swiperZoomContainer, imgSlide);
-              addInnerComponent(swiperSlide, swiperZoomContainer);
+              addInnerComponent(swiperSlide, imgSlide);
               addInnerComponent(swiperWrapper, swiperSlide);
             },
           );
@@ -164,7 +155,7 @@ export function createSwiper(ID: string): Promise<{
                 clickable: true,
               },
               autoplay: {
-                delay: 300000,
+                delay: 1000,
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true,
               },
@@ -186,6 +177,7 @@ export function createSwiper(ID: string): Promise<{
 
           swiperWrapper.addEventListener('click', (e) => {
             e.preventDefault();
+
             modalOverlay.style.visibility = 'visible';
             document.body.style.overflow = 'hidden';
           });
@@ -203,7 +195,13 @@ export function createSwiper(ID: string): Promise<{
       }
     })
     .catch((error) => {
-      console.error('Error fetching product details:', error);
+      if (isCustomError(error)) {
+        showToast(error.body.message);
+      } else if (error instanceof Error) {
+        showToast(error.message);
+      } else {
+        showToast('An unknown error occurred');
+      }
       throw error;
     });
 }

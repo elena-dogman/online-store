@@ -9,7 +9,10 @@ import { createProductCatalog } from '../../components/catalog/productCatalog/pr
 import { createSortComponent } from '../../components/catalog/productSort/productSort';
 import { fetchFilteredProducts, fetchProducts } from '../../api/apiService';
 import { createPagination } from '../../components/catalog/pagination/pagination';
-import { ProductProjection, ProductProjectionPagedQueryResponse } from '@commercetools/platform-sdk';
+import {
+  ProductProjection,
+  ProductProjectionPagedQueryResponse,
+} from '@commercetools/platform-sdk';
 import {
   fetchAndMapCategories,
   getFiltersFromURL,
@@ -18,7 +21,10 @@ import {
   categoriesMap,
   Filters,
 } from '../../components/catalog/filter/filters';
-import { createFilterComponent, updateSizeFilterForCategory } from '../../components/catalog/filter/productFilter';
+import {
+  createFilterComponent,
+  updateSizeFilterForCategory,
+} from '../../components/catalog/filter/productFilter';
 import { createLoadingOverlay } from '../../components/catalog/overlay/loadingOverlay';
 import { generateBreadcrumbLinks } from '../../components/breadcrumbs/breadcrumbs';
 
@@ -124,7 +130,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     clear(breadcrumbContainer);
     addInnerComponent(breadcrumbContainer, breadcrumbLinks);
 
-    breadcrumbContainer.querySelectorAll('a').forEach(anchor => {
+    breadcrumbContainer.querySelectorAll('a').forEach((anchor) => {
       anchor.addEventListener('click', async (event: Event) => {
         event.preventDefault();
         const target = event.currentTarget as HTMLAnchorElement;
@@ -150,24 +156,24 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     });
   };
 
- const updateFilters = async (
-  filterName: keyof Filters,
-  value: string,
-  checked: boolean,
-): Promise<void> => {
-  if (filterName === 'category') {
-    filters.category = checked ? value : '';
-    await updateSizeFilterForCategory(filters.category);
-  } else {
-    if (checked) {
-      filters[filterName].add(value);
+  const updateFilters = async (
+    filterName: keyof Filters,
+    value: string,
+    checked: boolean,
+  ): Promise<void> => {
+    if (filterName === 'category') {
+      filters.category = checked ? value : '';
+      await updateSizeFilterForCategory(filters.category);
     } else {
-      filters[filterName].delete(value);
+      if (checked) {
+        filters[filterName].add(value);
+      } else {
+        filters[filterName].delete(value);
+      }
     }
-  }
-  updateURLWithFilters(filters);
-  await updateBreadcrumbs();
-};
+    updateURLWithFilters(filters);
+    await updateBreadcrumbs();
+  };
 
   const showLoadingOverlay = (): void => {
     loadingOverlay.style.display = 'flex';
@@ -219,22 +225,16 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     if (categoryFilter) selectedFilters.push(categoryFilter);
     if (sizeFilter) selectedFilters.push(sizeFilter);
 
-    console.log('Selected Filters:', selectedFilters);
-
     let products: ProductProjection[] = [];
     if (selectedFilters.length > 0) {
-      console.log('Fetching filtered products with:', selectedFilters);
       products = await fetchFilteredProducts(selectedFilters, sort);
-      console.log('Fetched Filtered Products:', products);
       if (products.length <= 0) {
         clear(catalogContainer);
         addInnerComponent(catalogContainer, emptyRequest);
         clear(paginationContainer);
       }
     } else {
-      console.log('Fetching all products with sort:', sort);
       products = await fetchProducts(sort);
-      console.log('Fetched All Products:', products);
     }
 
     if (products.length > 0) {
@@ -265,15 +265,14 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     hideLoadingOverlay();
   };
 
-filterComponent.addEventListener('change', async (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const filterName = target.classList[0].split('-')[0] as keyof Filters;
+  filterComponent.addEventListener('change', async (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const filterName = target.classList[0].split('-')[0] as keyof Filters;
 
-  await updateFilters(filterName, target.value, target.checked);
-  clear(catalogContainer);
-  await renderProducts(1, itemsPerPage, currentSort);
-});
-
+    await updateFilters(filterName, target.value, target.checked);
+    clear(catalogContainer);
+    await renderProducts(1, itemsPerPage, currentSort);
+  });
 
   const sortComponent = createSortComponent(async (sort: string) => {
     currentSort = sort;
@@ -284,7 +283,7 @@ filterComponent.addEventListener('change', async (event: Event) => {
   const initialBreadcrumbLinks = generateBreadcrumbLinks(initialBreadcrumbs);
   addInnerComponent(breadcrumbContainer, initialBreadcrumbLinks);
 
-  breadcrumbContainer.querySelectorAll('a').forEach(anchor => {
+  breadcrumbContainer.querySelectorAll('a').forEach((anchor) => {
     anchor.addEventListener('click', async (event: Event) => {
       event.preventDefault();
       const target = event.currentTarget as HTMLAnchorElement;
@@ -330,11 +329,14 @@ filterComponent.addEventListener('change', async (event: Event) => {
 
   document.addEventListener('searchResults', (event) => {
     const customEvent = event as CustomEvent;
-    const searchResults = customEvent.detail as ProductProjectionPagedQueryResponse;
+    const searchResults =
+      customEvent.detail as ProductProjectionPagedQueryResponse;
     displaySearchResults(searchResults);
   });
 
-  const displaySearchResults = (searchResults: ProductProjectionPagedQueryResponse): void => {
+  const displaySearchResults = (
+    searchResults: ProductProjectionPagedQueryResponse,
+  ): void => {
     const products = searchResults.results;
     clear(catalogContainer);
 

@@ -21,8 +21,6 @@ export async function createFilterComponent(): Promise<HTMLElement> {
   const categoriesResponse = await fetchCategories();
 
   if (categoriesResponse) {
-    console.log('Categories Response:', categoriesResponse);
-
     const categoryOrder = ['men', 'women', 'unisex', 'kids'];
 
     const sortedCategories = categoriesResponse.sort((a, b) => {
@@ -43,7 +41,6 @@ export async function createFilterComponent(): Promise<HTMLElement> {
   }
 
   if (sizesResponse) {
-    console.log('Sizes Response:', sizesResponse);
     const filterGroup = createFilterGroup('size', sizesResponse);
     filterGroup.classList.add('size-filter-group');
     addInnerComponent(filterContainer, filterGroup);
@@ -52,7 +49,9 @@ export async function createFilterComponent(): Promise<HTMLElement> {
   return filterContainer;
 }
 
-export async function updateSizeFilterForCategory(categoryId: string): Promise<void> {
+export async function updateSizeFilterForCategory(
+  categoryId: string,
+): Promise<void> {
   const sizesResponse = await fetchSizesForCategory(categoryId);
 
   const sizeFilterGroup = document.querySelector('.size-filter-group');
@@ -246,4 +245,3 @@ function createFilterGroup(
 
   return filterGroup;
 }
-

@@ -129,7 +129,6 @@ export function buildPersonalProfile(userData: Customer): HTMLElement {
     const yearDate = date.slice(0, 4);
     const dayDate = date.slice(8, 12);
     const monthDate = date.slice(5, 7);
-    console.log(dayDate, monthDate, yearDate);
     const infoDateError = createErrorElement();
     infoInputMail.value = email;
     infoDateError.classList.add('error-date');

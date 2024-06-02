@@ -27,7 +27,6 @@ export function searchCountry(this: HTMLInputElement): void {
 }
 export function addCountriesList(this: HTMLElement): void {
   const countries = country.names().sort();
-  console.log(this);
   const wrapperText = this.textContent as string;
   const input = this.previousSibling as HTMLInputElement;
   const post = this.parentElement?.nextElementSibling

@@ -11,6 +11,15 @@
   z-index: 1000;
   visibility: hidden;
 }
+.modal-overlay.hidden {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.modal-container.hidden {
+  transform: scale(1);
+  transition: transform 0.5s ease-in-out;
+}
 .modal-container {
   background-color: white;
   border-radius: 8px;
@@ -18,8 +27,23 @@
   position: relative;
   width: 80%;
   max-width: 800px;
+  height: auto;
 }
-
+.modal-container.zoomed {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+.modal-container.zoomed .img-slide-modal {
+  background-color: black;
+}
+.modal-container.zoomer .modal-overlay > .close-button {
+  z-index: 0 !important;
+}
+.zoomed .swiper-zoom-container {
+  width: 100%;
+  height: 100%;
+}
 .close-button {
   position: absolute;
   top: 6%;
@@ -37,6 +61,7 @@
   justify-content: center;
   color: #fff;
   transition: background-color 0.3s;
+  z-index: 100;
   &:hover {
     background-color: $text-color-accent;
   }
@@ -145,6 +170,7 @@ modal {
   min-height: 100%;
   object-fit: contain;
   border-radius: 8px;
+  background-color: none;
 }
 .swiper-pagination-modal > .swiper-pagination-bullet {
   background: #333;
@@ -188,6 +214,9 @@ modal {
   .close-button {
     top: 10%;
   }
+  .img-slide-modal {
+    object-fit: cover !important;
+  }
 }
 
 @media (max-width: 970px) {
@@ -228,12 +257,13 @@ modal {
     width: 100%;
   }
   .img-slide-modal {
-    object-fit: cover;
+    object-fit: cover !important;
   }
   @media (max-height: 500px) {
     .modal-container {
       height: 100vh;
       width: 100%;
+      transform: scale(1) !important;
     }
     .close-button {
       z-index: 2;
