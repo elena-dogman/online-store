@@ -143,6 +143,10 @@ function checkInput(
     result.push(action);
   } else if (elem.getAttribute('name') === 'post') {
     const ancestor = elem.parentElement?.parentElement as HTMLElement;
+    const indicator = findElement(
+      ancestor,
+      'address-prof__country-indicator',
+    ) as HTMLElement;
     const city = findElement(
       ancestor,
       'profile-form__city-input',
@@ -202,6 +206,7 @@ function checkInput(
           action: 'setDefaultShippingAddress',
           addressId: id,
         };
+        indicator.textContent = 'Default Shipping Address';
         result.push(action);
       }
       if (billingDefaultCheck.checked) {
@@ -209,13 +214,18 @@ function checkInput(
           action: 'setDefaultBillingAddress',
           addressId: id,
         };
+        indicator.textContent = 'Default Billing Address';
         result.push(action);
+      }
+      if (billingDefaultCheck.checked && shippingDefaultCheck.checked) {
+        indicator.textContent = ' Default Shipping and Billing Address';
       }
       if (shippingCheck.checked) {
         const action: MyCustomerUpdateAction = {
           action: 'addShippingAddressId',
           addressId: id,
         };
+        indicator.textContent = ' Shipping Address';
         result.push(action);
       }
       if (
@@ -228,7 +238,9 @@ function checkInput(
         };
         result.push(action);
       }
-      // if()
+      if (!shippingCheck.checked && !billingAddress) {
+        indicator.textContent = ' Shipping Address';
+      }
     }
     if (!key) {
       const action: MyCustomerUpdateAction = {
