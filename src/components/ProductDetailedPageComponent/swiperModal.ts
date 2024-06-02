@@ -149,16 +149,27 @@ export function modalSwiper(url: string[]): HTMLElement {
       },
       updateOnWindowResize: true,
     });
+    let isZoomed = false;
+    let isMouseDown = false;
+
     document
       .querySelectorAll('.swiper-zoom-container')
       .forEach((zoomContainer) => {
         zoomContainer.addEventListener('click', (event) => {
           event.stopPropagation();
-          if (swiper.zoom.scale !== 1) {
-            swiper.zoom.out();
-          } else {
+          if (!isZoomed) {
             swiper.zoom.in();
+            isZoomed = true;
+          } else if (isMouseDown) {
+            swiper.zoom.out();
+            isZoomed = false;
           }
+        });
+        zoomContainer.addEventListener('mousedown', () => {
+          isMouseDown = true;
+        });
+        zoomContainer.addEventListener('mouseup', () => {
+          isMouseDown = false;
         });
       });
     modalContainer.addEventListener('classChange', () => {
@@ -182,6 +193,7 @@ export function modalSwiper(url: string[]): HTMLElement {
         swiper.allowSlidePrev = true;
         swiper.allowSlideNext = true;
         swiper.allowTouchMove = true;
+        swiper.mousewheel.enable();
       } else {
         modalContainer.classList.add('zoomed');
         triggerClassChange();
@@ -189,6 +201,7 @@ export function modalSwiper(url: string[]): HTMLElement {
         swiper.allowSlidePrev = false;
         swiper.allowSlideNext = false;
         swiper.allowTouchMove = false;
+        swiper.mousewheel.disable();
       }
     });
     closeButton.addEventListener('click', () => {

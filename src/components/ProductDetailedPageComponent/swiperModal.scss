@@ -166,6 +166,7 @@ modal {
 }
 
 .img-slide-modal {
+  -webkit-user-drag: none;
   min-width: 100%;
   min-height: 100%;
   object-fit: contain;
