@@ -12,6 +12,7 @@ export function createEdit(): HTMLElement {
     attributes: { form: 'profile-form' },
   };
   const showClickHandler = (e: Event): void => {
+    e.preventDefault();
     showClick(e);
   };
   const infoEditButton = createElement(infoHeaderButtonParams);

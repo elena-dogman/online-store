@@ -18,12 +18,10 @@ export async function buildAddressProfile(
   };
   const addressInfoContainer = createElement(addressInfoContainerParams);
   if (customerData) {
-    // Define an asynchronous function to process the addresses
     const processAddresses = async (): Promise<void> => {
       for (const e of customerData.addresses) {
         if (e.id) {
           const currentId = e.id;
-          // Now you can use 'await' because we are inside an async function
           const deleteBtn = await buildDeleteAddressBtn();
           const bullingId = customerData.billingAddressIds as string[];
           const shippingId = customerData.shippingAddressIds as string[];
@@ -74,7 +72,7 @@ export async function buildAddressProfile(
   }
   return addressInfoContainer;
 }
-export function addEmptyCountryList(): HTMLElement {
+export async function addEmptyCountryList(): Promise<HTMLElement> {
   const addressInfWrapperParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['address-prof-container__address-wrapper'],
@@ -89,10 +87,12 @@ export function addEmptyCountryList(): HTMLElement {
   );
   const [streetLabel, cityLabel, postLabel, streetInput, cityInput, postInput] =
     buildProfileAddressLoyalt();
+  const deleteBtn = await buildDeleteAddressBtn();
   addInnerComponent(addressInfWrapper, countriesContainer);
   addInnerComponent(addressInfWrapper, postLabel);
   addInnerComponent(addressInfWrapper, cityLabel);
   addInnerComponent(addressInfWrapper, streetLabel);
+  addInnerComponent(addressInfWrapper, deleteBtn);
   cityInput.value = '';
   postInput.value = '';
   countriesList.textContent = 'Chose your Country';

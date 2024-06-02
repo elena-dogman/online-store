@@ -9,7 +9,9 @@ import { checkLength } from './infoComponents';
 import { buildPasswordBtn } from '../password/password';
 import { buildAddAddressBtn } from '../infoMain/addressProfile/addAddress/addAddress';
 
-export function buildProfileHeader(userData: Customer): HTMLElement {
+export async function buildProfileHeader(
+  userData: Customer,
+): Promise<HTMLElement> {
   const profileHeaderParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['profile__header'],
@@ -50,7 +52,7 @@ export function buildProfileHeader(userData: Customer): HTMLElement {
   const logoUserLink = createElement(logoUserLinkParams);
   const editbutton = createEdit() as HTMLButtonElement;
   const passwrodButton = buildPasswordBtn(userData);
-  const addAddressButton = buildAddAddressBtn(userData);
+  const addAddressButton = await buildAddAddressBtn();
   addInnerComponent(profileHeader, profileLogoContainer);
   addInnerComponent(profileLogoContainer, profileLogoImg);
   addInnerComponent(profileLogoContainer, logoUserContainer);

@@ -58,7 +58,7 @@ export async function showClick(e: Event): Promise<void> {
       ...street,
     );
   }
-  fillObjectWithUniqueKeys(form, false, validStatus);
+  fillObjectWithUniqueKeys(form, true, validStatus);
   changeText(elem);
 }
 

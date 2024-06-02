@@ -102,10 +102,15 @@ export function buildRadioCountry(): [
   defaultBillingCheckBox.setAttribute('hide', '');
   shippingCheckBox.setAttribute('hide', '');
   billingCheckBox.setAttribute('hide', '');
+  defaultShippingCheckBox.removeAttribute('required');
+  defaultBillingCheckBox.removeAttribute('required');
+  shippingCheckBox.removeAttribute('required');
+  billingCheckBox.removeAttribute('required');
   defaultShippingCheckBox.addEventListener('click', toggleCheckBox);
   defaultBillingCheckBox.addEventListener('click', toggleCheckBox);
   shippingCheckBox.addEventListener('click', toggleCheckBox);
   billingCheckBox.addEventListener('click', toggleCheckBox);
+
   return [
     checkBoxContainer,
     defaultShippingCheckBox,
