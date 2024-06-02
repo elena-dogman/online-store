@@ -47,6 +47,7 @@
   display: flex;
   justify-content: space-between;
   padding: 0 20px;
+  align-items: center;
 }
 .profile-header__logo-container{
   display: flex;
@@ -71,17 +72,22 @@
 }
 .profile-header__buttons-container{
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
 }
 .profile-btn{
-  width: 80px;
+  display: flex;
+  text-align: center;
+  width: 100px;
   height: 40px;
   border: 0;
-  color:$text-color-contrast;
-  border-radius:8px ;
-  background:$text-color-accent;
-  transition:all 0.5s ease; 
+  color: rgb(255, 255, 255);
+  border-radius: 8px;
+  background: rgb(57, 172, 217);
   transition: all 0.5s ease;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
 }
 .profile-btn {
   cursor: pointer;
@@ -93,10 +99,6 @@
     cursor: not-allowed;
   }
 }
-.btn-edit--active{
-  background: $text-color-base;
-  color: $text-color-accent;
-}
 .profile-main__personal-profile-container{
   display: flex;
   flex-direction: column;
@@ -107,6 +109,7 @@
   justify-content: space-around;
   grid-column-gap: 20px;  
   padding: 40px 20px 0;
+  height: 91%;
 }
 .profile-form__address-prof-container{
 width: 50%;

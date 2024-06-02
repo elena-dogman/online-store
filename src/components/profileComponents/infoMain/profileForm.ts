@@ -7,6 +7,10 @@ import {
 
 import { buildAddressProfile } from './addressProfile/addressProfile';
 import { buildPersonalProfile } from './personalProfile/personalProfile';
+import {
+  fillObjectWithUniqueKeys,
+  validStatus,
+} from '../../../utils/validations/booleanValid';
 export async function buildProfileForm(
   data: Customer,
 ): Promise<HTMLElement | undefined> {
@@ -19,9 +23,9 @@ export async function buildProfileForm(
   const addressProfile = buildAddressProfile(data);
   const personalProfile = buildPersonalProfile(data);
 
-  const infoForm = createElement(infoFormParams);
+  const infoForm = createElement(infoFormParams) as HTMLFormElement;
   addInnerComponent(infoForm, personalProfile);
   addInnerComponent(infoForm, addressProfile);
-
+  fillObjectWithUniqueKeys(infoForm, true, validStatus);
   return infoForm;
 }

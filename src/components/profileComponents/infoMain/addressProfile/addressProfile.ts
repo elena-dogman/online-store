@@ -57,3 +57,28 @@ export function buildAddressProfile(customerData: Customer): HTMLElement {
   }
   return addressInfoContainer;
 }
+export function addEmptyCountryList(): HTMLElement {
+  const addressInfWrapperParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['address-prof-container__address-wrapper'],
+  };
+  const addressInfWrapper = createElement(addressInfWrapperParams);
+  const [countriesContainer, countriesList] = buildProfileCountry(
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+  );
+  const [streetLabel, cityLabel, postLabel, streetInput, cityInput, postInput] =
+    buildProfileAddressLoyalt();
+  addInnerComponent(addressInfWrapper, countriesContainer);
+  addInnerComponent(addressInfWrapper, postLabel);
+  addInnerComponent(addressInfWrapper, cityLabel);
+  addInnerComponent(addressInfWrapper, streetLabel);
+  cityInput.value = '';
+  postInput.value = '';
+  countriesList.textContent = 'Chose your Country';
+  streetInput.value = '';
+  return addressInfWrapper;
+}

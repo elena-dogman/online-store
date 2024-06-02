@@ -79,6 +79,5 @@ export function fillObjectWithUniqueKeys(
       obj[Object.keys(obj).length.toString()] = true;
     }
   }
-
   validStatus = obj;
 }

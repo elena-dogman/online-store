@@ -1,6 +1,9 @@
 import { Customer, MyCustomerUpdateAction } from '@commercetools/platform-sdk';
 import { CustomerUpdateBody, updateCustomer } from '../../../api/apiService';
-import { searchElement } from '../../../utils/usefullFunctions/searchElem';
+import {
+  findElement,
+  searchElement,
+} from '../../../utils/usefullFunctions/searchElem';
 import {
   fillObjectWithUniqueKeys,
   validStatus,
@@ -10,9 +13,13 @@ import { infoReadvalidStatus, setInfoReadvalidStatus } from './infoBoolean';
 
 export function showClick(e: Event, data: Customer): void {
   e.preventDefault();
-  const elem = e.target as HTMLButtonElement;
+  let elem = e.target as HTMLButtonElement;
+  if (!elem.classList.contains('.profile-header__btn-edit')) {
+    const parent = elem.parentElement as HTMLElement;
+    elem = findElement(parent, 'profile-header__btn-edit') as HTMLButtonElement;
+    elem.setAttribute('disabled', '');
+  }
   const form = elem.form as HTMLFormElement;
-  fillObjectWithUniqueKeys(form, true, validStatus);
   const name = form.elements.namedItem('Name') as HTMLInputElement;
   const lastName = form.elements.namedItem('Last Name') as HTMLInputElement;
   const date = form.elements.namedItem('Date') as HTMLInputElement;
@@ -42,6 +49,7 @@ export function showClick(e: Event, data: Customer): void {
       ...street,
     );
   }
+  fillObjectWithUniqueKeys(form, false, validStatus);
   changeText(elem);
 }
 

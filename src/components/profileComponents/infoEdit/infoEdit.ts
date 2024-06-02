@@ -15,8 +15,8 @@ export function createEdit(userData: Customer): HTMLElement {
   const showClickHandler = (e: Event): void => {
     showClick(e, userData);
   };
-  const infoHeaderButton = createElement(infoHeaderButtonParams);
-  infoHeaderButton.addEventListener('click', showClickHandler);
+  const infoEditButton = createElement(infoHeaderButtonParams);
+  infoEditButton.addEventListener('click', showClickHandler);
 
-  return infoHeaderButton;
+  return infoEditButton;
 }

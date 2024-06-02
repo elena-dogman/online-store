@@ -23,3 +23,20 @@ export function searchInput(
   });
   return result;
 }
+export function findElement(
+  element: Element,
+  searchElem: string,
+): HTMLElement | undefined {
+  if (element.classList.contains(searchElem)) {
+    return element as HTMLElement;
+  } else {
+    const children = element.children;
+    for (let i = 0; i < children.length; i++) {
+      const result = findElement(children[i], searchElem);
+      if (result) {
+        return result;
+      }
+    }
+  }
+  return;
+}

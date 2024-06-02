@@ -32,17 +32,22 @@ export function buildProfileCountry(
 
   const countriesInput = createElement(countriesInpunParams);
   const countriesList = createElement(countriesListParams);
-  if (currentId === billingId) {
-    addInnerComponent(countryContainer, countryIndicator);
-    countryIndicator.textContent = 'Billing Address';
-    if (currentId === defaultBillingId) {
-      countryIndicator.textContent = ' Default Billing Address';
-    }
-  } else if (currentId === shippingId) {
-    addInnerComponent(countryContainer, countryIndicator);
-    countryIndicator.textContent = 'Shipping Address';
-    if (currentId === defaultShippingId) {
-      countryIndicator.textContent = ' Default Shipping Address';
+  if (currentId !== undefined) {
+    if (currentId === billingId) {
+      addInnerComponent(countryContainer, countryIndicator);
+      countryIndicator.textContent = 'Billing Address';
+      if (currentId === defaultBillingId) {
+        countryIndicator.textContent = ' Default Billing Address';
+      }
+    } else if (currentId === shippingId) {
+      addInnerComponent(countryContainer, countryIndicator);
+      countryIndicator.textContent = 'Shipping Address';
+      if (currentId === defaultShippingId) {
+        countryIndicator.textContent = ' Default Shipping Address';
+      }
+    } else {
+      addInnerComponent(countryContainer, countryIndicator);
+      countryIndicator.textContent = 'Address';
     }
   } else {
     addInnerComponent(countryContainer, countryIndicator);
