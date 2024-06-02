@@ -4,7 +4,7 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../utils/baseComponent';
+} from '../../utils/general/baseComponent';
 
 export async function buildUserProfilePage(): Promise<HTMLElement> {
   const userProfilePageParams: ElementParams<'div'> = {

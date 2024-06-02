@@ -1,4 +1,4 @@
-import { filterArray } from '../filterElem';
+import { filterArray } from '../general/filterElem';
 import * as validationFunc from './validationsComponents';
 interface ValidationMap {
   [key: string]: (

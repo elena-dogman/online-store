@@ -5,9 +5,8 @@ import {
   createElement,
   addInnerComponent,
   ElementParams,
-} from '../../utils/baseComponent';
+} from '../../utils/general/baseComponent';
 import { navigateTo } from '../../router/router';
-
 
 export async function fetchCategoryTree(): Promise<Category[]> {
   const categories = await fetchCategories();

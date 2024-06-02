@@ -1,8 +1,10 @@
-import { Customer } from '@commercetools/platform-sdk';
-import { ElementParams, createElement } from '../../../utils/baseComponent';
+import {
+  ElementParams,
+  createElement,
+} from '../../../utils/general/baseComponent';
 import { showClick } from './infoEditComponents';
 
-export function createEdit(userData: Customer): HTMLElement {
+export function createEdit(): HTMLElement {
   const infoHeaderButtonParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['profile-header__btn-edit', 'profile-btn'],
@@ -10,10 +12,11 @@ export function createEdit(userData: Customer): HTMLElement {
     attributes: { form: 'profile-form' },
   };
   const showClickHandler = (e: Event): void => {
-    showClick(e, userData);
+    e.preventDefault();
+    showClick(e);
   };
-  const infoHeaderButton = createElement(infoHeaderButtonParams);
-  infoHeaderButton.addEventListener('click', showClickHandler);
+  const infoEditButton = createElement(infoHeaderButtonParams);
+  infoEditButton.addEventListener('click', showClickHandler);
 
-  return infoHeaderButton;
+  return infoEditButton;
 }

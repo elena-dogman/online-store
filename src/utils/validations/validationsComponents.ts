@@ -1,12 +1,12 @@
-import { calculateAge, checkDaysInMonth } from '../ageAndTextChecks';
+import { calculateAge, checkDaysInMonth } from '../general/ageAndTextChecks';
 import country from 'country-list-js';
 
 import * as dateComponents from '../../components/registrationForm/dateComponent';
 import { setValidStatus, checkAllInputs } from './booleanValid';
 import * as postalCodes from 'postal-codes-js';
 import { checkError, checkInputIndex } from './validation';
-import { searchElement, searchInput } from '../searchElem';
-import { filterArray } from '../filterElem';
+import { searchElement, searchInput } from '../general/searchElem';
+import { filterArray } from '../general/filterElem';
 
 export const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',

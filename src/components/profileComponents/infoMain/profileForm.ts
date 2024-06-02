@@ -3,10 +3,14 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../../utils/baseComponent';
+} from '../../../utils/general/baseComponent';
 
 import { buildAddressProfile } from './addressProfile/addressProfile';
-import { buildPersonalProfile } from './personalProfile';
+import { buildPersonalProfile } from './personalProfile/personalProfile';
+import {
+  fillObjectWithUniqueKeys,
+  validStatus,
+} from '../../../utils/validations/booleanValid';
 export async function buildProfileForm(
   data: Customer,
 ): Promise<HTMLElement | undefined> {
@@ -16,12 +20,12 @@ export async function buildProfileForm(
     attributes: { id: 'profile-form' },
   };
 
-  const addressProfile = buildAddressProfile(data);
+  const addressProfile = await buildAddressProfile(data);
   const personalProfile = buildPersonalProfile(data);
 
-  const infoForm = createElement(infoFormParams);
+  const infoForm = createElement(infoFormParams) as HTMLFormElement;
   addInnerComponent(infoForm, personalProfile);
   addInnerComponent(infoForm, addressProfile);
-
+  fillObjectWithUniqueKeys(infoForm, true, validStatus);
   return infoForm;
 }

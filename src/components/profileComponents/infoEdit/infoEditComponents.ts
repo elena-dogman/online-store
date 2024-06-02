@@ -1,18 +1,34 @@
 import { Customer, MyCustomerUpdateAction } from '@commercetools/platform-sdk';
-import { CustomerUpdateBody, updateCustomer } from '../../../api/apiService';
-import { searchElement } from '../../../utils/searchElem';
+import {
+  CustomerUpdateBody,
+  getUserData,
+  updateCustomer,
+} from '../../../api/apiService';
+import {
+  findElement,
+  getCountriesList,
+} from '../../../utils/general/searchElem';
 import {
   fillObjectWithUniqueKeys,
   validStatus,
 } from '../../../utils/validations/booleanValid';
+
 import { addCountriesList } from '../../registrationForm/address/addressComponents';
 import { infoReadvalidStatus, setInfoReadvalidStatus } from './infoBoolean';
-
-export function showClick(e: Event, data: Customer): void {
+import countrys from 'country-list-js';
+import { randomString } from '../../../utils/general/randomId';
+export async function showClick(e: Event): Promise<void> {
+  const data = await getUserData();
   e.preventDefault();
-  const elem = e.target as HTMLButtonElement;
+  let elem = e.target as HTMLButtonElement;
+  if (!elem.classList.contains('profile-header__btn-edit')) {
+    setInfoReadvalidStatus('name', true);
+    const parent = elem.parentElement as HTMLElement;
+    elem = findElement(parent, 'profile-header__btn-edit') as HTMLButtonElement;
+    elem.setAttribute('disabled', '');
+    elem.textContent = 'Edit';
+  }
   const form = elem.form as HTMLFormElement;
-  fillObjectWithUniqueKeys(form, true, validStatus);
   const name = form.elements.namedItem('Name') as HTMLInputElement;
   const lastName = form.elements.namedItem('Last Name') as HTMLInputElement;
   const date = form.elements.namedItem('Date') as HTMLInputElement;
@@ -42,6 +58,7 @@ export function showClick(e: Event, data: Customer): void {
       ...street,
     );
   }
+  fillObjectWithUniqueKeys(form, true, validStatus);
   changeText(elem);
 }
 
@@ -53,11 +70,12 @@ function changeText(text: HTMLButtonElement): void {
   }
 }
 
-function toggleReadOnly(
+async function toggleReadOnly(
   data: Customer,
   countries: HTMLElement[],
   ...args: HTMLInputElement[]
-): void {
+): Promise<void> {
+  const result: MyCustomerUpdateAction[] = [];
   if (infoReadvalidStatus.name) {
     args.flat().forEach((e) => {
       e.removeAttribute('readonly');
@@ -73,72 +91,186 @@ function toggleReadOnly(
       version: data.version,
       actions: [],
     };
-    const actions = body.actions;
     args.flat().forEach((e) => {
       dateToggleReadonly(e);
-      const act = checkInput(e);
-      if (act) {
-        actions.push(act);
-      }
+      const act = checkInput(e, data);
+      result.push(...act);
       e.setAttribute('readonly', '');
     });
     countries.forEach((e) => {
       e.classList.add('readonly');
       e.removeEventListener('click', addCountriesList, true);
     });
+    body.actions = result;
+    console.log(body);
     updateCustomer(body);
     setInfoReadvalidStatus('name', true);
   }
 }
-export function getCountriesList(elements: HTMLInputElement[]): HTMLElement[] {
-  return elements
-    .map((element) => {
-      const parent = element.parentElement;
-      if (parent && parent.parentElement) {
-        return parent.parentElement;
-      } else {
-        return null;
-      }
-    })
-    .filter((parent): parent is HTMLElement => parent !== null)
-    .flatMap((elem) => {
-      const wrapper = searchElement(elem, 'country-wrapper');
-      return wrapper ? [wrapper] : [];
-    })
-    .flatMap((elem) => {
-      const wrapper = searchElement(elem, 'countries-list');
-      return wrapper ? [wrapper] : [];
-    })
-    .filter((elem): elem is HTMLElement => elem !== undefined);
-}
+
 function checkInput(
   elem: HTMLInputElement,
-): MyCustomerUpdateAction | undefined {
+  data: Customer,
+): MyCustomerUpdateAction[] {
+  const result: MyCustomerUpdateAction[] = [];
   if (elem.getAttribute('name') === 'Name') {
-    return {
+    const action: MyCustomerUpdateAction = {
       action: 'setFirstName',
       firstName: elem.value,
-    } as MyCustomerUpdateAction;
+    };
+
+    result.push(action);
   } else if (elem.getAttribute('name') === 'Last Name') {
-    return {
+    const action: MyCustomerUpdateAction = {
       action: 'setLastName',
       lastName: elem.value,
-    } as MyCustomerUpdateAction;
+    };
+    result.push(action);
   } else if (elem.getAttribute('name') === 'Email') {
-    return {
+    const action: MyCustomerUpdateAction = {
       action: 'changeEmail',
       email: elem.value,
-    } as MyCustomerUpdateAction;
+    };
+    result.push(action);
   } else if (elem.getAttribute('name') === 'Date') {
     const month = elem.previousSibling as HTMLInputElement;
     const day = month?.previousSibling as HTMLInputElement;
-    const result = `${elem.value.padStart(4, '0')}-${month.value.padStart(2, '0')}-${day.value.padStart(2, '0')}`;
-    return {
+    const DOB = `${elem.value.padStart(4, '0')}-${month.value.padStart(2, '0')}-${day.value.padStart(2, '0')}`;
+    const action: MyCustomerUpdateAction = {
       action: 'setDateOfBirth',
-      dateOfBirth: result,
-    } as MyCustomerUpdateAction;
+      dateOfBirth: DOB,
+    };
+    result.push(action);
+  } else if (elem.getAttribute('name') === 'post') {
+    const ancestor = elem.parentElement?.parentElement as HTMLElement;
+    const indicator = findElement(
+      ancestor,
+      'address-prof__country-indicator',
+    ) as HTMLElement;
+    const city = findElement(
+      ancestor,
+      'profile-form__city-input',
+    ) as HTMLInputElement;
+    const street = findElement(
+      ancestor,
+      'profile-form__street-input',
+    ) as HTMLInputElement;
+    const country = findElement(
+      ancestor,
+      'address-prof__countries-list',
+    ) as HTMLElement;
+    const countryNames = countrys.names();
+    const countryIndex = countryNames.indexOf(country.textContent);
+    const capitalСountries = Object.keys(countrys.all)[countryIndex];
+
+    const id = elem.getAttribute('addressid');
+    const key = elem.getAttribute('addresskey') as string;
+    const billingAddress = data.billingAddressIds;
+    const shippingAddressIds = data.shippingAddressIds;
+    const shippingDefaultCheck = findElement(
+      ancestor,
+      'shipping-checkbox-container__default-shipping-checkbox',
+    ) as HTMLInputElement;
+    const shippingCheck = findElement(
+      ancestor,
+      'shipping-checkbox-container__shipping-checkbox',
+    ) as HTMLInputElement;
+    const billingDefaultCheck = findElement(
+      ancestor,
+      'billing-checkbox-container__default-billing-checkbox',
+    ) as HTMLInputElement;
+    const billingCheck = findElement(
+      ancestor,
+      'billing-checkbox-container__billing-checkbox',
+    ) as HTMLInputElement;
+    if (id) {
+      if (billingCheck.checked) {
+        const action: MyCustomerUpdateAction = {
+          action: 'addBillingAddressId',
+          addressId: id,
+        };
+        result.push(action);
+      }
+      if (
+        !billingCheck.checked &&
+        billingAddress?.find((element) => element === id)
+      ) {
+        const action: MyCustomerUpdateAction = {
+          action: 'removeBillingAddressId',
+          addressId: id,
+        };
+        result.push(action);
+      }
+      if (shippingDefaultCheck.checked) {
+        const action: MyCustomerUpdateAction = {
+          action: 'setDefaultShippingAddress',
+          addressId: id,
+        };
+        indicator.textContent = 'Default Shipping Address';
+        result.push(action);
+      }
+      if (billingDefaultCheck.checked) {
+        const action: MyCustomerUpdateAction = {
+          action: 'setDefaultBillingAddress',
+          addressId: id,
+        };
+        indicator.textContent = 'Default Billing Address';
+        result.push(action);
+      }
+      if (billingDefaultCheck.checked && shippingDefaultCheck.checked) {
+        indicator.textContent = ' Default Shipping and Billing Address';
+      }
+      if (shippingCheck.checked) {
+        const action: MyCustomerUpdateAction = {
+          action: 'addShippingAddressId',
+          addressId: id,
+        };
+        indicator.textContent = ' Shipping Address';
+        result.push(action);
+      }
+      if (
+        !shippingCheck.checked &&
+        shippingAddressIds?.find((element) => element === id)
+      ) {
+        const action: MyCustomerUpdateAction = {
+          action: 'removeShippingAddressId',
+          addressId: id,
+        };
+        result.push(action);
+      }
+      if (!shippingCheck.checked && !billingAddress) {
+        indicator.textContent = ' Shipping Address';
+      }
+    }
+    if (!key) {
+      const action: MyCustomerUpdateAction = {
+        action: 'addAddress',
+        address: {
+          key: randomString(),
+          city: city.value,
+          postalCode: elem.value,
+          streetName: street.value,
+          country: capitalСountries,
+        },
+      };
+      result.push(action);
+    }
+    if (city && street && id) {
+      const action: MyCustomerUpdateAction = {
+        action: 'changeAddress',
+        addressId: id,
+        address: {
+          key: randomString(),
+          city: city.value,
+          postalCode: elem.value,
+          streetName: street.value,
+          country: capitalСountries,
+        },
+      };
+      result.push(action);
+    }
   }
-  return;
+  return result;
 }
 function dateToggleReadonly(e: HTMLInputElement): void {
   if (e.classList.contains('date__year')) {
@@ -153,3 +285,34 @@ function dateToggleReadonly(e: HTMLInputElement): void {
     }
   }
 }
+// if (shippingDefault.checked) {
+//   const body = {
+//     action: 'setDefaultShippingAddress',
+//     addressId: id,
+//   };
+//   updateCustomer(body);
+// } else if (shipping.checked) {
+//   const body = {
+//     action: 'addShippingAddressId',
+//     addressId: id,
+//   };
+//   updateCustomer(body);
+// } else if (billingDefault.checked) {
+//   const body = {
+//     action: 'setDefaultBillingAddress',
+//     addressId: id,
+//   };
+//   updateCustomer(body);
+// } else if (billing.checked) {
+//   const body = {
+//     action: 'addBillingAddressId',
+//     addressId: id,
+//   };
+//   updateCustomer(body);
+// } else {
+//   const body = {
+//     action: 'removeShippingAddressId',
+//     addressId: id,
+//   };
+//   updateCustomer(body);
+// }

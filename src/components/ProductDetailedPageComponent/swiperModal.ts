@@ -2,7 +2,7 @@ import {
   createElement,
   addInnerComponent,
   ElementParams,
-} from '../../utils/baseComponent';
+} from '../../utils/general/baseComponent';
 import {
   Pagination,
   Autoplay,
