@@ -7,7 +7,7 @@ import {
 } from '../../../utils/validations/booleanValid';
 import { addCountriesList } from '../../registrationForm/address/addressComponents';
 import { infoReadvalidStatus, setInfoReadvalidStatus } from './infoBoolean';
-
+import countrys from 'country-list-js';
 export function showClick(e: Event, data: Customer): void {
   e.preventDefault();
   let elem = e.target as HTMLButtonElement;
@@ -66,6 +66,7 @@ function toggleReadOnly(
   ...args: HTMLInputElement[]
 ): void {
   if (infoReadvalidStatus.name) {
+    console.log(data);
     args.flat().forEach((e) => {
       e.removeAttribute('readonly');
       dateToggleReadonly(e);
@@ -144,6 +145,84 @@ function checkInput(
       action: 'setDateOfBirth',
       dateOfBirth: result,
     } as MyCustomerUpdateAction;
+  } else if (elem.getAttribute('name') === 'post') {
+    const ancestor = elem.parentElement?.parentElement as HTMLElement;
+    const form = elem.form as HTMLFormElement;
+    const name = form.querySelector('.profile-form__name-input');
+    const lastName = form.querySelector('.profile-form__last-name-input');
+    const email = form.querySelector('.profile-form__email-input');
+    const year = form.querySelector('.date__year') as HTMLInputElement;
+    const month = year?.previousElementSibling as HTMLInputElement;
+    const day = month?.previousElementSibling as HTMLInputElement;
+    const paddedDay = day.value.padStart(2, '0');
+    const paddedMonth = month.value.padStart(2, '0');
+    const paddedYear = year.value.padStart(4, '0');
+
+    const DOB = `${paddedYear}-${paddedMonth}-${paddedDay}`;
+    const city = findElement(
+      ancestor,
+      'profile-form__city-input',
+    ) as HTMLInputElement;
+    const street = findElement(
+      ancestor,
+      'profile-form__street-input',
+    ) as HTMLInputElement;
+    const country = findElement(
+      ancestor,
+      'address-prof__countries-list',
+    ) as HTMLElement;
+    const countryNames = countrys.names();
+    const countryIndex = countryNames.indexOf(country.textContent);
+    const capitalСountries = Object.keys(countrys.all)[countryIndex];
+
+    const id = elem.getAttribute('addressid');
+    const key = elem.getAttribute('addresskey');
+    const shippingDefault = findElement(
+      ancestor,
+      'shipping-checkbox-container__default-shipping-checkbox',
+    );
+    const shipping = findElement(
+      ancestor,
+      'shipping-checkbox-container__shipping-checkbox',
+    );
+    const billingDefault = findElement(
+      ancestor,
+      'billing-checkbox-container__default-billing-checkbox',
+    );
+    const billing = findElement(
+      ancestor,
+      'billing-checkbox-container__billing-checkbox',
+    );
+
+    console.log(
+      city,
+      street,
+      country,
+      shippingDefault,
+      shipping,
+      billingDefault,
+      billing,
+      name,
+      lastName,
+      email,
+      DOB,
+    );
+
+    // const body = {};
+    // updateCustomer(body);
+    if (city && street) {
+      return {
+        action: 'changeAddress',
+        addressId: id,
+        address: {
+          addressKey: key,
+          city: city.value,
+          postalCode: elem.value,
+          streetName: street.value,
+          country: capitalСountries,
+        },
+      } as MyCustomerUpdateAction;
+    }
   }
   return;
 }

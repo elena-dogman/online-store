@@ -44,12 +44,6 @@ export function buildProfileCountry(
     shippingCheckBox,
     billingCheckBox,
   ] = buildRadioCountry();
-  console.log(
-    defaultShippingCheckBox,
-    defaltBillingCheckBox,
-    shippingCheckBox,
-    billingCheckBox,
-  );
   addInnerComponent(countryContainer, countryIndicatorContainer);
   addInnerComponent(countryIndicatorContainer, countryIndicator);
   addInnerComponent(countryIndicatorContainer, radioContainer);
@@ -80,6 +74,7 @@ export function buildProfileCountry(
   } else {
     countryIndicator.textContent = 'Address';
   }
+
   addInnerComponent(countryContainer, countriesInput);
   addInnerComponent(countryContainer, countriesList);
   return [countryContainer, countriesList];

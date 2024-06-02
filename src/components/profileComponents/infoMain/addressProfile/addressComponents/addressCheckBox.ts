@@ -38,10 +38,13 @@ export function buildRadioCountry(): [
     'defaultShipping',
     [
       [
-        'shipping-checkbox-container__default-shiiping',
+        'shipping-checkbox-container__default-shipping-label',
         'address-checkbox-label',
       ],
-      ['shipping-checkbox-container__default-shiiping', 'address-checkbox'],
+      [
+        'shipping-checkbox-container__default-shipping-checkbox',
+        'address-checkbox',
+      ],
     ],
     'defaultShipping',
     'checkbox',
@@ -51,8 +54,8 @@ export function buildRadioCountry(): [
   const [shippingLabel, shippingCheckBox] = createInput(
     'shipping',
     [
-      ['shipping-checkbox-container__shiiping', 'address-checkbox-label'],
-      ['shipping-checkbox-container__shiiping', 'address-checkbox'],
+      ['shipping-checkbox-container__shipping-label', 'address-checkbox-label'],
+      ['shipping-checkbox-container__shipping-checkbox', 'address-checkbox'],
     ],
     'shipping',
     'checkbox',
@@ -63,10 +66,13 @@ export function buildRadioCountry(): [
     'defaultBilling',
     [
       [
-        'shipping-checkbox-container__default-billing',
+        'shipping-checkbox-container__default-billing-label',
         'address-checkbox-label',
       ],
-      ['shipping-checkbox-container__default-billing', 'address-checkbox'],
+      [
+        'billing-checkbox-container__default-billing-checkbox',
+        'address-checkbox',
+      ],
     ],
     'defaultBilling',
     'checkbox',
@@ -76,18 +82,22 @@ export function buildRadioCountry(): [
   const [billingLabel, billingCheckBox] = createInput(
     'billing',
     [
-      ['shipping-checkbox-container__billing', 'address-checkbox-label'],
-      ['shipping-checkbox-container__billing', 'address-checkbox'],
+      ['billing-checkbox-container__billing-label', 'address-checkbox-label'],
+      ['billing-checkbox-container__billing-checkbox', 'address-checkbox'],
     ],
     'billing',
     'checkbox',
   );
-  billingLabel.textContent = 'Use as default billing address';
+  billingLabel.textContent = 'Use as billing address';
   addInnerComponent(billingLabel, billingCheckBox);
   addInnerComponent(shippingCheckBoxContainer, defaultShippingLabel);
   addInnerComponent(shippingCheckBoxContainer, shippingLabel);
   addInnerComponent(billingCheckBoxContainer, defaultBillingLabel);
   addInnerComponent(billingCheckBoxContainer, billingLabel);
+  defaultShippingLabel.addEventListener('click', preventLabelDefault);
+  shippingLabel.addEventListener('click', preventLabelDefault);
+  defaultBillingLabel.addEventListener('click', preventLabelDefault);
+  billingLabel.addEventListener('click', preventLabelDefault);
   defaultShippingCheckBox.setAttribute('hide', '');
   defaultBillingCheckBox.setAttribute('hide', '');
   shippingCheckBox.setAttribute('hide', '');
@@ -104,18 +114,34 @@ export function buildRadioCountry(): [
     billingCheckBox,
   ];
 }
-
-function toggleCheckBox(e: Event): void {
+function preventLabelDefault(e: Event): void {
+  e.preventDefault();
+}
+export function toggleCheckBox(e: Event): void {
+  e.stopPropagation();
   const elem = e.target as HTMLInputElement;
   const ancestor = elem.parentElement?.parentElement as HTMLElement;
+  const form = elem.form as HTMLFormElement;
+  const similarElems = findElement(
+    form,
+    elem.classList[0],
+    true,
+  ) as HTMLInputElement[];
   const checkBoxes = findElement(
     ancestor,
     'address-checkbox',
     true,
   ) as HTMLInputElement[];
+
   for (let i = 0; i < checkBoxes.length; i++) {
     if (elem !== checkBoxes[i]) {
       checkBoxes[i].checked = false;
     }
   }
+
+  similarElems.forEach((el) => {
+    if (el != elem) {
+      el.checked = false;
+    }
+  });
 }

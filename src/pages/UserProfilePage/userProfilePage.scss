@@ -195,6 +195,12 @@ width: 50%;
     border-bottom: 1px solid black;
     display: none;
 }
+.address-prof__country-indicator{
+  width: 93px;
+  display: flex;
+    align-items: center;
+    text-align: center;
+}
 .profile__countries-item--expand{
   display: block;
 }
