@@ -458,6 +458,51 @@ export async function fetchProductAttributes(): Promise<number[] | null> {
   }
 }
 
+export async function fetchSizesForCategory(categoryId: string): Promise<number[]> {
+  try {
+    const response = await apiRoot
+      .productProjections()
+      .search()
+      .get({
+        queryArgs: {
+          filter: `categories.id: subtree("${categoryId}")`,
+          limit: 500,
+        },
+      })
+      .execute();
+
+    const products = response.body.results;
+    const sizes: Set<number> = new Set();
+
+    products.forEach((product) => {
+      product.masterVariant.attributes?.forEach((attribute) => {
+        if (attribute.name === 'size') {
+          const sizeValue = Array.isArray(attribute.value)
+            ? attribute.value[0]
+            : attribute.value;
+          sizes.add(sizeValue as number);
+        }
+      });
+
+      product.variants.forEach((variant) => {
+        variant.attributes?.forEach((attribute) => {
+          if (attribute.name === 'size') {
+            const sizeValue = Array.isArray(attribute.value)
+              ? attribute.value[0]
+              : attribute.value;
+            sizes.add(sizeValue as number);
+          }
+        });
+      });
+    });
+
+    return Array.from(sizes).sort((a, b) => a - b);
+  } catch (error) {
+    console.error('Error fetching sizes for category:', error);
+    return [];
+  }
+}
+
 export async function fetchCategories(): Promise<Category[]> {
   try {
     const response: ClientResponse<CategoryPagedQueryResponse> =

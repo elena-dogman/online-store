@@ -18,7 +18,7 @@ import {
   categoriesMap,
   Filters,
 } from '../../components/catalog/filter/filters';
-import { createFilterComponent } from '../../components/catalog/filter/productFilter';
+import { createFilterComponent, updateSizeFilterForCategory } from '../../components/catalog/filter/productFilter';
 import { createLoadingOverlay } from '../../components/catalog/overlay/loadingOverlay';
 import { generateBreadcrumbLinks } from '../../components/breadcrumbs/breadcrumbs';
 
@@ -150,23 +150,24 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     });
   };
 
-  const updateFilters = async (
-    filterName: keyof Filters,
-    value: string,
-    checked: boolean,
-  ): Promise<void> => {
-    if (filterName === 'category') {
-      filters.category = checked ? value : '';
+ const updateFilters = async (
+  filterName: keyof Filters,
+  value: string,
+  checked: boolean,
+): Promise<void> => {
+  if (filterName === 'category') {
+    filters.category = checked ? value : '';
+    await updateSizeFilterForCategory(filters.category);
+  } else {
+    if (checked) {
+      filters[filterName].add(value);
     } else {
-      if (checked) {
-        filters[filterName].add(value);
-      } else {
-        filters[filterName].delete(value);
-      }
+      filters[filterName].delete(value);
     }
-    updateURLWithFilters(filters);
-    await updateBreadcrumbs();
-  };
+  }
+  updateURLWithFilters(filters);
+  await updateBreadcrumbs();
+};
 
   const showLoadingOverlay = (): void => {
     loadingOverlay.style.display = 'flex';
@@ -264,14 +265,15 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     hideLoadingOverlay();
   };
 
-  filterComponent.addEventListener('change', async (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    const filterName = target.classList[0].split('-')[0] as keyof Filters;
+filterComponent.addEventListener('change', async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const filterName = target.classList[0].split('-')[0] as keyof Filters;
 
-    await updateFilters(filterName, target.value, target.checked);
-    clear(catalogContainer);
-    await renderProducts(1, itemsPerPage, currentSort);
-  });
+  await updateFilters(filterName, target.value, target.checked);
+  clear(catalogContainer);
+  await renderProducts(1, itemsPerPage, currentSort);
+});
+
 
   const sortComponent = createSortComponent(async (sort: string) => {
     currentSort = sort;

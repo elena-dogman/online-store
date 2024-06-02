@@ -7,6 +7,7 @@ import {
 import {
   fetchProductAttributes,
   fetchCategories,
+  fetchSizesForCategory,
 } from '../../../api/apiService';
 
 export async function createFilterComponent(): Promise<HTMLElement> {
@@ -49,6 +50,18 @@ export async function createFilterComponent(): Promise<HTMLElement> {
   }
 
   return filterContainer;
+}
+
+export async function updateSizeFilterForCategory(categoryId: string): Promise<void> {
+  const sizesResponse = await fetchSizesForCategory(categoryId);
+
+  const sizeFilterGroup = document.querySelector('.size-filter-group');
+  if (sizeFilterGroup) {
+    sizeFilterGroup.innerHTML = '';
+
+    const newFilterGroup = createFilterGroup('size', sizesResponse);
+    sizeFilterGroup.append(newFilterGroup);
+  }
 }
 
 function createCategoryFilterGroup(
@@ -218,7 +231,6 @@ function createFilterGroup(
     addInnerComponent(checkboxContainer, checkboxWrapper);
   });
 
-
   const toggleMenu = (): void => {
     checkboxContainer.classList.toggle('hidden');
     triangle.classList.toggle('open');
@@ -234,3 +246,4 @@ function createFilterGroup(
 
   return filterGroup;
 }
+
