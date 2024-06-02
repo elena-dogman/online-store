@@ -60,3 +60,24 @@ export function findElement(
 
   return;
 }
+export function getCountriesList(elements: HTMLInputElement[]): HTMLElement[] {
+  return elements
+    .map((element) => {
+      const parent = element.parentElement;
+      if (parent && parent.parentElement) {
+        return parent.parentElement;
+      } else {
+        return null;
+      }
+    })
+    .filter((parent): parent is HTMLElement => parent !== null)
+    .flatMap((elem) => {
+      const wrapper = searchElement(elem, 'country-wrapper');
+      return wrapper ? [wrapper] : [];
+    })
+    .flatMap((elem) => {
+      const wrapper = searchElement(elem, 'countries-list');
+      return wrapper ? [wrapper] : [];
+    })
+    .filter((elem): elem is HTMLElement => elem !== undefined);
+}

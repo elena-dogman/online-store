@@ -11,7 +11,6 @@ export function setValidStatus(
 }
 
 export function checkAllInputs(form: HTMLFormElement | null = null): void {
-  console.log(validStatus);
   if (window.location.href.includes('register')) {
     if (Object.values(validStatus).every((value) => value)) {
       authFormButton.removeAttribute('disabled');

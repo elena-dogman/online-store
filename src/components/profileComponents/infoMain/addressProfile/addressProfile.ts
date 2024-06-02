@@ -7,6 +7,7 @@ import { buildProfileCountry } from './addressComponents/buildProfileCountry';
 import countrys from 'country-list-js';
 import { buildProfileAddressLoyalt } from './addressComponents/addressList';
 import { Customer } from '@commercetools/platform-sdk';
+import { randomString } from '../../../../utils/general/randomId';
 export function buildAddressProfile(customerData: Customer): HTMLElement {
   const addressInfoContainerParams: ElementParams<'div'> = {
     tag: 'div',
@@ -17,10 +18,10 @@ export function buildAddressProfile(customerData: Customer): HTMLElement {
     customerData.addresses.forEach((e) => {
       if (e.id) {
         const currentId = e.id;
-        const bullingId = customerData.billingAddressIds?.toString();
-        const shippingId = customerData.shippingAddressIds?.toString();
-        const shippingDefaultId = customerData.defaultBillingAddressId;
-        const billingDefaultId = customerData.defaultShippingAddressId;
+        const bullingId = customerData.billingAddressIds as string[];
+        const shippingId = customerData.shippingAddressIds as string[];
+        const shippingDefaultId = customerData.defaultShippingAddressId;
+        const billingDefaultId = customerData.defaultBillingAddressId;
         const city = e.city ? e.city : '';
         const post = e.postalCode ? e.postalCode : '';
         const country = countrys.findByIso2(e.country);
@@ -34,8 +35,8 @@ export function buildAddressProfile(customerData: Customer): HTMLElement {
           currentId,
           bullingId,
           shippingId,
-          shippingDefaultId,
           billingDefaultId,
+          shippingDefaultId,
         );
         const [
           streetLabel,
@@ -46,10 +47,9 @@ export function buildAddressProfile(customerData: Customer): HTMLElement {
           postInput,
         ] = buildProfileAddressLoyalt();
         cityInput.value = city;
-        const key = e.key as string;
+        const key = randomString();
         postInput.setAttribute('addressId', e.id);
         postInput.setAttribute('addressKey', key);
-
         postInput.value = post;
         countriesList.textContent = country.name;
         streetInput.value = street;

@@ -6,8 +6,8 @@ import {
 import { buildRadioCountry } from './addressCheckBox';
 export function buildProfileCountry(
   currentId: string | undefined,
-  billingId: string | undefined,
-  shippingId: string | undefined,
+  billingId: string[] | undefined,
+  shippingId: string[] | undefined,
   defaultBillingId: string | undefined,
   defaultShippingId: string | undefined,
 ): [HTMLElement, HTMLElement] {
@@ -49,30 +49,38 @@ export function buildProfileCountry(
   addInnerComponent(countryIndicatorContainer, radioContainer);
   const countriesInput = createElement(countriesInpunParams);
   const countriesList = createElement(countriesListParams);
+
   if (currentId !== undefined) {
-    if (currentId === billingId) {
-      billingCheckBox.setAttribute('checked', '');
-      defaltBillingCheckBox.removeAttribute('checked');
-      countryIndicator.textContent = 'Billing Address';
-      if (currentId === defaultBillingId) {
-        defaltBillingCheckBox.setAttribute('checked', '');
-        billingCheckBox.removeAttribute('checked');
-        countryIndicator.textContent = ' Default Billing Address';
+    billingId?.forEach((e) => {
+      if (currentId === e) {
+        billingCheckBox.setAttribute('checked', '');
+        countryIndicator.textContent = 'Billing Address';
+        if (currentId === defaultBillingId) {
+          defaltBillingCheckBox.setAttribute('checked', '');
+          countryIndicator.textContent = ' Default Billing Address';
+        }
+      } else {
+        countryIndicator.textContent = 'Address';
       }
-    } else if (currentId === shippingId) {
-      shippingCheckBox.setAttribute('checked', '');
-      defaultShippingCheckBox.removeAttribute('checked');
-      countryIndicator.textContent = 'Shipping Address';
-      if (currentId === defaultShippingId) {
-        defaultShippingCheckBox.setAttribute('checked', '');
-        shippingCheckBox.removeAttribute('checked');
-        countryIndicator.textContent = ' Default Shipping Address';
+    });
+    shippingId?.forEach((e) => {
+      if (currentId === e) {
+        console.log(1);
+        shippingCheckBox.setAttribute('checked', '');
+        countryIndicator.textContent = 'Shipping Address';
+        if (currentId === defaultShippingId) {
+          defaultShippingCheckBox.setAttribute('checked', '');
+          countryIndicator.textContent = ' Default Shipping Address';
+        }
+      } else {
+        countryIndicator.textContent = 'Address';
       }
-    } else {
-      countryIndicator.textContent = 'Address';
-    }
+    });
   } else {
     countryIndicator.textContent = 'Address';
+  }
+  if (defaultShippingCheckBox.checked && defaltBillingCheckBox.checked) {
+    countryIndicator.textContent = ' Default Shipping and Billing Address';
   }
 
   addInnerComponent(countryContainer, countriesInput);

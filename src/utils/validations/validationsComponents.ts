@@ -465,7 +465,6 @@ export function postCodeValidation(
       }
 
       if (postalCodes.validate(postCode, value) === true) {
-        console.log(1);
         city.removeAttribute('disabled');
         incorectValidation(err, '');
         setValidStatus(index, true);

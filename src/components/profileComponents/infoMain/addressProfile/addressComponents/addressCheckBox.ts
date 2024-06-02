@@ -120,28 +120,24 @@ function preventLabelDefault(e: Event): void {
 export function toggleCheckBox(e: Event): void {
   e.stopPropagation();
   const elem = e.target as HTMLInputElement;
-  const ancestor = elem.parentElement?.parentElement as HTMLElement;
-  const form = elem.form as HTMLFormElement;
-  const similarElems = findElement(
-    form,
-    elem.classList[0],
-    true,
-  ) as HTMLInputElement[];
-  const checkBoxes = findElement(
-    ancestor,
-    'address-checkbox',
-    true,
-  ) as HTMLInputElement[];
-
-  for (let i = 0; i < checkBoxes.length; i++) {
-    if (elem !== checkBoxes[i]) {
-      checkBoxes[i].checked = false;
-    }
+  if (
+    elem.classList.contains(
+      'shipping-checkbox-container__default-shipping-checkbox',
+    ) ||
+    elem.classList.contains(
+      'billing-checkbox-container__default-billing-checkbox',
+    )
+  ) {
+    const form = elem.form as HTMLFormElement;
+    const similarElems = findElement(
+      form,
+      elem.classList[0],
+      true,
+    ) as HTMLInputElement[];
+    similarElems.forEach((el) => {
+      if (el != elem) {
+        el.checked = false;
+      }
+    });
   }
-
-  similarElems.forEach((el) => {
-    if (el != elem) {
-      el.checked = false;
-    }
-  });
 }
