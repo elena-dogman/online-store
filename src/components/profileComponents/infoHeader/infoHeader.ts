@@ -3,7 +3,7 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../../utils/usefullFunctions/baseComponent';
+} from '../../../utils/general/baseComponent';
 import { createEdit } from '../infoEdit/infoEdit';
 import { checkLength } from './infoComponents';
 import { buildPasswordBtn } from '../password/password';

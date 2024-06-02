@@ -2,7 +2,7 @@ import { Customer } from '@commercetools/platform-sdk';
 import {
   ElementParams,
   createElement,
-} from '../../../utils/usefullFunctions/baseComponent';
+} from '../../../utils/general/baseComponent';
 import { showClick } from './infoEditComponents';
 
 export function createEdit(userData: Customer): HTMLElement {

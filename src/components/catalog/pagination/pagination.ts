@@ -2,7 +2,7 @@ import {
   createElement,
   addInnerComponent,
   ElementParams,
-} from '../../../utils/usefullFunctions/baseComponent';
+} from '../../../utils/general/baseComponent';
 
 interface PaginationProps {
   totalItems: number;

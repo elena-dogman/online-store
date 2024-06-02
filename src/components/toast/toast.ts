@@ -2,7 +2,7 @@ import {
   createElement,
   ElementParams,
   addInnerComponent,
-} from '../../utils/usefullFunctions/baseComponent';
+} from '../../utils/general/baseComponent';
 
 export function showToast(error: string | undefined | unknown): void {
   const bodyApp: HTMLDivElement | null = document.querySelector('#app');

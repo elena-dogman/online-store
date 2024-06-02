@@ -2,7 +2,7 @@ import { navigateTo } from '../../../router/router';
 import {
   createElement,
   addInnerComponent,
-} from '../../../utils/usefullFunctions/baseComponent';
+} from '../../../utils/general/baseComponent';
 import { ProductProjection } from '@commercetools/platform-sdk';
 
 export function createProductCatalog(

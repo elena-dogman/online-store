@@ -3,7 +3,7 @@ import {
   addInnerComponent,
   EventCallback,
   ElementParams,
-} from '../../utils/usefullFunctions/baseComponent';
+} from '../../utils/general/baseComponent';
 
 export function createNotFoundPage(): HTMLElement {
   const containerParams: ElementParams<'div'> = {

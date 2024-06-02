@@ -2,7 +2,7 @@ import { Customer } from '@commercetools/platform-sdk';
 import {
   ElementParams,
   createElement,
-} from '../../../utils/usefullFunctions/baseComponent';
+} from '../../../utils/general/baseComponent';
 import { addPasswordModal } from './passwordModalForm';
 
 export function buildPasswordBtn(userData: Customer): HTMLElement {

@@ -1,4 +1,4 @@
-import { createElement } from '../usefullFunctions/baseComponent';
+import { createElement } from '../general/baseComponent';
 export function createErrorElement(): HTMLElement {
   return createElement({
     tag: 'span',

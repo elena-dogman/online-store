@@ -1,5 +1,5 @@
 import country from 'country-list-js';
-import { createElement } from '../../../utils/usefullFunctions/baseComponent';
+import { createElement } from '../../../utils/general/baseComponent';
 import { disableLocation } from '../../../utils/validations/validationsComponents';
 export function removeList(list: HTMLElement, input: HTMLInputElement): void {
   list.textContent = 'Choose your country';

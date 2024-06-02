@@ -2,7 +2,7 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../../../utils/usefullFunctions/baseComponent';
+} from '../../../../utils/general/baseComponent';
 import { buildProfileCountry } from './addressComponents/buildProfileCountry';
 import countrys from 'country-list-js';
 import { buildProfileAddressLoyalt } from './addressComponents/addressList';

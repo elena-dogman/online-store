@@ -2,7 +2,7 @@ import {
   addInnerComponent,
   createElement,
   ElementParams,
-} from '../../utils/usefullFunctions/baseComponent';
+} from '../../utils/general/baseComponent';
 import { createHeader } from '../../components/header/header';
 
 export function createMainPage(): HTMLElement {

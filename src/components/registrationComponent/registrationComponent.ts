@@ -1,7 +1,7 @@
 import {
   createElement,
   addInnerComponent,
-} from '../../utils/usefullFunctions/baseComponent';
+} from '../../utils/general/baseComponent';
 import '../../utils/validations/validation';
 import * as formComponent from '../../components/registrationForm/registrationForm';
 import router from '../../router/router';

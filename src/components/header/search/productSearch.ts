@@ -3,7 +3,7 @@ import {
   addInnerComponent,
   createElement,
   ElementParams,
-} from '../../../utils/usefullFunctions/baseComponent';
+} from '../../../utils/general/baseComponent';
 
 export function createSearchComponent(): HTMLElement {
   const searchWrapperParams: ElementParams<'div'> = {

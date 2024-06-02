@@ -2,7 +2,7 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../../../utils/usefullFunctions/baseComponent';
+} from '../../../../utils/general/baseComponent';
 import {
   checkAllInputs,
   fillObjectWithUniqueKeys,

@@ -1,9 +1,6 @@
 import { Customer, MyCustomerUpdateAction } from '@commercetools/platform-sdk';
 import { CustomerUpdateBody, updateCustomer } from '../../../api/apiService';
-import {
-  findElement,
-  searchElement,
-} from '../../../utils/usefullFunctions/searchElem';
+import { findElement, searchElement } from '../../../utils/general/searchElem';
 import {
   fillObjectWithUniqueKeys,
   validStatus,
@@ -14,7 +11,7 @@ import { infoReadvalidStatus, setInfoReadvalidStatus } from './infoBoolean';
 export function showClick(e: Event, data: Customer): void {
   e.preventDefault();
   let elem = e.target as HTMLButtonElement;
-  if (!elem.classList.contains('.profile-header__btn-edit')) {
+  if (!elem.classList.contains('profile-header__btn-edit')) {
     const parent = elem.parentElement as HTMLElement;
     elem = findElement(parent, 'profile-header__btn-edit') as HTMLButtonElement;
     elem.setAttribute('disabled', '');

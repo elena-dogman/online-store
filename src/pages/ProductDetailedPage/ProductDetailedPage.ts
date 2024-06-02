@@ -2,7 +2,7 @@ import {
   createElement,
   ElementParams,
   addInnerComponent,
-} from '../../utils/usefullFunctions/baseComponent';
+} from '../../utils/general/baseComponent';
 import { createHeader } from '../../components/header/header';
 import { productDetailedPageComponent } from '../../components/ProductDetailedPageComponent/ProductDetailedPageComponent';
 

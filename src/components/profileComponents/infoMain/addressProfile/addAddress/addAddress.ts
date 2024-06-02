@@ -2,8 +2,8 @@ import { Customer } from '@commercetools/platform-sdk';
 import {
   ElementParams,
   createElement,
-} from '../../../../../utils/usefullFunctions/baseComponent';
-import { findElement } from '../../../../../utils/usefullFunctions/searchElem';
+} from '../../../../../utils/general/baseComponent';
+import { findElement } from '../../../../../utils/general/searchElem';
 import { addEmptyCountryList } from '../addressProfile';
 import { showClick } from '../../../infoEdit/infoEditComponents';
 

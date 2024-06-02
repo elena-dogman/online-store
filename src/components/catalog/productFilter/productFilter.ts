@@ -3,7 +3,7 @@ import {
   createElement,
   addInnerComponent,
   ElementParams,
-} from '../../../utils/usefullFunctions/baseComponent';
+} from '../../../utils/general/baseComponent';
 import {
   fetchProductAttributes,
   fetchCategories,

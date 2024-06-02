@@ -3,7 +3,7 @@ import {
   addInnerComponent,
   clear,
   ElementParams,
-} from '../../utils/usefullFunctions/baseComponent';
+} from '../../utils/general/baseComponent';
 import { createHeader } from '../../components/header/header';
 import { createProductCatalog } from '../../components/catalog/productCatalog/productCatalog';
 import { createSortComponent } from '../../components/catalog/productSort/productSort';

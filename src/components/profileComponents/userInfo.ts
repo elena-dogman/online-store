@@ -3,7 +3,7 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../utils/usefullFunctions/baseComponent';
+} from '../../utils/general/baseComponent';
 import { buildProfileHeader } from './infoHeader/infoHeader';
 import { buildProfileForm } from './infoMain/profileForm';
 

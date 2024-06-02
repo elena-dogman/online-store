@@ -4,7 +4,7 @@ import {
   validationBirth,
   yearValidation,
 } from '../utils/validations/validationsComponents';
-import { calculateAge } from '../utils/usefullFunctions/ageAndTextChecks';
+import { calculateAge } from '../utils/general/ageAndTextChecks';
 
 describe('validationBirth', () => {
   it('returns true if the date matches the format', () => {

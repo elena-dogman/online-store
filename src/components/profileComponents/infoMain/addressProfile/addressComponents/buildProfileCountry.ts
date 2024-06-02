@@ -2,7 +2,8 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../../../../utils/usefullFunctions/baseComponent';
+} from '../../../../../utils/general/baseComponent';
+import { buildRadioCountry } from './addressRadio';
 export function buildProfileCountry(
   currentId: string | undefined,
   billingId: string | undefined,
@@ -14,11 +15,13 @@ export function buildProfileCountry(
     tag: 'div',
     classNames: ['address-prof__country-container', 'country-wrapper'],
   };
-  const countryIndicatorParams: ElementParams<'div'> = {
+  const countryIndicatorContainerParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['address-prof__country-indicator'],
+    classNames: ['address-prof__country-indicator-container'],
   };
-  const countryIndicator = createElement(countryIndicatorParams);
+  const countryIndicatorContainer = createElement(
+    countryIndicatorContainerParams,
+  );
   const countryContainer = createElement(countryContainerParam);
   const countriesListParams: ElementParams<'div'> = {
     tag: 'div',
@@ -29,28 +32,49 @@ export function buildProfileCountry(
     classNames: ['address-prof-input', 'reg-input'],
     attributes: { type: 'text', placeholder: 'Enter your country', hide: '' },
   };
-
+  const countryIndicatorParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['address-prof__country-indicator'],
+  };
+  const countryIndicator = createElement(countryIndicatorParams);
+  // radioContainer,
+  // defaultShippingRadio,
+  // defaultShippingRadio,
+  // shippingRadio,
+  // billingRadio,
+  const [
+    radioContainer,
+    defaultShippingRadio,
+    defultBillingRadio,
+    shippingRadio,
+    billingRadio,
+  ] = buildRadioCountry();
+  console.log(
+    defaultShippingRadio,
+    defultBillingRadio,
+    shippingRadio,
+    billingRadio,
+  );
+  addInnerComponent(countryContainer, countryIndicatorContainer);
+  addInnerComponent(countryIndicatorContainer, countryIndicator);
+  addInnerComponent(countryIndicatorContainer, radioContainer);
   const countriesInput = createElement(countriesInpunParams);
   const countriesList = createElement(countriesListParams);
   if (currentId !== undefined) {
     if (currentId === billingId) {
-      addInnerComponent(countryContainer, countryIndicator);
       countryIndicator.textContent = 'Billing Address';
       if (currentId === defaultBillingId) {
         countryIndicator.textContent = ' Default Billing Address';
       }
     } else if (currentId === shippingId) {
-      addInnerComponent(countryContainer, countryIndicator);
       countryIndicator.textContent = 'Shipping Address';
       if (currentId === defaultShippingId) {
         countryIndicator.textContent = ' Default Shipping Address';
       }
     } else {
-      addInnerComponent(countryContainer, countryIndicator);
       countryIndicator.textContent = 'Address';
     }
   } else {
-    addInnerComponent(countryContainer, countryIndicator);
     countryIndicator.textContent = 'Address';
   }
   addInnerComponent(countryContainer, countriesInput);

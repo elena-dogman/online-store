@@ -3,8 +3,8 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../../../utils/usefullFunctions/baseComponent';
-import { createInput } from '../../../../utils/usefullFunctions/createInput';
+} from '../../../../utils/general/baseComponent';
+import { createInput } from '../../../../utils/general/createInput';
 import { validateInput } from '../../../../utils/validations/validation';
 import { createErrorElement } from '../../../../utils/validations/validationsErrors';
 import { checkNumber } from '../../../../utils/validations/validationsComponents';
