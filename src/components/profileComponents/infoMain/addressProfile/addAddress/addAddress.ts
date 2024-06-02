@@ -6,7 +6,7 @@ import {
 import { findElement } from '../../../../../utils/general/searchElem';
 import { addEmptyCountryList } from '../addressProfile';
 import { showClick } from '../../../infoEdit/infoEditComponents';
-
+let counter = 0;
 export function buildAddAddressBtn(userData: Customer): HTMLElement {
   const addAddressBtnParams: ElementParams<'button'> = {
     tag: 'button',
@@ -25,8 +25,9 @@ export function buildAddAddressBtn(userData: Customer): HTMLElement {
       'profile-form__address-prof-container',
     ) as HTMLElement;
     if (newAddress) {
+      counter--;
+      newAddress.style.order = counter.toString();
       addressContainer.append(newAddress);
-      addressContainer.insertBefore(newAddress, addressContainer.firstChild);
     }
     showClick(e, userData);
   });

@@ -80,5 +80,8 @@ export function addEmptyCountryList(): HTMLElement {
   postInput.value = '';
   countriesList.textContent = 'Chose your Country';
   streetInput.value = '';
+  streetInput.setAttribute('disabled', '');
+  postInput.setAttribute('disabled', '');
+  cityInput.setAttribute('disabled', '');
   return addressInfWrapper;
 }

@@ -6,6 +6,7 @@ import {
 import countries from 'country-list-js';
 import { validateInput } from '../../../../../utils/validations/validation';
 import { createErrorElement } from '../../../../../utils/validations/validationsErrors';
+
 export function buildCountriesList(): HTMLElement {
   const countriesListParams: ElementParams<'div'> = {
     tag: 'div',
@@ -24,7 +25,6 @@ export function buildCountriesList(): HTMLElement {
   });
   return countriesList;
 }
-
 export function buildProfileAddressLoyalt(): [
   HTMLLabelElement,
   HTMLLabelElement,
@@ -47,7 +47,6 @@ export function buildProfileAddressLoyalt(): [
       'data-validation-type': 'city',
       readonly: '',
       placeholder: 'Enter your City',
-      disabled: '',
     },
   };
   const cityLabel = createElement(cityLabelParams) as HTMLLabelElement;
@@ -71,7 +70,6 @@ export function buildProfileAddressLoyalt(): [
       'data-validation-type': 'post',
       readonly: '',
       placeholder: 'Enter your Post Code',
-      disabled: '',
     },
   };
   const postLabel = createElement(postLabelParams) as HTMLLabelElement;
@@ -94,13 +92,11 @@ export function buildProfileAddressLoyalt(): [
       'data-validation-type': 'street',
       readonly: '',
       placeholder: 'Enter your Street',
-      disabled: '',
     },
   };
   const streetLabel = createElement(streetLabelParams) as HTMLLabelElement;
   const streetInput = createElement(streetInputParams) as HTMLInputElement;
   streetInput.addEventListener('input', validateInput);
-
   const profileStreetError = createErrorElement();
   addInnerComponent(streetLabel, streetInput);
   addInnerComponent(streetLabel, profileStreetError);
