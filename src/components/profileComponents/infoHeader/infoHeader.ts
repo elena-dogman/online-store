@@ -52,7 +52,7 @@ export async function buildProfileHeader(
   const logoUserLink = createElement(logoUserLinkParams);
   const editbutton = createEdit() as HTMLButtonElement;
   const passwrodButton = buildPasswordBtn(userData);
-  const addAddressButton = await buildAddAddressBtn();
+  const addAddressButton = buildAddAddressBtn();
   addInnerComponent(profileHeader, profileLogoContainer);
   addInnerComponent(profileLogoContainer, profileLogoImg);
   addInnerComponent(profileLogoContainer, logoUserContainer);
