@@ -16,7 +16,8 @@ export function buildAddressProfile(customerData: Customer): HTMLElement {
   };
   const addressInfoContainer = createElement(addressInfoContainerParams);
   if (customerData) {
-    customerData.addresses.forEach((e) => {
+    const reverseCustomret = customerData.addresses.reverse();
+    reverseCustomret.forEach((e) => {
       if (e.id) {
         const currentId = e.id;
         const deleteBtn = buildDeleteAddressBtn();

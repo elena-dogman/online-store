@@ -137,7 +137,6 @@ async function toggleReadOnly(
     body.actions = result;
     updateCustomer(body);
     setInfoReadvalidStatus('name', true);
-    console.log(data);
   }
 }
 
@@ -214,14 +213,12 @@ function checkInput(
       ancestor,
       'billing-checkbox-container__billing-checkbox',
     ) as HTMLInputElement;
-    console.log(billingCheck);
     if (id) {
       if (billingCheck.checked) {
         const action: MyCustomerUpdateAction = {
           action: 'addBillingAddressId',
           addressId: id,
         };
-        console.log(2);
         indicator.textContent = 'Billing Address';
         result.push(action);
       }
@@ -233,7 +230,6 @@ function checkInput(
           action: 'removeBillingAddressId',
           addressId: id,
         };
-        console.log(3);
         result.push(action);
       }
       if (shippingDefaultCheck.checked) {
@@ -241,7 +237,6 @@ function checkInput(
           action: 'setDefaultShippingAddress',
           addressId: id,
         };
-        console.log(4);
         indicator.textContent = 'Default Shipping Address';
         result.push(action);
       }
@@ -276,7 +271,9 @@ function checkInput(
       if (billingDefaultCheck.checked && shippingDefaultCheck.checked) {
         indicator.textContent = ' Default Shipping and Billing Address';
       }
-
+      if (billingCheck.checked && shippingCheck.checked) {
+        indicator.textContent = 'Shipping and Billing Address';
+      }
       if (
         !billingDefaultCheck.checked &&
         !shippingDefaultCheck.checked &&
