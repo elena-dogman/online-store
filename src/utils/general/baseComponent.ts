@@ -47,11 +47,12 @@ export function createElement(
   return element;
 }
 
-export function addInnerComponent(
-  parent: HTMLElement,
-  child: HTMLElement,
-): void {
-  parent.appendChild(child);
+export function addInnerComponent(parent: HTMLElement, child: HTMLElement | null): void {
+  if (child) {
+    parent.appendChild(child);
+  } else {
+    console.error('Attempted to add a non-existent child element to parent:', parent);
+  }
 }
 
 export function removeElement(element: HTMLElement): void {

@@ -6,6 +6,7 @@ import {
 import { appEvents } from '../../utils/general/eventEmitter';
 import { checkLoginStatus, logoutUser } from '../../api/apiService';
 import { createSearchComponent } from './search/productSearch';
+import router, { navigateToProfile } from '../../router/router';
 
 export function createHeader(): HTMLElement {
   const headerParams: ElementParams<'div'> = {
@@ -85,7 +86,7 @@ export function createHeader(): HTMLElement {
   });
   const userIcon = createElement({
     tag: 'a',
-    attributes: { href: '/profile' },
+
     classNames: ['header__icon', 'header__user-icon'],
   });
   const userImage = createElement({
@@ -95,6 +96,17 @@ export function createHeader(): HTMLElement {
       alt: 'User',
     },
   });
+  addInnerComponent(userIcon, userImage);
+  userIcon.onclick = (): void => {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      navigateToProfile(userId);
+    } else {
+      router.navigate('/login');
+    }
+  };
+  addInnerComponent(iconsContainer, basketIcon);
+  addInnerComponent(iconsContainer, userIcon);
   addInnerComponent(basketIcon, basketImage);
   addInnerComponent(userIcon, userImage);
   addInnerComponent(iconsContainer, basketIcon);

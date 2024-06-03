@@ -7,7 +7,7 @@ import { createSwiper } from './createSwiperProductDetailedPage';
 import { createIconContainer } from '../../utils/general/createIconContainer';
 import { Category, ClientResponse, Product } from '@commercetools/platform-sdk';
 import { generateBreadcrumbLinks } from '../breadcrumbs/breadcrumbs';
-import { isCustomError } from '../../utils/customError';
+import { isCustomError } from '../../utils/general/customError';
 import { showToast } from '../toast/toast';
 export function productDetailedPageComponent(ID: string): HTMLElement {
   const detailedProductContainerParams: ElementParams<'section'> = {
