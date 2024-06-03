@@ -33,15 +33,23 @@ export async function showClick(e: Event): Promise<void> {
   const lastName = form.elements.namedItem('Last Name') as HTMLInputElement;
   const date = form.elements.namedItem('Date') as HTMLInputElement;
   const email = form.elements.namedItem('Email') as HTMLInputElement;
-  const post = Array.from(
-    form.elements.namedItem('post') as RadioNodeList,
-  ) as HTMLInputElement[];
-  const city = Array.from(
-    form.elements.namedItem('city') as RadioNodeList,
-  ) as HTMLInputElement[];
-  const street = Array.from(
-    form.elements.namedItem('street') as RadioNodeList,
-  ) as HTMLInputElement[];
+  const post = Array.isArray(form.elements.namedItem('post'))
+    ? (Array.from(
+        form.elements.namedItem('post') as RadioNodeList,
+      ) as HTMLInputElement[])
+    : [form.elements.namedItem('post') as HTMLInputElement];
+
+  const city = Array.isArray(form.elements.namedItem('city'))
+    ? (Array.from(
+        form.elements.namedItem('city') as RadioNodeList,
+      ) as HTMLInputElement[])
+    : [form.elements.namedItem('city') as HTMLInputElement];
+
+  const street = Array.isArray(form.elements.namedItem('street'))
+    ? (Array.from(
+        form.elements.namedItem('street') as RadioNodeList,
+      ) as HTMLInputElement[])
+    : [form.elements.namedItem('street') as HTMLInputElement];
   elem.classList.toggle('btn-edit--active');
   const countries = Array.from(getCountriesList(post));
 
@@ -78,12 +86,12 @@ async function toggleReadOnly(
   const result: MyCustomerUpdateAction[] = [];
   if (infoReadvalidStatus.name) {
     args.flat().forEach((e) => {
-      e.removeAttribute('readonly');
+      // e.removeAttribute('readonly');
       dateToggleReadonly(e);
     });
     countries.forEach((e) => {
       e.classList.remove('readonly');
-      toggleCheckBoxDisabled(e, infoReadvalidStatus.name);
+      removeCheckBoxDisabled(e, infoReadvalidStatus.name);
       e.addEventListener('click', addCountriesList, true);
     });
     setInfoReadvalidStatus('name', false);
@@ -99,8 +107,8 @@ async function toggleReadOnly(
       e.setAttribute('readonly', '');
     });
     countries.forEach((e) => {
+      removeCheckBoxDisabled(e, infoReadvalidStatus.name);
       e.classList.add('readonly');
-      toggleCheckBoxDisabled(e, infoReadvalidStatus.name);
       e.removeEventListener('click', addCountriesList, true);
     });
     body.actions = result;
@@ -166,9 +174,9 @@ function checkInput(
     const capitalСountries = Object.keys(countrys.all)[countryIndex];
 
     const id = elem.getAttribute('addressid');
-    const key = elem.getAttribute('addresskey') as string;
     const billingAddress = data.billingAddressIds;
     const shippingAddressIds = data.shippingAddressIds;
+    console.log(data);
     const shippingDefaultCheck = findElement(
       ancestor,
       'shipping-checkbox-container__default-shipping-checkbox',
@@ -244,19 +252,6 @@ function checkInput(
         indicator.textContent = ' Shipping Address';
       }
     }
-    if (!key) {
-      const action: MyCustomerUpdateAction = {
-        action: 'addAddress',
-        address: {
-          key: randomString(),
-          city: city.value,
-          postalCode: elem.value,
-          streetName: street.value,
-          country: capitalСountries,
-        },
-      };
-      result.push(action);
-    }
     if (city && street && id) {
       const action: MyCustomerUpdateAction = {
         action: 'changeAddress',
@@ -287,35 +282,33 @@ function dateToggleReadonly(e: HTMLInputElement): void {
     }
   }
 }
-function toggleCheckBoxDisabled(e: HTMLElement, checkpoint: boolean): void {
-  const parent = e.parentElement;
-  if (parent) {
-    const shippingDefault = findElement(
-      parent,
-      'shipping-checkbox-container__default-shipping-checkbox',
-    ) as HTMLInputElement;
-    const billingDefault = findElement(
-      parent,
-      'billing-checkbox-container__default-billing-checkbox',
-    ) as HTMLInputElement;
-    const billing = findElement(
-      parent,
-      'billing-checkbox-container__billing-checkbox',
-    ) as HTMLInputElement;
-    const shipping = findElement(
-      parent,
-      'shipping-checkbox-container__shipping-checkbox',
-    ) as HTMLInputElement;
-    if (checkpoint) {
-      shippingDefault.removeAttribute('disabled');
-      billingDefault.removeAttribute('disabled');
-      billing.removeAttribute('disabled');
-      shipping.removeAttribute('disabled');
-    } else {
-      shippingDefault.setAttribute('disabled', '');
-      billingDefault.setAttribute('disabled', '');
-      billing.setAttribute('disabled', '');
-      shipping.setAttribute('disabled', '');
-    }
+function removeCheckBoxDisabled(e: HTMLElement, status: boolean): void {
+  const parent = e.parentElement as HTMLElement;
+  const defaultShipping = findElement(
+    parent,
+    'shipping-checkbox-container__default-shipping-checkbox',
+  ) as HTMLInputElement;
+  const shipping = findElement(
+    parent,
+    'shipping-checkbox-container__shipping-checkbox',
+  ) as HTMLInputElement;
+  const defaultBilling = findElement(
+    parent,
+    'billing-checkbox-container__billing-checkbox',
+  ) as HTMLInputElement;
+  const billing = findElement(
+    parent,
+    'billing-checkbox-container__default-billing-checkbox',
+  ) as HTMLInputElement;
+  if (status) {
+    defaultShipping.removeAttribute('disabled');
+    shipping.removeAttribute('disabled');
+    defaultBilling.removeAttribute('disabled');
+    billing.removeAttribute('disabled');
+  } else {
+    defaultShipping.setAttribute('disabled', '');
+    shipping.setAttribute('disabled', '');
+    defaultBilling.setAttribute('disabled', '');
+    billing.setAttribute('disabled', '');
   }
 }

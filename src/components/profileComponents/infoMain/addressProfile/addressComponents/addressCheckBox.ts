@@ -4,6 +4,7 @@ import {
   createElement,
 } from '../../../../../utils/general/baseComponent';
 import { createInput } from '../../../../../utils/general/createInput';
+import { randomString } from '../../../../../utils/general/randomId';
 import { findElement } from '../../../../../utils/general/searchElem';
 
 export function buildRadioCountry(): [
@@ -35,7 +36,7 @@ export function buildRadioCountry(): [
   addInnerComponent(checkBoxContainer, shippingCheckBoxContainer);
   addInnerComponent(checkBoxContainer, billingCheckBoxContainer);
   const [defaultShippingLabel, defaultShippingCheckBox] = createInput(
-    'defaultShipping',
+    randomString(),
     [
       [
         'shipping-checkbox-container__default-shipping-label',
@@ -52,7 +53,7 @@ export function buildRadioCountry(): [
   defaultShippingLabel.textContent = 'Use as default shipping address';
   addInnerComponent(defaultShippingLabel, defaultShippingCheckBox);
   const [shippingLabel, shippingCheckBox] = createInput(
-    'shipping',
+    randomString(),
     [
       ['shipping-checkbox-container__shipping-label', 'address-checkbox-label'],
       ['shipping-checkbox-container__shipping-checkbox', 'address-checkbox'],
@@ -63,7 +64,7 @@ export function buildRadioCountry(): [
   shippingLabel.textContent = 'Use as shipping address';
   addInnerComponent(shippingLabel, shippingCheckBox);
   const [defaultBillingLabel, defaultBillingCheckBox] = createInput(
-    'defaultBilling',
+    randomString(),
     [
       [
         'shipping-checkbox-container__default-billing-label',
@@ -80,7 +81,7 @@ export function buildRadioCountry(): [
   defaultBillingLabel.textContent = 'Use as default billing address';
   addInnerComponent(defaultBillingLabel, defaultBillingCheckBox);
   const [billingLabel, billingCheckBox] = createInput(
-    'billing',
+    randomString(),
     [
       ['billing-checkbox-container__billing-label', 'address-checkbox-label'],
       ['billing-checkbox-container__billing-checkbox', 'address-checkbox'],

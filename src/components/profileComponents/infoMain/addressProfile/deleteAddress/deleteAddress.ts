@@ -13,45 +13,45 @@ import {
   validStatus,
 } from '../../../../../utils/validations/booleanValid';
 
-export async function buildDeleteAddressBtn(): Promise<HTMLElement> {
-  const userData = await getUserData();
+export function buildDeleteAddressBtn(): HTMLElement {
   const deleteAddressBtnParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['address-prof-container__delete-btn', 'profile-btn'],
     textContent: 'Delete Address',
   };
   const deleteAddressBtn = createElement(deleteAddressBtnParams);
-  deleteAddressBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    const parent = deleteAddressBtn.parentElement;
-    const ancestor = parent?.parentElement;
-    const form = ancestor?.parentElement as HTMLFormElement;
-    console.log(form);
-    const deleteButtons = Array.from(
-      ancestor?.querySelectorAll('.address-prof-container__delete-btn') || [],
-    );
-    const addressList = userData.addresses;
-    const elem = e.target as HTMLButtonElement;
-    const index = deleteButtons.indexOf(elem);
-    if (addressList[index]?.id === undefined) {
-      parent?.remove();
-      fillObjectWithUniqueKeys(form, false, validStatus);
-      checkAllInputs();
-    } else {
-      const body: CustomerUpdateBody = {
-        version: userData.version,
-        actions: [
-          {
-            action: 'removeAddress',
-            addressId: addressList[index].id,
-          },
-        ],
-      };
-      updateCustomer(body);
-      parent?.remove();
-      fillObjectWithUniqueKeys(form, false, validStatus);
-      checkAllInputs();
-    }
-  });
+  deleteAddressBtn.addEventListener('click', clickDeleteButton);
   return deleteAddressBtn;
+}
+async function clickDeleteButton(e: Event): Promise<void> {
+  e.preventDefault();
+  const elem = e.target as HTMLButtonElement;
+  const parent = elem.parentElement;
+  const ancestor = parent?.parentElement;
+  const form = ancestor?.parentElement as HTMLFormElement;
+  const deleteButtons = Array.from(
+    ancestor?.querySelectorAll('.address-prof-container__delete-btn') || [],
+  );
+  const userData = await getUserData();
+  const addressList = userData.addresses.reverse();
+  const index = deleteButtons.indexOf(elem);
+  if (addressList[index]?.id === undefined) {
+    parent?.remove();
+    fillObjectWithUniqueKeys(form, false, validStatus);
+    checkAllInputs();
+  } else {
+    const body: CustomerUpdateBody = {
+      version: userData.version,
+      actions: [
+        {
+          action: 'removeAddress',
+          addressId: addressList[index].id,
+        },
+      ],
+    };
+    updateCustomer(body);
+    parent?.remove();
+    fillObjectWithUniqueKeys(form, false, validStatus);
+    checkAllInputs();
+  }
 }

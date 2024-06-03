@@ -52,7 +52,7 @@ export async function buildProfileHeader(
   const logoUserLink = createElement(logoUserLinkParams);
   const editbutton = createEdit() as HTMLButtonElement;
   const passwrodButton = buildPasswordBtn(userData);
-  const addAddressButton = await buildAddAddressBtn();
+  const addAddressButton = buildAddAddressBtn();
   addInnerComponent(profileHeader, profileLogoContainer);
   addInnerComponent(profileLogoContainer, profileLogoImg);
   addInnerComponent(profileLogoContainer, logoUserContainer);
@@ -65,7 +65,7 @@ export async function buildProfileHeader(
   let name = userData.firstName ? userData.firstName : '';
   let lastName = userData.lastName ? userData.lastName : '';
   let mail = userData.email ? userData.email : '';
-  profileLogoImg.innerHTML = `${name[0]}${lastName[0]}`;
+  profileLogoImg.innerHTML = `${name[0].toUpperCase()}${lastName[0].toUpperCase()}`;
   logoUserTitle.innerHTML = `${name} ${lastName}`;
   logoUserLink.innerHTML = mail;
   logoUserTitle.innerHTML = checkLength(logoUserTitle.innerHTML);

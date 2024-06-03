@@ -112,7 +112,10 @@ export const getProject = (): Promise<ClientResponse<Project>> => {
   return anonymousApiRoot.get().execute();
 };
 
-export const loginUser = async (body: { email: string; password: string; }): Promise<ClientResponse<CustomerSignInResult> | undefined | unknown> => {
+export const loginUser = async (body: {
+  email: string;
+  password: string;
+}): Promise<ClientResponse<CustomerSignInResult> | undefined | unknown> => {
   try {
     const passFlowClient = createApiBuilderFromCtpClient(
       createPasswordFlowClient({ email: body.email, password: body.password }),
@@ -310,7 +313,6 @@ export async function regUser(
     return undefined;
   }
 }
-
 export async function getDetailedProduct(ID: string): Promise<
   | {
       productResponse: ClientResponse<Product>;
