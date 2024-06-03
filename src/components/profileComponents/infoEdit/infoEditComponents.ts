@@ -83,6 +83,7 @@ async function toggleReadOnly(
     });
     countries.forEach((e) => {
       e.classList.remove('readonly');
+      toggleCheckBoxDisabled(e, infoReadvalidStatus.name);
       e.addEventListener('click', addCountriesList, true);
     });
     setInfoReadvalidStatus('name', false);
@@ -99,6 +100,7 @@ async function toggleReadOnly(
     });
     countries.forEach((e) => {
       e.classList.add('readonly');
+      toggleCheckBoxDisabled(e, infoReadvalidStatus.name);
       e.removeEventListener('click', addCountriesList, true);
     });
     body.actions = result;
@@ -285,34 +287,35 @@ function dateToggleReadonly(e: HTMLInputElement): void {
     }
   }
 }
-// if (shippingDefault.checked) {
-//   const body = {
-//     action: 'setDefaultShippingAddress',
-//     addressId: id,
-//   };
-//   updateCustomer(body);
-// } else if (shipping.checked) {
-//   const body = {
-//     action: 'addShippingAddressId',
-//     addressId: id,
-//   };
-//   updateCustomer(body);
-// } else if (billingDefault.checked) {
-//   const body = {
-//     action: 'setDefaultBillingAddress',
-//     addressId: id,
-//   };
-//   updateCustomer(body);
-// } else if (billing.checked) {
-//   const body = {
-//     action: 'addBillingAddressId',
-//     addressId: id,
-//   };
-//   updateCustomer(body);
-// } else {
-//   const body = {
-//     action: 'removeShippingAddressId',
-//     addressId: id,
-//   };
-//   updateCustomer(body);
-// }
+function toggleCheckBoxDisabled(e: HTMLElement, checkpoint: boolean): void {
+  const parent = e.parentElement;
+  if (parent) {
+    const shippingDefault = findElement(
+      parent,
+      'shipping-checkbox-container__default-shipping-checkbox',
+    ) as HTMLInputElement;
+    const billingDefault = findElement(
+      parent,
+      'billing-checkbox-container__default-billing-checkbox',
+    ) as HTMLInputElement;
+    const billing = findElement(
+      parent,
+      'billing-checkbox-container__billing-checkbox',
+    ) as HTMLInputElement;
+    const shipping = findElement(
+      parent,
+      'shipping-checkbox-container__shipping-checkbox',
+    ) as HTMLInputElement;
+    if (checkpoint) {
+      shippingDefault.removeAttribute('disabled');
+      billingDefault.removeAttribute('disabled');
+      billing.removeAttribute('disabled');
+      shipping.removeAttribute('disabled');
+    } else {
+      shippingDefault.setAttribute('disabled', '');
+      billingDefault.setAttribute('disabled', '');
+      billing.setAttribute('disabled', '');
+      shipping.setAttribute('disabled', '');
+    }
+  }
+}
