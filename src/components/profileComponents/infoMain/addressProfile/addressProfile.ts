@@ -9,6 +9,10 @@ import { buildProfileAddressLoyalt } from './addressComponents/addressList';
 import { Customer } from '@commercetools/platform-sdk';
 import { randomString } from '../../../../utils/general/randomId';
 import { buildDeleteAddressBtn } from './deleteAddress/deleteAddress';
+import {
+  fillObjectWithUniqueKeys,
+  validStatus,
+} from '../../../../utils/validations/booleanValid';
 export async function buildAddressProfile(
   customerData: Customer,
 ): Promise<HTMLElement> {
@@ -65,6 +69,8 @@ export async function buildAddressProfile(
           addInnerComponent(addressInfWrapper, cityLabel);
           addInnerComponent(addressInfWrapper, streetLabel);
           addInnerComponent(addressInfWrapper, deleteBtn);
+          const form = streetInput.form as HTMLFormElement;
+          fillObjectWithUniqueKeys(form, true, validStatus);
         }
       }
     };
