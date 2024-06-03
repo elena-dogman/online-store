@@ -135,6 +135,7 @@ async function toggleReadOnly(
       e.removeEventListener('click', addCountriesList, true);
     });
     body.actions = result;
+    console.log(body);
     updateCustomer(body);
     setInfoReadvalidStatus('name', true);
   }
@@ -268,11 +269,11 @@ function checkInput(
         result.push(action);
       }
 
-      if (billingDefaultCheck.checked && shippingDefaultCheck.checked) {
-        indicator.textContent = ' Default Shipping and Billing Address';
-      }
       if (billingCheck.checked && shippingCheck.checked) {
         indicator.textContent = 'Shipping and Billing Address';
+      }
+      if (billingDefaultCheck.checked && shippingDefaultCheck.checked) {
+        indicator.textContent = ' Default Shipping and Billing Address';
       }
       if (
         !billingDefaultCheck.checked &&
