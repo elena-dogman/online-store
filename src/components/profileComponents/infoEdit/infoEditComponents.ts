@@ -86,7 +86,7 @@ async function toggleReadOnly(
   const result: MyCustomerUpdateAction[] = [];
   if (infoReadvalidStatus.name) {
     args.flat().forEach((e) => {
-      e.removeAttribute('readonly');
+      // e.removeAttribute('readonly');
       dateToggleReadonly(e);
     });
     countries.forEach((e) => {
@@ -174,7 +174,6 @@ function checkInput(
     const capitalСountries = Object.keys(countrys.all)[countryIndex];
 
     const id = elem.getAttribute('addressid');
-    const key = elem.getAttribute('addresskey') as string;
     const billingAddress = data.billingAddressIds;
     const shippingAddressIds = data.shippingAddressIds;
     console.log(data);
@@ -252,19 +251,6 @@ function checkInput(
       if (!shippingCheck.checked && !billingAddress) {
         indicator.textContent = ' Shipping Address';
       }
-    }
-    if (!key) {
-      const action: MyCustomerUpdateAction = {
-        action: 'addAddress',
-        address: {
-          key: randomString(),
-          city: city.value,
-          postalCode: elem.value,
-          streetName: street.value,
-          country: capitalСountries,
-        },
-      };
-      result.push(action);
     }
     if (city && street && id) {
       const action: MyCustomerUpdateAction = {

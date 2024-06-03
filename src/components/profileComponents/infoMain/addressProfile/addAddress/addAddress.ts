@@ -8,8 +8,12 @@ import {
   fillObjectWithUniqueKeys,
   validStatus,
 } from '../../../../../utils/validations/booleanValid';
-import { showClick } from '../../../infoEdit/infoEditComponents';
-import { getUserData } from '../../../../../api/apiService';
+import {
+  CustomerUpdateBody,
+  getUserData,
+  updateCustomer,
+} from '../../../../../api/apiService';
+import { randomString } from '../../../../../utils/general/randomId';
 let counter = 0;
 export function buildAddAddressBtn(): HTMLElement {
   const addAddressBtnParams: ElementParams<'button'> = {
@@ -39,6 +43,28 @@ async function addAddress(e: Event): Promise<void> {
     newAddress.style.order = counter.toString();
     addressContainer.append(newAddress);
   }
-  showClick(e);
+  const userData = await getUserData();
   fillObjectWithUniqueKeys(form, false, validStatus);
+  const body: CustomerUpdateBody = {
+    version: userData.version,
+    actions: [
+      {
+        action: 'addAddress',
+        address: {
+          key: randomString(),
+          city: 'Chose Your Country',
+          postalCode: 'Chose Your Country',
+          streetName: 'Chose Your Country',
+          country: 'AF',
+        },
+      },
+    ],
+  };
+  updateCustomer(body);
+  // const post = findElement(
+  //   newAddress,
+  //   'profile-form__post-input',
+  // ) as HTMLInputElement;
+  // const id = await userData.addresses[length - 1].id;
+  // console.log(id);
 }
