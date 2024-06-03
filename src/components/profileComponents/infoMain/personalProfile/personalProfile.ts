@@ -108,7 +108,7 @@ export function buildPersonalProfile(userData: Customer): HTMLElement {
       ['profile-form__email-label', 'prof-label'],
       ['profile-form__email-input', 'prof-input'],
     ],
-    'Email',
+    'email',
   );
 
   const infoMailError = createErrorElement();

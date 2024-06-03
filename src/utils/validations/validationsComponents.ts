@@ -10,6 +10,7 @@ import { filterArray } from '../general/filterElem';
 
 export const ERROR_MESSAGES = {
   shortInput: 'Must contain at least 2 letters',
+  longInput: 'Must contain less than 40 letters',
   invalidEmail: 'Invalid email format',
   missingAtSymbol: "Email must contain an '@' symbol",
   missingDomain: 'Email must contain a domain name',
@@ -50,6 +51,7 @@ export function mailValidation(
   err: HTMLSpanElement | null,
   index?: number | null,
 ): boolean {
+  console.log(err);
   if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, ERROR_MESSAGES.invalidEmail);
@@ -57,7 +59,12 @@ export function mailValidation(
       checkAllInputs();
       return false;
     }
-
+    if (value.length >= 40) {
+      incorectValidation(err, ERROR_MESSAGES.longInput);
+      setValidStatus(index, false);
+      checkAllInputs();
+      return false;
+    }
     if (!value.includes('@')) {
       incorectValidation(err, ERROR_MESSAGES.missingAtSymbol);
       setValidStatus(index, false);
@@ -114,6 +121,12 @@ export function nameValidation(
     }
     if (value.length <= 1) {
       incorectValidation(err, ERROR_MESSAGES.shortInput);
+      setValidStatus(index, false);
+      checkAllInputs();
+      return false;
+    }
+    if (value.length >= 40) {
+      incorectValidation(err, ERROR_MESSAGES.longInput);
       setValidStatus(index, false);
       checkAllInputs();
       return false;
@@ -185,6 +198,12 @@ export function cityValidation(
           return false;
         }
       }
+      if (value.length >= 40) {
+        incorectValidation(err, ERROR_MESSAGES.longInput);
+        setValidStatus(index, false);
+        checkAllInputs();
+        return false;
+      }
       if (value.length <= 1) {
         if (street instanceof HTMLInputElement) {
           street.setAttribute('disabled', '');
@@ -231,6 +250,12 @@ export function streetValidation(
       incorectValidation(err, '');
       return false;
     }
+    if (value.length >= 40) {
+      incorectValidation(err, ERROR_MESSAGES.longInput);
+      setValidStatus(index, false);
+      checkAllInputs();
+      return false;
+    }
     if (value.length <= 1) {
       setValidStatus(index, false);
       checkAllInputs();
@@ -264,7 +289,12 @@ export function passwordValidation(
       err.style.bottom = '0px';
       return false;
     }
-
+    if (value.length >= 40) {
+      incorectValidation(err, ERROR_MESSAGES.longInput);
+      setValidStatus(index, false);
+      checkAllInputs();
+      return false;
+    }
     if (value.length < 8) {
       setValidStatus(index, false);
       checkAllInputs(form);
