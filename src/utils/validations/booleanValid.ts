@@ -11,7 +11,6 @@ export function setValidStatus(
 }
 
 export function checkAllInputs(form: HTMLFormElement | null = null): void {
-  console.log(validStatus);
   if (window.location.href.includes('register')) {
     if (Object.values(validStatus).every((value) => value)) {
       authFormButton.removeAttribute('disabled');
@@ -28,11 +27,17 @@ export function checkAllInputs(form: HTMLFormElement | null = null): void {
   } else if (window.location.href.includes('profile')) {
     const edit = document.querySelector('.profile-header__btn-edit');
     const save = document.querySelector('.password-form__save');
+    const addAddress = document.querySelector(
+      '.profile-header__btn-add-address',
+    );
+    console.log(addAddress);
     if (!form?.classList.contains('modal__password-form')) {
       if (Object.values(validStatus).every((value) => value)) {
         edit?.removeAttribute('disabled');
+        addAddress?.removeAttribute('disabled');
       } else {
         edit?.setAttribute('disabled', '');
+        addAddress?.setAttribute('disabled', '');
       }
     } else {
       if (Object.values(validStatus).every((value) => value)) {

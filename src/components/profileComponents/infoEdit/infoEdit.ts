@@ -4,7 +4,7 @@ import {
 } from '../../../utils/general/baseComponent';
 import { showClick } from './infoEditComponents';
 
-export function createEdit(): HTMLElement {
+export async function createEdit(): Promise<HTMLElement> {
   const infoHeaderButtonParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['profile-header__btn-edit', 'profile-btn'],

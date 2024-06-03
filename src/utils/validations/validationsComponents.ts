@@ -51,7 +51,6 @@ export function mailValidation(
   err: HTMLSpanElement | null,
   index?: number | null,
 ): boolean {
-  console.log(err);
   if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, ERROR_MESSAGES.invalidEmail);
