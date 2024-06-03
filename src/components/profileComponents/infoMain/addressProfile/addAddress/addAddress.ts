@@ -8,6 +8,8 @@ import {
   fillObjectWithUniqueKeys,
   validStatus,
 } from '../../../../../utils/validations/booleanValid';
+import { showClick } from '../../../infoEdit/infoEditComponents';
+import { getUserData } from '../../../../../api/apiService';
 let counter = 0;
 export function buildAddAddressBtn(): HTMLElement {
   const addAddressBtnParams: ElementParams<'button'> = {
@@ -22,9 +24,11 @@ export function buildAddAddressBtn(): HTMLElement {
 }
 async function addAddress(e: Event): Promise<void> {
   e.preventDefault();
+  const data = await getUserData();
+  console.log(data);
   const elem = e.target as HTMLButtonElement;
   const form = elem.form as HTMLFormElement;
-  const newAddress = addEmptyCountryList(); // Await the async function call
+  const newAddress = addEmptyCountryList();
   const addressContainer = findElement(
     form,
     'profile-form__address-prof-container',
@@ -35,5 +39,6 @@ async function addAddress(e: Event): Promise<void> {
     newAddress.style.order = counter.toString();
     addressContainer.append(newAddress);
   }
+  showClick(e);
   fillObjectWithUniqueKeys(form, false, validStatus);
 }

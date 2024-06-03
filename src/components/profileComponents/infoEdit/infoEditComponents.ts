@@ -33,15 +33,23 @@ export async function showClick(e: Event): Promise<void> {
   const lastName = form.elements.namedItem('Last Name') as HTMLInputElement;
   const date = form.elements.namedItem('Date') as HTMLInputElement;
   const email = form.elements.namedItem('Email') as HTMLInputElement;
-  const post = Array.from(
-    form.elements.namedItem('post') as RadioNodeList,
-  ) as HTMLInputElement[];
-  const city = Array.from(
-    form.elements.namedItem('city') as RadioNodeList,
-  ) as HTMLInputElement[];
-  const street = Array.from(
-    form.elements.namedItem('street') as RadioNodeList,
-  ) as HTMLInputElement[];
+  const post = Array.isArray(form.elements.namedItem('post'))
+    ? (Array.from(
+        form.elements.namedItem('post') as RadioNodeList,
+      ) as HTMLInputElement[])
+    : [form.elements.namedItem('post') as HTMLInputElement];
+
+  const city = Array.isArray(form.elements.namedItem('city'))
+    ? (Array.from(
+        form.elements.namedItem('city') as RadioNodeList,
+      ) as HTMLInputElement[])
+    : [form.elements.namedItem('city') as HTMLInputElement];
+
+  const street = Array.isArray(form.elements.namedItem('street'))
+    ? (Array.from(
+        form.elements.namedItem('street') as RadioNodeList,
+      ) as HTMLInputElement[])
+    : [form.elements.namedItem('street') as HTMLInputElement];
   elem.classList.toggle('btn-edit--active');
   const countries = Array.from(getCountriesList(post));
 
@@ -169,6 +177,7 @@ function checkInput(
     const key = elem.getAttribute('addresskey') as string;
     const billingAddress = data.billingAddressIds;
     const shippingAddressIds = data.shippingAddressIds;
+    console.log(data);
     const shippingDefaultCheck = findElement(
       ancestor,
       'shipping-checkbox-container__default-shipping-checkbox',
@@ -310,5 +319,10 @@ function removeCheckBoxDisabled(e: HTMLElement, status: boolean): void {
     shipping.removeAttribute('disabled');
     defaultBilling.removeAttribute('disabled');
     billing.removeAttribute('disabled');
+  } else {
+    defaultShipping.setAttribute('disabled', '');
+    shipping.setAttribute('disabled', '');
+    defaultBilling.setAttribute('disabled', '');
+    billing.setAttribute('disabled', '');
   }
 }
