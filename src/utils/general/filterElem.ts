@@ -6,3 +6,10 @@ export function filterArray(form: HTMLFormElement): HTMLInputElement[] {
       element.getAttribute('hide') !== '',
   ) as HTMLInputElement[];
 }
+export function isEmptyArray(arr: HTMLInputElement[]): boolean {
+  if (arr.length === 0) {
+    return true;
+  } else {
+    return false;
+  }
+}

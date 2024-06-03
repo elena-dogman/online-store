@@ -33,7 +33,7 @@ async function clickDeleteButton(e: Event): Promise<void> {
     ancestor?.querySelectorAll('.address-prof-container__delete-btn') || [],
   );
   const userData = await getUserData();
-  const addressList = userData.addresses.reverse();
+  const addressList = userData.addresses;
   const index = deleteButtons.indexOf(elem);
   if (addressList[index]?.id === undefined) {
     parent?.remove();
