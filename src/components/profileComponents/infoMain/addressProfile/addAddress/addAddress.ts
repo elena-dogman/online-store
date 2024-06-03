@@ -5,6 +5,10 @@ import {
 import { findElement } from '../../../../../utils/general/searchElem';
 import { addEmptyCountryList } from '../addressProfile';
 import { showClick } from '../../../infoEdit/infoEditComponents';
+import {
+  fillObjectWithUniqueKeys,
+  validStatus,
+} from '../../../../../utils/validations/booleanValid';
 let counter = 0;
 export async function buildAddAddressBtn(): Promise<HTMLElement> {
   const addAddressBtnParams: ElementParams<'button'> = {
@@ -29,7 +33,7 @@ export async function buildAddAddressBtn(): Promise<HTMLElement> {
       newAddress.style.order = counter.toString();
       addressContainer.append(newAddress);
     }
-
+    fillObjectWithUniqueKeys(form, false, validStatus);
     showClick(e);
   });
   return addAddressBtn;

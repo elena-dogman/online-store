@@ -30,8 +30,6 @@ export async function buildDeleteAddressBtn(): Promise<HTMLElement> {
     const deleteButtons = Array.from(
       ancestor?.querySelectorAll('.address-prof-container__delete-btn') || [],
     );
-    // const formBtn = findElement(form, '.profile-header__btn-edit');
-    // console.log(formBtn);
     const addressList = userData.addresses;
     const elem = e.target as HTMLButtonElement;
     const index = deleteButtons.indexOf(elem);
@@ -51,7 +49,6 @@ export async function buildDeleteAddressBtn(): Promise<HTMLElement> {
       };
       updateCustomer(body);
       parent?.remove();
-      console.log(validStatus);
       fillObjectWithUniqueKeys(form, false, validStatus);
       checkAllInputs();
     }
