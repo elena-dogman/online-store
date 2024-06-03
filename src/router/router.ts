@@ -56,10 +56,16 @@ function createRouter(routes: Routes): Router {
 
       const isLoggedIn = Boolean(localStorage.getItem('token'));
 
+      if (path.startsWith('/profile') && !isLoggedIn) {
+        this.navigate('/login');
+        return;
+      }
+
       if ((path === '/login' || path === '/register') && isLoggedIn) {
         this.navigate('/');
         return;
       }
+
       const routeKeys = Object.keys(this.routes);
       let handler: RouteHandler | null = null;
       let params: Record<string, string> = {};
@@ -104,16 +110,20 @@ const routes = {
   '/register': buildRegistrationPage,
   '/404': notFoundPage,
   '/catalog': createCatalogPage,
-  '/profile': buildUserProfilePage,
+  '/profile/:id': buildUserProfilePage,
   '/product/:id': createDetailedProductPage,
 };
 
 const router = createRouter(routes);
 
-function navigateTo(path: string): void {
+export function navigateTo(path: string): void {
   window.history.pushState({}, '', path);
   router.handleLocationChange();
 }
 
-export { navigateTo };
+export function navigateToProfile(userId: string): void {
+  router.navigate(`/profile/${userId}`);
+}
+
 export default router;
+

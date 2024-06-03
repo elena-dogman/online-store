@@ -17,7 +17,7 @@ import {
 import { Category, ClientResponse, Product } from '@commercetools/platform-sdk';
 import { modalSwiper } from './swiperModal';
 import { showToast } from '../toast/toast';
-import { isCustomError } from '../../utils/customError';
+import { isCustomError } from '../../utils/general/customError';
 
 Swiper.use([
   Pagination,

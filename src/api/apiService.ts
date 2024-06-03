@@ -59,7 +59,6 @@ export async function updateCustomer(bodya: CustomerUpdateBody): Promise<void> {
     } else {
       showToast('An unknown error occurred');
     }
-    // Rethrow the error to be handled by the caller
     throw error;
   }
 }
@@ -113,10 +112,7 @@ export const getProject = (): Promise<ClientResponse<Project>> => {
   return anonymousApiRoot.get().execute();
 };
 
-export const loginUser = async (body: {
-  email: string;
-  password: string;
-}): Promise<ClientResponse<CustomerSignInResult> | undefined | unknown> => {
+export const loginUser = async (body: { email: string; password: string; }): Promise<ClientResponse<CustomerSignInResult> | undefined | unknown> => {
   try {
     const passFlowClient = createApiBuilderFromCtpClient(
       createPasswordFlowClient({ email: body.email, password: body.password }),
@@ -124,6 +120,9 @@ export const loginUser = async (body: {
       projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
     });
     const data = await passFlowClient.login().post({ body }).execute();
+
+    localStorage.setItem('userId', data.body.customer.id);
+
     router.navigate('/');
     appEvents.emit('login', undefined);
     return data;
@@ -138,6 +137,7 @@ export const loginUser = async (body: {
     throw error;
   }
 };
+
 export const loginStayUser = async (body: {
   email: string;
   password: string;
