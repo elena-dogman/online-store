@@ -30,13 +30,14 @@ export function checkAllInputs(form: HTMLFormElement | null = null): void {
     const addAddress = document.querySelector(
       '.profile-header__btn-add-address',
     );
+    console.log(addAddress);
     if (!form?.classList.contains('modal__password-form')) {
       if (Object.values(validStatus).every((value) => value)) {
         edit?.removeAttribute('disabled');
         addAddress?.removeAttribute('disabled');
       } else {
         edit?.setAttribute('disabled', '');
-        addAddress?.removeAttribute('disabled');
+        addAddress?.setAttribute('disabled', '');
       }
     } else {
       if (Object.values(validStatus).every((value) => value)) {

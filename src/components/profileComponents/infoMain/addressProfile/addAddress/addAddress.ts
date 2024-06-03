@@ -80,5 +80,10 @@ async function addAddress(e: Event): Promise<void> {
     if (infoReadvalidStatus) {
       setInfoReadvalidStatus('name', true);
     }
+    elem.setAttribute('disabled', '');
+    const saveBtn = document.querySelector(
+      '.profile-header__btn-edit',
+    ) as HTMLButtonElement;
+    saveBtn.textContent = 'Edit';
   }
 }
