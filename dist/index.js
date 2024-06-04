@@ -35771,6 +35771,13 @@ function filterArray(form) {
     (element) => element.tagName === "INPUT" && element.getAttribute("type") !== "checkbox" && element.getAttribute("hide") !== ""
   );
 }
+function isEmptyArray(arr) {
+  if (arr.length === 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
 function checkError(childrens) {
   if (childrens) {
     const childrenArray = Array.from(childrens);
@@ -35922,7 +35929,6 @@ function incorectValidation(errorSpan, errorMessage) {
   errorSpan.textContent = errorMessage;
 }
 function mailValidation(value, err, index) {
-  console.log(err);
   if (err && index != null) {
     if (value.length === 0) {
       incorectValidation(err, ERROR_MESSAGES.invalidEmail);
@@ -36964,7 +36970,6 @@ function setValidStatus(field, value) {
   validStatus[field] = value;
 }
 function checkAllInputs(form = null) {
-  console.log(validStatus);
   if (window.location.href.includes("register")) {
     if (Object.values(validStatus).every((value) => value)) {
       authFormButton.removeAttribute("disabled");
@@ -36981,11 +36986,16 @@ function checkAllInputs(form = null) {
   } else if (window.location.href.includes("profile")) {
     const edit = document.querySelector(".profile-header__btn-edit");
     const save = document.querySelector(".password-form__save");
+    const addAddress2 = document.querySelector(
+      ".profile-header__btn-add-address"
+    );
     if (!(form == null ? void 0 : form.classList.contains("modal__password-form"))) {
       if (Object.values(validStatus).every((value) => value)) {
         edit == null ? void 0 : edit.removeAttribute("disabled");
+        addAddress2 == null ? void 0 : addAddress2.removeAttribute("disabled");
       } else {
         edit == null ? void 0 : edit.setAttribute("disabled", "");
+        addAddress2 == null ? void 0 : addAddress2.setAttribute("disabled", "");
       }
     } else {
       if (Object.values(validStatus).every((value) => value)) {
@@ -45634,7 +45644,6 @@ function randomString() {
   return result;
 }
 async function showClick(e) {
-  const data = await getUserData();
   e.preventDefault();
   let elem = e.target;
   if (!elem.classList.contains("profile-header__btn-edit")) {
@@ -45649,31 +45658,52 @@ async function showClick(e) {
   const lastName = form.elements.namedItem("Last Name");
   const date = form.elements.namedItem("Date");
   const email = form.elements.namedItem("Email");
-  const post = Array.isArray(form.elements.namedItem("post")) ? Array.from(
+  const post = Array.from(
     form.elements.namedItem("post")
-  ) : [form.elements.namedItem("post")];
-  const city = Array.isArray(form.elements.namedItem("city")) ? Array.from(
+  );
+  const city = Array.from(
     form.elements.namedItem("city")
-  ) : [form.elements.namedItem("city")];
-  const street = Array.isArray(form.elements.namedItem("street")) ? Array.from(
+  );
+  const street = Array.from(
     form.elements.namedItem("street")
-  ) : [form.elements.namedItem("street")];
+  );
+  const postElem = form.elements.namedItem("post");
+  const cityElem = form.elements.namedItem("city");
+  const streetElem = form.elements.namedItem("street");
   elem.classList.toggle("btn-edit--active");
+  const countrie = [
+    findElement(form, "address-prof__countries-list")
+  ];
   const countries = Array.from(getCountriesList(post));
-  if (name && lastName && date && post && city && street && email) {
-    toggleReadOnly(
-      data,
-      countries,
-      name,
-      lastName,
-      date,
-      email,
-      ...post,
-      ...city,
-      ...street
-    );
+  if (!isEmptyArray(post) && !isEmptyArray(city) && !isEmptyArray(street)) {
+    if (name && lastName && date && post && city && street && email) {
+      toggleReadOnly(
+        countries,
+        name,
+        lastName,
+        date,
+        email,
+        ...post,
+        ...city,
+        ...street
+      );
+    }
+  } else {
+    if (name && lastName && date && postElem && cityElem && streetElem && email) {
+      toggleReadOnly(
+        countrie,
+        name,
+        lastName,
+        date,
+        email,
+        postElem,
+        cityElem,
+        streetElem
+      );
+    }
   }
   fillObjectWithUniqueKeys(form, true, validStatus);
+  checkAllInputs();
   changeText(elem);
 }
 function changeText(text) {
@@ -45683,10 +45713,12 @@ function changeText(text) {
     text.innerHTML = "Edit";
   }
 }
-async function toggleReadOnly(data, countries, ...args) {
+async function toggleReadOnly(countries, ...args) {
   const result = [];
+  const data = await getUserData();
   if (infoReadvalidStatus.name) {
     args.flat().forEach((e) => {
+      e.removeAttribute("readonly");
       dateToggleReadonly(e);
     });
     countries.forEach((e) => {
@@ -45771,7 +45803,6 @@ function checkInput(elem, data) {
     const id = elem.getAttribute("addressid");
     const billingAddress = data.billingAddressIds;
     const shippingAddressIds = data.shippingAddressIds;
-    console.log(data);
     const shippingDefaultCheck = findElement(
       ancestor,
       "shipping-checkbox-container__default-shipping-checkbox"
@@ -45794,6 +45825,7 @@ function checkInput(elem, data) {
           action: "addBillingAddressId",
           addressId: id
         };
+        indicator.textContent = "Billing Address";
         result.push(action);
       }
       if (!billingCheck.checked && (billingAddress == null ? void 0 : billingAddress.find((element) => element === id))) {
@@ -45819,9 +45851,6 @@ function checkInput(elem, data) {
         indicator.textContent = "Default Billing Address";
         result.push(action);
       }
-      if (billingDefaultCheck.checked && shippingDefaultCheck.checked) {
-        indicator.textContent = " Default Shipping and Billing Address";
-      }
       if (shippingCheck.checked) {
         const action = {
           action: "addShippingAddressId",
@@ -45837,8 +45866,14 @@ function checkInput(elem, data) {
         };
         result.push(action);
       }
-      if (!shippingCheck.checked && !billingAddress) {
-        indicator.textContent = " Shipping Address";
+      if (billingCheck.checked && shippingCheck.checked) {
+        indicator.textContent = "Shipping and Billing Address";
+      }
+      if (billingDefaultCheck.checked && shippingDefaultCheck.checked) {
+        indicator.textContent = " Default Shipping and Billing Address";
+      }
+      if (!billingDefaultCheck.checked && !shippingDefaultCheck.checked && !billingCheck.checked && !shippingCheck.checked) {
+        indicator.textContent = "Address";
       }
     }
     if (city && street && id) {
@@ -45901,7 +45936,7 @@ function removeCheckBoxDisabled(e, status) {
     billing.setAttribute("disabled", "");
   }
 }
-function createEdit() {
+async function createEdit() {
   const infoHeaderButtonParams = {
     tag: "button",
     classNames: ["profile-header__btn-edit", "profile-btn"],
@@ -46381,7 +46416,7 @@ async function clickDeleteButton(e) {
     (ancestor == null ? void 0 : ancestor.querySelectorAll(".address-prof-container__delete-btn")) || []
   );
   const userData = await getUserData();
-  const addressList = userData.addresses.reverse();
+  const addressList = userData.addresses;
   const index = deleteButtons.indexOf(elem);
   if (((_a = addressList[index]) == null ? void 0 : _a.id) === void 0) {
     parent == null ? void 0 : parent.remove();
@@ -46410,8 +46445,8 @@ function buildAddressProfile(customerData) {
   };
   const addressInfoContainer = createElement$1(addressInfoContainerParams);
   if (customerData) {
-    const customerDataReverse = customerData.addresses.reverse();
-    customerDataReverse.forEach((e) => {
+    const reverseCustomret = customerData.addresses.reverse();
+    reverseCustomret.forEach((e) => {
       if (e.id) {
         const currentId = e.id;
         const deleteBtn = buildDeleteAddressBtn();
@@ -46491,7 +46526,7 @@ function addEmptyCountryList() {
   return addressInfWrapper;
 }
 let counter = 0;
-function buildAddAddressBtn() {
+async function buildAddAddressBtn() {
   const addAddressBtnParams = {
     tag: "button",
     classNames: ["profile-header__btn-add-address", "profile-btn"],
@@ -46499,43 +46534,62 @@ function buildAddAddressBtn() {
     attributes: { form: "profile-form" }
   };
   const addAddressBtn = createElement$1(addAddressBtnParams);
-  addAddressBtn.addEventListener("click", addAddress);
+  addAddressBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    await addAddress(e);
+  });
   return addAddressBtn;
 }
 async function addAddress(e) {
-  e.preventDefault();
-  const data = await getUserData();
-  console.log(data);
-  const elem = e.target;
-  const form = elem.form;
-  const newAddress = addEmptyCountryList();
-  const addressContainer = findElement(
-    form,
-    "profile-form__address-prof-container"
-  );
-  if (newAddress) {
-    counter--;
-    newAddress.style.order = counter.toString();
-    addressContainer.append(newAddress);
-  }
   const userData = await getUserData();
-  fillObjectWithUniqueKeys(form, false, validStatus);
-  const body = {
-    version: userData.version,
-    actions: [
-      {
-        action: "addAddress",
-        address: {
-          key: randomString(),
-          city: "Chose Your Country",
-          postalCode: "Chose Your Country",
-          streetName: "Chose Your Country",
-          country: "AF"
+  if (userData) {
+    const elem = e.target;
+    const form = elem.form;
+    const newAddress = addEmptyCountryList();
+    const addressContainer = findElement(
+      form,
+      "profile-form__address-prof-container"
+    );
+    if (newAddress) {
+      counter--;
+      newAddress.style.order = counter.toString();
+      addressContainer.append(newAddress);
+    }
+    fillObjectWithUniqueKeys(form, false, validStatus);
+    const body = {
+      version: userData.version,
+      actions: [
+        {
+          action: "addAddress",
+          address: {
+            key: randomString(),
+            city: "Chose Your Country",
+            postalCode: "Chose Your Country",
+            streetName: "Chose Your Country",
+            country: "AF"
+          }
         }
-      }
-    ]
-  };
-  updateCustomer(body);
+      ]
+    };
+    await updateCustomer(body);
+    const post = findElement(
+      newAddress,
+      "profile-form__post-input"
+    );
+    const newUSerdata = await getUserData();
+    const id = newUSerdata.addresses[newUSerdata.addresses.length - 1].id;
+    if (id) {
+      post.setAttribute("addressid", id);
+    }
+    if (infoReadvalidStatus) {
+      setInfoReadvalidStatus("name", true);
+    }
+    elem.setAttribute("disabled", "");
+    const saveBtn = document.querySelector(
+      ".profile-header__btn-edit"
+    );
+    saveBtn.textContent = "Edit";
+  }
 }
 async function buildProfileHeader(userData) {
   const profileHeaderParams = {
@@ -46576,9 +46630,9 @@ async function buildProfileHeader(userData) {
   const logoUserContainer = createElement$1(logoUserContainerParams);
   const logoUserTitle = createElement$1(logoUserTitleParams);
   const logoUserLink = createElement$1(logoUserLinkParams);
-  const editbutton = createEdit();
+  const editbutton = await createEdit();
   const passwrodButton = buildPasswordBtn(userData);
-  const addAddressButton = buildAddAddressBtn();
+  const addAddressButton = await buildAddAddressBtn();
   addInnerComponent(profileHeader, profileLogoContainer);
   addInnerComponent(profileLogoContainer, profileLogoImg);
   addInnerComponent(profileLogoContainer, logoUserContainer);

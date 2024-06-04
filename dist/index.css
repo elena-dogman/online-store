@@ -2511,21 +2511,26 @@ button.swiper-pagination-bullet {
 }
 
 .profile-container__profile-wrapper {
-  max-width: 800px;
-  height: 640px;
-  width: 80vw;
-  background: rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  background: rgb(247, 247, 247);
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
   border-radius: 10px;
   padding: 10px;
   margin-top: 64px;
   margin-bottom: 2vh;
+  position: relative;
+  top: 48%;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, -50%);
+  width: 97vw;
+  height: 90vh;
 }
 
 .profile__header {
   display: flex;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 10px 20px;
   align-items: center;
 }
 
@@ -2559,26 +2564,30 @@ button.swiper-pagination-bullet {
 }
 
 .profile-btn {
+  position: relative;
+  top: 0;
+  all: unset;
   display: flex;
-  text-align: center;
-  width: 100px;
-  height: 40px;
-  border: 0;
-  color: rgb(255, 255, 255);
-  border-radius: 8px;
-  background: rgb(57, 172, 217);
-  transition: all 0.5s ease;
-  align-content: center;
   justify-content: center;
   align-items: center;
-}
-
-.profile-btn {
+  text-align: center;
+  max-width: 300px;
+  min-width: 150px;
+  height: 56px;
+  border-radius: 6px;
+  border: 1px solid rgb(0, 0, 0);
+  margin-bottom: 20px;
+  color: rgb(0, 0, 0);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
 }
 
-.profile-btn:hover:not(:disabled) {
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+@media (hover: hover) {
+  .profile-btn:hover:not(:disabled) {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+  }
 }
 
 .profile-btn:disabled {
@@ -2597,17 +2606,17 @@ button.swiper-pagination-bullet {
   justify-content: space-around;
   grid-column-gap: 20px;
   padding: 40px 20px 0;
-  height: 91%;
+  height: 90%;
 }
 
 .address-prof-container__address-wrapper {
   border: 1px solid;
-  padding: 6px;
+  padding: 10px;
   border-radius: 20px;
 }
 
 .profile-form__address-prof-container {
-  width: 50%;
+  width: 70%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -2630,7 +2639,8 @@ button.swiper-pagination-bullet {
 
 .address-prof__country-indicator-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  gap: 5px;
 }
 
 .shipping-checkbox-container,
@@ -2638,6 +2648,7 @@ button.swiper-pagination-bullet {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: 5px;
 }
 
 .country-indicator-container__shipping-checkbox-container {
@@ -2645,9 +2656,10 @@ button.swiper-pagination-bullet {
 }
 
 .address-checkbox-label {
-  font-size: 10rem;
+  font-size: 12rem;
   display: flex;
   flex-direction: row-reverse;
+  align-items: center;
 }
 
 .address-prof__country-container {
@@ -2655,16 +2667,20 @@ button.swiper-pagination-bullet {
 }
 
 .address-prof__countries-list.countries-list {
-  top: 50px;
+  top: 70%;
+  height: 45px;
+  padding: 10px;
+  position: relative;
+  margin-bottom: 10px;
 }
 
 .address-prof__countries-list.--expanded {
   height: 191px;
-  top: 70px;
+  border-radius: 10px;
 }
 
 .address-prof__country-indicator {
-  font-size: 10rem;
+  font-size: 14rem;
 }
 
 .prof-label {
@@ -2704,10 +2720,11 @@ button.swiper-pagination-bullet {
 }
 
 .address-prof__country-indicator {
-  width: 93px;
+  max-width: 100%;
   display: flex;
   align-items: center;
   text-align: center;
+  font-size: 14rem;
 }
 
 .profile__countries-item--expand {
@@ -2747,6 +2764,7 @@ button.swiper-pagination-bullet {
   transition: all 0.5s ease;
   width: 0%;
   opacity: 0;
+  margin-bottom: 0px !important;
 }
 
 .prof-input {
@@ -2754,7 +2772,8 @@ button.swiper-pagination-bullet {
   background-color: transparent;
   border-bottom: 1px solid black;
   margin-bottom: 18px;
-  padding: 0 0 1px 5px;
+  padding: 10px;
+  height: 100%;
 }
 
 .prof-input:focus {
@@ -2800,12 +2819,48 @@ button.swiper-pagination-bullet {
   margin: 0 auto;
 }
 
+.address-checkbox-label > input[type=checkbox] {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  appearance: none;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: background-color 0.5s ease, border-color 0.5s ease;
+  position: relative;
+}
+
+.address-checkbox-label > input[type=checkbox]:checked {
+  background-color: #333;
+  border-color: #333;
+}
+
+.address-checkbox-label > input[type=checkbox]:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.date__year.prof-input.date-input {
+  width: 100px;
+}
+
 @media (max-width: 910px) {
   .profile-container__profile-wrapper {
     overflow-y: auto;
+    width: auto;
   }
   .profile-header__buttons-container {
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 5px;
   }
   .profile-container__profile-form {
     flex-direction: column;
@@ -2830,6 +2885,7 @@ button.swiper-pagination-bullet {
   }
   .profile-header__buttons-container {
     flex-direction: row;
+    justify-content: space-around;
   }
 }
 
@@ -2855,17 +2911,19 @@ button.swiper-pagination-bullet {
   .indicator-container__checkbox-container,
   .address-prof__country-indicator-container {
     gap: 5px;
-    font-family: 10px;
+  }
+  .indicator-container__checkbox-container {
+    flex-direction: column;
   }
   .address-prof__countries-list.countries-list {
-    top: 60px;
-    text-align: center;
+    top: 0px;
+    text-align: left;
     vertical-align: middle;
     border: 2px solid gray;
     border-radius: 20px;
     transition: border-color 0.3s ease;
     width: 100%;
-    height: 30px;
+    height: 40px;
     margin-top: 4px;
   }
   .address-prof__countries-list.--expanded {
@@ -2875,15 +2933,23 @@ button.swiper-pagination-bullet {
   .profile-container {
     padding: 40px 0;
   }
+  .profile-container__profile-wrapper {
+    top: 50%;
+    padding: 0px;
+    width: 100vw;
+  }
 }
 
 @media (max-width: 400px) {
-  .address-prof__countries-list.countries-list {
-    top: 80px;
-  }
   .address-prof__countries-list.--expanded {
-    top: 115px;
+    top: 0px;
     height: 270px;
+  }
+}
+
+@media (max-height: 800px) {
+  .profile-form__address-prof-container {
+    overflow-y: visible;
   }
 }
 
@@ -4743,7 +4809,7 @@ input[type=checkbox] {
   .error {
     color: rgb(255, 64, 64);
     position: absolute;
-    font-size: 16rem;
+    font-size: 12rem;
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
