@@ -52,14 +52,7 @@ export async function updateCustomer(bodya: CustomerUpdateBody): Promise<void> {
   try {
     await refreshFlowClient.me().post({ body: bodya }).execute();
   } catch (error: unknown) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast('An unknown error occurred');
-    }
-    throw error;
+    return;
   }
 }
 export async function changePassword(
