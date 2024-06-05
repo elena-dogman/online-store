@@ -26,6 +26,7 @@ import { appEvents } from '../utils/general/eventEmitter';
 import { RegistrationData } from '../components/registrationForm/regDataInterface';
 import { showToast } from '../components/toast/toast';
 import { isCustomError } from '../utils/general/customError';
+import { resultPasswordModal } from '../components/profileComponents/password/passwordModalForm';
 
 interface SearchQueryArgs {
   'text.en-US': string;
@@ -86,15 +87,11 @@ export async function changePassword(
       .execute();
     localStorage.removeItem('token');
     await loginStayUser(body);
+    resultPasswordModal('Password is changed');
   } catch (error: unknown) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast('An unknown error occurred');
-    }
-    throw error;
+    resultPasswordModal(
+      'Error: The entered password does not match the current one',
+    );
   }
 }
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
