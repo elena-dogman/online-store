@@ -51,8 +51,14 @@ export async function updateCustomer(bodya: CustomerUpdateBody): Promise<void> {
   ).withProjectKey({ projectKey: import.meta.env.VITE_CTP_PROJECT_KEY });
   try {
     await refreshFlowClient.me().post({ body: bodya }).execute();
-  } catch (error: unknown) {
-    return;
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
   }
 }
 export async function changePassword(

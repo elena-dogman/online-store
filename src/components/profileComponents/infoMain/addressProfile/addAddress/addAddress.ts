@@ -74,6 +74,7 @@ async function addAddress(e: Event): Promise<void> {
     ) as HTMLInputElement;
     const newUSerdata = await getUserData();
     const id = newUSerdata.addresses[newUSerdata.addresses.length - 1].id;
+
     if (id) {
       post.setAttribute('addressid', id);
     }

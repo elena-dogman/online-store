@@ -138,6 +138,13 @@ async function toggleReadOnly(
     console.log(body);
     updateCustomer(body);
     setInfoReadvalidStatus('name', true);
+    const deleteBtns = document.querySelectorAll(
+      '.address-prof-container__delete-btn',
+    );
+
+    deleteBtns.forEach((btn) => {
+      btn.removeAttribute('disabled');
+    });
   }
 }
 
@@ -285,18 +292,21 @@ function checkInput(
       }
     }
     if (city && street && id) {
-      const action: MyCustomerUpdateAction = {
-        action: 'changeAddress',
-        addressId: id,
-        address: {
-          key: randomString(),
-          city: city.value,
-          postalCode: elem.value,
-          streetName: street.value,
-          country: capitalСountries,
-        },
-      };
-      result.push(action);
+      if (elem.getAttribute('addressid') === id) {
+        console.log(1);
+        const action: MyCustomerUpdateAction = {
+          action: 'changeAddress',
+          addressId: id,
+          address: {
+            key: randomString(),
+            city: city.value,
+            postalCode: elem.value,
+            streetName: street.value,
+            country: capitalСountries,
+          },
+        };
+        result.push(action);
+      }
     }
   }
   return result;
