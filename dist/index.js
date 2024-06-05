@@ -17570,14 +17570,7 @@ async function updateCustomer(bodya) {
   try {
     await refreshFlowClient.me().post({ body: bodya }).execute();
   } catch (error) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast("An unknown error occurred");
-    }
-    throw error;
+    return;
   }
 }
 async function changePassword(dataCustomer, customerPassword) {
