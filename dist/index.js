@@ -37130,6 +37130,25 @@ function createHeader() {
   appEvents.on("logout", () => updateAuthButton(false));
   return header;
 }
+function createHero() {
+  const containerParams = {
+    tag: "div",
+    classNames: ["hero-container"],
+    textContent: ""
+  };
+  const heroContainer = createElement$1(containerParams);
+  const imageParams = {
+    tag: "img",
+    classNames: ["hero-image"],
+    attributes: {
+      src: "/assets/mainPage/hero-img.png",
+      alt: "Not Found"
+    }
+  };
+  const heroImg = createElement$1(imageParams);
+  addInnerComponent(heroContainer, heroImg);
+  return heroContainer;
+}
 function createMainPage() {
   const pageContainerParams = {
     tag: "div",
@@ -37138,25 +37157,8 @@ function createMainPage() {
   const container = createElement$1(pageContainerParams);
   const header = createHeader();
   addInnerComponent(container, header);
-  const buttonsContainer = createElement$1({
-    tag: "div",
-    classNames: ["buttons-for-reviewer"]
-  });
-  const loginButton = createElement$1({
-    tag: "a",
-    attributes: { href: "/login" },
-    classNames: ["button-for-reviewer", "login-button"],
-    textContent: "Log In"
-  });
-  const registerButton = createElement$1({
-    tag: "a",
-    attributes: { href: "/register" },
-    classNames: ["button-for-reviewer", "register-button"],
-    textContent: "Register"
-  });
-  addInnerComponent(buttonsContainer, loginButton);
-  addInnerComponent(buttonsContainer, registerButton);
-  addInnerComponent(container, buttonsContainer);
+  const hero = createHero();
+  addInnerComponent(container, hero);
   return container;
 }
 function createNotFoundPage() {
@@ -37747,6 +37749,14 @@ async function createFilterComponent() {
     filterGroup.classList.add("size-filter-group");
     addInnerComponent(filterContainer, filterGroup);
   }
+  const clearButtonParams = {
+    tag: "button",
+    classNames: ["clear-filters-button"],
+    textContent: "Clear all"
+  };
+  const clearButton = createElement$1(clearButtonParams);
+  clearButton.addEventListener("click", clearAllFilters);
+  addInnerComponent(filterContainer, clearButton);
   return filterContainer;
 }
 async function updateSizeFilterForCategory(categoryId) {
@@ -37900,6 +37910,17 @@ function createFilterGroup(name, values) {
   addInnerComponent(filterGroup, filterLabelWrapper);
   addInnerComponent(filterGroup, checkboxContainer);
   return filterGroup;
+}
+function clearAllFilters() {
+  const filters = {
+    audience: /* @__PURE__ */ new Set(),
+    category: "",
+    size: /* @__PURE__ */ new Set()
+  };
+  updateURLWithFilters(filters);
+  document.querySelectorAll(".filter-group input").forEach((input) => {
+    input.checked = false;
+  });
 }
 function createLoadingOverlay() {
   const overlay = createElement$1({
