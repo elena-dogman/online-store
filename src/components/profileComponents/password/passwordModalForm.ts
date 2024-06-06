@@ -158,3 +158,37 @@ function showPassword(e: Event): void {
     elem.setAttribute('title', 'Click to make your password visible');
   }
 }
+export function resultPasswordModal(text: string): void {
+  const app = document.querySelector('#app') as HTMLElement;
+  const resultPasswordContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['password-result__modal-container', 'modal_container'],
+  };
+  const passwordContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['password-result__result-container'],
+  };
+  const passwordContainer = createElement(passwordContainerParams);
+  const resultPasswordContainer = createElement(resultPasswordContainerParams);
+  const resultPasswordTitleParams: ElementParams<'h2'> = {
+    tag: 'h2',
+    classNames: ['password-result__title'],
+    textContent: text,
+  };
+  const resultPasswordTitle = createElement(resultPasswordTitleParams);
+  const buttonCloseParams: ElementParams<'button'> = {
+    tag: 'button',
+    classNames: ['password-result__close', 'profile-btn'],
+    textContent: 'Close',
+  };
+  const buttonClose = createElement(buttonCloseParams);
+
+  addInnerComponent(app, resultPasswordContainer);
+  addInnerComponent(resultPasswordContainer, passwordContainer);
+  addInnerComponent(passwordContainer, resultPasswordTitle);
+  addInnerComponent(passwordContainer, buttonClose);
+
+  buttonClose.addEventListener('click', () => {
+    resultPasswordContainer.remove();
+  });
+}
