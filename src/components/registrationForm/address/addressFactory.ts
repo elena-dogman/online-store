@@ -1,7 +1,7 @@
-import { createElement } from '../../../utils/baseComponent';
+import { createElement } from '../../../utils/general/baseComponent';
 import { validateInput } from '../../../utils/validations/validation';
 import { createErrorElement } from '../../../utils/validations/validationsErrors';
-import { addCountries } from './countryList';
+import { addCountriesList } from './addressComponents';
 export interface Components {
   [key: string]: AddressComponents;
 }
@@ -33,12 +33,7 @@ function createAddressComponents(
 
   const labelStreet = createElement({
     tag: 'label',
-    classNames: [
-      `${type}__street-label`,
-      'reg__label',
-      'street-label',
-      'label-street',
-    ],
+    classNames: [`${type}__street-label`, 'reg__label', 'label-street'],
     textContent: 'Address',
   });
   const inputStreet = createElement({
@@ -57,12 +52,7 @@ function createAddressComponents(
 
   const labelCity = createElement({
     tag: 'label',
-    classNames: [
-      `${type}__city-label`,
-      'reg__label',
-      'city-label',
-      'label-city',
-    ],
+    classNames: [`${type}__city-label`, 'reg__label', 'label-city'],
     textContent: 'City',
   });
   const inputCity = createElement({
@@ -106,17 +96,17 @@ function createAddressComponents(
   });
   const listCountry = createElement({
     tag: 'div',
-    classNames: [`${type}__countries-list`],
+    classNames: [`${type}__countries-list`, 'countries-list'],
     textContent: 'Choose your country',
   });
   const inputCountry = createElement({
     tag: 'input',
     classNames: [`${type}__countries-input`, 'reg-input'],
-    attributes: { type: 'text', placeholder: 'Enter your country ' },
+    attributes: { type: 'text', placeholder: 'Enter your country', hide: '' },
   }) as HTMLInputElement;
   const countryWrapper = createElement({
     tag: 'div',
-    classNames: [`${type}__country-wrapper`],
+    classNames: [`${type}__country-wrapper`, 'country-wrapper'],
   });
   countryWrapper.append(inputCountry, listCountry);
   labelCountry.append(countryWrapper);
@@ -124,7 +114,8 @@ function createAddressComponents(
   inputStreet.addEventListener('input', validateInput);
   inputCity.addEventListener('input', validateInput);
   inputPost.addEventListener('input', validateInput);
-  listCountry.addEventListener('click', addCountries);
+  listCountry.addEventListener('click', addCountriesList, true);
+
   container.append(
     labelCountry,
     countryWrapper,

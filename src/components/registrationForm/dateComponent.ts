@@ -1,4 +1,7 @@
-import { ElementParams, createElement } from '../../utils/baseComponent';
+import {
+  ElementParams,
+  createElement,
+} from '../../utils/general/baseComponent';
 import * as errors from '..//..//utils/validations/validationsErrors';
 import * as validationFunc from '../../utils/validations/validationsComponents';
 import { validateInput } from '../../utils/validations/validation';
@@ -7,6 +10,7 @@ const containerForDate = createElement({
   classNames: ['reg-form__date-container'],
 });
 export const errorDateReg = errors.createErrorElement();
+errorDateReg.classList.add('error-date');
 export const dayDate = createElement({
   tag: 'input',
   classNames: ['date__day', 'reg-input', 'date-input'],
@@ -14,6 +18,7 @@ export const dayDate = createElement({
     type: 'text',
     maxLength: '2',
     'data-validation-type': 'day',
+    hide: '',
   },
 });
 export const monthDate = createElement({
@@ -23,6 +28,7 @@ export const monthDate = createElement({
     type: 'text',
     maxLength: '2',
     'data-validation-type': 'month',
+    hide: '',
   },
 });
 export const yearDate = createElement({

@@ -7,7 +7,13 @@
   padding: 10px 20px;
   font-family: $font-family-base;
   background: white;
-  z-index: 9999;
+  z-index: 999;
+}
+
+.header__logo-search-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .header__logo-link,
@@ -17,7 +23,12 @@
   text-decoration: none;
 }
 
-.header__nav-links,
+.header__nav-links {
+  display: flex;
+  gap: 15px;
+  margin: 0 auto;
+  left: 50%;
+}
 .header__icons,
 .header__auth-buttons {
   flex-wrap: wrap;
@@ -39,6 +50,7 @@
 
 .header__icons {
   margin-right: 10px;
+  cursor: pointer;
 }
 
 .header__icon img {
@@ -141,7 +153,32 @@
   color: $text-color-accent;
 }
 
-@media (max-width: 768px) {
+.search__wrapper {
+  display: flex;
+  border-bottom: 1px solid #000;
+  padding-bottom: 5px;
+}
+
+.search__input {
+  border: none;
+  outline: none;
+  font-size: $font-size-small;
+  margin-left: 10px;
+}
+
+.search__button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.search__icon {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 870px) {
 
   .header__auth-buttons,
   .header__nav-links {
@@ -185,11 +222,17 @@
   }
 }
 
-@media (max-width: 410px) {
+@media (max-width: 575px) {
   .header__logo {
-    font-size: $font-size-button-text;
+      display: none;
+    }
   }
-}
+
+    @media (max-width: 390px) {
+      .header {
+        padding: 10px;
+      }
+    }
 
 @media (hover: hover) and (pointer: fine) {
 

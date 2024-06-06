@@ -35,6 +35,8 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'error',
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     '@typescript-eslint/indent': 'off',
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": "off",
   },
   ignorePatterns: ['.eslintrc.cjs', 'vite.config.js', '.env'],
   settings: {

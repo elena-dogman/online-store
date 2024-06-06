@@ -2,7 +2,7 @@ import {
   ElementParams,
   addInnerComponent,
   createElement,
-} from '../../utils/baseComponent';
+} from '../../utils/general/baseComponent';
 import * as errors from '..//..//utils/validations/validationsErrors';
 import { addDate } from './dateComponent';
 import { createDefaultCheck } from './address/checkBoxes/addressCheckBoxes';
@@ -10,12 +10,16 @@ import { addressesContainer } from './address/addressFactory';
 import { commonFormCompontens } from './nameMailForm';
 import { submitRegData } from './submitRegData';
 import { addDefaultChecks } from './address/checkBoxes/checkBoxesComponents';
+import {
+  fillObjectWithUniqueKeys,
+  validStatus,
+} from '../../utils/validations/booleanValid';
 export const errorNameReg = errors.createErrorElement();
 export const errorLastNameReg = errors.createErrorElement();
 export const authSideForm = createElement({
   tag: 'form',
   classNames: ['auth-side__reg-form'],
-});
+}) as HTMLFormElement;
 const regDateAndCheckContainerParams: ElementParams<'div'> = {
   tag: 'div',
   classNames: ['reg-form__container__date-checks'],
@@ -44,5 +48,6 @@ export function createForm(): void {
   addInnerComponent(authSideForm, address);
   addInnerComponent(authSideForm, addDefaultChecks());
   addInnerComponent(authSideForm, authFormButton);
+  fillObjectWithUniqueKeys(authSideForm, false, validStatus);
   authFormButton.addEventListener('click', submitRegData);
 }

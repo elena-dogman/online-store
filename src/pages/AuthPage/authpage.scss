@@ -77,7 +77,7 @@
 
 .password_icon {
   cursor: pointer;
-  @include hoverButton;
+  @include hoverLink;
 }
 .submit_button {
   all: unset;
@@ -110,7 +110,7 @@
   text-decoration: none;
   border: none;
   cursor: pointer;
-  @include hoverButton;
+  @include hoverLink;
 }
 .auth_error {
   color: $text-color-error;

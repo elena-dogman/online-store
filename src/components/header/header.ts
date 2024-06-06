@@ -2,9 +2,11 @@ import {
   addInnerComponent,
   createElement,
   ElementParams,
-} from '../../utils/baseComponent';
-import { appEvents } from '../../utils/eventEmitter';
+} from '../../utils/general/baseComponent';
+import { appEvents } from '../../utils/general/eventEmitter';
 import { checkLoginStatus, logoutUser } from '../../api/apiService';
+import { createSearchComponent } from './search/productSearch';
+import router, { navigateToProfile } from '../../router/router';
 
 export function createHeader(): HTMLElement {
   const headerParams: ElementParams<'div'> = {
@@ -25,24 +27,41 @@ export function createHeader(): HTMLElement {
   });
   addInnerComponent(logoLink, logo);
 
+  const logoSearchContainer = createElement({
+    tag: 'div',
+    classNames: ['header__logo-search-container'],
+  });
+
+  addInnerComponent(logoSearchContainer, logoLink);
+
+  const isCatalogPage = window.location.pathname === '/catalog';
+
+  if (isCatalogPage) {
+    const searchComponent = createSearchComponent();
+    addInnerComponent(logoSearchContainer, searchComponent);
+  }
+
   const navContainer = createElement({
     tag: 'div',
     classNames: ['header__nav-links'],
   });
-  const homeLink = createElement({
-    tag: 'a',
-    attributes: { href: '/' },
-    classNames: ['header__nav-link'],
-    textContent: 'Home',
-  });
-  const aboutLink = createElement({
-    tag: 'a',
-    attributes: { href: '/about' },
-    classNames: ['header__nav-link'],
-    textContent: 'About Us',
-  });
-  addInnerComponent(navContainer, homeLink);
-  addInnerComponent(navContainer, aboutLink);
+
+  if (!isCatalogPage) {
+    const homeLink = createElement({
+      tag: 'a',
+      attributes: { href: '/' },
+      classNames: ['header__nav-link'],
+      textContent: 'Home',
+    });
+    const aboutLink = createElement({
+      tag: 'a',
+      attributes: { href: '/catalog' },
+      classNames: ['header__nav-link'],
+      textContent: 'Catalog',
+    });
+    addInnerComponent(navContainer, homeLink);
+    addInnerComponent(navContainer, aboutLink);
+  }
 
   const rightContainer = createElement({
     tag: 'div',
@@ -67,7 +86,7 @@ export function createHeader(): HTMLElement {
   });
   const userIcon = createElement({
     tag: 'a',
-    attributes: { href: '/profile' },
+
     classNames: ['header__icon', 'header__user-icon'],
   });
   const userImage = createElement({
@@ -77,6 +96,17 @@ export function createHeader(): HTMLElement {
       alt: 'User',
     },
   });
+  addInnerComponent(userIcon, userImage);
+  userIcon.onclick = (): void => {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      navigateToProfile(userId);
+    } else {
+      router.navigate('/login');
+    }
+  };
+  addInnerComponent(iconsContainer, basketIcon);
+  addInnerComponent(iconsContainer, userIcon);
   addInnerComponent(basketIcon, basketImage);
   addInnerComponent(userIcon, userImage);
   addInnerComponent(iconsContainer, basketIcon);
@@ -111,8 +141,10 @@ export function createHeader(): HTMLElement {
   addInnerComponent(rightContainer, iconsContainer);
   addInnerComponent(rightContainer, authNavContainer);
 
-  addInnerComponent(header, logoLink);
-  addInnerComponent(header, navContainer);
+  addInnerComponent(header, logoSearchContainer);
+  if (!isCatalogPage) {
+    addInnerComponent(header, navContainer);
+  }
   addInnerComponent(header, rightContainer);
 
   const burgerMenu = createElement({
@@ -133,7 +165,10 @@ export function createHeader(): HTMLElement {
   };
 
   const closeBurgerMenu = (event: MouseEvent): void => {
-    if (!header.contains(event.target as Node) && authNavContainer.classList.contains('open')) {
+    if (
+      !header.contains(event.target as Node) &&
+      authNavContainer.classList.contains('open')
+    ) {
       authNavContainer.classList.remove('open');
       burgerMenu.classList.remove('change');
     }
@@ -141,11 +176,12 @@ export function createHeader(): HTMLElement {
 
   document.addEventListener('click', closeBurgerMenu);
 
+  const tabletScreenWidthInPx = 870;
   const moveNavLinks = (): void => {
-    const isMobile = window.innerWidth <= 768;
-    if (isMobile) {
+    const isMobile = window.innerWidth <= tabletScreenWidthInPx;
+    if (isMobile && !isCatalogPage) {
       addInnerComponent(authNavContainer, navContainer);
-    } else {
+    } else if (!isCatalogPage) {
       if (authNavContainer.classList.contains('open')) {
         authNavContainer.classList.remove('open');
         burgerMenu.classList.remove('change');
@@ -156,6 +192,8 @@ export function createHeader(): HTMLElement {
 
   window.addEventListener('resize', moveNavLinks);
   document.addEventListener('DOMContentLoaded', moveNavLinks);
+  window.addEventListener('load', moveNavLinks);
+  moveNavLinks();
 
   async function handleLogout(): Promise<void> {
     await logoutUser();
@@ -168,16 +206,18 @@ export function createHeader(): HTMLElement {
     authButton.setAttribute('href', isLoggedIn ? '#' : '/login');
     authButton.onclick = isLoggedIn
       ? async (): Promise<void> => {
-        await handleLogout();
-        appEvents.emit('logout', undefined);
-      }
+          await handleLogout();
+          appEvents.emit('logout', undefined);
+        }
       : null;
   }
 
-  document.addEventListener('DOMContentLoaded', async () => {
+  document.addEventListener('DOMContentLoaded', initializeAuthButtons);
+  function initializeAuthButtons(): void {
     const isLoggedIn = checkLoginStatus();
     updateAuthButton(isLoggedIn);
-  });
+  }
+  initializeAuthButtons();
 
   appEvents.on('login', () => updateAuthButton(true));
   appEvents.on('logout', () => updateAuthButton(false));

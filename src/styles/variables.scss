@@ -5,6 +5,8 @@ $text-color-accent: rgb(57, 172, 217);
 $not-found-base-color: rgb(86, 111, 167);
 $not-active-color: rgb(151, 148, 148);
 $text-color-error: rgb(255, 64, 64);
+$additional-info-color: #666;
+$card-background: rgb(247, 247, 247);
 
 // fonts
 $font-family-base: 'Poppins', sans-serif;
@@ -12,19 +14,21 @@ $font-family-logo: 'Oxygen', sans-serif;
 $font-size-small: 14rem;
 $font-size-base: 16rem;
 $font-size-button-text: 20rem;
+$font-size-subtitle: 22rem;
 $font-size-large-text: 24rem;
 $font-size-form-heading: 32rem;
 $font-size-big-heading: 64rem;
 
 //effects
-$button-hover-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+$button-hover-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); //this is button hover (box-shadow: $button-hover-box-shadow)
 $button-disabled-background: gray;
 
 //other
 $button-border: 1px solid #bbb5b5;
 
 //mixins
-@mixin hoverButton {
+// this is link hover
+@mixin hoverLink {
   &:hover {
     transform: scale(1.1);
     transition: transform 0.3s ease;
@@ -42,3 +46,10 @@ $button-border: 1px solid #bbb5b5;
     }
   }
 }
+
+  @mixin hoverOpacity($opacity) {
+    &:hover {
+    opacity: $opacity;
+    transition: opacity 0.3s ease;
+    }
+  }

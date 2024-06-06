@@ -27,9 +27,7 @@ export async function submitRegData(): Promise<void> {
   const paddedDay = birthDay.value.padStart(2, '0');
   const paddedMonth = birthMonth.value.padStart(2, '0');
   const paddedYear = birthYear.value.padStart(4, '0');
-
   const DOB = `${paddedYear}-${paddedMonth}-${paddedDay}`;
-
   const countryNames = country.names();
   const countryBillingIndex = countryNames.indexOf(countryBilling.textContent);
   const countryShippingIndex = countryNames.indexOf(
@@ -37,7 +35,7 @@ export async function submitRegData(): Promise<void> {
   );
   let billingPostCode = Object.keys(country.all)[countryBillingIndex];
   const shippingPostCode = Object.keys(country.all)[countryShippingIndex];
-  if (validStatusAddress.joinAdress) {
+  if (validStatusAddress.joinAddress) {
     billingPostCode = shippingPostCode;
     streetBilling.value = streetShipping.value;
     cityBilling.value = cityShipping.value;

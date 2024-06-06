@@ -3,7 +3,7 @@ import {
   createElement,
   ElementParams,
   addInnerComponent,
-} from '../../utils/baseComponent';
+} from '../../utils/general/baseComponent';
 import { ClientResponse } from '@commercetools/platform-sdk';
 import { createHeader } from '../../components/header/header';
 import { validateInput } from '../../utils/validations/validation';
@@ -36,13 +36,9 @@ export function createAuthPage(): HTMLElement {
   const passwordInputIcon = authFormArray[3];
   const submitButton = authFormArray[4];
 
-  emailInput.addEventListener('input', (event) => {
-    validateInput(event);
-  });
+  emailInput.addEventListener('input', validateInput);
 
-  passwordInput.addEventListener('input', (event) => {
-    validateInput(event);
-  });
+  passwordInput.addEventListener('input', validateInput);
 
   passwordInputIcon.addEventListener('click', (event) => {
     event.preventDefault();

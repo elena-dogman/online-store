@@ -2,38 +2,13 @@ import {
   createElement,
   ElementParams,
   addInnerComponent,
-} from '../../utils/baseComponent';
+} from '../../utils/general/baseComponent';
+import { createInput } from '../../utils/general/createInput';
+import {
+  fillObjectWithUniqueKeys,
+  validStatus,
+} from '../../utils/validations/booleanValid';
 import { commonFormCompontens } from '../registrationForm/nameMailForm';
-function createInput(
-  id: string,
-
-  validationType: string,
-  type: string = 'text',
-): [HTMLLabelElement, HTMLInputElement] {
-  const inputParams: ElementParams<'input'> = {
-    tag: 'input',
-    attributes: {
-      id: id,
-      type: type,
-      name: id,
-      'data-validation-type': validationType,
-      required: '',
-    },
-    classNames: ['form-input'],
-  };
-  const labelParams: ElementParams<'label'> = {
-    tag: 'label',
-    textContent: id,
-    attributes: {
-      for: id,
-    },
-    classNames: ['form-label'],
-  };
-  const input = createElement(inputParams) as HTMLInputElement;
-  const label = createElement(labelParams) as HTMLLabelElement;
-
-  return [label, input];
-}
 export function createAuthForm(): HTMLElement[] {
   const formContainerParams: ElementParams<'form'> = {
     tag: 'form',
@@ -48,8 +23,7 @@ export function createAuthForm(): HTMLElement[] {
     },
     classNames: ['submit_button'],
   };
-  const authForm = createElement(formContainerParams);
-
+  const authForm = createElement(formContainerParams) as HTMLFormElement;
   const authFormHeaderParams: ElementParams<'h2'> = {
     tag: 'h2',
     textContent: 'Sign in & choose your best felt boots!',
@@ -103,9 +77,15 @@ export function createAuthForm(): HTMLElement[] {
   const passwordIcon = commonFormCompontens.passwordIcon;
   const emailErrorSpan = createElement(emailErrorSpanParams);
   const passwordErrorSpan = createElement(passwordErrorSpanParams);
-  const [emailLabel, emailInput] = createInput('email', 'email');
+  const [emailLabel, emailInput] = createInput(
+    'email',
+    [['form-label'], ['form-input']],
+    'email',
+    'email',
+  );
   const [passwordLabel, passwordInput] = createInput(
     'password',
+    [['form-label'], ['form-input']],
     'password',
     'password',
   );
@@ -125,6 +105,6 @@ export function createAuthForm(): HTMLElement[] {
   addInnerComponent(authForm, passwordContainer);
   addInnerComponent(authForm, submitButton);
   addInnerComponent(authForm, authFormFooter);
-
+  fillObjectWithUniqueKeys(authForm, false, validStatus);
   return [authForm, emailInput, passwordInput, passwordIcon, submitButton];
 }

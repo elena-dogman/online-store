@@ -5,16 +5,31 @@
 @import '../components/toast/toast.scss';
 @import '../pages/AuthPage/authpageResponsive.scss';
 @import '../pages//MainPage/MainPage.scss';
+@import '../pages/CatalogPage/CatalogPage.module.scss';
+@import '../pages/UserProfilePage/userProfilePage.scss';
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+@import 'swiper/scss/autoplay';
+@import 'swiper/css/zoom';
+@import './swiper.scss';
+@import 'swiper/swiper-bundle.css';
+@import '../pages/ProductDetailedPage/productdetailedpage.scss';
+@import '../components/ProductDetailedPageComponent/swiperModal.scss';
+@import '../components/breadcrumbs/breadcrumbs.module.scss';
+@import '../components/profileComponents/password/passwordModal.scss';
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
   user-select: none;
+  scrollbar-width: none;
 }
 html,
 body,
 #app {
   height: 100%;
+  scrollbar-width: none;
 }
 #app {
   display: flex;
