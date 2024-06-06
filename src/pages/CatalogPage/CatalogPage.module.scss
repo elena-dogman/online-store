@@ -294,6 +294,18 @@
   cursor: pointer;
 }
 
+.clear-filters-button {
+  padding: 5px 5px;
+  border-radius: 5px;
+  background-color: $additional-info-color;
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: 80px;
+  font-size: $font-size-small;
+  margin-left: 15px;
+}
+
 .checkbox-wrapper label {
   flex: 1;
   position: relative;
@@ -430,7 +442,8 @@
     background-color: $card-background;
   }
 
-  .pagination-button:hover {
+  .pagination-button:hover,
+    .clear-filters-button:hover {
     box-shadow: $button-hover-box-shadow;
   }
   .product-card:hover {
@@ -453,7 +466,6 @@
   padding: 40px;
   width: 80%;
 }
-
 @media (max-width: 1150px) {
   .catalog-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -610,6 +622,11 @@
     > .breadcrumb-item {
     margin: 0px;
   }
+
+    .clear-filters-button {
+      margin: 0;
+      width: 100%;
+    }
 
 @media (max-width: 460px) {
   .catalog-page-container {
