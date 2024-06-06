@@ -17557,752 +17557,6 @@ function showToast(error) {
 function isCustomError(error) {
   return typeof error === "object" && error !== null && "body" in error && typeof error.body === "object" && "message" in error.body;
 }
-async function updateCustomer(bodya) {
-  const unparsedToken = localStorage.getItem("token");
-  if (!unparsedToken) {
-    throw new Error("No token found in local storage");
-  }
-  const token = JSON.parse(unparsedToken);
-  const refreshToken = token.refreshToken;
-  const refreshFlowClient = createApiBuilderFromCtpClient(
-    createRefreshTokenClient(refreshToken)
-  ).withProjectKey({ projectKey: "valenki-store" });
-  try {
-    await refreshFlowClient.me().post({ body: bodya }).execute();
-  } catch (error) {
-    return;
-  }
-}
-async function changePassword(dataCustomer, customerPassword) {
-  const unparsedToken = localStorage.getItem("token");
-  if (!unparsedToken) {
-    throw new Error("No token found in local storage");
-  }
-  const token = JSON.parse(unparsedToken);
-  const refreshToken = token.refreshToken;
-  const refreshFlowClient = createApiBuilderFromCtpClient(
-    createRefreshTokenClient(refreshToken)
-  ).withProjectKey({ projectKey: "valenki-store" });
-  try {
-    const body = {
-      email: dataCustomer.email,
-      password: customerPassword.newPassword
-    };
-    await refreshFlowClient.me().password().post({ body: customerPassword }).execute();
-    localStorage.removeItem("token");
-    await loginStayUser(body);
-  } catch (error) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast("An unknown error occurred");
-    }
-    throw error;
-  }
-}
-const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
-  projectKey: "valenki-store"
-});
-const anonymousApiRoot = createApiBuilderFromCtpClient(
-  anonymousCtpClient
-).withProjectKey({
-  projectKey: "valenki-store"
-});
-const getProject = () => {
-  return anonymousApiRoot.get().execute();
-};
-const loginUser = async (body) => {
-  try {
-    const passFlowClient = createApiBuilderFromCtpClient(
-      createPasswordFlowClient({ email: body.email, password: body.password })
-    ).withProjectKey({
-      projectKey: "valenki-store"
-    });
-    const data = await passFlowClient.login().post({ body }).execute();
-    localStorage.setItem("userId", data.body.customer.id);
-    router.navigate("/");
-    appEvents.emit("login", void 0);
-    return data;
-  } catch (error) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast("An unknown error occurred");
-    }
-    throw error;
-  }
-};
-const loginStayUser = async (body) => {
-  try {
-    const passFlowClient = createApiBuilderFromCtpClient(
-      createPasswordFlowClient({ email: body.email, password: body.password })
-    ).withProjectKey({
-      projectKey: "valenki-store"
-    });
-    const data = await passFlowClient.login().post({ body }).execute();
-    return data;
-  } catch (error) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast("An unknown error occurred");
-    }
-    throw error;
-  }
-};
-const logoutUser = async () => {
-  try {
-    localStorage.removeItem("token");
-    await anonymousApiRoot.get().execute();
-    router.navigate("/login");
-    appEvents.emit("logout", void 0);
-  } catch (error) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast("An unknown error occurred");
-    }
-  }
-};
-async function isUserLogined() {
-  if (localStorage.getItem("token")) {
-    const unparsedToken = JSON.parse(localStorage.getItem("token"));
-    const currentPath = window.location.pathname;
-    const refreshToken = unparsedToken.refreshToken;
-    const refreshFlowClient = createApiBuilderFromCtpClient(
-      createRefreshTokenClient(refreshToken)
-    ).withProjectKey({
-      projectKey: "valenki-store"
-    });
-    try {
-      const userData = await refreshFlowClient.me().get().execute();
-      if (currentPath === "/" || currentPath === "/login") {
-        router.navigate("/");
-      }
-      appEvents.emit("login", void 0);
-      return userData;
-    } catch (error) {
-      router.navigate("/login");
-    }
-  } else {
-    await getProject();
-  }
-}
-async function getUserData() {
-  if (localStorage.getItem("token")) {
-    const unparsedToken = JSON.parse(localStorage.getItem("token"));
-    const refreshToken = unparsedToken.refreshToken;
-    const refreshFlowClient = createApiBuilderFromCtpClient(
-      createRefreshTokenClient(refreshToken)
-    ).withProjectKey({
-      projectKey: "valenki-store"
-    });
-    try {
-      const response = await refreshFlowClient.me().get().execute();
-      if (!response.body) {
-        throw new Error("No user data found");
-      }
-      const userData = response.body;
-      return userData;
-    } catch (error) {
-      if (isCustomError(error)) {
-        showToast(error.body.message);
-      } else if (error instanceof Error) {
-        showToast(error.message);
-      } else {
-        showToast("An unknown error occurred");
-      }
-      throw error;
-    }
-  } else {
-    throw new Error("No token found");
-  }
-}
-function checkLoginStatus() {
-  return Boolean(localStorage.getItem("token"));
-}
-async function regUser(regData) {
-  try {
-    const addresses = [
-      {
-        key: "Shipping-Address",
-        city: regData.shippingAddress.city,
-        country: regData.shippingAddress.country,
-        postalCode: regData.shippingAddress.postaCode,
-        streetName: regData.shippingAddress.streetName
-      },
-      {
-        key: "Billing-Address",
-        city: regData.billingAddress.city,
-        country: regData.billingAddress.country,
-        postalCode: regData.billingAddress.postaCode,
-        streetName: regData.billingAddress.streetName
-      }
-    ];
-    const requestBody = {
-      email: regData.mailValue,
-      firstName: regData.name,
-      lastName: regData.lastName,
-      password: regData.password,
-      dateOfBirth: regData.DOB,
-      addresses,
-      ...regData.shippingAddress.isDefault ? { defaultShippingAddress: 0 } : {},
-      ...regData.billingAddress.isDefault ? { defaultBillingAddress: 1 } : {}
-    };
-    await apiRoot.customers().post({
-      body: requestBody
-    }).execute();
-    await loginUser({
-      email: regData.mailValue,
-      password: regData.password
-    });
-  } catch (error) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast("An unknown error occurred");
-    }
-    return void 0;
-  }
-}
-async function getDetailedProduct(ID2) {
-  try {
-    const response = await apiRoot.products().withId({ ID: ID2 }).get().execute();
-    const categories = response.body.masterData.current.categories;
-    const categoryIds = categories.map((category) => category.id);
-    const categoryPromises = categoryIds.map(
-      (categoryID) => apiRoot.categories().withId({ ID: categoryID }).get().execute()
-    );
-    const categoryResponses = await Promise.all(categoryPromises);
-    return { productResponse: response, categoryResponses };
-  } catch (error) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast("An unknown error occurred");
-    }
-    return void 0;
-  }
-}
-async function fetchProducts(sort) {
-  try {
-    let offset = 0;
-    const limit = 500;
-    let allProducts = [];
-    let hasMore = true;
-    const queryArgs = {
-      limit,
-      offset
-    };
-    if (sort) {
-      queryArgs.sort = [sort];
-    }
-    while (hasMore) {
-      const response = await apiRoot.productProjections().search().get({
-        queryArgs
-      }).execute();
-      if (response.body.results.length === 0) {
-        hasMore = false;
-      } else {
-        allProducts = allProducts.concat(response.body.results);
-        offset += limit;
-        if (response.body.results.length < limit) {
-          hasMore = false;
-        }
-      }
-    }
-    return allProducts;
-  } catch (error) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast("An unknown error occurred");
-    }
-    return [];
-  }
-}
-async function fetchProductAttributes() {
-  try {
-    let offset = 0;
-    const limit = 500;
-    let allProducts = [];
-    let hasMore = true;
-    while (hasMore) {
-      const response = await apiRoot.productProjections().search().get({
-        queryArgs: {
-          limit,
-          offset
-        }
-      }).execute();
-      if (response.body.results.length === 0) {
-        hasMore = false;
-      } else {
-        allProducts = allProducts.concat(response.body.results);
-        offset += limit;
-        if (response.body.results.length < limit) {
-          hasMore = false;
-        }
-      }
-    }
-    if (allProducts.length === 0) {
-      return null;
-    }
-    const sizes = /* @__PURE__ */ new Set();
-    allProducts.forEach((product) => {
-      var _a;
-      (_a = product.masterVariant.attributes) == null ? void 0 : _a.forEach((attribute) => {
-        if (attribute.name === "size") {
-          const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
-          sizes.add(sizeValue);
-        }
-      });
-      product.variants.forEach((variant) => {
-        var _a2;
-        (_a2 = variant.attributes) == null ? void 0 : _a2.forEach((attribute) => {
-          if (attribute.name === "size") {
-            const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
-            sizes.add(sizeValue);
-          }
-        });
-      });
-    });
-    const uniqueSizes = Array.from(sizes).sort((a, b) => a - b);
-    return uniqueSizes;
-  } catch (error) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast("An unknown error occurred");
-    }
-    return null;
-  }
-}
-async function fetchSizesForCategory(categoryId) {
-  try {
-    const response = await apiRoot.productProjections().search().get({
-      queryArgs: {
-        filter: `categories.id: subtree("${categoryId}")`,
-        limit: 500
-      }
-    }).execute();
-    const products = response.body.results;
-    const sizes = /* @__PURE__ */ new Set();
-    products.forEach((product) => {
-      var _a;
-      (_a = product.masterVariant.attributes) == null ? void 0 : _a.forEach((attribute) => {
-        if (attribute.name === "size") {
-          const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
-          sizes.add(sizeValue);
-        }
-      });
-      product.variants.forEach((variant) => {
-        var _a2;
-        (_a2 = variant.attributes) == null ? void 0 : _a2.forEach((attribute) => {
-          if (attribute.name === "size") {
-            const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
-            sizes.add(sizeValue);
-          }
-        });
-      });
-    });
-    return Array.from(sizes).sort((a, b) => a - b);
-  } catch (error) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast("An unknown error occurred");
-    }
-    return [];
-  }
-}
-async function fetchCategories() {
-  try {
-    const response = await anonymousApiRoot.categories().get().execute();
-    const categories = response.body.results;
-    return categories;
-  } catch (error) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast("An unknown error occurred");
-    }
-    return [];
-  }
-}
-async function fetchFilteredProducts(filters, sort) {
-  try {
-    const queryArgs = {
-      filter: filters
-    };
-    if (sort) {
-      queryArgs.sort = [sort];
-    }
-    const response = await apiRoot.productProjections().search().get({
-      queryArgs
-    }).execute();
-    return response.body.results;
-  } catch (error) {
-    if (isCustomError(error)) {
-      showToast(error.body.message);
-    } else if (error instanceof Error) {
-      showToast(error.message);
-    } else {
-      showToast("An unknown error occurred");
-    }
-    return [];
-  }
-}
-async function searchProducts(searchText) {
-  try {
-    const queryArgs = {
-      "text.en-US": searchText,
-      fuzzy: true
-    };
-    const response = await apiRoot.productProjections().search().get({ queryArgs }).execute();
-    return response.body;
-  } catch (error) {
-    console.error("Error during product search:", error);
-    throw error;
-  }
-}
-function createSearchComponent() {
-  const searchWrapperParams = {
-    tag: "div",
-    classNames: ["search__wrapper"]
-  };
-  const searchWrapper = createElement$1(searchWrapperParams);
-  const searchInputParams = {
-    tag: "input",
-    classNames: ["search__input"],
-    attributes: { placeholder: "Search" }
-  };
-  const searchInput2 = createElement$1(searchInputParams);
-  const searchButtonParams = {
-    tag: "button",
-    classNames: ["search__button"]
-  };
-  const searchButton = createElement$1(searchButtonParams);
-  const searchIcon = createElement$1({
-    tag: "img",
-    classNames: ["search__icon"],
-    attributes: {
-      src: "/assets/header/search.png",
-      alt: "Search"
-    }
-  });
-  addInnerComponent(searchButton, searchIcon);
-  const searchFormParams = {
-    tag: "form",
-    classNames: ["search__form"]
-  };
-  const searchForm = createElement$1(searchFormParams);
-  addInnerComponent(searchForm, searchInput2);
-  addInnerComponent(searchForm, searchButton);
-  addInnerComponent(searchWrapper, searchForm);
-  searchForm.addEventListener("submit", async (event2) => {
-    event2.preventDefault();
-    const searchText = searchInput2.value.trim();
-    if (searchText) {
-      try {
-        const searchResults = await searchProducts(searchText);
-        const customEvent = new CustomEvent("searchResults", {
-          detail: searchResults
-        });
-        document.dispatchEvent(customEvent);
-      } catch (error) {
-        console.error("Search error:", error);
-      }
-    }
-  });
-  return searchWrapper;
-}
-function createHeader() {
-  const headerParams = {
-    tag: "div",
-    classNames: ["header"]
-  };
-  const header = createElement$1(headerParams);
-  const logoLink = createElement$1({
-    tag: "a",
-    attributes: { href: "/" },
-    classNames: ["header__logo-link"]
-  });
-  const logo = createElement$1({
-    tag: "div",
-    classNames: ["header__logo"],
-    textContent: "・valenki store・"
-  });
-  addInnerComponent(logoLink, logo);
-  const logoSearchContainer = createElement$1({
-    tag: "div",
-    classNames: ["header__logo-search-container"]
-  });
-  addInnerComponent(logoSearchContainer, logoLink);
-  const isCatalogPage = window.location.pathname === "/catalog";
-  if (isCatalogPage) {
-    const searchComponent = createSearchComponent();
-    addInnerComponent(logoSearchContainer, searchComponent);
-  }
-  const navContainer = createElement$1({
-    tag: "div",
-    classNames: ["header__nav-links"]
-  });
-  if (!isCatalogPage) {
-    const homeLink = createElement$1({
-      tag: "a",
-      attributes: { href: "/" },
-      classNames: ["header__nav-link"],
-      textContent: "Home"
-    });
-    const aboutLink = createElement$1({
-      tag: "a",
-      attributes: { href: "/catalog" },
-      classNames: ["header__nav-link"],
-      textContent: "Catalog"
-    });
-    addInnerComponent(navContainer, homeLink);
-    addInnerComponent(navContainer, aboutLink);
-  }
-  const rightContainer = createElement$1({
-    tag: "div",
-    classNames: ["header__right-container"]
-  });
-  const iconsContainer = createElement$1({
-    tag: "div",
-    classNames: ["header__icons"]
-  });
-  const basketIcon = createElement$1({
-    tag: "a",
-    attributes: { href: "/basket" },
-    classNames: ["header__icon", "header__basket-icon"]
-  });
-  const basketImage = createElement$1({
-    tag: "img",
-    attributes: {
-      src: "/assets/header/basket.png",
-      alt: "Basket"
-    }
-  });
-  const userIcon = createElement$1({
-    tag: "a",
-    classNames: ["header__icon", "header__user-icon"]
-  });
-  const userImage = createElement$1({
-    tag: "img",
-    attributes: {
-      src: "/assets/header/user-profile.png",
-      alt: "User"
-    }
-  });
-  addInnerComponent(userIcon, userImage);
-  userIcon.onclick = () => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      navigateToProfile(userId);
-    } else {
-      router.navigate("/login");
-    }
-  };
-  addInnerComponent(iconsContainer, basketIcon);
-  addInnerComponent(iconsContainer, userIcon);
-  addInnerComponent(basketIcon, basketImage);
-  addInnerComponent(userIcon, userImage);
-  addInnerComponent(iconsContainer, basketIcon);
-  addInnerComponent(iconsContainer, userIcon);
-  const authNavContainer = createElement$1({
-    tag: "div",
-    classNames: ["header__auth-nav-container"]
-  });
-  const authContainer = createElement$1({
-    tag: "div",
-    classNames: ["header__auth-buttons"]
-  });
-  const registerButton = createElement$1({
-    tag: "a",
-    attributes: { href: "/register" },
-    classNames: ["header__auth-button", "register-button"],
-    textContent: "Register"
-  });
-  const authButton = createElement$1({
-    tag: "a",
-    attributes: { href: "/login" },
-    classNames: ["header__auth-button", "login-button"],
-    textContent: "Log In"
-  });
-  addInnerComponent(authContainer, registerButton);
-  addInnerComponent(authContainer, authButton);
-  addInnerComponent(authNavContainer, authContainer);
-  addInnerComponent(rightContainer, iconsContainer);
-  addInnerComponent(rightContainer, authNavContainer);
-  addInnerComponent(header, logoSearchContainer);
-  if (!isCatalogPage) {
-    addInnerComponent(header, navContainer);
-  }
-  addInnerComponent(header, rightContainer);
-  const burgerMenu = createElement$1({
-    tag: "div",
-    classNames: ["header__burger"]
-  });
-  const burgerLine1 = createElement$1({ tag: "div", classNames: ["line1"] });
-  const burgerLine2 = createElement$1({ tag: "div", classNames: ["line2"] });
-  const burgerLine3 = createElement$1({ tag: "div", classNames: ["line3"] });
-  addInnerComponent(burgerMenu, burgerLine1);
-  addInnerComponent(burgerMenu, burgerLine2);
-  addInnerComponent(burgerMenu, burgerLine3);
-  addInnerComponent(header, burgerMenu);
-  burgerMenu.onclick = () => {
-    authNavContainer.classList.toggle("open");
-    burgerMenu.classList.toggle("change");
-  };
-  const closeBurgerMenu = (event2) => {
-    if (!header.contains(event2.target) && authNavContainer.classList.contains("open")) {
-      authNavContainer.classList.remove("open");
-      burgerMenu.classList.remove("change");
-    }
-  };
-  document.addEventListener("click", closeBurgerMenu);
-  const tabletScreenWidthInPx = 870;
-  const moveNavLinks = () => {
-    const isMobile = window.innerWidth <= tabletScreenWidthInPx;
-    if (isMobile && !isCatalogPage) {
-      addInnerComponent(authNavContainer, navContainer);
-    } else if (!isCatalogPage) {
-      if (authNavContainer.classList.contains("open")) {
-        authNavContainer.classList.remove("open");
-        burgerMenu.classList.remove("change");
-      }
-      header.insertBefore(navContainer, rightContainer);
-    }
-  };
-  window.addEventListener("resize", moveNavLinks);
-  document.addEventListener("DOMContentLoaded", moveNavLinks);
-  window.addEventListener("load", moveNavLinks);
-  moveNavLinks();
-  async function handleLogout() {
-    await logoutUser();
-    appEvents.emit("logout", void 0);
-  }
-  async function updateAuthButton(isLoggedIn) {
-    registerButton.style.display = isLoggedIn ? "none" : "block";
-    authButton.textContent = isLoggedIn ? "Log Out" : "Log In";
-    authButton.setAttribute("href", isLoggedIn ? "#" : "/login");
-    authButton.onclick = isLoggedIn ? async () => {
-      await handleLogout();
-      appEvents.emit("logout", void 0);
-    } : null;
-  }
-  document.addEventListener("DOMContentLoaded", initializeAuthButtons);
-  function initializeAuthButtons() {
-    const isLoggedIn = checkLoginStatus();
-    updateAuthButton(isLoggedIn);
-  }
-  initializeAuthButtons();
-  appEvents.on("login", () => updateAuthButton(true));
-  appEvents.on("logout", () => updateAuthButton(false));
-  return header;
-}
-function createMainPage() {
-  const pageContainerParams = {
-    tag: "div",
-    classNames: ["main-page-wrapper"]
-  };
-  const container = createElement$1(pageContainerParams);
-  const header = createHeader();
-  addInnerComponent(container, header);
-  const buttonsContainer = createElement$1({
-    tag: "div",
-    classNames: ["buttons-for-reviewer"]
-  });
-  const loginButton = createElement$1({
-    tag: "a",
-    attributes: { href: "/login" },
-    classNames: ["button-for-reviewer", "login-button"],
-    textContent: "Log In"
-  });
-  const registerButton = createElement$1({
-    tag: "a",
-    attributes: { href: "/register" },
-    classNames: ["button-for-reviewer", "register-button"],
-    textContent: "Register"
-  });
-  addInnerComponent(buttonsContainer, loginButton);
-  addInnerComponent(buttonsContainer, registerButton);
-  addInnerComponent(container, buttonsContainer);
-  return container;
-}
-function createNotFoundPage() {
-  const containerParams = {
-    tag: "div",
-    classNames: ["not-found-container"],
-    textContent: ""
-  };
-  const container = createElement$1(containerParams);
-  const imageParams = {
-    tag: "img",
-    classNames: ["not-found-image"],
-    attributes: {
-      src: "/assets/notFoundComponent/404-img.png",
-      alt: "Not Found"
-    }
-  };
-  const image = createElement$1(imageParams);
-  const contentContainer = createElement$1({
-    tag: "div",
-    classNames: ["not-found-content"]
-  });
-  const headingParams = {
-    tag: "h1",
-    classNames: ["not-found-title"],
-    textContent: "OOPS!"
-  };
-  const heading = createElement$1(headingParams);
-  const descriptionParams = {
-    tag: "p",
-    classNames: ["not-found-description"],
-    textContent: "Looks like Bigfoot has broken the link."
-  };
-  const description = createElement$1(descriptionParams);
-  const backHomeCallback = {
-    eventType: "click",
-    callback: () => window.location.href = "/"
-  };
-  const buttonParams = {
-    tag: "button",
-    classNames: ["back-home-button"],
-    textContent: "Back to homepage",
-    callbacks: [backHomeCallback]
-  };
-  const backButton = createElement$1(buttonParams);
-  addInnerComponent(contentContainer, heading);
-  addInnerComponent(contentContainer, description);
-  addInnerComponent(contentContainer, backButton);
-  addInnerComponent(container, image);
-  addInnerComponent(container, contentContainer);
-  return container;
-}
-function notFoundPage() {
-  return createNotFoundPage();
-}
 function createInput(id, classes2, validationType, type = "text") {
   const inputParams = {
     tag: "input",
@@ -18332,6 +17586,18 @@ function createErrorElement() {
     tag: "span",
     classNames: ["error"]
   });
+}
+function filterArray(form) {
+  return Array.from(form.elements).filter(
+    (element) => element.tagName === "INPUT" && element.getAttribute("type") !== "checkbox" && element.getAttribute("hide") !== ""
+  );
+}
+function isEmptyArray(arr) {
+  if (arr.length === 0) {
+    return true;
+  } else {
+    return false;
+  }
 }
 function calculateAge(date) {
   const currentDate = /* @__PURE__ */ new Date();
@@ -30464,6 +29730,686 @@ Array.prototype.unique = function() {
 };
 var countryListJsExports = countryListJs.exports;
 const countrys = /* @__PURE__ */ getDefaultExportFromCjs(countryListJsExports);
+const containerForDate = createElement$1({
+  tag: "label",
+  classNames: ["reg-form__date-container"]
+});
+const errorDateReg = createErrorElement();
+errorDateReg.classList.add("error-date");
+const dayDate = createElement$1({
+  tag: "input",
+  classNames: ["date__day", "reg-input", "date-input"],
+  attributes: {
+    type: "text",
+    maxLength: "2",
+    "data-validation-type": "day",
+    hide: ""
+  }
+});
+const monthDate = createElement$1({
+  tag: "input",
+  classNames: ["date__month", "reg-input", "date-input"],
+  attributes: {
+    type: "text",
+    maxLength: "2",
+    "data-validation-type": "month",
+    hide: ""
+  }
+});
+const yearDate = createElement$1({
+  tag: "input",
+  classNames: ["date__year", "reg-input", "date-input"],
+  attributes: {
+    type: "text",
+    maxLength: "4",
+    "data-validation-type": "year"
+  }
+});
+function addDate() {
+  const regFormLabelDateParams = {
+    tag: "label",
+    classNames: ["reg-form__date-label", "reg__label"],
+    textContent: "Date of birth"
+  };
+  const regFormLabelDate = createElement$1(regFormLabelDateParams);
+  regFormLabelDate.append(errorDateReg);
+  regFormLabelDate.append(containerForDate);
+  containerForDate.append(dayDate);
+  containerForDate.append(monthDate);
+  containerForDate.append(yearDate);
+  dayDate.addEventListener("input", validateInput);
+  dayDate.addEventListener("input", checkNumber);
+  monthDate.addEventListener("input", validateInput);
+  monthDate.addEventListener("input", checkNumber);
+  yearDate.addEventListener("input", validateInput);
+  yearDate.addEventListener("input", checkNumber);
+  return regFormLabelDate;
+}
+function searchCountry() {
+  const countyItems = document.querySelectorAll(".address__countries-item");
+  const value = this.value.toLowerCase();
+  countyItems.forEach((user) => {
+    var _a;
+    const userText = ((_a = user.textContent) == null ? void 0 : _a.toLowerCase()) || "";
+    let match = true;
+    for (let i = 0; i < value.length; i++) {
+      if (userText[i] !== value[i]) {
+        match = false;
+        break;
+      }
+    }
+    if (!match) {
+      user.style.display = "none";
+    } else {
+      user.style.display = "flex";
+    }
+  });
+}
+function addCountriesList() {
+  var _a, _b;
+  const countries = countrys.names().sort();
+  const wrapperText = this.textContent;
+  const input = this.previousSibling;
+  const post = (_b = (_a = this.parentElement) == null ? void 0 : _a.nextElementSibling) == null ? void 0 : _b.firstElementChild;
+  this.textContent = "";
+  this.classList.add("--expanded");
+  input.classList.add("countries-input--expanded");
+  input.addEventListener("input", searchCountry);
+  const clickHandler = (e) => {
+    outClick(e, this, post, input, clickHandler, wrapperText);
+  };
+  if (this.classList.contains("--expanded")) {
+    document.addEventListener("click", clickHandler, true);
+  }
+  countries.forEach((e) => {
+    const countriesItem = createElement$1({
+      tag: "div",
+      classNames: ["address__countries-item"]
+    });
+    countriesItem.textContent = e;
+    this.append(countriesItem);
+    countriesItem.addEventListener("click", (element) => {
+      document.removeEventListener("click", clickHandler);
+      this.removeEventListener("click", addCountriesList);
+      disableLocation(this);
+      post.removeAttribute("disabled");
+      input.classList.remove("countries-input--expanded");
+      this.classList.remove("--expanded");
+      this.textContent = countriesItem.textContent;
+      element.stopPropagation();
+    });
+  });
+}
+function outClick(e, wrapper, post, input, clickHandler, text) {
+  if (e.target !== wrapper) {
+    if (e.target == input) {
+      return;
+    } else if (wrapper.classList.contains("--expanded")) {
+      wrapper.removeEventListener("click", addCountriesList);
+      document.removeEventListener("click", clickHandler);
+      wrapper.textContent = text;
+      post.removeAttribute("disabled");
+      input.classList.remove("countries-input--expanded");
+      wrapper.classList.remove("--expanded");
+    } else {
+      wrapper.removeEventListener("click", addCountriesList);
+      document.removeEventListener("click", clickHandler);
+    }
+  }
+}
+function createAddressComponents(type) {
+  const container = createElement$1({
+    tag: "div",
+    classNames: [`${type}__container`]
+  });
+  const labelStreet = createElement$1({
+    tag: "label",
+    classNames: [`${type}__street-label`, "reg__label", "label-street"],
+    textContent: "Address"
+  });
+  const inputStreet = createElement$1({
+    tag: "input",
+    classNames: [`${type}__street-input`, "reg-input", "input-street"],
+    attributes: {
+      type: "text",
+      "data-validation-type": "street",
+      "validation-element": `${type}`,
+      disabled: ""
+    }
+  });
+  const errorStreet = createErrorElement();
+  labelStreet.append(inputStreet);
+  labelStreet.append(errorStreet);
+  const labelCity = createElement$1({
+    tag: "label",
+    classNames: [`${type}__city-label`, "reg__label", "label-city"],
+    textContent: "City"
+  });
+  const inputCity = createElement$1({
+    tag: "input",
+    classNames: [`${type}__city-input`, "reg-input", "input-city"],
+    attributes: {
+      type: "text",
+      "data-validation-type": "city",
+      "validation-element": `${type}`,
+      disabled: ""
+    }
+  });
+  const errorCity = createErrorElement();
+  labelCity.appendChild(inputCity);
+  labelCity.appendChild(errorCity);
+  const labelPost = createElement$1({
+    tag: "label",
+    classNames: [`${type}__post-label`, "reg__label", "label-post"],
+    textContent: "Post"
+  });
+  const inputPost = createElement$1({
+    tag: "input",
+    classNames: [`${type}__post-input`, "reg-input", "input-post"],
+    attributes: {
+      type: "text",
+      "data-validation-type": "post",
+      "validation-element": `${type}`,
+      disabled: ""
+    }
+  });
+  inputPost.addEventListener("input", function(event2) {
+    validateInput(event2);
+  });
+  const errorPost = createErrorElement();
+  labelPost.append(inputPost);
+  labelPost.append(errorPost);
+  const labelCountry = createElement$1({
+    tag: "label",
+    classNames: [`${type}__country-label`, "reg__label"],
+    textContent: `${type === "billing" ? "Billing" : "Shipping"} address`
+  });
+  const listCountry = createElement$1({
+    tag: "div",
+    classNames: [`${type}__countries-list`, "countries-list"],
+    textContent: "Choose your country"
+  });
+  const inputCountry = createElement$1({
+    tag: "input",
+    classNames: [`${type}__countries-input`, "reg-input"],
+    attributes: { type: "text", placeholder: "Enter your country", hide: "" }
+  });
+  const countryWrapper = createElement$1({
+    tag: "div",
+    classNames: [`${type}__country-wrapper`, "country-wrapper"]
+  });
+  countryWrapper.append(inputCountry, listCountry);
+  labelCountry.append(countryWrapper);
+  inputStreet.addEventListener("input", validateInput);
+  inputCity.addEventListener("input", validateInput);
+  inputPost.addEventListener("input", validateInput);
+  listCountry.addEventListener("click", addCountriesList, true);
+  container.append(
+    labelCountry,
+    countryWrapper,
+    labelPost,
+    labelCity,
+    labelStreet
+  );
+  return {
+    container,
+    labelStreet,
+    inputStreet,
+    errorStreet,
+    labelCity,
+    inputCity,
+    errorCity,
+    labelPost,
+    inputPost,
+    errorPost,
+    labelCountry,
+    listCountry,
+    inputCountry,
+    countryWrapper
+  };
+}
+const billingComponents = createAddressComponents("billing");
+const shippingComponents = createAddressComponents("shipping");
+const addressesContainer = createElement$1({
+  tag: "div",
+  classNames: ["addresses-container"]
+});
+addressesContainer.append(
+  shippingComponents.container,
+  billingComponents.container
+);
+const validStatusAddress = {
+  shippingIsDefault: false,
+  billingIsDefault: false,
+  joinAddress: false
+};
+function setValidStatusAddress(field, value) {
+  validStatusAddress[field] = value;
+}
+function joinChecked() {
+  if (shippingComponents.inputCountry.form) {
+    setValidStatusAddress("joinAddress", true);
+    shippingComponents.container.classList.add("shipping__container--join");
+    billingComponents.container.remove();
+    fillObjectWithUniqueKeys(
+      shippingComponents.inputCountry.form,
+      false,
+      validStatus
+    );
+    checkAllInputs();
+  }
+}
+function joinUnchecked() {
+  if (shippingComponents.inputCountry.form) {
+    shippingComponents.container.classList.remove("shipping__container--join");
+    addressesContainer.append(billingComponents.container);
+    fillObjectWithUniqueKeys(
+      shippingComponents.inputCountry.form,
+      false,
+      validStatus
+    );
+    setValidStatusAddress("joinAddress", false);
+    checkAllInputs();
+  }
+}
+function addDefaultChecks() {
+  const checkContainerParams = {
+    tag: "div",
+    classNames: ["reg-form__container-checkbox"]
+  };
+  const defaultBillingLabelParams = {
+    tag: "label",
+    classNames: ["reg-form__billing-checkbox", "default__label"],
+    textContent: "Use as default billing address"
+  };
+  const defaultBillingCheckParams = {
+    tag: "input",
+    classNames: ["reg-form__billing-checkbox"],
+    attributes: { type: "checkbox" }
+  };
+  const checkContainer = createElement$1(checkContainerParams);
+  const defaultBillingLabel = createElement$1(defaultBillingLabelParams);
+  const defaultBillingCheck = createElement$1(
+    defaultBillingCheckParams
+  );
+  defaultBillingCheck.addEventListener("click", () => {
+    if (defaultBillingCheck.checked) {
+      setValidStatusAddress("billingIsDefault", true);
+    } else {
+      setValidStatusAddress("billingIsDefault", false);
+    }
+  });
+  const defaultShippingLabelParams = {
+    tag: "label",
+    classNames: ["reg-form__shipping-checkbox", "default__label"],
+    textContent: "Use as default shipping address"
+  };
+  const defaultShippingCheckParams = {
+    tag: "input",
+    classNames: ["reg-form__shipping-checkbox"],
+    attributes: { type: "checkbox" }
+  };
+  const defaultShippingLabel = createElement$1(defaultShippingLabelParams);
+  const defaultShippingCheck = createElement$1(
+    defaultShippingCheckParams
+  );
+  defaultShippingCheck.addEventListener("click", () => {
+    if (defaultShippingCheck.checked) {
+      setValidStatusAddress("shippingIsDefault", true);
+    } else {
+      setValidStatusAddress("shippingIsDefault", false);
+    }
+  });
+  addInnerComponent(checkContainer, defaultBillingLabel);
+  addInnerComponent(checkContainer, defaultShippingLabel);
+  addInnerComponent(defaultBillingLabel, defaultBillingCheck);
+  addInnerComponent(defaultShippingLabel, defaultShippingCheck);
+  return checkContainer;
+}
+function createDefaultCheck() {
+  const defaultLabelParams = {
+    tag: "label",
+    classNames: ["reg-form__default-label", "reg__label"]
+  };
+  const defaultLabel = createElement$1(defaultLabelParams);
+  const defaultJoinAddressLabelParams = {
+    tag: "label",
+    classNames: ["reg-form__join-label", "default__label"],
+    textContent: "Billing address is the same as the shipping address"
+  };
+  const defaultJoinAddressCheckParams = {
+    tag: "input",
+    classNames: ["reg-form__join-check"],
+    attributes: { type: "checkbox" }
+  };
+  const defaultJoinAddressLabel = createElement$1(defaultJoinAddressLabelParams);
+  const defaultJoinAddressCheck = createElement$1(
+    defaultJoinAddressCheckParams
+  );
+  defaultJoinAddressCheck.addEventListener("click", () => {
+    if (defaultJoinAddressCheck.checked) {
+      joinChecked();
+    } else {
+      joinUnchecked();
+    }
+  });
+  addInnerComponent(defaultLabel, defaultJoinAddressLabel);
+  addInnerComponent(defaultJoinAddressLabel, defaultJoinAddressCheck);
+  return [defaultLabel, defaultJoinAddressCheck];
+}
+function createCommonFormContainer() {
+  const containerParams = {
+    tag: "div",
+    classNames: ["reg-form__common-inf-container"]
+  };
+  const container = createElement$1(containerParams);
+  const namesContainerParams = {
+    tag: "div",
+    classNames: ["common-inputs-container__names-container"]
+  };
+  const labelNameParams = {
+    tag: "label",
+    classNames: ["names-сontainer__name-label", "reg__label"],
+    textContent: "Name"
+  };
+  const inputNameParams = {
+    tag: "input",
+    classNames: ["names-сontainer-input", "reg-input", "common--input"],
+    attributes: { type: "text", "data-validation-type": "name" }
+  };
+  const labelLastNameParams = {
+    tag: "label",
+    classNames: ["names-сontainer-name-label", "reg__label"],
+    textContent: "Last Name"
+  };
+  const inputLastNameParams = {
+    tag: "input",
+    classNames: [
+      "names-сontainer__last-name-input",
+      "reg-input",
+      "common--input"
+    ],
+    attributes: {
+      type: "text",
+      "data-validation-type": "lastName"
+    }
+  };
+  const namesContainer = createElement$1(namesContainerParams);
+  const nameLabel = createElement$1(labelNameParams);
+  const inputName = createElement$1(inputNameParams);
+  const errorName = createErrorElement();
+  const lastNameLabel = createElement$1(labelLastNameParams);
+  const inputLastName = createElement$1(inputLastNameParams);
+  const errorLastName = createErrorElement();
+  addInnerComponent(container, namesContainer);
+  addInnerComponent(namesContainer, nameLabel);
+  addInnerComponent(nameLabel, inputName);
+  addInnerComponent(nameLabel, errorName);
+  addInnerComponent(namesContainer, lastNameLabel);
+  addInnerComponent(lastNameLabel, inputLastName);
+  addInnerComponent(lastNameLabel, errorLastName);
+  inputName.addEventListener("input", validateInput);
+  inputLastName.addEventListener("input", validateInput);
+  const mailPassContainerParams = {
+    tag: "div",
+    classNames: ["common-inputs-container__mail-pass-container"]
+  };
+  const mailPassContainer = createElement$1(mailPassContainerParams);
+  const labelMailParams = {
+    tag: "label",
+    classNames: ["mail-pass-container__mail-label", "reg__label"],
+    textContent: "Email"
+  };
+  const inputMailParams = {
+    tag: "input",
+    classNames: [
+      "mail-pass-container__mail-input",
+      "reg-input",
+      "common--input"
+    ],
+    attributes: {
+      type: "email",
+      "data-validation-type": "email"
+    }
+  };
+  const labelMail = createElement$1(labelMailParams);
+  const inputMail = createElement$1(inputMailParams);
+  const errorEmail = createErrorElement();
+  addInnerComponent(container, mailPassContainer);
+  addInnerComponent(mailPassContainer, labelMail);
+  addInnerComponent(labelMail, inputMail);
+  addInnerComponent(labelMail, errorEmail);
+  const LabelPasswordParams = {
+    tag: "label",
+    classNames: ["mail-pass-container__password-label", "reg__label"],
+    textContent: "Password"
+  };
+  const InputPasswordParams = {
+    tag: "input",
+    classNames: [
+      "mail-pass-container__password-input",
+      "reg-input",
+      "common--input"
+    ],
+    attributes: {
+      type: "password",
+      "data-validation-type": "password"
+    }
+  };
+  const passwordIconParams = {
+    tag: "img",
+    attributes: {
+      src: "/assets/authpage/hide.png",
+      alt: "make your password visible/hide",
+      title: "Click to make your password visible"
+    },
+    classNames: ["password_icon"]
+  };
+  const labelPassword = createElement$1(LabelPasswordParams);
+  const inputPassword = createElement$1(InputPasswordParams);
+  const passwordIcon = createElement$1(passwordIconParams);
+  inputMail.addEventListener("input", validateInput);
+  inputPassword.addEventListener("input", validateInput);
+  const errorPassword = createErrorElement();
+  addInnerComponent(mailPassContainer, labelPassword);
+  addInnerComponent(labelPassword, inputPassword);
+  addInnerComponent(labelPassword, passwordIcon);
+  addInnerComponent(labelPassword, errorPassword);
+  inputPassword.addEventListener("keydown", function(event2) {
+    if (event2.key === " ") {
+      event2.preventDefault();
+    }
+  });
+  passwordIcon.addEventListener("click", (event2) => {
+    event2.preventDefault();
+    if (inputPassword.getAttribute("type") === "password") {
+      inputPassword.setAttribute("type", "text");
+      passwordIcon.setAttribute("src", "/assets/authpage/show.png");
+      passwordIcon.setAttribute("title", "Click to hide your password");
+    } else {
+      inputPassword.setAttribute("type", "password");
+      passwordIcon.setAttribute("src", "/assets/authpage/hide.png");
+      passwordIcon.setAttribute("title", "Click to make your password visible");
+    }
+  });
+  return {
+    container,
+    inputName,
+    inputLastName,
+    inputMail,
+    inputPassword,
+    passwordIcon
+  };
+}
+const commonFormCompontens = createCommonFormContainer();
+async function submitRegData() {
+  const name = commonFormCompontens.inputName;
+  const lastName = commonFormCompontens.inputLastName;
+  const password = commonFormCompontens.inputPassword;
+  const mail = commonFormCompontens.inputMail;
+  const postShipping = shippingComponents.inputPost;
+  const postBilling = billingComponents.inputPost;
+  const cityBilling = billingComponents.inputCity;
+  const cityShipping = shippingComponents.inputCity;
+  const streetShipping = shippingComponents.inputStreet;
+  const streetBilling = billingComponents.inputStreet;
+  const countryShipping = shippingComponents.listCountry;
+  const countryBilling = billingComponents.listCountry;
+  const birthDay = dayDate;
+  const birthMonth = monthDate;
+  const birthYear = yearDate;
+  const paddedDay = birthDay.value.padStart(2, "0");
+  const paddedMonth = birthMonth.value.padStart(2, "0");
+  const paddedYear = birthYear.value.padStart(4, "0");
+  const DOB = `${paddedYear}-${paddedMonth}-${paddedDay}`;
+  const countryNames = countrys.names();
+  const countryBillingIndex = countryNames.indexOf(countryBilling.textContent);
+  const countryShippingIndex = countryNames.indexOf(
+    countryShipping.textContent
+  );
+  let billingPostCode = Object.keys(countrys.all)[countryBillingIndex];
+  const shippingPostCode = Object.keys(countrys.all)[countryShippingIndex];
+  if (validStatusAddress.joinAddress) {
+    billingPostCode = shippingPostCode;
+    streetBilling.value = streetShipping.value;
+    cityBilling.value = cityShipping.value;
+    postBilling.value = postShipping.value;
+  }
+  const regData = {
+    name: name.value,
+    lastName: lastName.value,
+    password: password.value,
+    mailValue: mail.value,
+    DOB,
+    shippingAddress: {
+      isDefault: validStatusAddress.shippingIsDefault,
+      country: shippingPostCode,
+      postaCode: postShipping.value,
+      city: cityShipping.value,
+      streetName: streetShipping.value
+    },
+    billingAddress: {
+      isDefault: validStatusAddress.billingIsDefault,
+      country: billingPostCode,
+      postaCode: postBilling.value,
+      city: cityBilling.value,
+      streetName: streetBilling.value
+    }
+  };
+  await regUser(regData);
+}
+createErrorElement();
+createErrorElement();
+const authSideForm = createElement$1({
+  tag: "form",
+  classNames: ["auth-side__reg-form"]
+});
+const regDateAndCheckContainerParams = {
+  tag: "div",
+  classNames: ["reg-form__container__date-checks"]
+};
+const regDateAndCheckContainer = createElement$1(regDateAndCheckContainerParams);
+const address = createElement$1({
+  tag: "div",
+  classNames: ["reg-form__address"]
+});
+const authFormButton = createElement$1({
+  tag: "button",
+  classNames: ["reg-form__button", "reg-button"],
+  attributes: { type: "button", disabled: "" },
+  textContent: "Create Account"
+});
+function createForm() {
+  addInnerComponent(authSideForm, commonFormCompontens.container);
+  addInnerComponent(authSideForm, regDateAndCheckContainer);
+  addInnerComponent(regDateAndCheckContainer, addDate());
+  addInnerComponent(authSideForm, createDefaultCheck()[0]);
+  addInnerComponent(authSideForm, addressesContainer);
+  addInnerComponent(authSideForm, address);
+  addInnerComponent(authSideForm, addDefaultChecks());
+  addInnerComponent(authSideForm, authFormButton);
+  fillObjectWithUniqueKeys(authSideForm, false, validStatus);
+  authFormButton.addEventListener("click", submitRegData);
+}
+let validStatus = {};
+function setValidStatus(field, value) {
+  validStatus[field] = value;
+}
+function checkAllInputs(form = null) {
+  if (window.location.href.includes("register")) {
+    if (Object.values(validStatus).every((value) => value)) {
+      authFormButton.removeAttribute("disabled");
+    } else {
+      authFormButton.setAttribute("disabled", "");
+    }
+  } else if (window.location.href.includes("login")) {
+    const submitButton = document.querySelector(".submit_button");
+    if (Object.values(validStatus).every((value) => value)) {
+      submitButton == null ? void 0 : submitButton.removeAttribute("disabled");
+    } else {
+      submitButton == null ? void 0 : submitButton.setAttribute("disabled", "");
+    }
+  } else if (window.location.href.includes("profile")) {
+    const edit = document.querySelector(".profile-header__btn-edit");
+    const save = document.querySelector(".password-form__save");
+    const addAddress2 = document.querySelector(
+      ".profile-header__btn-add-address"
+    );
+    if (!(form == null ? void 0 : form.classList.contains("modal__password-form"))) {
+      if (Object.values(validStatus).every((value) => value)) {
+        edit == null ? void 0 : edit.removeAttribute("disabled");
+        addAddress2 == null ? void 0 : addAddress2.removeAttribute("disabled");
+      } else {
+        edit == null ? void 0 : edit.setAttribute("disabled", "");
+        addAddress2 == null ? void 0 : addAddress2.setAttribute("disabled", "");
+      }
+    } else {
+      if (Object.values(validStatus).every((value) => value)) {
+        save == null ? void 0 : save.removeAttribute("disabled");
+      } else {
+        save == null ? void 0 : save.setAttribute("disabled", "");
+      }
+    }
+  }
+}
+function fillObjectWithUniqueKeys(form, value, existingData, clearPrevious = false) {
+  if (clearPrevious) {
+    existingData = {};
+  }
+  const formArray = filterArray(form);
+  const obj = { ...existingData };
+  let counter2 = 1;
+  formArray.forEach((e, index) => {
+    let key = index.toString();
+    while (Object.prototype.hasOwnProperty.call(obj, key)) {
+      counter2++;
+      key = index.toString() + counter2;
+    }
+    if (key.includes("Chose Your Country")) {
+      obj[key] = false;
+    }
+    if (key.includes("")) {
+      obj[key] = false;
+      console.log(e);
+    }
+    if (!obj[key]) {
+      obj[key] = value;
+    }
+    counter2 = 1;
+    if (e.value === "Chose Your Country") {
+      obj[key] = false;
+    }
+  });
+  if (Object.keys(obj).length !== formArray.length) {
+    while (Object.keys(obj).length > formArray.length) {
+      delete obj[Object.keys(obj).pop()];
+    }
+    while (Object.keys(obj).length < formArray.length) {
+      obj[Object.keys(obj).length.toString()] = true;
+    }
+  }
+  validStatus = obj;
+}
 const AF = {
   countryName: "Afghanistan",
   postalCodeFormat: "4Digits.json",
@@ -35759,71 +35705,6 @@ var validate = function(countryCode, postalCode) {
   }
   return true;
 };
-function filterArray(form) {
-  return Array.from(form.elements).filter(
-    (element) => element.tagName === "INPUT" && element.getAttribute("type") !== "checkbox" && element.getAttribute("hide") !== ""
-  );
-}
-function isEmptyArray(arr) {
-  if (arr.length === 0) {
-    return true;
-  } else {
-    return false;
-  }
-}
-function checkError(childrens) {
-  if (childrens) {
-    const childrenArray = Array.from(childrens);
-    for (const element of childrenArray) {
-      if (element.classList.contains("error")) {
-        return element;
-      }
-    }
-  }
-  return null;
-}
-function checkInputIndex(event2) {
-  if (event2 instanceof Event) {
-    const elem = event2.target;
-    const form = elem.form;
-    const formArray = Array.from(form.elements).filter(
-      (element) => element.tagName === "INPUT" && element.getAttribute("type") !== "checkbox" && element.getAttribute("hide") !== ""
-    );
-    const index = formArray.indexOf(elem);
-    return index;
-  } else {
-    const form = event2.form;
-    const formArray = filterArray(form);
-    const index = formArray.indexOf(event2);
-    return index;
-  }
-}
-function validateInput(event2) {
-  var _a;
-  const indexOfInput = checkInputIndex(event2);
-  const element = event2.target;
-  const value = element.value.trim();
-  const error = checkError((_a = element.parentElement) == null ? void 0 : _a.children);
-  const form = element.form;
-  const attribute = element.getAttribute("data-validation-type");
-  const validationMap = {
-    name: nameValidation,
-    lastName: lastNameValidation,
-    city: cityValidation,
-    post: postCodeValidation,
-    street: streetValidation,
-    password: passwordValidation,
-    email: mailValidation,
-    birthday: validationBirth,
-    day: dayValidation,
-    month: monthValidation,
-    year: yearValidation
-  };
-  if (attribute && validationMap[attribute]) {
-    validationMap[attribute](value, error, indexOfInput, form);
-  }
-  return true;
-}
 function searchElement(addressParent, searchElem) {
   const addressContainer = Array.from(addressParent == null ? void 0 : addressParent.children);
   let result;
@@ -36357,675 +36238,979 @@ function disableLocation(wrapper) {
     city.value = "";
   }
 }
-const containerForDate = createElement$1({
-  tag: "label",
-  classNames: ["reg-form__date-container"]
-});
-const errorDateReg = createErrorElement();
-errorDateReg.classList.add("error-date");
-const dayDate = createElement$1({
-  tag: "input",
-  classNames: ["date__day", "reg-input", "date-input"],
-  attributes: {
-    type: "text",
-    maxLength: "2",
-    "data-validation-type": "day",
-    hide: ""
-  }
-});
-const monthDate = createElement$1({
-  tag: "input",
-  classNames: ["date__month", "reg-input", "date-input"],
-  attributes: {
-    type: "text",
-    maxLength: "2",
-    "data-validation-type": "month",
-    hide: ""
-  }
-});
-const yearDate = createElement$1({
-  tag: "input",
-  classNames: ["date__year", "reg-input", "date-input"],
-  attributes: {
-    type: "text",
-    maxLength: "4",
-    "data-validation-type": "year"
-  }
-});
-function addDate() {
-  const regFormLabelDateParams = {
-    tag: "label",
-    classNames: ["reg-form__date-label", "reg__label"],
-    textContent: "Date of birth"
-  };
-  const regFormLabelDate = createElement$1(regFormLabelDateParams);
-  regFormLabelDate.append(errorDateReg);
-  regFormLabelDate.append(containerForDate);
-  containerForDate.append(dayDate);
-  containerForDate.append(monthDate);
-  containerForDate.append(yearDate);
-  dayDate.addEventListener("input", validateInput);
-  dayDate.addEventListener("input", checkNumber);
-  monthDate.addEventListener("input", validateInput);
-  monthDate.addEventListener("input", checkNumber);
-  yearDate.addEventListener("input", validateInput);
-  yearDate.addEventListener("input", checkNumber);
-  return regFormLabelDate;
-}
-function searchCountry() {
-  const countyItems = document.querySelectorAll(".address__countries-item");
-  const value = this.value.toLowerCase();
-  countyItems.forEach((user) => {
-    var _a;
-    const userText = ((_a = user.textContent) == null ? void 0 : _a.toLowerCase()) || "";
-    let match = true;
-    for (let i = 0; i < value.length; i++) {
-      if (userText[i] !== value[i]) {
-        match = false;
-        break;
+function checkError(childrens) {
+  if (childrens) {
+    const childrenArray = Array.from(childrens);
+    for (const element of childrenArray) {
+      if (element.classList.contains("error")) {
+        return element;
       }
     }
-    if (!match) {
-      user.style.display = "none";
-    } else {
-      user.style.display = "flex";
-    }
-  });
-}
-function addCountriesList() {
-  var _a, _b;
-  const countries = countrys.names().sort();
-  const wrapperText = this.textContent;
-  const input = this.previousSibling;
-  const post = (_b = (_a = this.parentElement) == null ? void 0 : _a.nextElementSibling) == null ? void 0 : _b.firstElementChild;
-  this.textContent = "";
-  this.classList.add("--expanded");
-  input.classList.add("countries-input--expanded");
-  input.addEventListener("input", searchCountry);
-  const clickHandler = (e) => {
-    outClick(e, this, post, input, clickHandler, wrapperText);
-  };
-  if (this.classList.contains("--expanded")) {
-    document.addEventListener("click", clickHandler, true);
   }
-  countries.forEach((e) => {
-    const countriesItem = createElement$1({
-      tag: "div",
-      classNames: ["address__countries-item"]
-    });
-    countriesItem.textContent = e;
-    this.append(countriesItem);
-    countriesItem.addEventListener("click", (element) => {
-      document.removeEventListener("click", clickHandler);
-      this.removeEventListener("click", addCountriesList);
-      disableLocation(this);
-      post.removeAttribute("disabled");
-      input.classList.remove("countries-input--expanded");
-      this.classList.remove("--expanded");
-      this.textContent = countriesItem.textContent;
-      element.stopPropagation();
-    });
-  });
+  return null;
 }
-function outClick(e, wrapper, post, input, clickHandler, text) {
-  if (e.target !== wrapper) {
-    if (e.target == input) {
-      return;
-    } else if (wrapper.classList.contains("--expanded")) {
-      wrapper.removeEventListener("click", addCountriesList);
-      document.removeEventListener("click", clickHandler);
-      wrapper.textContent = text;
-      post.removeAttribute("disabled");
-      input.classList.remove("countries-input--expanded");
-      wrapper.classList.remove("--expanded");
-    } else {
-      wrapper.removeEventListener("click", addCountriesList);
-      document.removeEventListener("click", clickHandler);
-    }
-  }
-}
-function createAddressComponents(type) {
-  const container = createElement$1({
-    tag: "div",
-    classNames: [`${type}__container`]
-  });
-  const labelStreet = createElement$1({
-    tag: "label",
-    classNames: [`${type}__street-label`, "reg__label", "label-street"],
-    textContent: "Address"
-  });
-  const inputStreet = createElement$1({
-    tag: "input",
-    classNames: [`${type}__street-input`, "reg-input", "input-street"],
-    attributes: {
-      type: "text",
-      "data-validation-type": "street",
-      "validation-element": `${type}`,
-      disabled: ""
-    }
-  });
-  const errorStreet = createErrorElement();
-  labelStreet.append(inputStreet);
-  labelStreet.append(errorStreet);
-  const labelCity = createElement$1({
-    tag: "label",
-    classNames: [`${type}__city-label`, "reg__label", "label-city"],
-    textContent: "City"
-  });
-  const inputCity = createElement$1({
-    tag: "input",
-    classNames: [`${type}__city-input`, "reg-input", "input-city"],
-    attributes: {
-      type: "text",
-      "data-validation-type": "city",
-      "validation-element": `${type}`,
-      disabled: ""
-    }
-  });
-  const errorCity = createErrorElement();
-  labelCity.appendChild(inputCity);
-  labelCity.appendChild(errorCity);
-  const labelPost = createElement$1({
-    tag: "label",
-    classNames: [`${type}__post-label`, "reg__label", "label-post"],
-    textContent: "Post"
-  });
-  const inputPost = createElement$1({
-    tag: "input",
-    classNames: [`${type}__post-input`, "reg-input", "input-post"],
-    attributes: {
-      type: "text",
-      "data-validation-type": "post",
-      "validation-element": `${type}`,
-      disabled: ""
-    }
-  });
-  inputPost.addEventListener("input", function(event2) {
-    validateInput(event2);
-  });
-  const errorPost = createErrorElement();
-  labelPost.append(inputPost);
-  labelPost.append(errorPost);
-  const labelCountry = createElement$1({
-    tag: "label",
-    classNames: [`${type}__country-label`, "reg__label"],
-    textContent: `${type === "billing" ? "Billing" : "Shipping"} address`
-  });
-  const listCountry = createElement$1({
-    tag: "div",
-    classNames: [`${type}__countries-list`, "countries-list"],
-    textContent: "Choose your country"
-  });
-  const inputCountry = createElement$1({
-    tag: "input",
-    classNames: [`${type}__countries-input`, "reg-input"],
-    attributes: { type: "text", placeholder: "Enter your country", hide: "" }
-  });
-  const countryWrapper = createElement$1({
-    tag: "div",
-    classNames: [`${type}__country-wrapper`, "country-wrapper"]
-  });
-  countryWrapper.append(inputCountry, listCountry);
-  labelCountry.append(countryWrapper);
-  inputStreet.addEventListener("input", validateInput);
-  inputCity.addEventListener("input", validateInput);
-  inputPost.addEventListener("input", validateInput);
-  listCountry.addEventListener("click", addCountriesList, true);
-  container.append(
-    labelCountry,
-    countryWrapper,
-    labelPost,
-    labelCity,
-    labelStreet
-  );
-  return {
-    container,
-    labelStreet,
-    inputStreet,
-    errorStreet,
-    labelCity,
-    inputCity,
-    errorCity,
-    labelPost,
-    inputPost,
-    errorPost,
-    labelCountry,
-    listCountry,
-    inputCountry,
-    countryWrapper
-  };
-}
-const billingComponents = createAddressComponents("billing");
-const shippingComponents = createAddressComponents("shipping");
-const addressesContainer = createElement$1({
-  tag: "div",
-  classNames: ["addresses-container"]
-});
-addressesContainer.append(
-  shippingComponents.container,
-  billingComponents.container
-);
-const validStatusAddress = {
-  shippingIsDefault: false,
-  billingIsDefault: false,
-  joinAddress: false
-};
-function setValidStatusAddress(field, value) {
-  validStatusAddress[field] = value;
-}
-function joinChecked() {
-  if (shippingComponents.inputCountry.form) {
-    setValidStatusAddress("joinAddress", true);
-    shippingComponents.container.classList.add("shipping__container--join");
-    billingComponents.container.remove();
-    fillObjectWithUniqueKeys(
-      shippingComponents.inputCountry.form,
-      false,
-      validStatus
+function checkInputIndex(event2) {
+  if (event2 instanceof Event) {
+    const elem = event2.target;
+    const form = elem.form;
+    const formArray = Array.from(form.elements).filter(
+      (element) => element.tagName === "INPUT" && element.getAttribute("type") !== "checkbox" && element.getAttribute("hide") !== ""
     );
-    checkAllInputs();
+    const index = formArray.indexOf(elem);
+    return index;
+  } else {
+    const form = event2.form;
+    const formArray = filterArray(form);
+    const index = formArray.indexOf(event2);
+    return index;
   }
 }
-function joinUnchecked() {
-  if (shippingComponents.inputCountry.form) {
-    shippingComponents.container.classList.remove("shipping__container--join");
-    addressesContainer.append(billingComponents.container);
-    fillObjectWithUniqueKeys(
-      shippingComponents.inputCountry.form,
-      false,
-      validStatus
-    );
-    setValidStatusAddress("joinAddress", false);
-    checkAllInputs();
+function validateInput(event2) {
+  var _a;
+  const indexOfInput = checkInputIndex(event2);
+  const element = event2.target;
+  const value = element.value.trim();
+  const error = checkError((_a = element.parentElement) == null ? void 0 : _a.children);
+  const form = element.form;
+  const attribute = element.getAttribute("data-validation-type");
+  const validationMap = {
+    name: nameValidation,
+    lastName: lastNameValidation,
+    city: cityValidation,
+    post: postCodeValidation,
+    street: streetValidation,
+    password: passwordValidation,
+    email: mailValidation,
+    birthday: validationBirth,
+    day: dayValidation,
+    month: monthValidation,
+    year: yearValidation
+  };
+  if (attribute && validationMap[attribute]) {
+    validationMap[attribute](value, error, indexOfInput, form);
   }
+  return true;
 }
-function addDefaultChecks() {
-  const checkContainerParams = {
-    tag: "div",
-    classNames: ["reg-form__container-checkbox"]
-  };
-  const defaultBillingLabelParams = {
-    tag: "label",
-    classNames: ["reg-form__billing-checkbox", "default__label"],
-    textContent: "Use as default billing address"
-  };
-  const defaultBillingCheckParams = {
-    tag: "input",
-    classNames: ["reg-form__billing-checkbox"],
-    attributes: { type: "checkbox" }
-  };
-  const checkContainer = createElement$1(checkContainerParams);
-  const defaultBillingLabel = createElement$1(defaultBillingLabelParams);
-  const defaultBillingCheck = createElement$1(
-    defaultBillingCheckParams
+function addPasswordModal(userData) {
+  const app = document.querySelector("#app");
+  const profileForm = app.querySelector(
+    ".profile-container__profile-form"
   );
-  defaultBillingCheck.addEventListener("click", () => {
-    if (defaultBillingCheck.checked) {
-      setValidStatusAddress("billingIsDefault", true);
-    } else {
-      setValidStatusAddress("billingIsDefault", false);
-    }
-  });
-  const defaultShippingLabelParams = {
-    tag: "label",
-    classNames: ["reg-form__shipping-checkbox", "default__label"],
-    textContent: "Use as default shipping address"
+  const passwordModalParams = {
+    tag: "div",
+    classNames: ["modal__change-password", "modal_container"]
   };
-  const defaultShippingCheckParams = {
-    tag: "input",
-    classNames: ["reg-form__shipping-checkbox"],
-    attributes: { type: "checkbox" }
+  const passwordModal = createElement$1(passwordModalParams);
+  const passwordFormParams = {
+    tag: "form",
+    classNames: ["modal__password-form"],
+    attributes: { id: "change-password-form" }
   };
-  const defaultShippingLabel = createElement$1(defaultShippingLabelParams);
-  const defaultShippingCheck = createElement$1(
-    defaultShippingCheckParams
+  const formTitleParams = {
+    tag: "h2",
+    classNames: ["password-form__title"],
+    textContent: "Enter your new Password"
+  };
+  const formTitle = createElement$1(formTitleParams);
+  const passwordForm = createElement$1(passwordFormParams);
+  const [currentPasswordLabel, currentPasswordInput] = createInput(
+    "current-password",
+    [
+      ["current-password-label", "prof-label"],
+      ["current-passwrod-input", "prof-input"]
+    ],
+    "password",
+    "password"
   );
-  defaultShippingCheck.addEventListener("click", () => {
-    if (defaultShippingCheck.checked) {
-      setValidStatusAddress("shippingIsDefault", true);
-    } else {
-      setValidStatusAddress("shippingIsDefault", false);
-    }
-  });
-  addInnerComponent(checkContainer, defaultBillingLabel);
-  addInnerComponent(checkContainer, defaultShippingLabel);
-  addInnerComponent(defaultBillingLabel, defaultBillingCheck);
-  addInnerComponent(defaultShippingLabel, defaultShippingCheck);
-  return checkContainer;
-}
-function createDefaultCheck() {
-  const defaultLabelParams = {
-    tag: "label",
-    classNames: ["reg-form__default-label", "reg__label"]
-  };
-  const defaultLabel = createElement$1(defaultLabelParams);
-  const defaultJoinAddressLabelParams = {
-    tag: "label",
-    classNames: ["reg-form__join-label", "default__label"],
-    textContent: "Billing address is the same as the shipping address"
-  };
-  const defaultJoinAddressCheckParams = {
-    tag: "input",
-    classNames: ["reg-form__join-check"],
-    attributes: { type: "checkbox" }
-  };
-  const defaultJoinAddressLabel = createElement$1(defaultJoinAddressLabelParams);
-  const defaultJoinAddressCheck = createElement$1(
-    defaultJoinAddressCheckParams
-  );
-  defaultJoinAddressCheck.addEventListener("click", () => {
-    if (defaultJoinAddressCheck.checked) {
-      joinChecked();
-    } else {
-      joinUnchecked();
-    }
-  });
-  addInnerComponent(defaultLabel, defaultJoinAddressLabel);
-  addInnerComponent(defaultJoinAddressLabel, defaultJoinAddressCheck);
-  return [defaultLabel, defaultJoinAddressCheck];
-}
-function createCommonFormContainer() {
-  const containerParams = {
-    tag: "div",
-    classNames: ["reg-form__common-inf-container"]
-  };
-  const container = createElement$1(containerParams);
-  const namesContainerParams = {
-    tag: "div",
-    classNames: ["common-inputs-container__names-container"]
-  };
-  const labelNameParams = {
-    tag: "label",
-    classNames: ["names-сontainer__name-label", "reg__label"],
-    textContent: "Name"
-  };
-  const inputNameParams = {
-    tag: "input",
-    classNames: ["names-сontainer-input", "reg-input", "common--input"],
-    attributes: { type: "text", "data-validation-type": "name" }
-  };
-  const labelLastNameParams = {
-    tag: "label",
-    classNames: ["names-сontainer-name-label", "reg__label"],
-    textContent: "Last Name"
-  };
-  const inputLastNameParams = {
-    tag: "input",
-    classNames: [
-      "names-сontainer__last-name-input",
-      "reg-input",
-      "common--input"
-    ],
-    attributes: {
-      type: "text",
-      "data-validation-type": "lastName"
-    }
-  };
-  const namesContainer = createElement$1(namesContainerParams);
-  const nameLabel = createElement$1(labelNameParams);
-  const inputName = createElement$1(inputNameParams);
-  const errorName = createErrorElement();
-  const lastNameLabel = createElement$1(labelLastNameParams);
-  const inputLastName = createElement$1(inputLastNameParams);
-  const errorLastName = createErrorElement();
-  addInnerComponent(container, namesContainer);
-  addInnerComponent(namesContainer, nameLabel);
-  addInnerComponent(nameLabel, inputName);
-  addInnerComponent(nameLabel, errorName);
-  addInnerComponent(namesContainer, lastNameLabel);
-  addInnerComponent(lastNameLabel, inputLastName);
-  addInnerComponent(lastNameLabel, errorLastName);
-  inputName.addEventListener("input", validateInput);
-  inputLastName.addEventListener("input", validateInput);
-  const mailPassContainerParams = {
-    tag: "div",
-    classNames: ["common-inputs-container__mail-pass-container"]
-  };
-  const mailPassContainer = createElement$1(mailPassContainerParams);
-  const labelMailParams = {
-    tag: "label",
-    classNames: ["mail-pass-container__mail-label", "reg__label"],
-    textContent: "Email"
-  };
-  const inputMailParams = {
-    tag: "input",
-    classNames: [
-      "mail-pass-container__mail-input",
-      "reg-input",
-      "common--input"
-    ],
-    attributes: {
-      type: "email",
-      "data-validation-type": "email"
-    }
-  };
-  const labelMail = createElement$1(labelMailParams);
-  const inputMail = createElement$1(inputMailParams);
-  const errorEmail = createErrorElement();
-  addInnerComponent(container, mailPassContainer);
-  addInnerComponent(mailPassContainer, labelMail);
-  addInnerComponent(labelMail, inputMail);
-  addInnerComponent(labelMail, errorEmail);
-  const LabelPasswordParams = {
-    tag: "label",
-    classNames: ["mail-pass-container__password-label", "reg__label"],
-    textContent: "Password"
-  };
-  const InputPasswordParams = {
-    tag: "input",
-    classNames: [
-      "mail-pass-container__password-input",
-      "reg-input",
-      "common--input"
-    ],
-    attributes: {
-      type: "password",
-      "data-validation-type": "password"
-    }
-  };
-  const passwordIconParams = {
+  const currentPasswordIconParams = {
     tag: "img",
     attributes: {
       src: "/assets/authpage/hide.png",
       alt: "make your password visible/hide",
       title: "Click to make your password visible"
     },
-    classNames: ["password_icon"]
+    classNames: ["password_icon", "change-password-icon"]
   };
-  const labelPassword = createElement$1(LabelPasswordParams);
-  const inputPassword = createElement$1(InputPasswordParams);
-  const passwordIcon = createElement$1(passwordIconParams);
-  inputMail.addEventListener("input", validateInput);
-  inputPassword.addEventListener("input", validateInput);
-  const errorPassword = createErrorElement();
-  addInnerComponent(mailPassContainer, labelPassword);
-  addInnerComponent(labelPassword, inputPassword);
-  addInnerComponent(labelPassword, passwordIcon);
-  addInnerComponent(labelPassword, errorPassword);
-  inputPassword.addEventListener("keydown", function(event2) {
-    if (event2.key === " ") {
-      event2.preventDefault();
-    }
-  });
-  passwordIcon.addEventListener("click", (event2) => {
-    event2.preventDefault();
-    if (inputPassword.getAttribute("type") === "password") {
-      inputPassword.setAttribute("type", "text");
-      passwordIcon.setAttribute("src", "/assets/authpage/show.png");
-      passwordIcon.setAttribute("title", "Click to hide your password");
-    } else {
-      inputPassword.setAttribute("type", "password");
-      passwordIcon.setAttribute("src", "/assets/authpage/hide.png");
-      passwordIcon.setAttribute("title", "Click to make your password visible");
-    }
-  });
-  return {
-    container,
-    inputName,
-    inputLastName,
-    inputMail,
-    inputPassword,
-    passwordIcon
-  };
-}
-const commonFormCompontens = createCommonFormContainer();
-async function submitRegData() {
-  const name = commonFormCompontens.inputName;
-  const lastName = commonFormCompontens.inputLastName;
-  const password = commonFormCompontens.inputPassword;
-  const mail = commonFormCompontens.inputMail;
-  const postShipping = shippingComponents.inputPost;
-  const postBilling = billingComponents.inputPost;
-  const cityBilling = billingComponents.inputCity;
-  const cityShipping = shippingComponents.inputCity;
-  const streetShipping = shippingComponents.inputStreet;
-  const streetBilling = billingComponents.inputStreet;
-  const countryShipping = shippingComponents.listCountry;
-  const countryBilling = billingComponents.listCountry;
-  const birthDay = dayDate;
-  const birthMonth = monthDate;
-  const birthYear = yearDate;
-  const paddedDay = birthDay.value.padStart(2, "0");
-  const paddedMonth = birthMonth.value.padStart(2, "0");
-  const paddedYear = birthYear.value.padStart(4, "0");
-  const DOB = `${paddedYear}-${paddedMonth}-${paddedDay}`;
-  const countryNames = countrys.names();
-  const countryBillingIndex = countryNames.indexOf(countryBilling.textContent);
-  const countryShippingIndex = countryNames.indexOf(
-    countryShipping.textContent
+  const currentPasswordIcon = createElement$1(
+    currentPasswordIconParams
   );
-  let billingPostCode = Object.keys(countrys.all)[countryBillingIndex];
-  const shippingPostCode = Object.keys(countrys.all)[countryShippingIndex];
-  if (validStatusAddress.joinAddress) {
-    billingPostCode = shippingPostCode;
-    streetBilling.value = streetShipping.value;
-    cityBilling.value = cityShipping.value;
-    postBilling.value = postShipping.value;
-  }
-  const regData = {
-    name: name.value,
-    lastName: lastName.value,
-    password: password.value,
-    mailValue: mail.value,
-    DOB,
-    shippingAddress: {
-      isDefault: validStatusAddress.shippingIsDefault,
-      country: shippingPostCode,
-      postaCode: postShipping.value,
-      city: cityShipping.value,
-      streetName: streetShipping.value
+  currentPasswordIcon.addEventListener("click", showPassword);
+  const currentPasswordError = createErrorElement();
+  currentPasswordInput.addEventListener("input", validateInput);
+  currentPasswordLabel.textContent = "Current Password";
+  const [newPasswordLabel, newPasswordInput] = createInput(
+    "confirm-password",
+    [
+      ["new-password-label", "prof-label"],
+      ["new-passwrod-input", "prof-input"]
+    ],
+    "password",
+    "password"
+  );
+  const newPasswordIconParams = {
+    tag: "img",
+    attributes: {
+      src: "/assets/authpage/hide.png",
+      alt: "make your password visible/hide",
+      title: "Click to make your password visible"
     },
-    billingAddress: {
-      isDefault: validStatusAddress.billingIsDefault,
-      country: billingPostCode,
-      postaCode: postBilling.value,
-      city: cityBilling.value,
-      streetName: streetBilling.value
+    classNames: ["password_icon", "change-password-icon"]
+  };
+  const newPasswordIcon = createElement$1(
+    newPasswordIconParams
+  );
+  newPasswordIcon.addEventListener("click", showPassword);
+  newPasswordLabel.textContent = "New Password";
+  newPasswordInput.addEventListener("input", validateInput);
+  const newPasswordError = createErrorElement();
+  const buttonsContainerParams = {
+    tag: "div",
+    classNames: ["password-form__btn-container"]
+  };
+  const buttonCloseParams = {
+    tag: "button",
+    classNames: ["password-form__close", "profile-btn"],
+    textContent: "Close"
+  };
+  const buttonSaveParams = {
+    tag: "button",
+    classNames: ["password-form__save", "profile-btn"],
+    textContent: "Save",
+    attributes: { form: "change-password-form", disabled: "" }
+  };
+  const buttonsContainer = createElement$1(buttonsContainerParams);
+  const buttonClose = createElement$1(buttonCloseParams);
+  const buttonSave = createElement$1(buttonSaveParams);
+  buttonClose.addEventListener("click", (e) => {
+    e.preventDefault();
+    passwordModal.remove();
+    fillObjectWithUniqueKeys(profileForm, true, validStatus, true);
+  });
+  buttonSave.addEventListener("click", (e) => {
+    e.preventDefault();
+    passwordModal.remove();
+    const body = {
+      id: userData.id,
+      version: userData.version,
+      currentPassword: currentPasswordInput.value,
+      newPassword: newPasswordInput.value
+    };
+    changePassword(userData, body);
+    fillObjectWithUniqueKeys(profileForm, true, validStatus, true);
+  });
+  addInnerComponent(buttonsContainer, buttonClose);
+  addInnerComponent(buttonsContainer, buttonSave);
+  if (app) {
+    addInnerComponent(app, passwordModal);
+    addInnerComponent(passwordModal, passwordForm);
+    addInnerComponent(passwordForm, formTitle);
+    addInnerComponent(passwordForm, currentPasswordLabel);
+    addInnerComponent(currentPasswordLabel, currentPasswordInput);
+    addInnerComponent(currentPasswordLabel, currentPasswordError);
+    addInnerComponent(currentPasswordLabel, newPasswordIcon);
+    addInnerComponent(passwordForm, newPasswordLabel);
+    addInnerComponent(newPasswordLabel, newPasswordInput);
+    addInnerComponent(newPasswordLabel, newPasswordError);
+    addInnerComponent(newPasswordLabel, currentPasswordIcon);
+    addInnerComponent(passwordForm, buttonsContainer);
+    fillObjectWithUniqueKeys(passwordForm, false, validStatus, true);
+  }
+  return passwordModal;
+}
+function showPassword(e) {
+  e.preventDefault();
+  const elem = e.target;
+  const lable = elem.parentElement;
+  const input = searchInput(lable);
+  if (input.getAttribute("type") === "password") {
+    input.setAttribute("type", "text");
+    elem.setAttribute("src", "/assets/authpage/show.png");
+    elem.setAttribute("title", "Click to hide your password");
+  } else {
+    input.setAttribute("type", "password");
+    elem.setAttribute("src", "/assets/authpage/hide.png");
+    elem.setAttribute("title", "Click to make your password visible");
+  }
+}
+function resultPasswordModal(text) {
+  const app = document.querySelector("#app");
+  const resultPasswordContainerParams = {
+    tag: "div",
+    classNames: ["password-result__modal-container", "modal_container"]
+  };
+  const passwordContainerParams = {
+    tag: "div",
+    classNames: ["password-result__result-container"]
+  };
+  const passwordContainer = createElement$1(passwordContainerParams);
+  const resultPasswordContainer = createElement$1(resultPasswordContainerParams);
+  const resultPasswordTitleParams = {
+    tag: "h2",
+    classNames: ["password-result__title"],
+    textContent: text
+  };
+  const resultPasswordTitle = createElement$1(resultPasswordTitleParams);
+  const buttonCloseParams = {
+    tag: "button",
+    classNames: ["password-result__close", "profile-btn"],
+    textContent: "Close"
+  };
+  const buttonClose = createElement$1(buttonCloseParams);
+  addInnerComponent(app, resultPasswordContainer);
+  addInnerComponent(resultPasswordContainer, passwordContainer);
+  addInnerComponent(passwordContainer, resultPasswordTitle);
+  addInnerComponent(passwordContainer, buttonClose);
+  buttonClose.addEventListener("click", () => {
+    resultPasswordContainer.remove();
+  });
+}
+async function updateCustomer(bodya) {
+  const unparsedToken = localStorage.getItem("token");
+  if (!unparsedToken) {
+    throw new Error("No token found in local storage");
+  }
+  const token = JSON.parse(unparsedToken);
+  const refreshToken = token.refreshToken;
+  const refreshFlowClient = createApiBuilderFromCtpClient(
+    createRefreshTokenClient(refreshToken)
+  ).withProjectKey({ projectKey: "valenki-store" });
+  try {
+    await refreshFlowClient.me().post({ body: bodya }).execute();
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast("An unknown error occurred");
+    }
+  }
+}
+async function changePassword(dataCustomer, customerPassword) {
+  const unparsedToken = localStorage.getItem("token");
+  if (!unparsedToken) {
+    throw new Error("No token found in local storage");
+  }
+  const token = JSON.parse(unparsedToken);
+  const refreshToken = token.refreshToken;
+  const refreshFlowClient = createApiBuilderFromCtpClient(
+    createRefreshTokenClient(refreshToken)
+  ).withProjectKey({ projectKey: "valenki-store" });
+  try {
+    const body = {
+      email: dataCustomer.email,
+      password: customerPassword.newPassword
+    };
+    await refreshFlowClient.me().password().post({ body: customerPassword }).execute();
+    localStorage.removeItem("token");
+    await loginStayUser(body);
+    resultPasswordModal("Password is changed");
+  } catch (error) {
+    resultPasswordModal(
+      "Error: The entered password does not match the current one"
+    );
+  }
+}
+const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
+  projectKey: "valenki-store"
+});
+const anonymousApiRoot = createApiBuilderFromCtpClient(
+  anonymousCtpClient
+).withProjectKey({
+  projectKey: "valenki-store"
+});
+const getProject = () => {
+  return anonymousApiRoot.get().execute();
+};
+const loginUser = async (body) => {
+  try {
+    const passFlowClient = createApiBuilderFromCtpClient(
+      createPasswordFlowClient({ email: body.email, password: body.password })
+    ).withProjectKey({
+      projectKey: "valenki-store"
+    });
+    const data = await passFlowClient.login().post({ body }).execute();
+    localStorage.setItem("userId", data.body.customer.id);
+    router.navigate("/");
+    appEvents.emit("login", void 0);
+    return data;
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast("An unknown error occurred");
+    }
+    throw error;
+  }
+};
+const loginStayUser = async (body) => {
+  try {
+    const passFlowClient = createApiBuilderFromCtpClient(
+      createPasswordFlowClient({ email: body.email, password: body.password })
+    ).withProjectKey({
+      projectKey: "valenki-store"
+    });
+    const data = await passFlowClient.login().post({ body }).execute();
+    return data;
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast("An unknown error occurred");
+    }
+    throw error;
+  }
+};
+const logoutUser = async () => {
+  try {
+    localStorage.removeItem("token");
+    await anonymousApiRoot.get().execute();
+    router.navigate("/login");
+    appEvents.emit("logout", void 0);
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast("An unknown error occurred");
+    }
+  }
+};
+async function isUserLogined() {
+  if (localStorage.getItem("token")) {
+    const unparsedToken = JSON.parse(localStorage.getItem("token"));
+    const currentPath = window.location.pathname;
+    const refreshToken = unparsedToken.refreshToken;
+    const refreshFlowClient = createApiBuilderFromCtpClient(
+      createRefreshTokenClient(refreshToken)
+    ).withProjectKey({
+      projectKey: "valenki-store"
+    });
+    try {
+      const userData = await refreshFlowClient.me().get().execute();
+      if (currentPath === "/" || currentPath === "/login") {
+        router.navigate("/");
+      }
+      appEvents.emit("login", void 0);
+      return userData;
+    } catch (error) {
+      router.navigate("/login");
+    }
+  } else {
+    await getProject();
+  }
+}
+async function getUserData() {
+  if (localStorage.getItem("token")) {
+    const unparsedToken = JSON.parse(localStorage.getItem("token"));
+    const refreshToken = unparsedToken.refreshToken;
+    const refreshFlowClient = createApiBuilderFromCtpClient(
+      createRefreshTokenClient(refreshToken)
+    ).withProjectKey({
+      projectKey: "valenki-store"
+    });
+    try {
+      const response = await refreshFlowClient.me().get().execute();
+      if (!response.body) {
+        throw new Error("No user data found");
+      }
+      const userData = response.body;
+      return userData;
+    } catch (error) {
+      if (isCustomError(error)) {
+        showToast(error.body.message);
+      } else if (error instanceof Error) {
+        showToast(error.message);
+      } else {
+        showToast("An unknown error occurred");
+      }
+      throw error;
+    }
+  } else {
+    throw new Error("No token found");
+  }
+}
+function checkLoginStatus() {
+  return Boolean(localStorage.getItem("token"));
+}
+async function regUser(regData) {
+  try {
+    const addresses = [
+      {
+        key: "Shipping-Address",
+        city: regData.shippingAddress.city,
+        country: regData.shippingAddress.country,
+        postalCode: regData.shippingAddress.postaCode,
+        streetName: regData.shippingAddress.streetName
+      },
+      {
+        key: "Billing-Address",
+        city: regData.billingAddress.city,
+        country: regData.billingAddress.country,
+        postalCode: regData.billingAddress.postaCode,
+        streetName: regData.billingAddress.streetName
+      }
+    ];
+    const requestBody = {
+      email: regData.mailValue,
+      firstName: regData.name,
+      lastName: regData.lastName,
+      password: regData.password,
+      dateOfBirth: regData.DOB,
+      addresses,
+      ...regData.shippingAddress.isDefault ? { defaultShippingAddress: 0 } : {},
+      ...regData.billingAddress.isDefault ? { defaultBillingAddress: 1 } : {}
+    };
+    await apiRoot.customers().post({
+      body: requestBody
+    }).execute();
+    await loginUser({
+      email: regData.mailValue,
+      password: regData.password
+    });
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast("An unknown error occurred");
+    }
+    return void 0;
+  }
+}
+async function getDetailedProduct(ID2) {
+  try {
+    const response = await apiRoot.products().withId({ ID: ID2 }).get().execute();
+    const categories = response.body.masterData.current.categories;
+    const categoryIds = categories.map((category) => category.id);
+    const categoryPromises = categoryIds.map(
+      (categoryID) => apiRoot.categories().withId({ ID: categoryID }).get().execute()
+    );
+    const categoryResponses = await Promise.all(categoryPromises);
+    return { productResponse: response, categoryResponses };
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast("An unknown error occurred");
+    }
+    return void 0;
+  }
+}
+async function fetchProducts(sort) {
+  try {
+    let offset = 0;
+    const limit = 500;
+    let allProducts = [];
+    let hasMore = true;
+    const queryArgs = {
+      limit,
+      offset
+    };
+    if (sort) {
+      queryArgs.sort = [sort];
+    }
+    while (hasMore) {
+      const response = await apiRoot.productProjections().search().get({
+        queryArgs
+      }).execute();
+      if (response.body.results.length === 0) {
+        hasMore = false;
+      } else {
+        allProducts = allProducts.concat(response.body.results);
+        offset += limit;
+        if (response.body.results.length < limit) {
+          hasMore = false;
+        }
+      }
+    }
+    return allProducts;
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast("An unknown error occurred");
+    }
+    return [];
+  }
+}
+async function fetchProductAttributes() {
+  try {
+    let offset = 0;
+    const limit = 500;
+    let allProducts = [];
+    let hasMore = true;
+    while (hasMore) {
+      const response = await apiRoot.productProjections().search().get({
+        queryArgs: {
+          limit,
+          offset
+        }
+      }).execute();
+      if (response.body.results.length === 0) {
+        hasMore = false;
+      } else {
+        allProducts = allProducts.concat(response.body.results);
+        offset += limit;
+        if (response.body.results.length < limit) {
+          hasMore = false;
+        }
+      }
+    }
+    if (allProducts.length === 0) {
+      return null;
+    }
+    const sizes = /* @__PURE__ */ new Set();
+    allProducts.forEach((product) => {
+      var _a;
+      (_a = product.masterVariant.attributes) == null ? void 0 : _a.forEach((attribute) => {
+        if (attribute.name === "size") {
+          const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
+          sizes.add(sizeValue);
+        }
+      });
+      product.variants.forEach((variant) => {
+        var _a2;
+        (_a2 = variant.attributes) == null ? void 0 : _a2.forEach((attribute) => {
+          if (attribute.name === "size") {
+            const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
+            sizes.add(sizeValue);
+          }
+        });
+      });
+    });
+    const uniqueSizes = Array.from(sizes).sort((a, b) => a - b);
+    return uniqueSizes;
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast("An unknown error occurred");
+    }
+    return null;
+  }
+}
+async function fetchSizesForCategory(categoryId) {
+  try {
+    const response = await apiRoot.productProjections().search().get({
+      queryArgs: {
+        filter: `categories.id: subtree("${categoryId}")`,
+        limit: 500
+      }
+    }).execute();
+    const products = response.body.results;
+    const sizes = /* @__PURE__ */ new Set();
+    products.forEach((product) => {
+      var _a;
+      (_a = product.masterVariant.attributes) == null ? void 0 : _a.forEach((attribute) => {
+        if (attribute.name === "size") {
+          const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
+          sizes.add(sizeValue);
+        }
+      });
+      product.variants.forEach((variant) => {
+        var _a2;
+        (_a2 = variant.attributes) == null ? void 0 : _a2.forEach((attribute) => {
+          if (attribute.name === "size") {
+            const sizeValue = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
+            sizes.add(sizeValue);
+          }
+        });
+      });
+    });
+    return Array.from(sizes).sort((a, b) => a - b);
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast("An unknown error occurred");
+    }
+    return [];
+  }
+}
+async function fetchCategories() {
+  try {
+    const response = await anonymousApiRoot.categories().get().execute();
+    const categories = response.body.results;
+    return categories;
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast("An unknown error occurred");
+    }
+    return [];
+  }
+}
+async function fetchFilteredProducts(filters, sort) {
+  try {
+    const queryArgs = {
+      filter: filters
+    };
+    if (sort) {
+      queryArgs.sort = [sort];
+    }
+    const response = await apiRoot.productProjections().search().get({
+      queryArgs
+    }).execute();
+    return response.body.results;
+  } catch (error) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast("An unknown error occurred");
+    }
+    return [];
+  }
+}
+async function searchProducts(searchText) {
+  try {
+    const queryArgs = {
+      "text.en-US": searchText,
+      fuzzy: true
+    };
+    const response = await apiRoot.productProjections().search().get({ queryArgs }).execute();
+    return response.body;
+  } catch (error) {
+    console.error("Error during product search:", error);
+    throw error;
+  }
+}
+function createSearchComponent() {
+  const searchWrapperParams = {
+    tag: "div",
+    classNames: ["search__wrapper"]
+  };
+  const searchWrapper = createElement$1(searchWrapperParams);
+  const searchInputParams = {
+    tag: "input",
+    classNames: ["search__input"],
+    attributes: { placeholder: "Search" }
+  };
+  const searchInput2 = createElement$1(searchInputParams);
+  const searchButtonParams = {
+    tag: "button",
+    classNames: ["search__button"]
+  };
+  const searchButton = createElement$1(searchButtonParams);
+  const searchIcon = createElement$1({
+    tag: "img",
+    classNames: ["search__icon"],
+    attributes: {
+      src: "/assets/header/search.png",
+      alt: "Search"
+    }
+  });
+  addInnerComponent(searchButton, searchIcon);
+  const searchFormParams = {
+    tag: "form",
+    classNames: ["search__form"]
+  };
+  const searchForm = createElement$1(searchFormParams);
+  addInnerComponent(searchForm, searchInput2);
+  addInnerComponent(searchForm, searchButton);
+  addInnerComponent(searchWrapper, searchForm);
+  searchForm.addEventListener("submit", async (event2) => {
+    event2.preventDefault();
+    const searchText = searchInput2.value.trim();
+    if (searchText) {
+      try {
+        const searchResults = await searchProducts(searchText);
+        const customEvent = new CustomEvent("searchResults", {
+          detail: searchResults
+        });
+        document.dispatchEvent(customEvent);
+      } catch (error) {
+        console.error("Search error:", error);
+      }
+    }
+  });
+  return searchWrapper;
+}
+function createHeader() {
+  const headerParams = {
+    tag: "div",
+    classNames: ["header"]
+  };
+  const header = createElement$1(headerParams);
+  const logoLink = createElement$1({
+    tag: "a",
+    attributes: { href: "/" },
+    classNames: ["header__logo-link"]
+  });
+  const logo = createElement$1({
+    tag: "div",
+    classNames: ["header__logo"],
+    textContent: "・valenki store・"
+  });
+  addInnerComponent(logoLink, logo);
+  const logoSearchContainer = createElement$1({
+    tag: "div",
+    classNames: ["header__logo-search-container"]
+  });
+  addInnerComponent(logoSearchContainer, logoLink);
+  const isCatalogPage = window.location.pathname === "/catalog";
+  if (isCatalogPage) {
+    const searchComponent = createSearchComponent();
+    addInnerComponent(logoSearchContainer, searchComponent);
+  }
+  const navContainer = createElement$1({
+    tag: "div",
+    classNames: ["header__nav-links"]
+  });
+  if (!isCatalogPage) {
+    const homeLink = createElement$1({
+      tag: "a",
+      attributes: { href: "/" },
+      classNames: ["header__nav-link"],
+      textContent: "Home"
+    });
+    const aboutLink = createElement$1({
+      tag: "a",
+      attributes: { href: "/catalog" },
+      classNames: ["header__nav-link"],
+      textContent: "Catalog"
+    });
+    addInnerComponent(navContainer, homeLink);
+    addInnerComponent(navContainer, aboutLink);
+  }
+  const rightContainer = createElement$1({
+    tag: "div",
+    classNames: ["header__right-container"]
+  });
+  const iconsContainer = createElement$1({
+    tag: "div",
+    classNames: ["header__icons"]
+  });
+  const basketIcon = createElement$1({
+    tag: "a",
+    attributes: { href: "/basket" },
+    classNames: ["header__icon", "header__basket-icon"]
+  });
+  const basketImage = createElement$1({
+    tag: "img",
+    attributes: {
+      src: "/assets/header/basket.png",
+      alt: "Basket"
+    }
+  });
+  const userIcon = createElement$1({
+    tag: "a",
+    classNames: ["header__icon", "header__user-icon"]
+  });
+  const userImage = createElement$1({
+    tag: "img",
+    attributes: {
+      src: "/assets/header/user-profile.png",
+      alt: "User"
+    }
+  });
+  addInnerComponent(userIcon, userImage);
+  userIcon.onclick = () => {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      navigateToProfile(userId);
+    } else {
+      router.navigate("/login");
     }
   };
-  await regUser(regData);
-}
-createErrorElement();
-createErrorElement();
-const authSideForm = createElement$1({
-  tag: "form",
-  classNames: ["auth-side__reg-form"]
-});
-const regDateAndCheckContainerParams = {
-  tag: "div",
-  classNames: ["reg-form__container__date-checks"]
-};
-const regDateAndCheckContainer = createElement$1(regDateAndCheckContainerParams);
-const address = createElement$1({
-  tag: "div",
-  classNames: ["reg-form__address"]
-});
-const authFormButton = createElement$1({
-  tag: "button",
-  classNames: ["reg-form__button", "reg-button"],
-  attributes: { type: "button", disabled: "" },
-  textContent: "Create Account"
-});
-function createForm() {
-  addInnerComponent(authSideForm, commonFormCompontens.container);
-  addInnerComponent(authSideForm, regDateAndCheckContainer);
-  addInnerComponent(regDateAndCheckContainer, addDate());
-  addInnerComponent(authSideForm, createDefaultCheck()[0]);
-  addInnerComponent(authSideForm, addressesContainer);
-  addInnerComponent(authSideForm, address);
-  addInnerComponent(authSideForm, addDefaultChecks());
-  addInnerComponent(authSideForm, authFormButton);
-  fillObjectWithUniqueKeys(authSideForm, false, validStatus);
-  authFormButton.addEventListener("click", submitRegData);
-}
-let validStatus = {};
-function setValidStatus(field, value) {
-  validStatus[field] = value;
-}
-function checkAllInputs(form = null) {
-  if (window.location.href.includes("register")) {
-    if (Object.values(validStatus).every((value) => value)) {
-      authFormButton.removeAttribute("disabled");
-    } else {
-      authFormButton.setAttribute("disabled", "");
-    }
-  } else if (window.location.href.includes("login")) {
-    const submitButton = document.querySelector(".submit_button");
-    if (Object.values(validStatus).every((value) => value)) {
-      submitButton == null ? void 0 : submitButton.removeAttribute("disabled");
-    } else {
-      submitButton == null ? void 0 : submitButton.setAttribute("disabled", "");
-    }
-  } else if (window.location.href.includes("profile")) {
-    const edit = document.querySelector(".profile-header__btn-edit");
-    const save = document.querySelector(".password-form__save");
-    const addAddress2 = document.querySelector(
-      ".profile-header__btn-add-address"
-    );
-    if (!(form == null ? void 0 : form.classList.contains("modal__password-form"))) {
-      if (Object.values(validStatus).every((value) => value)) {
-        edit == null ? void 0 : edit.removeAttribute("disabled");
-        addAddress2 == null ? void 0 : addAddress2.removeAttribute("disabled");
-      } else {
-        edit == null ? void 0 : edit.setAttribute("disabled", "");
-        addAddress2 == null ? void 0 : addAddress2.setAttribute("disabled", "");
-      }
-    } else {
-      if (Object.values(validStatus).every((value) => value)) {
-        save == null ? void 0 : save.removeAttribute("disabled");
-      } else {
-        save == null ? void 0 : save.setAttribute("disabled", "");
-      }
-    }
-  }
-}
-function fillObjectWithUniqueKeys(form, value, existingData, clearPrevious = false) {
-  if (clearPrevious) {
-    existingData = {};
-  }
-  const formArray = filterArray(form);
-  const obj = { ...existingData };
-  let counter2 = 1;
-  formArray.forEach((_, index) => {
-    let key = index.toString();
-    while (Object.prototype.hasOwnProperty.call(obj, key)) {
-      counter2++;
-      key = index.toString() + counter2;
-    }
-    if (!obj[key]) {
-      obj[key] = value;
-    }
-    counter2 = 1;
+  addInnerComponent(iconsContainer, basketIcon);
+  addInnerComponent(iconsContainer, userIcon);
+  addInnerComponent(basketIcon, basketImage);
+  addInnerComponent(userIcon, userImage);
+  addInnerComponent(iconsContainer, basketIcon);
+  addInnerComponent(iconsContainer, userIcon);
+  const authNavContainer = createElement$1({
+    tag: "div",
+    classNames: ["header__auth-nav-container"]
   });
-  if (Object.keys(obj).length !== formArray.length) {
-    while (Object.keys(obj).length > formArray.length) {
-      delete obj[Object.keys(obj).pop()];
-    }
-    while (Object.keys(obj).length < formArray.length) {
-      obj[Object.keys(obj).length.toString()] = true;
-    }
+  const authContainer = createElement$1({
+    tag: "div",
+    classNames: ["header__auth-buttons"]
+  });
+  const registerButton = createElement$1({
+    tag: "a",
+    attributes: { href: "/register" },
+    classNames: ["header__auth-button", "register-button"],
+    textContent: "Register"
+  });
+  const authButton = createElement$1({
+    tag: "a",
+    attributes: { href: "/login" },
+    classNames: ["header__auth-button", "login-button"],
+    textContent: "Log In"
+  });
+  addInnerComponent(authContainer, registerButton);
+  addInnerComponent(authContainer, authButton);
+  addInnerComponent(authNavContainer, authContainer);
+  addInnerComponent(rightContainer, iconsContainer);
+  addInnerComponent(rightContainer, authNavContainer);
+  addInnerComponent(header, logoSearchContainer);
+  if (!isCatalogPage) {
+    addInnerComponent(header, navContainer);
   }
-  validStatus = obj;
+  addInnerComponent(header, rightContainer);
+  const burgerMenu = createElement$1({
+    tag: "div",
+    classNames: ["header__burger"]
+  });
+  const burgerLine1 = createElement$1({ tag: "div", classNames: ["line1"] });
+  const burgerLine2 = createElement$1({ tag: "div", classNames: ["line2"] });
+  const burgerLine3 = createElement$1({ tag: "div", classNames: ["line3"] });
+  addInnerComponent(burgerMenu, burgerLine1);
+  addInnerComponent(burgerMenu, burgerLine2);
+  addInnerComponent(burgerMenu, burgerLine3);
+  addInnerComponent(header, burgerMenu);
+  burgerMenu.onclick = () => {
+    authNavContainer.classList.toggle("open");
+    burgerMenu.classList.toggle("change");
+  };
+  const closeBurgerMenu = (event2) => {
+    if (!header.contains(event2.target) && authNavContainer.classList.contains("open")) {
+      authNavContainer.classList.remove("open");
+      burgerMenu.classList.remove("change");
+    }
+  };
+  document.addEventListener("click", closeBurgerMenu);
+  const tabletScreenWidthInPx = 870;
+  const moveNavLinks = () => {
+    const isMobile = window.innerWidth <= tabletScreenWidthInPx;
+    if (isMobile && !isCatalogPage) {
+      addInnerComponent(authNavContainer, navContainer);
+    } else if (!isCatalogPage) {
+      if (authNavContainer.classList.contains("open")) {
+        authNavContainer.classList.remove("open");
+        burgerMenu.classList.remove("change");
+      }
+      header.insertBefore(navContainer, rightContainer);
+    }
+  };
+  window.addEventListener("resize", moveNavLinks);
+  document.addEventListener("DOMContentLoaded", moveNavLinks);
+  window.addEventListener("load", moveNavLinks);
+  moveNavLinks();
+  async function handleLogout() {
+    await logoutUser();
+    appEvents.emit("logout", void 0);
+  }
+  async function updateAuthButton(isLoggedIn) {
+    registerButton.style.display = isLoggedIn ? "none" : "block";
+    authButton.textContent = isLoggedIn ? "Log Out" : "Log In";
+    authButton.setAttribute("href", isLoggedIn ? "#" : "/login");
+    authButton.onclick = isLoggedIn ? async () => {
+      await handleLogout();
+      appEvents.emit("logout", void 0);
+    } : null;
+  }
+  document.addEventListener("DOMContentLoaded", initializeAuthButtons);
+  function initializeAuthButtons() {
+    const isLoggedIn = checkLoginStatus();
+    updateAuthButton(isLoggedIn);
+  }
+  initializeAuthButtons();
+  appEvents.on("login", () => updateAuthButton(true));
+  appEvents.on("logout", () => updateAuthButton(false));
+  return header;
+}
+function createMainPage() {
+  const pageContainerParams = {
+    tag: "div",
+    classNames: ["main-page-wrapper"]
+  };
+  const container = createElement$1(pageContainerParams);
+  const header = createHeader();
+  addInnerComponent(container, header);
+  const buttonsContainer = createElement$1({
+    tag: "div",
+    classNames: ["buttons-for-reviewer"]
+  });
+  const loginButton = createElement$1({
+    tag: "a",
+    attributes: { href: "/login" },
+    classNames: ["button-for-reviewer", "login-button"],
+    textContent: "Log In"
+  });
+  const registerButton = createElement$1({
+    tag: "a",
+    attributes: { href: "/register" },
+    classNames: ["button-for-reviewer", "register-button"],
+    textContent: "Register"
+  });
+  addInnerComponent(buttonsContainer, loginButton);
+  addInnerComponent(buttonsContainer, registerButton);
+  addInnerComponent(container, buttonsContainer);
+  return container;
+}
+function createNotFoundPage() {
+  const containerParams = {
+    tag: "div",
+    classNames: ["not-found-container"],
+    textContent: ""
+  };
+  const container = createElement$1(containerParams);
+  const imageParams = {
+    tag: "img",
+    classNames: ["not-found-image"],
+    attributes: {
+      src: "/assets/notFoundComponent/404-img.png",
+      alt: "Not Found"
+    }
+  };
+  const image = createElement$1(imageParams);
+  const contentContainer = createElement$1({
+    tag: "div",
+    classNames: ["not-found-content"]
+  });
+  const headingParams = {
+    tag: "h1",
+    classNames: ["not-found-title"],
+    textContent: "OOPS!"
+  };
+  const heading = createElement$1(headingParams);
+  const descriptionParams = {
+    tag: "p",
+    classNames: ["not-found-description"],
+    textContent: "Looks like Bigfoot has broken the link."
+  };
+  const description = createElement$1(descriptionParams);
+  const backHomeCallback = {
+    eventType: "click",
+    callback: () => window.location.href = "/"
+  };
+  const buttonParams = {
+    tag: "button",
+    classNames: ["back-home-button"],
+    textContent: "Back to homepage",
+    callbacks: [backHomeCallback]
+  };
+  const backButton = createElement$1(buttonParams);
+  addInnerComponent(contentContainer, heading);
+  addInnerComponent(contentContainer, description);
+  addInnerComponent(contentContainer, backButton);
+  addInnerComponent(container, image);
+  addInnerComponent(container, contentContainer);
+  return container;
+}
+function notFoundPage() {
+  return createNotFoundPage();
 }
 function createAuthForm() {
   const formContainerParams = {
@@ -45740,6 +45925,12 @@ async function toggleReadOnly(countries, ...args) {
     console.log(body);
     updateCustomer(body);
     setInfoReadvalidStatus("name", true);
+    const deleteBtns = document.querySelectorAll(
+      ".address-prof-container__delete-btn"
+    );
+    deleteBtns.forEach((btn) => {
+      btn.removeAttribute("disabled");
+    });
   }
 }
 function checkInput(elem, data) {
@@ -45870,18 +46061,21 @@ function checkInput(elem, data) {
       }
     }
     if (city && street && id) {
-      const action = {
-        action: "changeAddress",
-        addressId: id,
-        address: {
-          key: randomString(),
-          city: city.value,
-          postalCode: elem.value,
-          streetName: street.value,
-          country: capitalСountries
-        }
-      };
-      result.push(action);
+      if (elem.getAttribute("addressid") === id) {
+        console.log(1);
+        const action = {
+          action: "changeAddress",
+          addressId: id,
+          address: {
+            key: randomString(),
+            city: city.value,
+            postalCode: elem.value,
+            streetName: street.value,
+            country: capitalСountries
+          }
+        };
+        result.push(action);
+      }
     }
   }
   return result;
@@ -45949,147 +46143,6 @@ function checkLength(name) {
     return name = name.slice(0, 20) + "...";
   } else {
     return name;
-  }
-}
-function addPasswordModal(userData) {
-  const app = document.querySelector("#app");
-  const profileForm = app.querySelector(
-    ".profile-container__profile-form"
-  );
-  const passwordModalParams = {
-    tag: "div",
-    classNames: ["modal__change-password", "modal_container"]
-  };
-  const passwordModal = createElement$1(passwordModalParams);
-  const passwordFormParams = {
-    tag: "form",
-    classNames: ["modal__password-form"],
-    attributes: { id: "change-password-form" }
-  };
-  const formTitleParams = {
-    tag: "h2",
-    classNames: ["password-form__title"],
-    textContent: "Enter your new Password"
-  };
-  const formTitle = createElement$1(formTitleParams);
-  const passwordForm = createElement$1(passwordFormParams);
-  const [currentPasswordLabel, currentPasswordInput] = createInput(
-    "current-password",
-    [
-      ["current-password-label", "prof-label"],
-      ["current-passwrod-input", "prof-input"]
-    ],
-    "password",
-    "password"
-  );
-  const currentPasswordIconParams = {
-    tag: "img",
-    attributes: {
-      src: "/assets/authpage/hide.png",
-      alt: "make your password visible/hide",
-      title: "Click to make your password visible"
-    },
-    classNames: ["password_icon", "change-password-icon"]
-  };
-  const currentPasswordIcon = createElement$1(
-    currentPasswordIconParams
-  );
-  currentPasswordIcon.addEventListener("click", showPassword);
-  const currentPasswordError = createErrorElement();
-  currentPasswordInput.addEventListener("input", validateInput);
-  currentPasswordLabel.textContent = "Current Password";
-  const [newPasswordLabel, newPasswordInput] = createInput(
-    "confirm-password",
-    [
-      ["new-password-label", "prof-label"],
-      ["new-passwrod-input", "prof-input"]
-    ],
-    "password",
-    "password"
-  );
-  const newPasswordIconParams = {
-    tag: "img",
-    attributes: {
-      src: "/assets/authpage/hide.png",
-      alt: "make your password visible/hide",
-      title: "Click to make your password visible"
-    },
-    classNames: ["password_icon", "change-password-icon"]
-  };
-  const newPasswordIcon = createElement$1(
-    newPasswordIconParams
-  );
-  newPasswordIcon.addEventListener("click", showPassword);
-  newPasswordLabel.textContent = "New Password";
-  newPasswordInput.addEventListener("input", validateInput);
-  const newPasswordError = createErrorElement();
-  const buttonsContainerParams = {
-    tag: "div",
-    classNames: ["password-form__btn-container"]
-  };
-  const buttonCloseParams = {
-    tag: "button",
-    classNames: ["password-form__close", "profile-btn"],
-    textContent: "Close"
-  };
-  const buttonSaveParams = {
-    tag: "button",
-    classNames: ["password-form__save", "profile-btn"],
-    textContent: "Save",
-    attributes: { form: "change-password-form", disabled: "" }
-  };
-  const buttonsContainer = createElement$1(buttonsContainerParams);
-  const buttonClose = createElement$1(buttonCloseParams);
-  const buttonSave = createElement$1(buttonSaveParams);
-  buttonClose.addEventListener("click", (e) => {
-    e.preventDefault();
-    passwordModal.remove();
-    fillObjectWithUniqueKeys(profileForm, true, validStatus, true);
-  });
-  buttonSave.addEventListener("click", (e) => {
-    e.preventDefault();
-    passwordModal.remove();
-    const body = {
-      id: userData.id,
-      version: userData.version,
-      currentPassword: currentPasswordInput.value,
-      newPassword: newPasswordInput.value
-    };
-    changePassword(userData, body);
-    fillObjectWithUniqueKeys(profileForm, true, validStatus, true);
-  });
-  addInnerComponent(buttonsContainer, buttonClose);
-  addInnerComponent(buttonsContainer, buttonSave);
-  if (app) {
-    addInnerComponent(app, passwordModal);
-    addInnerComponent(passwordModal, passwordForm);
-    addInnerComponent(passwordForm, formTitle);
-    addInnerComponent(passwordForm, currentPasswordLabel);
-    addInnerComponent(currentPasswordLabel, currentPasswordInput);
-    addInnerComponent(currentPasswordLabel, currentPasswordError);
-    addInnerComponent(currentPasswordLabel, newPasswordIcon);
-    addInnerComponent(passwordForm, newPasswordLabel);
-    addInnerComponent(newPasswordLabel, newPasswordInput);
-    addInnerComponent(newPasswordLabel, newPasswordError);
-    addInnerComponent(newPasswordLabel, currentPasswordIcon);
-    addInnerComponent(passwordForm, buttonsContainer);
-    fillObjectWithUniqueKeys(passwordForm, false, validStatus, true);
-  }
-  return passwordModal;
-}
-function showPassword(e) {
-  e.preventDefault();
-  const elem = e.target;
-  const lable = elem.parentElement;
-  const input = searchInput(lable);
-  if (input.getAttribute("type") === "password") {
-    input.setAttribute("type", "text");
-    elem.setAttribute("src", "/assets/authpage/show.png");
-    elem.setAttribute("title", "Click to hide your password");
-  } else {
-    input.setAttribute("type", "password");
-    elem.setAttribute("src", "/assets/authpage/hide.png");
-    elem.setAttribute("title", "Click to make your password visible");
   }
 }
 function buildPasswordBtn(userData) {
@@ -46408,27 +46461,35 @@ async function clickDeleteButton(e) {
   const deleteButtons = Array.from(
     (ancestor == null ? void 0 : ancestor.querySelectorAll(".address-prof-container__delete-btn")) || []
   );
+  const post = findElement(
+    parent,
+    "profile-form__post-input"
+  );
   const userData = await getUserData();
-  const addressList = userData.addresses;
+  const addressList = userData.addresses.reverse();
   const index = deleteButtons.indexOf(elem);
+  const id = post.getAttribute("addressid");
   if (((_a = addressList[index]) == null ? void 0 : _a.id) === void 0) {
     parent == null ? void 0 : parent.remove();
     fillObjectWithUniqueKeys(form, false, validStatus);
     checkAllInputs();
   } else {
-    const body = {
-      version: userData.version,
-      actions: [
-        {
-          action: "removeAddress",
-          addressId: addressList[index].id
-        }
-      ]
-    };
-    updateCustomer(body);
-    parent == null ? void 0 : parent.remove();
-    fillObjectWithUniqueKeys(form, false, validStatus);
-    checkAllInputs();
+    if (id) {
+      const body = {
+        version: userData.version,
+        actions: [
+          {
+            action: "removeAddress",
+            addressId: id
+          }
+        ]
+      };
+      parent == null ? void 0 : parent.remove();
+      updateCustomer(body);
+      fillObjectWithUniqueKeys(form, false, validStatus);
+      console.log(validStatus);
+      checkAllInputs();
+    }
   }
 }
 function buildAddressProfile(customerData) {
