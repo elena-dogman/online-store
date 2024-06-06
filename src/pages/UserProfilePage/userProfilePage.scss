@@ -424,19 +424,11 @@
     padding: 0px;
     width: 100vw;
   }
-  // .profile-container__profile-form {
-  //   padding: 0px;
-  // }
 }
 
 @media (max-width: 400px) {
   .address-prof__countries-list.--expanded {
     top: 0px;
     height: 270px;
-  }
-}
-@media (max-height: 800px) {
-  .profile-form__address-prof-container {
-    overflow-y: visible;
   }
 }
