@@ -9,6 +9,7 @@ import {
   fetchCategories,
   fetchSizesForCategory,
 } from '../../../api/apiService';
+import { Filters, updateURLWithFilters } from './filters';
 
 export async function createFilterComponent(): Promise<HTMLElement> {
   const filterContainerParams: ElementParams<'div'> = {
@@ -45,6 +46,14 @@ export async function createFilterComponent(): Promise<HTMLElement> {
     filterGroup.classList.add('size-filter-group');
     addInnerComponent(filterContainer, filterGroup);
   }
+const clearButtonParams: ElementParams<'button'> = {
+    tag: 'button',
+    classNames: ['clear-filters-button'],
+    textContent: 'Clear all',
+  };
+  const clearButton = createElement(clearButtonParams);
+  clearButton.addEventListener('click', clearAllFilters);
+  addInnerComponent(filterContainer, clearButton);
 
   return filterContainer;
 }
@@ -244,4 +253,16 @@ function createFilterGroup(
   addInnerComponent(filterGroup, checkboxContainer);
 
   return filterGroup;
+}
+
+function clearAllFilters(): void {
+  const filters: Filters = {
+    audience: new Set(),
+    category: '',
+    size: new Set(),
+  };
+  updateURLWithFilters(filters);
+  document.querySelectorAll('.filter-group input').forEach((input) => {
+    (input as HTMLInputElement).checked = false;
+  });
 }
