@@ -130,4 +130,3 @@ export function createReviewCards(): HTMLElement {
   });
 
   return reviewCardsContainer;
-}

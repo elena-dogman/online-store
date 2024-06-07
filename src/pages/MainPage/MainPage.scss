@@ -7,3 +7,220 @@
   object-fit: cover;
   display: block;
 }
+
+.review-cards-container {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.review-card-container {
+  display: flex;
+  border: 2px solid black;
+  color: black;
+  padding: 20px;
+  align-items: center;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 800px;
+  margin: 10px 0;
+}
+
+.review-image-wrapper {
+  position: relative;
+}
+
+.review-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  margin-right: 20px;
+  border-radius: 5px;
+}
+
+.heart-icon {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  width: 60px;
+  height: 60px;
+}
+
+.review-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.review-text-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.review-icon {
+  width: 100px;
+  height: auto;
+  margin-left: 20px;
+}
+
+.review-description,
+.review-name {
+  margin: 5px 0;
+  font-family: $font-family-base;
+}
+
+.review-description {
+  font-size: 18rem;
+}
+
+.review-name {
+  font-style: italic;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  overflow: hidden;
+}
+
+.review-cards-container {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+
+.review-card-container {
+  min-width: 100%;
+  box-sizing: border-box;
+}
+
+.slider-arrow {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.left-arrow {
+  left: 10px;
+}
+
+.right-arrow {
+  right: 10px;
+}
+
+.review-heading,
+.sale-heading {
+  text-align: center;
+  font-size: $font-size-big-heading;
+  font-family: $font-family-base;
+  margin: 20px 0;
+  color: #333;
+}
+
+.sale-cards-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.sale-cards-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sale-card-container {
+  position: relative;
+  width: 300px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+  text-align: center;
+  font-family: $font-family-base;
+}
+
+.sale-card-container:hover {
+  transform: scale(1.05);
+}
+
+.sale-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.sale-sticker {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(120, 1, 22, 0.4);;
+  color: #780116;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.sale-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: $text-color-base;
+  color: white;
+  text-align: center;
+  border: none;
+  border-radius: 0 0 10px 10px;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sale-button:hover{
+   background-color: #333;
+  }
+}
+
+@media (max-width: 600px) {
+  .review-card-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .review-image {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 10px auto;
+  }
+
+  .heart-icon {
+    top: -50px;
+    right: calc(50% - 30px);
+  }
+
+  .review-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .review-icon {
+    width: 80px;
+    margin: 10px auto 0 auto;
+  }
+}

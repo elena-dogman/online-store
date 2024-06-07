@@ -87,7 +87,8 @@ export function createSaleCards(): HTMLElement {
       cardLink: '/catalog?category=RSS+inspired',
     },
     {
-      saleImageSrc: '/assets/mainPage/kitty.png',
+
+      saleImageSrc: '/assets/mainPage/ktty.png',
       saleStickerText: '10% Off Kids Boots',
       cardLink: '/catalog?category=kids',
     },
