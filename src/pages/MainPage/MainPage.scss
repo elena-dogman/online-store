@@ -179,20 +179,12 @@
 }
 
 .sale-button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  background-color: $text-color-base;
-  color: white;
-  text-align: center;
-  border: none;
-  border-radius: 0 0 10px 10px;
-  cursor: pointer;
+@include cardButton;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .sale-button:hover{
-   background-color: #333;
+   background-color: $card-button-hover-color;
   }
 }
 

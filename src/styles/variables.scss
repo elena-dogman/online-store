@@ -7,6 +7,7 @@ $not-active-color: rgb(151, 148, 148);
 $text-color-error: rgb(255, 64, 64);
 $additional-info-color: #666;
 $card-background: rgb(247, 247, 247);
+$card-button-hover-color: #333;
 
 // fonts
 $font-family-base: 'Poppins', sans-serif;
@@ -52,4 +53,16 @@ $button-border: 1px solid #bbb5b5;
     opacity: $opacity;
     transition: opacity 0.3s ease;
     }
+  }
+
+  @mixin cardButton {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: $text-color-base;
+      color: white;
+      text-align: center;
+      border: none;
+      border-radius: 0 0 10px 10px;
+      cursor: pointer;
   }
