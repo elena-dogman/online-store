@@ -195,3 +195,32 @@
    background-color: #333;
   }
 }
+
+@media (max-width: 600px) {
+  .review-card-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .review-image {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 10px auto;
+  }
+
+  .heart-icon {
+    top: -50px;
+    right: calc(50% - 30px);
+  }
+
+  .review-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .review-icon {
+    width: 80px;
+    margin: 10px auto 0 auto;
+  }
+}
