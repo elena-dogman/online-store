@@ -18,8 +18,8 @@
 
 .review-card-container {
   display: flex;
-  background-color: black;
-  color: white;
+  border: 2px solid black;
+  color: black;
   padding: 20px;
   align-items: center;
   border-radius: 5px;
@@ -120,7 +120,8 @@
   right: 10px;
 }
 
-.review-heading {
+.review-heading,
+.sale-heading {
   text-align: center;
   font-size: $font-size-big-heading;
   font-family: $font-family-base;
@@ -128,4 +129,69 @@
   color: #333;
 }
 
+.sale-cards-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
 
+.sale-cards-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sale-card-container {
+  position: relative;
+  width: 300px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+  text-align: center;
+  font-family: $font-family-base;
+}
+
+.sale-card-container:hover {
+  transform: scale(1.05);
+}
+
+.sale-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.sale-sticker {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(120, 1, 22, 0.4);;
+  color: #780116;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.sale-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: $text-color-base;
+  color: white;
+  text-align: center;
+  border: none;
+  border-radius: 0 0 10px 10px;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sale-button:hover{
+   background-color: #333;
+  }
+}
