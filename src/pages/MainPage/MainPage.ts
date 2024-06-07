@@ -5,8 +5,8 @@ import {
 } from '../../utils/general/baseComponent';
 import { createHeader } from '../../components/header/header';
 import { createHero } from '../../components/mainPageComponents/hero';
-import { createReviewCards } from '../../components/mainPageComponents/reviews';
 import { createSaleCards } from '../../components/mainPageComponents/sale';
+import { createReviewCards } from '../../components/mainPageComponents/reviews';
 
 export function createMainPage(): HTMLElement {
   const pageContainerParams: ElementParams<'div'> = {
