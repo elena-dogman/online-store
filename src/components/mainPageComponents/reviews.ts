@@ -119,7 +119,7 @@ export function createReviewCards(): HTMLElement {
     {
       reviewImageSrc: '/assets/mainPage/pavel.png',
       reviewContent: `Simply the best. These boots go perfectly with Stone Island and Burberry.
-      They are comfortable to walk in on stage and you look cool`,
+      They are comfortable to walk in on stage and you look cool.`,
       reviewName: 'Pavel T.',
     },
   ];
@@ -130,4 +130,3 @@ export function createReviewCards(): HTMLElement {
   });
 
   return reviewCardsContainer;
-}
