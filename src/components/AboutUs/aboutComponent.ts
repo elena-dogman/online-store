@@ -68,7 +68,7 @@ const teamMembers = [
       '*(серьезный факт, но не про программирование)*',
       '*(рандомный факт)*',
     ],
-    imageSrc: 'leonid.jpg',
+    imageSrc: '../assets/about/members/ivan.jpg',
   },
 ];
 
@@ -251,13 +251,22 @@ export function aboutComponent(): HTMLElement {
   addInnerComponent(ourTeamContainer, teamMembersContainer);
   ///
   // Elena
-  teamMembers.forEach((member) => {
+  teamMembers.forEach((member, index) => {
+    const classNames = ['team-member'];
+
+    if (index === 0) {
+      classNames.push('left');
+    } else if (index === 1) {
+      classNames.push('top');
+    } else if (index === 2) {
+      classNames.push('right');
+    }
+
     const memberContainerParams: ElementParams<'div'> = {
       tag: 'div',
-      classNames: ['team-member'],
+      classNames: classNames,
     };
     const memberContainer = createElement(memberContainerParams);
-
     const memberImageParams: ElementParams<'img'> = {
       tag: 'img',
       attributes: {
@@ -332,24 +341,31 @@ export function aboutComponent(): HTMLElement {
   const makeMagicButtonParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['make-magic-button'],
-    textContent: 'Make magic',
   };
-
+  const magicWandImageParams: ElementParams<'img'> = {
+    tag: 'img',
+    attributes: {
+      src: '../assets/about/magic-wand.png',
+      alt: 'Magic Wand',
+    },
+    classNames: ['magic-wand-image'],
+  };
+  const magicWandImage = createElement(magicWandImageParams);
   const makeMagicButton = createElement(makeMagicButtonParams);
+  addInnerComponent(makeMagicButton, magicWandImage);
   makeMagicButton.addEventListener('click', toggleMagic);
 
   addInnerComponent(aboutContainer, makeMagicButton);
   function toggleMagic(): void {
-    const app = document.getElementById('app');
-
-    if (app?.classList.contains('magic-active')) {
-      app.classList.remove('magic-active');
-      makeMagicButton.textContent = 'Make magic';
+    const aboutUs = document.querySelector('.about_us');
+    if (aboutUs?.classList.contains('magic-active')) {
+      aboutUs.classList.remove('magic-active');
+      makeMagicButton.style.background = '#ead1eb';
       stopAnimation();
       resetTextColors();
     } else {
-      app?.classList.add('magic-active');
-      makeMagicButton.textContent = 'Undo magic';
+      aboutUs?.classList.add('magic-active');
+      makeMagicButton.style.background = 'white';
       showAnimation();
       changeTextColors();
     }
@@ -375,5 +391,25 @@ export function aboutComponent(): HTMLElement {
     bgAnimation.style.opacity = '1';
   }
   ///
+  window.addEventListener('load', () => {
+    aboutContainer.classList.add('visible');
+    // sliderContainer?.classList.add('visible');
+  });
+
+  // Добавляем класс visible к блоку our_team и его внутренним блокам при скролле
+  window.addEventListener('scroll', () => {
+    const teamMemberContainers = document.querySelectorAll('.team-member');
+    const ourTeamPosition = ourTeamContainer?.getBoundingClientRect().top;
+    const screenPosition = window.innerHeight / 1.2;
+
+    if (ourTeamPosition && ourTeamPosition < screenPosition) {
+      ourTeamContainer.classList.add('visible');
+      teamMemberContainers.forEach((container) => {
+        container.classList.add('visible');
+      });
+    }
+  });
+  //
+
   return aboutContainer;
 }

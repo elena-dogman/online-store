@@ -5,26 +5,41 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px;
+  opacity: 0;
+  transform: translateY(-50px);
+  transition:
+    opacity 1s ease,
+    transform 1s ease;
+}
+.about_us_container.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .mission_container {
   margin-bottom: 40px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .mission_header {
   margin-bottom: 20px;
+  margin-top: 40px;
+  font-size: $font-size-big-heading;
 }
 
-.mission_text {
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
+.mission_text,
 .building_together_text {
   line-height: 1.6;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
+  &::first-letter {
+    font-size: 24rem;
+    font-weight: bold;
+    color: #333;
+  }
 }
 
 .slider-container {
@@ -50,7 +65,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   text-align: center;
   padding: 35px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -112,26 +127,85 @@
 }
 //
 .our_team {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.our_team.visible {
+  opacity: 1;
+}
+
+.team_members {
   display: flex;
+  align-items: center;
   justify-content: space-around;
-  padding: 20px;
 }
 
 .team-member {
   width: 250px;
   padding: 20px;
-  background-color: #f4f4f4;
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
   text-align: center;
+  opacity: 0;
+  transition:
+    opacity 1s ease,
+    transform 1s ease;
+}
+
+.team-member::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 3px solid transparent;
+  border-radius: 15px;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(45deg, #ff6f61, #de56e4, #4a90e2, #50c878) border-box;
+  transition: transform 1s ease;
+  z-index: -1;
+}
+.magic-active .team-member::before {
+  background:
+    linear-gradient(black, #0c0c0c) padding-box,
+    linear-gradient(45deg, #ff6f61, #de56e4, #4a90e2, #50c878) border-box;
+}
+.team-member.left {
+  transform: translateX(-100px);
+}
+
+.team-member.top {
+  transform: translateY(-100px);
+}
+
+.team-member.right {
+  transform: translateX(100px);
+}
+
+.team-member.visible {
+  opacity: 1;
+  transform: translateX(0) translateY(0);
 }
 
 .team-member-image {
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   margin-bottom: 15px;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.team-member:hover {
+  transform: translateY(-5px);
+  transition: transform 0.3s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.team-member:hover .team-member-image {
+  transform: scale(1.1);
 }
 
 .member_name {
@@ -152,19 +226,36 @@
 .member_details li {
   margin-bottom: 5px;
 }
-
-.team-member:hover {
-  transform: translateY(-5px);
-  transition: transform 0.3s ease;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
 //
 //
 .make-magic-button {
-  position: absolute;
+  all: unset;
+  position: fixed;
   z-index: 99999;
+  left: -15%;
   top: 10%;
-  left: 2%;
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.make-magic-button:hover {
+  background-color: #ead1eb;
+  transform: scale(1.05);
+}
+
+.magic-wand-image {
+  margin-left: 10px;
+  width: 32px;
+  height: 32px;
 }
 .magic-active {
   background-color: black;
@@ -173,17 +264,16 @@
     background-color 0.5s ease,
     color 0.5s ease;
 }
-
 .bg-animation {
   opacity: 0;
-  visibility: hidden;
-  position: fixed;
+  transition: opacity 0.5s ease;
+  position: fixed; /* Изменено на fixed для фиксированной позиции */
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  pointer-events: none; /* Отключает взаимодействие с элементом */
 }
-
 #stars {
   width: 1px;
   height: 1px;
