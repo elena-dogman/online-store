@@ -22,6 +22,7 @@ import {
   CustomerChangePassword,
   Cart,
   MyCartDraft,
+  MyLineItemDraft,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/general/eventEmitter';
@@ -617,6 +618,44 @@ export async function createCart(): Promise<ClientResponse<Cart>> {
 
     const response = await apiRoot.me().carts().post({
       body: cartDraft,
+    }).execute();
+
+    return response;
+  } catch (error: unknown) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
+    throw error;
+  }
+}
+
+export async function addToCart(
+  cartId: string,
+  productId: string,
+  variantId: number,
+  quantity: number,
+): Promise<ClientResponse<Cart>> {
+  try {
+    const lineItem: MyLineItemDraft = {
+      productId,
+      variantId,
+      quantity,
+    };
+
+    const response = await apiRoot.me().carts().withId({ ID: cartId }).post({
+      body: {
+        actions: [{
+          action: 'addLineItem',
+          productId: lineItem.productId,
+          variantId: lineItem.variantId,
+          quantity: lineItem.quantity,
+        }],
+        version: 0,
+      },
     }).execute();
 
     return response;
