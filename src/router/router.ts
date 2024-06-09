@@ -56,7 +56,8 @@ function createRouter(routes: Routes): Router {
 
       const isLoggedIn = Boolean(localStorage.getItem('token'));
 
-      if (path.startsWith('/profile') && !isLoggedIn) {
+      // Обработка перехода на /profile
+      if (path === '/profile' && !isLoggedIn) {
         this.navigate('/login');
         return;
       }
@@ -110,7 +111,7 @@ const routes = {
   '/register': buildRegistrationPage,
   '/404': notFoundPage,
   '/catalog': createCatalogPage,
-  '/profile/:id': buildUserProfilePage,
+  '/profile': buildUserProfilePage,
   '/product/:id': createDetailedProductPage,
 };
 
@@ -121,9 +122,4 @@ export function navigateTo(path: string): void {
   router.handleLocationChange();
 }
 
-export function navigateToProfile(userId: string): void {
-  router.navigate(`/profile/${userId}`);
-}
-
 export default router;
-

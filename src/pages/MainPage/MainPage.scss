@@ -215,4 +215,13 @@
     width: 80px;
     margin: 10px auto 0 auto;
   }
+
+.review-heading,
+.sale-heading {
+  text-align: center;
+  font-size: $font-size-form-heading;
+  font-family: $font-family-base;
+  margin: 20px 0;
+  color: #333;
+}
 }
