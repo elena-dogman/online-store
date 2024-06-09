@@ -46,22 +46,27 @@ export function createHeader(): HTMLElement {
     classNames: ['header__nav-links'],
   });
 
-  if (!isCatalogPage) {
     const homeLink = createElement({
       tag: 'a',
       attributes: { href: '/' },
       classNames: ['header__nav-link'],
       textContent: 'Home',
     });
-    const aboutLink = createElement({
+    const catalogLink = createElement({
       tag: 'a',
       attributes: { href: '/catalog' },
       classNames: ['header__nav-link'],
       textContent: 'Catalog',
     });
+    const aboutLink = createElement({
+      tag: 'a',
+      attributes: { href: '/about-us' },
+      classNames: ['header__nav-link'],
+      textContent: 'About us',
+    });
     addInnerComponent(navContainer, homeLink);
+    addInnerComponent(navContainer, catalogLink);
     addInnerComponent(navContainer, aboutLink);
-  }
 
   const rightContainer = createElement({
     tag: 'div',
@@ -140,9 +145,7 @@ export function createHeader(): HTMLElement {
   addInnerComponent(rightContainer, authNavContainer);
 
   addInnerComponent(header, logoSearchContainer);
-  if (!isCatalogPage) {
-    addInnerComponent(header, navContainer);
-  }
+  addInnerComponent(header, navContainer);
   addInnerComponent(header, rightContainer);
 
   const burgerMenu = createElement({
@@ -177,9 +180,9 @@ export function createHeader(): HTMLElement {
   const tabletScreenWidthInPx = 870;
   const moveNavLinks = (): void => {
     const isMobile = window.innerWidth <= tabletScreenWidthInPx;
-    if (isMobile && !isCatalogPage) {
+    if (isMobile) {
       addInnerComponent(authNavContainer, navContainer);
-    } else if (!isCatalogPage) {
+    } else {
       if (authNavContainer.classList.contains('open')) {
         authNavContainer.classList.remove('open');
         burgerMenu.classList.remove('change');
