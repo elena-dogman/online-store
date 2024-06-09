@@ -5,6 +5,7 @@ import { buildRegistrationPage } from '../pages/RegistrationPage/registrationPag
 import { createCatalogPage } from '../pages/CatalogPage/CatalogPage';
 import { createDetailedProductPage } from '../pages/ProductDetailedPage/ProductDetailedPage';
 import { buildUserProfilePage } from '../pages/UserProfilePage/userProfilePage';
+import { createAboutUsPage } from '../pages/AboutUs/about';
 import createBasketPage from '../pages/BasketPage/basketPage';
 
 type RouteHandler = (
@@ -76,6 +77,7 @@ function createRouter(routes: Routes): Router {
         const match = matchPath(route, path);
         if (match) {
           handler = this.routes[route];
+          console.log(handler);
           params = match.params;
           break;
         }
@@ -114,6 +116,7 @@ const routes = {
   '/catalog': createCatalogPage,
   '/profile': buildUserProfilePage,
   '/product/:id': createDetailedProductPage,
+  '/about': createAboutUsPage,
   '/basket': createBasketPage,
 };
 

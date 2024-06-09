@@ -1,0 +1,101 @@
+.about_us_container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Стили для секции миссии */
+.mission_container {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.mission_header {
+  margin-bottom: 20px;
+}
+
+.mission_text {
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* Стили для секции "Building Together" */
+.building_together_text {
+  line-height: 1.6;
+  margin-bottom: 40px;
+}
+
+/* Стили для контейнера слайдера */
+.slider-container {
+  width: 100%;
+  overflow: hidden;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.slider-container > .swiper {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.slider-container > .swiper > .swiper-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.slider-container > .swiper > .swiper-wrapper > .swiper-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+.slider-container > .swiper > .swiper-wrapper > .swiper-slide > .slide-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.slider-container > .swiper > .swiper-wrapper > .swiper-slide > .slide-title {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.slider-container > .swiper > .swiper-wrapper > .swiper-slide > .slide-text {
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Стили для навигационных кнопок */
+.slider-container > .swiper-button-prev-container,
+.slider-container > .swiper-button-next-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.slider-container > .swiper-button-prev-container {
+  left: 10px;
+}
+
+.slider-container > .swiper-button-next-container {
+  right: 10px;
+}
