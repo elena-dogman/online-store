@@ -71,7 +71,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
   const breadcrumbContainerParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['breadcrumb-container'],
+    classNames: ['breadcrumb-wrapper'],
   };
   const breadcrumbContainer = createElement(breadcrumbContainerParams);
 

@@ -4,11 +4,11 @@
   font-family: $font-family-base;
   overflow: auto;
 }
-.catalog-page-container > .breadcrumb-container {
+.catalog-page-container > .breadcrumb-wrapper {
   z-index: 100;
 }
 
-.catalog-page-container > .breadcrumb-container > .breadcrumb-container {
+.catalog-page-container > .breadcrumb-wrapper > .breadcrumb-container {
   position: fixed;
   top: 15px;
   width: max-content;
@@ -22,7 +22,7 @@
 }
 
 .catalog-page-container
-  > .breadcrumb-container
+  > .breadcrumb-wrapper
   > .breadcrumb-container
   > .breadcrumb-item {
   display: inline-block;
@@ -371,7 +371,7 @@ margin-top: auto;
   position: relative;
   display: inline-block;
   cursor: pointer;
-  margin: 40px 0 10px 20px;
+  margin: 10px 0 10px 20px;
   top: 20px;
   padding: 10px 10px 10px 0px;
 }
@@ -599,7 +599,26 @@ margin-top: auto;
   .empty-request {
     left: 50%;
   }
+.sort-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: 10px;
 }
+
+.sort-container .sort-label {
+  margin: 0;
+}
+
+.filter-icon-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background-color: transparent;
+  padding: 5px;
+  z-index: 101;
+}
+  }
 @media (max-width: 600px) {
   .catalog-grid {
     gap: 0px;
@@ -607,10 +626,10 @@ margin-top: auto;
   .catalog-container-wrapper {
     padding-left: 0px;
   }
-  .catalog-page-container > .breadcrumb-container {
+  .catalog-page-container > .breadcrumb-wrapper {
     margin-left: 20px;
   }
-  .catalog-page-container > .breadcrumb-container > .breadcrumb-container {
+  .catalog-page-container > .breadcrumb-wrapper > .breadcrumb-container {
     font-size: $font-size-small;
     margin-left: 0px;
   }
@@ -631,11 +650,13 @@ margin-top: auto;
       padding: 5px;
       margin: 5px;
     }
-  .catalog-page-container
-    > .breadcrumb-container
-    > .breadcrumb-container
-    > .breadcrumb-item {
-    margin: 0px;
+
+  .breadcrumb-container{
+    margin: 0;
+  }
+
+  .filter-wrapper {
+    margin: 0;
   }
 
     .clear-filters-button {
@@ -665,25 +686,6 @@ margin-top: auto;
     margin: 5px;
   }
 
-  .filter-wrapper {
-    width: 100%;
-    padding: 10px 0;
-    margin-top: 10px;
-  }
-
-  .filter-icon-container {
-    display: flex;
-   justify-content: flex-end;
-    position: relative;
-    margin-top: 100px;
-    background-color: transparent;
-    padding: 5px;
-    z-index: 101;
-  }
-.filter-icon {
-  width: 20px;
-  height: 20px;
-}
     .pagination {
       flex-wrap: wrap;
       gap: 5px;
@@ -693,7 +695,7 @@ margin-top: auto;
       flex: 1 1 auto;
       margin-bottom: 5px;
     }
-.catalog-page-container>.breadcrumb-container>.breadcrumb-container {
+.catalog-page-container>.breadcrumb-wrapper>.breadcrumb-container {
   position: relative;
 }
 }
