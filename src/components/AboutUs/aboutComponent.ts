@@ -39,6 +39,38 @@ const slidesData = [
     text: 'We believe that humor and a positive attitude are essential ingredients for a healthy and productive work environment. By encouraging laughter and light-hearted moments, we reduce stress, build stronger bonds, and keep our team’s spirits high. A touch of humor helps us navigate challenges with a smile and keeps our creativity flowing.',
   },
 ];
+const teamMembers = [
+  {
+    name: 'Elena Dogman',
+    role: 'team lead',
+    details: [
+      'agile guru',
+      '2 years of kickboxing practice',
+      'lactose intolerant',
+    ],
+    imageSrc: '../assets/about/members/elena.jpg',
+  },
+  {
+    name: 'Ivan',
+    role: 'team spirit',
+    details: [
+      'style master',
+      '*(серьезный факт, но не про программирование)*',
+      '*(рандомный факт)*',
+    ],
+    imageSrc: '../assets/about/members/ivan.jpg',
+  },
+  {
+    name: 'Leonid',
+    role: 'team engine',
+    details: [
+      'meeting maestro',
+      '*(серьезный факт, но не про программирование)*',
+      '*(рандомный факт)*',
+    ],
+    imageSrc: 'leonid.jpg',
+  },
+];
 
 export function aboutComponent(): HTMLElement {
   const aboutContainerParams: ElementParams<'div'> = {
@@ -203,5 +235,145 @@ export function aboutComponent(): HTMLElement {
       },
     });
   }, 0);
+
+  const ourTeamParams: ElementParams<'section'> = {
+    tag: 'section',
+    classNames: ['our_team'],
+    textContent: 'Our Team',
+  };
+  const ourTeamContainer = createElement(ourTeamParams);
+  const teamMembersParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['team_members'],
+  };
+  const teamMembersContainer = createElement(teamMembersParams);
+  addInnerComponent(aboutContainer, ourTeamContainer);
+  addInnerComponent(ourTeamContainer, teamMembersContainer);
+  ///
+  // Elena
+  teamMembers.forEach((member) => {
+    const memberContainerParams: ElementParams<'div'> = {
+      tag: 'div',
+      classNames: ['team-member'],
+    };
+    const memberContainer = createElement(memberContainerParams);
+
+    const memberImageParams: ElementParams<'img'> = {
+      tag: 'img',
+      attributes: {
+        src: member.imageSrc,
+        alt: member.name,
+      },
+      classNames: ['team-member-image'],
+    };
+    const memberImage = createElement(memberImageParams);
+
+    const memberTextContainerParams: ElementParams<'div'> = {
+      tag: 'div',
+      classNames: ['text_container'],
+    };
+    const memberTextContainer = createElement(memberTextContainerParams);
+
+    const memberNameParams: ElementParams<'h3'> = {
+      tag: 'h3',
+      classNames: ['member_name'],
+      textContent: member.name,
+    };
+    const memberName = createElement(memberNameParams);
+
+    const memberRoleParams: ElementParams<'p'> = {
+      tag: 'p',
+      classNames: ['member_role'],
+      textContent: member.role,
+    };
+    const memberRole = createElement(memberRoleParams);
+
+    const memberDetailsParams: ElementParams<'ul'> = {
+      tag: 'ul',
+      classNames: ['member_details'],
+    };
+    const memberDetails = createElement(memberDetailsParams);
+
+    member.details.forEach((detail) => {
+      const detailItemParams: ElementParams<'li'> = {
+        tag: 'li',
+        textContent: detail,
+      };
+      const detailItem = createElement(detailItemParams);
+      addInnerComponent(memberDetails, detailItem);
+    });
+
+    addInnerComponent(memberContainer, memberImage);
+    addInnerComponent(memberContainer, memberTextContainer);
+    addInnerComponent(memberTextContainer, memberName);
+    addInnerComponent(memberTextContainer, memberRole);
+    addInnerComponent(memberTextContainer, memberDetails);
+    addInnerComponent(teamMembersContainer, memberContainer);
+  });
+  ///
+  ///
+  const bgAnimation = createElement({
+    tag: 'div',
+    classNames: ['bg-animation'],
+  });
+  const stars = createElement({ tag: 'div', attributes: { id: 'stars' } });
+  const stars2 = createElement({ tag: 'div', attributes: { id: 'stars2' } });
+  const stars3 = createElement({ tag: 'div', attributes: { id: 'stars3' } });
+  const stars4 = createElement({ tag: 'div', attributes: { id: 'stars4' } });
+
+  addInnerComponent(bgAnimation, stars);
+  addInnerComponent(bgAnimation, stars2);
+  addInnerComponent(bgAnimation, stars3);
+  addInnerComponent(bgAnimation, stars4);
+
+  document.body.appendChild(bgAnimation);
+  ///
+  ///
+  const makeMagicButtonParams: ElementParams<'button'> = {
+    tag: 'button',
+    classNames: ['make-magic-button'],
+    textContent: 'Make magic',
+  };
+
+  const makeMagicButton = createElement(makeMagicButtonParams);
+  makeMagicButton.addEventListener('click', toggleMagic);
+
+  addInnerComponent(aboutContainer, makeMagicButton);
+  function toggleMagic(): void {
+    const app = document.getElementById('app');
+
+    if (app?.classList.contains('magic-active')) {
+      app.classList.remove('magic-active');
+      makeMagicButton.textContent = 'Make magic';
+      stopAnimation();
+      resetTextColors();
+    } else {
+      app?.classList.add('magic-active');
+      makeMagicButton.textContent = 'Undo magic';
+      showAnimation();
+      changeTextColors();
+    }
+  }
+
+  function changeTextColors(): void {
+    const textElements = document.querySelectorAll('.magic-text');
+    textElements.forEach((element) => {
+      element.classList.add('magic-text-white');
+    });
+  }
+
+  function resetTextColors(): void {
+    const textElements = document.querySelectorAll('.magic-text');
+    textElements.forEach((element) => {
+      element.classList.remove('magic-text-white');
+    });
+  }
+  function stopAnimation(): void {
+    bgAnimation.style.opacity = '0';
+  }
+  function showAnimation(): void {
+    bgAnimation.style.opacity = '1';
+  }
+  ///
   return aboutContainer;
 }
