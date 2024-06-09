@@ -20,6 +20,8 @@ import {
   ProductProjectionPagedSearchResponse,
   QueryParam,
   CustomerChangePassword,
+  Cart,
+  MyCartDraft,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/general/eventEmitter';
@@ -603,6 +605,29 @@ export async function searchProducts(
     return response.body;
   } catch (error) {
     console.error('Error during product search:', error);
+    throw error;
+  }
+}
+
+export async function createCart(): Promise<ClientResponse<Cart>> {
+  try {
+    const cartDraft: MyCartDraft = {
+      currency: 'USD',
+    };
+
+    const response = await apiRoot.me().carts().post({
+      body: cartDraft,
+    }).execute();
+
+    return response;
+  } catch (error: unknown) {
+    if (isCustomError(error)) {
+      showToast(error.body.message);
+    } else if (error instanceof Error) {
+      showToast(error.message);
+    } else {
+      showToast('An unknown error occurred');
+    }
     throw error;
   }
 }
