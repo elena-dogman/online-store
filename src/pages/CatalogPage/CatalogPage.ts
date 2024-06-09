@@ -27,6 +27,7 @@ import {
 } from '../../components/catalog/filter/productFilter';
 import { createLoadingOverlay } from '../../components/catalog/overlay/loadingOverlay';
 import { generateBreadcrumbLinks } from '../../components/breadcrumbs/breadcrumbs';
+import { handleAddToCart } from '../../api/cartService';
 
 export async function buildBreadcrumbsFromUrl(): Promise<
   { name: string; url: string }[]
@@ -362,6 +363,18 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     if (products.length > 0) {
       const productCatalog = createProductCatalog(products);
       addInnerComponent(catalogContainer, productCatalog);
+
+      catalogContainer.querySelectorAll('.add-to-cart-button').forEach(button => {
+      button.addEventListener('click', async (event: Event) => {
+        const target = event.target as HTMLButtonElement;
+        const productId = target.dataset.productId || '';
+        const variantId = parseInt(target.dataset.variantId || '0', 10);
+        const quantity = 1;
+
+        await handleAddToCart(productId, variantId, quantity);
+      });
+    });
+
 
       const pagination = createPagination({
         totalItems: products.length,
