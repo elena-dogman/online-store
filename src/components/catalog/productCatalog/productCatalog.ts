@@ -41,6 +41,11 @@ export function createProductCatalog(
       ],
     });
 
+    const contentWrapper = createElement({
+      tag: 'div',
+      classNames: ['product-content-wrapper'],
+    });
+
     const imageElement = createElement({
       tag: 'img',
       classNames: ['product-image'],
@@ -86,10 +91,18 @@ export function createProductCatalog(
       addInnerComponent(priceContainer, priceElement);
     }
 
-    addInnerComponent(productCard, imageElement);
-    addInnerComponent(productCard, nameElement);
-    addInnerComponent(productCard, descriptionElement);
-    addInnerComponent(productCard, priceContainer);
+    const addToCartButton = createElement({
+      tag: 'button',
+      classNames: ['add-to-cart-button'],
+      textContent: 'ADD TO CART',
+    });
+
+    addInnerComponent(contentWrapper, imageElement);
+    addInnerComponent(contentWrapper, nameElement);
+    addInnerComponent(contentWrapper, descriptionElement);
+    addInnerComponent(contentWrapper, priceContainer);
+    addInnerComponent(productCard, contentWrapper);
+    addInnerComponent(productCard, addToCartButton);
 
     addInnerComponent(catalogContainer, productCard);
   });
