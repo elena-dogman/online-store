@@ -20,6 +20,11 @@ import {
   ProductProjectionPagedSearchResponse,
   QueryParam,
   CustomerChangePassword,
+  Cart,
+  LineItemDraft,
+  ByProjectKeyRequestBuilder,
+  CartAddLineItemAction,
+  CartUpdate,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/general/eventEmitter';
@@ -157,7 +162,6 @@ export const loginStayUser = async (body: {
     } else {
       showToast('An unknown error occurred');
     }
-    // Rethrow the error to be handled by the caller
     throw error;
   }
 };
@@ -605,4 +609,58 @@ export async function searchProducts(
     console.error('Error during product search:', error);
     throw error;
   }
+}
+
+export const getUserApiRoot = (): ByProjectKeyRequestBuilder => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    const { refreshToken } = JSON.parse(token);
+    return createApiBuilderFromCtpClient(createRefreshTokenClient(refreshToken)).withProjectKey({
+      projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
+    });
+  }
+  return anonymousApiRoot;
+};
+
+export async function addToCart(productId: string, variantId: number, quantity: number = 1): Promise<ClientResponse<Cart>> {
+  const api = getUserApiRoot();
+  const cart = await getOrCreateCart(api);
+  return addProductToCart(api, cart.body.id, cart.body.version, productId, variantId, quantity);
+}
+
+async function getOrCreateCart(api: ByProjectKeyRequestBuilder): Promise<ClientResponse<Cart>> {
+  try {
+    return await api.me().activeCart().get().execute();
+  } catch (error) {
+    const cartDraft = {
+      currency: 'USD',
+    };
+    return await api.me().carts().post({ body: cartDraft }).execute();
+  }
+}
+
+async function addProductToCart(
+  api: ByProjectKeyRequestBuilder,
+  cartId: string,
+  cartVersion: number,
+  productId: string,
+  variantId: number,
+  quantity: number): Promise<ClientResponse<Cart>> {
+  const lineItemDraft: LineItemDraft = {
+    productId,
+    variantId,
+    quantity,
+  };
+
+  const cartUpdate: CartUpdate = {
+    version: cartVersion,
+    actions: [{
+      action: 'addLineItem',
+      ...lineItemDraft,
+    } as CartAddLineItemAction],
+  };
+
+  return api.carts().withId({ ID: cartId }).post({
+    body: cartUpdate,
+  }).execute();
 }
