@@ -1,3 +1,4 @@
+import { RoutePaths } from '../../types/types';
 import {
   createElement,
   addInnerComponent,
@@ -79,7 +80,7 @@ export function createSaleCards(): HTMLElement {
     {
       saleImageSrc: '/assets/mainPage/genshin.png',
       saleStickerText: '20% Off Gamer Boots',
-      cardLink: '/catalog',
+      cardLink: RoutePaths.Catalog,
     },
     {
       saleImageSrc: '/assets/mainPage/recording.png',

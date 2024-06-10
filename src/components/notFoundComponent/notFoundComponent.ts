@@ -1,3 +1,4 @@
+import { RoutePaths } from '../../types/types';
 import {
   createElement,
   addInnerComponent,
@@ -44,7 +45,7 @@ export function createNotFoundPage(): HTMLElement {
 
   const backHomeCallback: EventCallback = {
     eventType: 'click',
-    callback: () => (window.location.href = '/'),
+    callback: () => (window.location.href = RoutePaths.Main),
   };
   const buttonParams: ElementParams<'button'> = {
     tag: 'button',

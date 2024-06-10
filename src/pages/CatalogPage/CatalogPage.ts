@@ -27,6 +27,7 @@ import {
 } from '../../components/catalog/filter/productFilter';
 import { createLoadingOverlay } from '../../components/catalog/overlay/loadingOverlay';
 import { generateBreadcrumbLinks } from '../../components/breadcrumbs/breadcrumbs';
+import { RoutePaths } from '../../types/types';
 
 export async function buildBreadcrumbsFromUrl(): Promise<
   { name: string; url: string }[]
@@ -36,7 +37,7 @@ export async function buildBreadcrumbsFromUrl(): Promise<
 
   const breadcrumbs = [
     { name: 'home', url: '/' },
-    { name: 'catalog', url: '/catalog' },
+    { name: 'catalog', url: RoutePaths.Catalog },
   ];
   if (!categoryName) {
     return breadcrumbs;

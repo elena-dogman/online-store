@@ -7,6 +7,7 @@ import { appEvents } from '../../utils/general/eventEmitter';
 import { checkLoginStatus, logoutUser } from '../../api/apiService';
 import { createSearchComponent } from './search/productSearch';
 import router from '../../router/router';
+import { RoutePaths } from '../../types/types';
 
 export function createHeader(): HTMLElement {
   const headerParams: ElementParams<'div'> = {
@@ -17,7 +18,7 @@ export function createHeader(): HTMLElement {
 
   const logoLink = createElement({
     tag: 'a',
-    attributes: { href: '/' },
+    attributes: { href: RoutePaths.Main },
     classNames: ['header__logo-link'],
   });
   const logo = createElement({
@@ -48,19 +49,19 @@ export function createHeader(): HTMLElement {
 
     const homeLink = createElement({
       tag: 'a',
-      attributes: { href: '/' },
+      attributes: { href: RoutePaths.Main },
       classNames: ['header__nav-link'],
       textContent: 'Home',
     });
     const catalogLink = createElement({
       tag: 'a',
-      attributes: { href: '/catalog' },
+      attributes: { href: RoutePaths.Catalog },
       classNames: ['header__nav-link'],
       textContent: 'Catalog',
     });
     const aboutLink = createElement({
       tag: 'a',
-      attributes: { href: '/about-us' },
+      attributes: { href: RoutePaths.AboutUs },
       classNames: ['header__nav-link'],
       textContent: 'About us',
     });
@@ -79,7 +80,7 @@ export function createHeader(): HTMLElement {
   });
   const basketIcon = createElement({
     tag: 'a',
-    attributes: { href: '/basket' },
+    attributes: { href: RoutePaths.Basket },
     classNames: ['header__icon', 'header__basket-icon'],
   });
   const basketImage = createElement({
@@ -103,9 +104,9 @@ export function createHeader(): HTMLElement {
   addInnerComponent(userIcon, userImage);
   userIcon.onclick = (): void => {
     if (checkLoginStatus()) {
-      router.navigate('/profile');
+      router.navigate(RoutePaths.Profile);
     } else {
-      router.navigate('/login');
+      router.navigate(RoutePaths.Login);
     }
   };
   addInnerComponent(iconsContainer, basketIcon);
@@ -126,13 +127,13 @@ export function createHeader(): HTMLElement {
   });
   const registerButton = createElement({
     tag: 'a',
-    attributes: { href: '/register' },
+    attributes: { href: RoutePaths.Register },
     classNames: ['header__auth-button', 'register-button'],
     textContent: 'Register',
   });
   const authButton = createElement({
     tag: 'a',
-    attributes: { href: '/login' },
+    attributes: { href: RoutePaths.Login },
     classNames: ['header__auth-button', 'login-button'],
     textContent: 'Log In',
   });
@@ -204,7 +205,7 @@ export function createHeader(): HTMLElement {
   async function updateAuthButton(isLoggedIn: boolean): Promise<void> {
     registerButton.style.display = isLoggedIn ? 'none' : 'block';
     authButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
-    authButton.setAttribute('href', isLoggedIn ? '#' : '/login');
+    authButton.setAttribute('href', isLoggedIn ? '#' : RoutePaths.Login);
     authButton.onclick = isLoggedIn
       ? async (): Promise<void> => {
           await handleLogout();

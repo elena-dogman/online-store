@@ -34,6 +34,7 @@ import { RegistrationData } from '../components/registrationForm/regDataInterfac
 import { showToast } from '../components/toast/toast';
 import { isCustomError } from '../utils/general/customError';
 import { resultPasswordModal } from '../components/profileComponents/password/passwordModalForm';
+import { RoutePaths } from '../types/types';
 
 interface SearchQueryArgs {
   'text.en-US': string;
@@ -129,7 +130,7 @@ export const loginUser = async (body: {
 
     localStorage.setItem('userId', data.body.customer.id);
 
-    router.navigate('/');
+    router.navigate(RoutePaths.Main);
     appEvents.emit('login', undefined);
     return data;
   } catch (error: unknown) {
@@ -172,7 +173,7 @@ export const logoutUser = async (): Promise<void> => {
   try {
     localStorage.removeItem('token');
     await anonymousApiRoot.get().execute();
-    router.navigate('/login');
+    router.navigate(RoutePaths.Login);
     appEvents.emit('logout', undefined);
   } catch (error) {
     if (isCustomError(error)) {
@@ -210,13 +211,13 @@ export async function isUserLogined(): Promise<ClientResponse<Customer> | void> 
     });
     try {
       const userData = await refreshFlowClient.me().get().execute();
-      if (currentPath === '/' || currentPath === '/login') {
-        router.navigate('/');
+      if (currentPath === RoutePaths.Main || currentPath === RoutePaths.Login) {
+        router.navigate(RoutePaths.Main);
       }
       appEvents.emit('login', undefined);
       return userData;
     } catch (error) {
-      router.navigate('/login');
+      router.navigate(RoutePaths.Login);
     }
   } else {
     await getProject();
