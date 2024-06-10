@@ -46,9 +46,16 @@
     display: flex;
     flex-direction: column;
   }
+  .basket-products-item__item-wrapper {
+    display: flex;
+   flex-direction: row;
+   justify-content: center;
+   align-items: center;
+  }
   .basket-products-item__item-img{
     width: 90px;
     height: 90px;
+    border-radius: 5px;
   }
   .basket-products__basket-list{
     display: flex;
@@ -58,6 +65,7 @@
   }
   .basket-products__basket-products-item{
     display: flex;
+    justify-content: space-between;
     border-bottom: 1px solid black;
     padding: 20px;
   }
@@ -69,9 +77,13 @@
   .basket-products-item__item-count-container{
     margin-left: 20px;
     display: flex;
-align-items: center;
-gap: 10px;
+    align-items: center;
+    gap: 10px;
   }
+.basket-products-item__item-description-title {
+padding: 10px;
+}
+
 .item-count-container__count-view{
   width: 30px;
   height: 30px;
