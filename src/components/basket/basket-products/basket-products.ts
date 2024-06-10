@@ -15,6 +15,7 @@ export default function createBasketProductsContainer(): HTMLElement {
   const basketProductsTitlePapams: ElementParams<'h2'> = {
     tag: 'h2',
     classNames: ['basket-products__products-title'],
+    textContent: 'Shopping Cart',
   };
   const basketProductsTitle = createElement(basketProductsTitlePapams);
 

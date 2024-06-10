@@ -3,7 +3,7 @@ import {
   addInnerComponent,
   createElement,
 } from '../../utils/general/baseComponent';
-import createBasketPayContainer from './basket-pay/basket-pay';
+import createBasketPayContainer from './basket-pay/basketPay';
 import createBasketProductsContainer from './basket-products/basket-products';
 
 export default function buildBusketContainer(): HTMLElement {
