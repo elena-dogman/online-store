@@ -616,20 +616,35 @@ export const getUserApiRoot = (): ByProjectKeyRequestBuilder => {
   const token = localStorage.getItem('token');
   if (token) {
     const { refreshToken } = JSON.parse(token);
-    return createApiBuilderFromCtpClient(createRefreshTokenClient(refreshToken)).withProjectKey({
+    return createApiBuilderFromCtpClient(
+      createRefreshTokenClient(refreshToken),
+    ).withProjectKey({
       projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
     });
   }
   return anonymousApiRoot;
 };
 
-export async function addToCart(productId: string, variantId: number, quantity: number = 1): Promise<ClientResponse<Cart>> {
+export async function addToCart(
+  productId: string,
+  variantId: number,
+  quantity: number = 1,
+): Promise<ClientResponse<Cart>> {
   const api = getUserApiRoot();
   const cart = await getOrCreateCart(api);
-  return addProductToCart(api, cart.body.id, cart.body.version, productId, variantId, quantity);
+  return addProductToCart(
+    api,
+    cart.body.id,
+    cart.body.version,
+    productId,
+    variantId,
+    quantity,
+  );
 }
 
-async function getOrCreateCart(api: ByProjectKeyRequestBuilder): Promise<ClientResponse<Cart>> {
+async function getOrCreateCart(
+  api: ByProjectKeyRequestBuilder,
+): Promise<ClientResponse<Cart>> {
   try {
     return await api.me().activeCart().get().execute();
   } catch (error) {
@@ -646,7 +661,8 @@ async function addProductToCart(
   cartVersion: number,
   productId: string,
   variantId: number,
-  quantity: number): Promise<ClientResponse<Cart>> {
+  quantity: number,
+): Promise<ClientResponse<Cart>> {
   const lineItemDraft: LineItemDraft = {
     productId,
     variantId,
@@ -655,20 +671,29 @@ async function addProductToCart(
 
   const cartUpdate: CartUpdate = {
     version: cartVersion,
-    actions: [{
-      action: 'addLineItem',
-      ...lineItemDraft,
-    } as CartAddLineItemAction],
+    actions: [
+      {
+        action: 'addLineItem',
+        ...lineItemDraft,
+      } as CartAddLineItemAction,
+    ],
   };
 
-  return api.carts().withId({ ID: cartId }).post({
-    body: cartUpdate,
-  }).execute();
+  return api
+    .carts()
+    .withId({ ID: cartId })
+    .post({
+      body: cartUpdate,
+    })
+    .execute();
 }
 
 export async function fetchCartItems(): Promise<LineItem[]> {
   const api = getUserApiRoot();
-  const response: ClientResponse<Cart> = await api.me().activeCart().get().execute();
+  const response: ClientResponse<Cart> = await api
+    .me()
+    .activeCart()
+    .get()
+    .execute();
   return response.body.lineItems;
 }
-
