@@ -6,7 +6,7 @@ import {
 import createBasketPayContainer from './basket-pay/basketPay';
 import createBasketProductsContainer from './basket-products/basket-products';
 
-export default async function buildBusketContainer(): Promise<HTMLElement> {
+export default async function buildBasketContainer(): Promise<HTMLElement> {
   const basketContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['basket-page__basket-container'],

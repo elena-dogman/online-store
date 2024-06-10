@@ -26,6 +26,7 @@ import {
   CartAddLineItemAction,
   CartUpdate,
   LineItem,
+  CartChangeLineItemQuantityAction,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/general/eventEmitter';
@@ -696,4 +697,37 @@ export async function fetchCartItems(): Promise<LineItem[]> {
     .get()
     .execute();
   return response.body.lineItems;
+}
+
+export async function updateQuantity(lineItemId: string, quantity: number): Promise<LineItem | null> {
+  const api = getUserApiRoot();
+  try {
+    const cartResponse: ClientResponse<Cart> = await api.me().activeCart().get().execute();
+    const cart = cartResponse.body;
+
+    const updateAction: CartChangeLineItemQuantityAction = {
+      action: 'changeLineItemQuantity',
+      lineItemId,
+      quantity,
+    };
+
+    const cartUpdate: CartUpdate = {
+      version: cart.version,
+      actions: [updateAction],
+    };
+
+    const updatedCart: ClientResponse<Cart> = await api.carts().withId({ ID: cart.id }).post({
+      body: cartUpdate,
+    }).execute();
+
+    const updatedLineItem = updatedCart.body.lineItems.find(item => item.id === lineItemId);
+    if (!updatedLineItem) {
+      return null;
+    }
+
+    return updatedLineItem;
+  } catch (error) {
+    console.error('Error updating cart item quantity:', error);
+    return null;
+  }
 }
