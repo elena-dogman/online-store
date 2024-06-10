@@ -1,3 +1,4 @@
+@import '..//..//styles/variables.scss';
 .user-profile-page {
   position: relative;
   overflow: hidden;
@@ -36,9 +37,6 @@
   padding: 20px;
 }
 .profile-container__profile-wrapper {
-  // max-width: 800px;
-  // height: 640px;
-  // width: 80vw;
   overflow: hidden;
   background: $card-background;
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
@@ -95,7 +93,6 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-
   max-width: 300px;
   min-width: 150px;
   height: 56px;
@@ -424,9 +421,6 @@
     padding: 0px;
     width: 100vw;
   }
-  // .profile-container__profile-form {
-  //   padding: 0px;
-  // }
 }
 
 @media (max-width: 400px) {

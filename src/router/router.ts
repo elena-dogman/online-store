@@ -5,6 +5,7 @@ import { buildRegistrationPage } from '../pages/RegistrationPage/registrationPag
 import { createCatalogPage } from '../pages/CatalogPage/CatalogPage';
 import { createDetailedProductPage } from '../pages/ProductDetailedPage/ProductDetailedPage';
 import { buildUserProfilePage } from '../pages/UserProfilePage/userProfilePage';
+import createBasketPage from '../pages/BasketPage/basketPage';
 
 type RouteHandler = (
   params?: Record<string, string>,
@@ -113,6 +114,7 @@ const routes = {
   '/catalog': createCatalogPage,
   '/profile': buildUserProfilePage,
   '/product/:id': createDetailedProductPage,
+  '/basket': createBasketPage,
 };
 
 const router = createRouter(routes);

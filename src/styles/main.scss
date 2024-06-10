@@ -14,10 +14,12 @@
 @import 'swiper/css/zoom';
 @import './swiper.scss';
 @import 'swiper/swiper-bundle.css';
+@import '../utils/general/deleteIcon/deleteIcon.scss';
 @import '../pages/ProductDetailedPage/productdetailedpage.scss';
 @import '../components/ProductDetailedPageComponent/swiperModal.scss';
 @import '../components/breadcrumbs/breadcrumbs.module.scss';
 @import '../components/profileComponents/password/passwordModal.scss';
+@import '../pages/BasketPage/basketPage.scss';
 * {
   box-sizing: border-box;
   padding: 0;
