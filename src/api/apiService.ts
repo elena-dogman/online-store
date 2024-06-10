@@ -25,6 +25,7 @@ import {
   ByProjectKeyRequestBuilder,
   CartAddLineItemAction,
   CartUpdate,
+  LineItem,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/general/eventEmitter';
@@ -664,3 +665,10 @@ async function addProductToCart(
     body: cartUpdate,
   }).execute();
 }
+
+export async function fetchCartItems(): Promise<LineItem[]> {
+  const api = getUserApiRoot();
+  const response: ClientResponse<Cart> = await api.me().activeCart().get().execute();
+  return response.body.lineItems;
+}
+

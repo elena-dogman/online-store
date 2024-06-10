@@ -6,7 +6,7 @@ import {
 import createBasketPayContainer from './basket-pay/basketPay';
 import createBasketProductsContainer from './basket-products/basket-products';
 
-export default function buildBusketContainer(): HTMLElement {
+export default async function buildBusketContainer(): Promise<HTMLElement> {
   const basketContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['basket-page__basket-container'],
@@ -19,7 +19,7 @@ export default function buildBusketContainer(): HTMLElement {
   const basketWraper = createElement(basketWrapperParams);
   addInnerComponent(basketContainer, basketWraper);
 
-  const basketProducts = createBasketProductsContainer();
+  const basketProducts = await createBasketProductsContainer();
   const basketPay = createBasketPayContainer();
 
   addInnerComponent(basketWraper, basketProducts);
