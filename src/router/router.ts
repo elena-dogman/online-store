@@ -115,7 +115,7 @@ const routes = {
   '/catalog': createCatalogPage,
   '/profile': buildUserProfilePage,
   '/product/:id': createDetailedProductPage,
-  '/about': createAboutUsPage,
+  '/about-us': createAboutUsPage,
   '/basket': createBasketPage,
 };
 
