@@ -77,7 +77,6 @@ function createRouter(routes: Routes): Router {
         const match = matchPath(route, path);
         if (match) {
           handler = this.routes[route];
-          console.log(handler);
           params = match.params;
           break;
         }

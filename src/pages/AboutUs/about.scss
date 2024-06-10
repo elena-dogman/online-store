@@ -1,20 +1,50 @@
 .about_us {
   font-family: $font-family-base;
 }
+
 .about_us_container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px;
   opacity: 0;
-  transform: translateY(-50px);
+  transform: translateY(-150px);
   transition:
-    opacity 1s ease,
-    transform 1s ease;
+    opacity 1.5s ease,
+    transform 1.5s ease;
 }
+
 .about_us_container.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+a.no-hash {
+  position: relative;
+  text-decoration: none;
+  cursor: pointer;
+  color: inherit;
+  font-weight: bold;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background-color: black;
+    bottom: -3px;
+    left: 0;
+    transform: scaleX(0);
+    transform-origin: bottom left;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover::after {
+      transform: scaleX(1);
+      transform-origin: bottom left;
+    }
+  }
 }
 
 .mission_container {
@@ -29,6 +59,7 @@
   margin-bottom: 20px;
   margin-top: 40px;
   font-size: $font-size-big-heading;
+  text-wrap: nowrap;
 }
 
 .mission_text,
@@ -41,13 +72,13 @@
     color: #333;
   }
 }
-
 .slider-container {
   width: 100%;
   overflow: hidden;
   margin: 0 auto;
-  max-width: 1000px;
+  max-width: 1100px;
   padding: 20px 0px;
+  margin-bottom: 50px;
 }
 
 .slider-container > .swiper {
@@ -125,10 +156,19 @@
   position: static;
   color: #fff;
 }
-//
 .our_team {
   opacity: 0;
   transition: opacity 1s ease;
+  text-align: center;
+  font-size: $font-size-big-heading;
+  font-family: $font-family-base;
+  display: block;
+  margin-block-start: 0.83em;
+  margin-block-end: 0.83em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+  unicode-bidi: isolate;
 }
 
 .our_team.visible {
@@ -136,52 +176,70 @@
 }
 
 .team_members {
+  margin-top: 50px;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-around;
+  font-size: 24rem;
+  gap: 10px;
 }
 
 .team-member {
-  width: 250px;
+  width: 350px;
   padding: 20px;
   position: relative;
   text-align: center;
   opacity: 0;
+  border-radius: 15px;
   transition:
     opacity 1s ease,
     transform 1s ease;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 3px solid transparent;
+    border-radius: 15px;
+    background:
+      linear-gradient(white, white) padding-box,
+      linear-gradient(45deg, #ff6f61, #de56e4, #4a90e2, #50c878) border-box;
+    transition: transform 1s ease;
+    z-index: -1;
+  }
 }
 
-.team-member::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border: 3px solid transparent;
-  border-radius: 15px;
-  background:
-    linear-gradient(white, white) padding-box,
-    linear-gradient(45deg, #ff6f61, #de56e4, #4a90e2, #50c878) border-box;
-  transition: transform 1s ease;
-  z-index: -1;
-}
 .magic-active .team-member::before {
   background:
     linear-gradient(black, #0c0c0c) padding-box,
     linear-gradient(45deg, #ff6f61, #de56e4, #4a90e2, #50c878) border-box;
 }
+.magic-active .school-logo_icon {
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%)
+    contrast(100%);
+}
+.github-logo {
+  transition: all 0.5s ease;
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+.magic-active .github-logo {
+  border-radius: 50%;
+  background: white;
+}
 .team-member.left {
-  transform: translateX(-100px);
+  transform: translateX(-300px);
 }
 
 .team-member.top {
-  transform: translateY(-100px);
+  transform: translateY(-300px);
 }
 
 .team-member.right {
-  transform: translateX(100px);
+  transform: translateX(-100px);
 }
 
 .team-member.visible {
@@ -190,8 +248,8 @@
 }
 
 .team-member-image {
-  width: 150px;
-  height: 150px;
+  width: 250px;
+  height: 250px;
   border-radius: 50%;
   margin-bottom: 15px;
   object-fit: cover;
@@ -205,20 +263,26 @@
 }
 
 .team-member:hover .team-member-image {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .member_name {
-  font-size: 1.2em;
+  font-size: 24rem;
   margin-bottom: 5px;
+  gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .member_role {
+  font-size: 20rem;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
 }
 
 .member_details {
+  font-size: 18rem;
   list-style: none;
   padding: 0;
 }
@@ -226,13 +290,26 @@
 .member_details li {
   margin-bottom: 5px;
 }
-//
-//
+
+.school-logo_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.school-logo_icon {
+  width: 200px;
+  transition: all 0.5s ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
 .make-magic-button {
   all: unset;
   position: fixed;
   z-index: 99999;
-  left: -15%;
   top: 10%;
   display: inline-flex;
   align-items: center;
@@ -243,8 +320,8 @@
   cursor: pointer;
   font-size: 16px;
   transition:
-    background-color 0.3s ease,
-    transform 0.3s ease;
+    background-color 0.6s ease,
+    transform 0.6s ease;
 }
 
 .make-magic-button:hover {
@@ -261,18 +338,111 @@
   background-color: black;
   color: white;
   transition:
-    background-color 0.5s ease,
-    color 0.5s ease;
+    background-color 0.8s ease,
+    color 0.8s ease;
+}
+@media (max-width: 980px) {
+  .team-member-image {
+    width: 200px;
+    height: 200px;
+  }
+}
+@media (max-width: 830px) {
+  .team-member-image {
+    width: 150px;
+    height: 150px;
+  }
+  .team-member > .text_container {
+    gap: 0px;
+  }
+  .member_role {
+    margin-bottom: 10px;
+  }
+  .member_details {
+    font-size: 14rem;
+  }
+  .slider-container > .swiper > .swiper-wrapper > .swiper-slide {
+    padding: 20px;
+  }
+}
+@media (max-width: 768px) {
+  .slider-container > .swiper > .swiper-wrapper > .swiper-slide {
+    max-width: unset;
+  }
+  .slider-container > .swiper > .swiper-wrapper > .swiper-slide > .slide-image {
+    width: 60%;
+  }
+  .slider-container > .swiper {
+    height: unset;
+  }
+}
+@media (max-width: 670px) {
+  .team_members {
+    flex-direction: column;
+    align-items: center;
+  }
+  .team-member.top {
+    order: 1;
+  }
+  .team-member.left {
+    order: 2;
+  }
+  .team-member.right {
+    order: 3;
+  }
+  .team-member {
+    width: 100%;
+  }
+  .team-member-image {
+    width: 250px;
+    height: 250px;
+  }
+  .mission_header {
+    font-size: 48rem;
+  }
+  .our_team {
+    font-size: 48rem;
+  }
+}
+@media (max-width: 550px) {
+  .about_us_container {
+    padding: 30px 10px;
+  }
+  .make-magic-button {
+    top: 0%;
+  }
+  .mission_text,
+  .building_together_text {
+    text-align: justify;
+  }
+  .slider-container {
+    margin-bottom: 0px;
+  }
+  .our_team {
+    margin-block-start: 0px;
+  }
+  .mission_container {
+    margin-bottom: 0px;
+  }
+}
+@media (max-width: 450px) {
+  .mission_header {
+    font-size: 32rem;
+  }
+  .mission_text,
+  .building_together_text {
+    font-size: 14rem;
+  }
 }
 .bg-animation {
   opacity: 0;
-  transition: opacity 0.5s ease;
-  position: fixed; /* Изменено на fixed для фиксированной позиции */
+  transition: opacity 0.8s ease;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* Отключает взаимодействие с элементом */
+  pointer-events: none;
 }
 #stars {
   width: 1px;

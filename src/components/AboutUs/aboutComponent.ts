@@ -5,6 +5,7 @@ import {
 } from '../../utils/general/baseComponent';
 import { Autoplay, Mousewheel, Keyboard, Navigation } from 'swiper/modules';
 import Swiper from 'swiper';
+
 Swiper.use([Autoplay, Mousewheel, Keyboard, Navigation]);
 
 const slidesData = [
@@ -24,51 +25,43 @@ const slidesData = [
     text: 'We believe that humor and a positive attitude are essential ingredients for a healthy and productive work environment. By encouraging laughter and light-hearted moments, we reduce stress, build stronger bonds, and keep our team’s spirits high. A touch of humor helps us navigate challenges with a smile and keeps our creativity flowing.',
   },
   {
-    imageSrc: '../assets/about/slider/1.png',
-    title: 'Effective communication',
-    text: 'Clear and open communication is essential for successful teamwork. We prioritize regular check-ins, active listening, and transparent discussions to ensure that everyone is on the same page.',
+    imageSrc: '../assets/about/slider/4.png',
+    title: 'Never Say Never',
+    text: 'We don’t believe in giving up. When faced with a challenge, our default response is, “Never say never.” We keep pushing, learning, and adapting until we succeed.',
   },
   {
-    imageSrc: '../assets/about/slider/2.png',
-    title: 'Team Spirit and Camaraderie',
-    text: 'A strong sense of team spirit and camaraderie is at the heart of our success. We celebrate each other’s achievements, support one another during tough times, and create a positive, collaborative atmosphere that makes our work environment enjoyable and productive.',
+    imageSrc: '../assets/about/slider/5.png',
+    title: 'Embrace the Chaos',
+    text: "We thrive on chaos! If something can go wrong, we find a way to make it fun. After all, what's a project without a few (hundred) unexpected twists?",
   },
   {
-    imageSrc: '../assets/about/slider/3.png',
-    title: 'Humor and Positivity',
-    text: 'We believe that humor and a positive attitude are essential ingredients for a healthy and productive work environment. By encouraging laughter and light-hearted moments, we reduce stress, build stronger bonds, and keep our team’s spirits high. A touch of humor helps us navigate challenges with a smile and keeps our creativity flowing.',
+    imageSrc: '../assets/about/slider/6.png',
+    title: 'Code Until You’re Cross-eyed',
+    text: 'We believe that true dedication shows when you’re staring at code so long it looks like abstract art. Coffee and code marathons are our specialty!',
   },
 ];
 const teamMembers = [
   {
-    name: 'Elena Dogman',
-    role: 'team lead',
-    details: [
-      'agile guru',
-      '2 years of kickboxing practice',
-      'lactose intolerant',
-    ],
-    imageSrc: '../assets/about/members/elena.jpg',
-  },
-  {
     name: 'Ivan',
     role: 'team spirit',
-    details: [
-      'style master',
-      '*(серьезный факт, но не про программирование)*',
-      '*(рандомный факт)*',
-    ],
+    details: ['style master', 'ex marine engineer', 'friendly toxic'],
     imageSrc: '../assets/about/members/ivan.jpg',
+    github: 'https://github.com/dropthedead',
   },
+  {
+    name: 'Elena',
+    role: 'team lead',
+    details: ['agile guru', '2 years of kickboxing', 'lactose intolerant'],
+    imageSrc: '../assets/about/members/elena.jpg',
+    github: 'https://github.com/elena-dogman',
+  },
+
   {
     name: 'Leonid',
     role: 'team engine',
-    details: [
-      'meeting maestro',
-      '*(серьезный факт, но не про программирование)*',
-      '*(рандомный факт)*',
-    ],
-    imageSrc: '../assets/about/members/ivan.jpg',
+    details: ['meeting maestro', 'bibliophile', 'banana hater'],
+    imageSrc: '../assets/about/members/leonid.jpg',
+    github: 'https://github.com/nesmeian',
   },
 ];
 
@@ -118,10 +111,10 @@ export function aboutComponent(): HTMLElement {
   const buildingTogetherHeader = createElement(buildingTogetherHeaderParams);
   const buildingTogetherText = createElement(buildingTogetherTextParams);
   buildingTogetherText.innerHTML = `
-  In this journey, <a href="#elena">Elena</a> took on the role of team lead, handling the catalog, various project components, 
+  In this journey, <a class="no-hash" data-target="our_team">Elena</a> took on the role of team lead, handling the catalog, various project components, 
   and managing agile practices with meticulous updates to the Kanban board. 
-  <a href="#ivan">Ivan</a> developed the detailed page and authentication page, playing a crucial role in ensuring the responsiveness 
-  of the project's pages. Meanwhile, <a href="#leonid">Leonid</a> developed the profile and registration pages, sparking many of the team's 
+  <a class="no-hash" data-target="our_team">Ivan</a> developed the detailed page and authentication page, playing a crucial role in ensuring the responsiveness 
+  of the project's pages. Meanwhile, <a class="no-hash" data-target="our_team">Leonid</a> developed the profile and registration pages, sparking many of the team's 
   crucial discussions and meetings.
 `;
   addInnerComponent(missionContainer, buildingTogetherHeader);
@@ -217,22 +210,35 @@ export function aboutComponent(): HTMLElement {
   addInnerComponent(swiper, swiperNavigationPrevContainer);
   addInnerComponent(swiper, swiperNavigationNextContainer);
   addInnerComponent(sliderContainer, swiper);
-
   addInnerComponent(sliderSection, sliderContainer);
-
   addInnerComponent(aboutContainer, missionContainer);
   addInnerComponent(aboutContainer, sliderContainer);
 
-  setTimeout(() => {
-    new Swiper('.swiper', {
+  function initializeSwiper(): Swiper {
+    const screenWidth = window.innerWidth;
+    const slidesPerView = screenWidth <= 768 ? 1 : 3;
+
+    const slider = new Swiper('.swiper', {
       direction: 'horizontal',
       loop: true,
-      slidesPerView: 3,
+      slidesPerView: slidesPerView,
       spaceBetween: 30,
       navigation: {
         nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
       },
+      updateOnWindowResize: true,
+    });
+
+    return slider;
+  }
+
+  setTimeout(() => {
+    const slider = initializeSwiper();
+
+    window.addEventListener('resize', () => {
+      slider.params.slidesPerView = window.innerWidth <= 768 ? 1 : 3;
+      slider.update();
     });
   }, 0);
 
@@ -240,8 +246,12 @@ export function aboutComponent(): HTMLElement {
     tag: 'section',
     classNames: ['our_team'],
     textContent: 'Our Team',
+    attributes: {
+      id: 'our_team',
+    },
   };
   const ourTeamContainer = createElement(ourTeamParams);
+
   const teamMembersParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['team_members'],
@@ -249,11 +259,9 @@ export function aboutComponent(): HTMLElement {
   const teamMembersContainer = createElement(teamMembersParams);
   addInnerComponent(aboutContainer, ourTeamContainer);
   addInnerComponent(ourTeamContainer, teamMembersContainer);
-  ///
-  // Elena
+
   teamMembers.forEach((member, index) => {
     const classNames = ['team-member'];
-
     if (index === 0) {
       classNames.push('left');
     } else if (index === 1) {
@@ -290,6 +298,28 @@ export function aboutComponent(): HTMLElement {
     };
     const memberName = createElement(memberNameParams);
 
+    const githubLogoParams: ElementParams<'img'> = {
+      tag: 'img',
+      attributes: {
+        src: '../assets/about/git.png',
+        alt: 'GitHub Logo',
+        title: 'GitHub Profile',
+      },
+      classNames: ['github-logo'],
+    };
+    const githubLogo = createElement(githubLogoParams);
+
+    const githubLinkParams: ElementParams<'a'> = {
+      tag: 'a',
+      attributes: {
+        href: member.github,
+        target: '_blank',
+      },
+    };
+    const githubLink = createElement(githubLinkParams);
+    addInnerComponent(githubLink, githubLogo);
+    addInnerComponent(memberName, githubLink);
+
     const memberRoleParams: ElementParams<'p'> = {
       tag: 'p',
       classNames: ['member_role'],
@@ -319,8 +349,6 @@ export function aboutComponent(): HTMLElement {
     addInnerComponent(memberTextContainer, memberDetails);
     addInnerComponent(teamMembersContainer, memberContainer);
   });
-  ///
-  ///
   const bgAnimation = createElement({
     tag: 'div',
     classNames: ['bg-animation'],
@@ -329,15 +357,12 @@ export function aboutComponent(): HTMLElement {
   const stars2 = createElement({ tag: 'div', attributes: { id: 'stars2' } });
   const stars3 = createElement({ tag: 'div', attributes: { id: 'stars3' } });
   const stars4 = createElement({ tag: 'div', attributes: { id: 'stars4' } });
-
   addInnerComponent(bgAnimation, stars);
   addInnerComponent(bgAnimation, stars2);
   addInnerComponent(bgAnimation, stars3);
   addInnerComponent(bgAnimation, stars4);
-
   document.body.appendChild(bgAnimation);
-  ///
-  ///
+
   const makeMagicButtonParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['make-magic-button'],
@@ -354,13 +379,39 @@ export function aboutComponent(): HTMLElement {
   const makeMagicButton = createElement(makeMagicButtonParams);
   addInnerComponent(makeMagicButton, magicWandImage);
   makeMagicButton.addEventListener('click', toggleMagic);
+  document.body.appendChild(makeMagicButton);
 
-  addInnerComponent(aboutContainer, makeMagicButton);
+  const schoolLogoContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['school-logo_container'],
+  };
+  const schoolLogoContainer = createElement(schoolLogoContainerParams);
+  const schoolLogoLinkParams: ElementParams<'a'> = {
+    tag: 'a',
+    classNames: ['school-logo_link'],
+    attributes: {
+      href: 'https://rs.school/',
+      target: '_blank',
+    },
+  };
+  const schoolLogoLink = createElement(schoolLogoLinkParams);
+  const schoolLogoIconParams: ElementParams<'img'> = {
+    tag: 'img',
+    classNames: ['school-logo_icon'],
+    attributes: {
+      src: '../assets/about/school_logo.svg',
+    },
+  };
+  const schoolLogoIcon = createElement(schoolLogoIconParams);
+  addInnerComponent(schoolLogoLink, schoolLogoIcon);
+  addInnerComponent(schoolLogoContainer, schoolLogoLink);
+  addInnerComponent(aboutContainer, schoolLogoContainer);
   function toggleMagic(): void {
     const aboutUs = document.querySelector('.about_us');
     if (aboutUs?.classList.contains('magic-active')) {
       aboutUs.classList.remove('magic-active');
       makeMagicButton.style.background = '#ead1eb';
+      schoolLogoIcon.style.fill = 'white';
       stopAnimation();
       resetTextColors();
     } else {
@@ -390,26 +441,23 @@ export function aboutComponent(): HTMLElement {
   function showAnimation(): void {
     bgAnimation.style.opacity = '1';
   }
-  ///
+
   window.addEventListener('load', () => {
     aboutContainer.classList.add('visible');
-    // sliderContainer?.classList.add('visible');
   });
 
-  // Добавляем класс visible к блоку our_team и его внутренним блокам при скролле
   window.addEventListener('scroll', () => {
     const teamMemberContainers = document.querySelectorAll('.team-member');
     const ourTeamPosition = ourTeamContainer?.getBoundingClientRect().top;
     const screenPosition = window.innerHeight / 1.2;
-
     if (ourTeamPosition && ourTeamPosition < screenPosition) {
       ourTeamContainer.classList.add('visible');
-      teamMemberContainers.forEach((container) => {
-        container.classList.add('visible');
+      teamMemberContainers.forEach((container, index) => {
+        setTimeout(() => {
+          container.classList.add('visible');
+        }, 100 * index);
       });
     }
   });
-  //
-
   return aboutContainer;
 }

@@ -17,6 +17,25 @@ export function createAboutUsPage(): HTMLElement {
 
   aboutPageContainer.prepend(header);
   addInnerComponent(aboutPageContainer, aboutPageComponent);
-  console.log(aboutPageContainer);
+  document.addEventListener('DOMContentLoaded', (e) => {
+    e.preventDefault();
+    function scrollToElement(targetId: string): void {
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    document.querySelectorAll('.no-hash').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        const targetId = (event.currentTarget as HTMLElement).getAttribute(
+          'data-target',
+        );
+        if (targetId) {
+          scrollToElement(targetId);
+        }
+      });
+    });
+  });
   return aboutPageContainer;
 }
