@@ -51,7 +51,7 @@ const teamMembers = [
   {
     name: 'Elena',
     role: 'team lead',
-    details: ['agile guru', '2 years of kickboxing', 'lactose intolerant'],
+    details: ['agile guru', 'does kickboxing', 'lactose intolerant'],
     imageSrc: '../assets/about/members/elena.jpg',
     github: 'https://github.com/elena-dogman',
   },
@@ -85,10 +85,10 @@ export function aboutComponent(): HTMLElement {
     tag: 'p',
     classNames: ['mission_text'],
     textContent: `
-      We were never the best. None of us were at the top of RSS scoreboard. None of us had prior experience in web development. 
+      We were never the best. None of us were at the top of RSS scoreboard. None of us had prior experience in web development.
       But we had a vision - to come together as a team of three underdogs and, through shared learning, create something truly unique. 
-      We harnessed each of our strengths and worked together to overcome our weaknesses through collaboration and support. 
-      Our mission is to demonstrate that anything is possible if you don’t give up, no matter how challenging it gets. 
+      We harnessed each of our strengths and worked together to overcome our weaknesses through collaboration and support.
+      Our mission is to demonstrate that anything is possible if you don’t give up, no matter how challenging it gets.
       We believe in ourselves - believe in yourself, too.
     `,
   };
@@ -112,7 +112,7 @@ export function aboutComponent(): HTMLElement {
   const buildingTogetherText = createElement(buildingTogetherTextParams);
   buildingTogetherText.innerHTML = `
   In this journey, <a class="no-hash" data-target="our_team">Elena</a> took on the role of team lead, handling the catalog, various project components, 
-  and managing agile practices with meticulous updates to the Kanban board. 
+  and managing agile practices with meticulous updates to the Kanban board.
   <a class="no-hash" data-target="our_team">Ivan</a> developed the detailed page and authentication page, playing a crucial role in ensuring the responsiveness 
   of the project's pages. Meanwhile, <a class="no-hash" data-target="our_team">Leonid</a> developed the profile and registration pages, sparking many of the team's 
   crucial discussions and meetings.

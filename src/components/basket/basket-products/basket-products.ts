@@ -5,14 +5,17 @@ import {
 } from '../../../utils/general/baseComponent';
 import createRemoveIcon from '../../../utils/general/deleteIcon/deleteIcon';
 import { fetchCartItems } from '../../../api/apiService';
+import { LineItem } from '@commercetools/platform-sdk';
+import { setupQuantityHandlers } from './quantity-handlers';
+import { formatPrice } from '../../../utils/general/price-formatter';
 
-interface BasketItem {
-  name: string;
-  img: string;
-  id: string;
-  count: string;
-  price: string;
-  totalPrice: string;
+
+interface BasketProductsItem {
+  element: HTMLElement;
+  countView: HTMLElement;
+  totalPriceElement: HTMLElement;
+  countSubtract: HTMLElement;
+  countAdd: HTMLElement;
 }
 
 export default async function createBasketProductsContainer(): Promise<HTMLElement> {
@@ -41,35 +44,25 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
     });
     addInnerComponent(basketProducts, emptyMessage);
   } else {
-    let totalPrice = 0;
-
     cartItems.forEach(item => {
-      const itemTotalPrice = (item.price.value.centAmount * item.quantity) / 100;
-      totalPrice += itemTotalPrice;
-
-      const productElement = createBasketProductsItem({
-        name: item.name['en-US'],
-        img: item.variant.images?.[0]?.url || 'default-image-url',
-        id: item.id,
-        count: item.quantity.toString(),
-        price: `$${(item.price.value.centAmount / 100).toFixed(2)}`,
-        totalPrice: `$${itemTotalPrice.toFixed(2)}`,
-      });
-      addInnerComponent(basketProducts, productElement);
+      const productElement = createBasketProductsItem(item);
+      addInnerComponent(basketProducts, productElement.element);
+      setupQuantityHandlers(
+        productElement.countView,
+        productElement.totalPriceElement,
+        productElement.countSubtract,
+        productElement.countAdd,
+        item.id,
+        item.quantity,
+        item.price.value.centAmount / 100,
+      );
     });
-
-    const totalElement = createElement({
-      tag: 'div',
-      classNames: ['basket-products__total'],
-      textContent: `Total: $${totalPrice.toFixed(2)}`,
-    });
-    addInnerComponent(basketProducts, totalElement);
   }
 
   return basketProducts;
 }
 
-function createBasketProductsItem(config: BasketItem): HTMLElement {
+function createBasketProductsItem(item: LineItem): BasketProductsItem {
   const basketProductsItemParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['basket-products__basket-products-item'],
@@ -87,15 +80,17 @@ function createBasketProductsItem(config: BasketItem): HTMLElement {
     classNames: ['basket-products-item__item-img'],
     attributes: {
       alt: 'basket product image',
-      src: config.img,
+      src: item.variant.images?.[0]?.url || 'assets/basket/default.jpg',
     },
   };
   const basketItemImg = createElement(basketItemImgParams);
 
+  const productName = item.name['en-US'] || 'No name available';
+
   const basketItemDescriptionTitleParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['basket-products-item__item-description-title'],
-    textContent: config.name,
+    textContent: productName,
   };
   const basketItemDescriptionTitle = createElement(basketItemDescriptionTitleParams);
 
@@ -131,23 +126,35 @@ function createBasketProductsItem(config: BasketItem): HTMLElement {
   const basketItemCountViewParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['item-count-container__count-view'],
-    textContent: config.count,
+    textContent: item.quantity.toString(),
   };
   const basketItemCountView = createElement(basketItemCountViewParams);
 
-  const basketItemCountPriceParams: ElementParams<'div'> = {
+  const basketItemPriceContainerParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['item-count-container__count-price'],
-    textContent: config.price,
+    classNames: ['item-count-container__price-container'],
   };
-  const basketItemCountPrice = createElement(basketItemCountPriceParams);
+  const basketItemPriceContainer = createElement(basketItemPriceContainerParams);
+
+ const unitPrice = formatPrice(item.price.value.centAmount / 100);
+ const totalPrice = formatPrice((item.price.value.centAmount * item.quantity) / 100);
+
+  const basketItemUnitPriceParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['item-count-container__unit-price'],
+    textContent: `${unitPrice}`,
+  };
+  const basketItemUnitPrice = createElement(basketItemUnitPriceParams);
 
   const basketItemTotalPriceParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['item-count-container__count-total'],
-    textContent: `Total: ${config.totalPrice}`,
+    classNames: ['item-count-container__total-price'],
+    textContent: `Total: ${totalPrice}`,
   };
   const basketItemTotalPrice = createElement(basketItemTotalPriceParams);
+
+  addInnerComponent(basketItemPriceContainer, basketItemUnitPrice);
+  addInnerComponent(basketItemPriceContainer, basketItemTotalPrice);
 
   const removeIcon = createRemoveIcon('basket-products');
 
@@ -157,9 +164,14 @@ function createBasketProductsItem(config: BasketItem): HTMLElement {
   addInnerComponent(basketItemCountContainer, basketItemCountSubtract);
   addInnerComponent(basketItemCountContainer, basketItemCountView);
   addInnerComponent(basketItemCountContainer, basketItemCountAdd);
-  addInnerComponent(basketItemCountContainer, basketItemCountPrice);
-  addInnerComponent(basketItemCountContainer, basketItemTotalPrice);
+  addInnerComponent(basketItemCountContainer, basketItemPriceContainer);
   addInnerComponent(basketItemCountContainer, removeIcon);
 
-  return basketProductsItem;
+  return {
+    element: basketProductsItem,
+    countView: basketItemCountView,
+    totalPriceElement: basketItemTotalPrice,
+    countSubtract: basketItemCountSubtract,
+    countAdd: basketItemCountAdd,
+  };
 }

@@ -9,6 +9,7 @@ import { Category, ClientResponse, Product } from '@commercetools/platform-sdk';
 import { generateBreadcrumbLinks } from '../breadcrumbs/breadcrumbs';
 import { isCustomError } from '../../utils/general/customError';
 import { showToast } from '../toast/toast';
+import { RoutePaths } from '../../types/types';
 export function productDetailedPageComponent(ID: string): HTMLElement {
   const detailedProductContainerParams: ElementParams<'section'> = {
     tag: 'section',
@@ -32,7 +33,7 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
         const replaceDashWithPlus = (text: string): string =>
           text.replace(/-/g, '+');
         const breadcrumbs = [
-          { name: 'home', url: '/' },
+          { name: 'home', url: RoutePaths.Main },
           { name: 'catalog', url: '/catalog' },
         ];
 

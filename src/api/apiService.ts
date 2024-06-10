@@ -26,6 +26,7 @@ import {
   CartAddLineItemAction,
   CartUpdate,
   LineItem,
+  CartChangeLineItemQuantityAction,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/general/eventEmitter';
@@ -33,6 +34,7 @@ import { RegistrationData } from '../components/registrationForm/regDataInterfac
 import { showToast } from '../components/toast/toast';
 import { isCustomError } from '../utils/general/customError';
 import { resultPasswordModal } from '../components/profileComponents/password/passwordModalForm';
+import { RoutePaths } from '../types/types';
 
 interface SearchQueryArgs {
   'text.en-US': string;
@@ -128,7 +130,7 @@ export const loginUser = async (body: {
 
     localStorage.setItem('userId', data.body.customer.id);
 
-    router.navigate('/');
+    router.navigate(RoutePaths.Main);
     appEvents.emit('login', undefined);
     return data;
   } catch (error: unknown) {
@@ -171,7 +173,7 @@ export const logoutUser = async (): Promise<void> => {
   try {
     localStorage.removeItem('token');
     await anonymousApiRoot.get().execute();
-    router.navigate('/login');
+    router.navigate(RoutePaths.Login);
     appEvents.emit('logout', undefined);
   } catch (error) {
     if (isCustomError(error)) {
@@ -209,13 +211,13 @@ export async function isUserLogined(): Promise<ClientResponse<Customer> | void> 
     });
     try {
       const userData = await refreshFlowClient.me().get().execute();
-      if (currentPath === '/' || currentPath === '/login') {
-        router.navigate('/');
+      if (currentPath === RoutePaths.Main || currentPath === RoutePaths.Login) {
+        router.navigate(RoutePaths.Main);
       }
       appEvents.emit('login', undefined);
       return userData;
     } catch (error) {
-      router.navigate('/login');
+      router.navigate(RoutePaths.Login);
     }
   } else {
     await getProject();
@@ -696,4 +698,37 @@ export async function fetchCartItems(): Promise<LineItem[]> {
     .get()
     .execute();
   return response.body.lineItems;
+}
+
+export async function updateQuantity(lineItemId: string, quantity: number): Promise<LineItem | null> {
+  const api = getUserApiRoot();
+  try {
+    const cartResponse: ClientResponse<Cart> = await api.me().activeCart().get().execute();
+    const cart = cartResponse.body;
+
+    const updateAction: CartChangeLineItemQuantityAction = {
+      action: 'changeLineItemQuantity',
+      lineItemId,
+      quantity,
+    };
+
+    const cartUpdate: CartUpdate = {
+      version: cart.version,
+      actions: [updateAction],
+    };
+
+    const updatedCart: ClientResponse<Cart> = await api.carts().withId({ ID: cart.id }).post({
+      body: cartUpdate,
+    }).execute();
+
+    const updatedLineItem = updatedCart.body.lineItems.find(item => item.id === lineItemId);
+    if (!updatedLineItem) {
+      return null;
+    }
+
+    return updatedLineItem;
+  } catch (error) {
+    console.error('Error updating cart item quantity:', error);
+    return null;
+  }
 }

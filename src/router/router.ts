@@ -7,6 +7,7 @@ import { createDetailedProductPage } from '../pages/ProductDetailedPage/ProductD
 import { buildUserProfilePage } from '../pages/UserProfilePage/userProfilePage';
 import { createAboutUsPage } from '../pages/AboutUs/about';
 import createBasketPage from '../pages/BasketPage/basketPage';
+import { RoutePaths } from '../types/types';
 
 type RouteHandler = (
   params?: Record<string, string>,
@@ -58,14 +59,13 @@ function createRouter(routes: Routes): Router {
 
       const isLoggedIn = Boolean(localStorage.getItem('token'));
 
-      // Обработка перехода на /profile
-      if (path === '/profile' && !isLoggedIn) {
-        this.navigate('/login');
+      if (path === RoutePaths.Profile && !isLoggedIn) {
+        this.navigate(RoutePaths.Login);
         return;
       }
 
-      if ((path === '/login' || path === '/register') && isLoggedIn) {
-        this.navigate('/');
+      if ((path === RoutePaths.Login || path === RoutePaths.Register) && isLoggedIn) {
+        this.navigate(RoutePaths.Main);
         return;
       }
 
@@ -108,15 +108,15 @@ function createRouter(routes: Routes): Router {
 }
 
 const routes = {
-  '/': createMainPage,
-  '/login': createAuthPage,
-  '/register': buildRegistrationPage,
-  '/404': notFoundPage,
-  '/catalog': createCatalogPage,
-  '/profile': buildUserProfilePage,
-  '/product/:id': createDetailedProductPage,
-  '/about-us': createAboutUsPage,
-  '/basket': createBasketPage,
+  [RoutePaths.Main]: createMainPage,
+  [RoutePaths.Login]: createAuthPage,
+  [RoutePaths.Register]: buildRegistrationPage,
+  [RoutePaths.NotFound]: notFoundPage,
+  [RoutePaths.Catalog]: createCatalogPage,
+  [RoutePaths.Profile]: buildUserProfilePage,
+  [RoutePaths.Product]: createDetailedProductPage,
+  [RoutePaths.AboutUs]: createAboutUsPage,
+  [RoutePaths.Basket]: createBasketPage,
 };
 
 const router = createRouter(routes);

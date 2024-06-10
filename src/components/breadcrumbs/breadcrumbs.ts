@@ -7,6 +7,7 @@ import {
   ElementParams,
 } from '../../utils/general/baseComponent';
 import { navigateTo } from '../../router/router';
+import { RoutePaths } from '../../types/types';
 
 export async function fetchCategoryTree(): Promise<Category[]> {
   const categories = await fetchCategories();
@@ -20,7 +21,7 @@ export async function buildBreadcrumbsFromUrl(): Promise<
   const categoryNames = url.searchParams.getAll('category');
 
   const breadcrumbs = [
-    { name: 'home', url: '/' },
+    { name: 'home', url: RoutePaths.Main },
     { name: 'catalog', url: '/catalog' },
   ];
 
