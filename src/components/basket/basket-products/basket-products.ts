@@ -142,14 +142,14 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
   const basketItemUnitPriceParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['item-count-container__unit-price'],
-    textContent: `$${unitPrice}`,
+    textContent: `${unitPrice}`,
   };
   const basketItemUnitPrice = createElement(basketItemUnitPriceParams);
 
   const basketItemTotalPriceParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['item-count-container__total-price'],
-    textContent: `Total: $${totalPrice}`,
+    textContent: `Total: ${totalPrice}`,
   };
   const basketItemTotalPrice = createElement(basketItemTotalPriceParams);
 

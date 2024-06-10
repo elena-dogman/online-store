@@ -84,16 +84,27 @@
 padding: 10px;
 }
 
-.item-count-container__count-view{
+.item-count-container__count-view {
   width: 30px;
   height: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
   border:0.5px solid #D9D9D9;
+  padding: 10px;
 }
+
+.item-count-container__count-view,
+.item-count-container__count-subtract,
+.item-count-container__count-add,
+.item-count-container__unit-price,
+.item-count-container__total-price {
+  padding: 10px;
+}
+
 .basket-products__remove-icon-container{
   width: 12px;
+  padding: 10px;
 }
 .input-basket {
   border: none;
