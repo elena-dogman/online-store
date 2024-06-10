@@ -7,6 +7,8 @@ import createRemoveIcon from '../../../utils/general/deleteIcon/deleteIcon';
 import { fetchCartItems } from '../../../api/apiService';
 import { LineItem } from '@commercetools/platform-sdk';
 import { setupQuantityHandlers } from './quantity-handlers';
+import { formatPrice } from '../../../utils/general/price-formatter';
+
 
 interface BasketProductsItem {
   element: HTMLElement;
@@ -38,7 +40,7 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
     const emptyMessage = createElement({
       tag: 'p',
       classNames: ['basket-products__empty-message'],
-      textContent: 'Your basket is empty.',
+      textContent: 'Your cart is empty.',
     });
     addInnerComponent(basketProducts, emptyMessage);
   } else {
@@ -78,7 +80,7 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
     classNames: ['basket-products-item__item-img'],
     attributes: {
       alt: 'basket product image',
-      src: item.variant.images?.[0]?.url || 'default-image-url',
+      src: item.variant.images?.[0]?.url || 'assets/basket/default.jpg',
     },
   };
   const basketItemImg = createElement(basketItemImgParams);
@@ -134,8 +136,8 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
   };
   const basketItemPriceContainer = createElement(basketItemPriceContainerParams);
 
-  const unitPrice = (item.price.value.centAmount / 100).toFixed(2);
-  const totalPrice = ((item.price.value.centAmount * item.quantity) / 100).toFixed(2);
+ const unitPrice = formatPrice(item.price.value.centAmount / 100);
+ const totalPrice = formatPrice((item.price.value.centAmount * item.quantity) / 100);
 
   const basketItemUnitPriceParams: ElementParams<'div'> = {
     tag: 'div',

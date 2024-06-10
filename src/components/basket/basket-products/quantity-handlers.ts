@@ -1,4 +1,5 @@
 import { updateQuantity } from '../../../api/apiService';
+import { formatPrice } from '../../../utils/general/price-formatter';
 
 export function setupQuantityHandlers(
   countView: HTMLElement,
@@ -16,7 +17,7 @@ export function setupQuantityHandlers(
     if (updatedItem) {
       currentCount = updatedItem.quantity;
       countView.textContent = updatedItem.quantity.toString();
-      totalPriceElement.textContent = `Total: $${(price * updatedItem.quantity).toFixed(2)}`;
+      totalPriceElement.textContent = `Total: ${formatPrice(price * updatedItem.quantity)}`;
     }
   };
 
