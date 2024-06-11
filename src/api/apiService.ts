@@ -791,3 +791,35 @@ export async function getDiscountCodes(): Promise<
     throw new Error("Couldn't get discount codes");
   }
 }
+export async function getActiveCart(): Promise<Cart | null> {
+  try {
+    const api = getUserApiRoot();
+    const response = await api.me().activeCart().get().execute();
+    return response.body;
+  } catch (error) {
+    console.error('Error fetching active cart:', error);
+    return null;
+  }
+}
+
+interface BadRequest {
+  code: number;
+  message: string;
+  statusCode: number;
+}
+export async function applyPromoCode(
+  ID: string,
+  body: {
+    version: number;
+    actions: { action: 'addDiscountCode'; code: string }[];
+  },
+): Promise<ClientResponse<Cart> | BadRequest | null> {
+  try {
+    const api = getUserApiRoot();
+    const response = await api.carts().withId({ ID }).post({ body }).execute();
+    return response;
+  } catch (error) {
+    console.error('Error adding promocode', error);
+    return error as BadRequest;
+  }
+}
