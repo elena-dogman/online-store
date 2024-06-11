@@ -135,6 +135,12 @@
       color: $text-color-contrast;
     }
   }
+  &:disabled {
+    background-color: $button-disabled-background;
+    cursor: not-allowed;
+    box-shadow: none;
+    color: $text-color-base;
+  }
 }
 .icons_container {
   display: flex;

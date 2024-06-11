@@ -119,6 +119,18 @@ export function aboutComponent(): HTMLElement {
 `;
   addInnerComponent(missionContainer, buildingTogetherHeader);
   addInnerComponent(missionContainer, buildingTogetherText);
+  const ourValuesContainer: ElementParams<'section'> = {
+    tag: 'section',
+    classNames: ['our_values'],
+  };
+  const ourValuesTextParams: ElementParams<'h2'> = {
+    tag: 'h2',
+    classNames: ['mission_header'],
+    textContent: 'Our Values',
+  };
+  const ourValuesText = createElement(ourValuesTextParams);
+  const ourValues = createElement(ourValuesContainer);
+  addInnerComponent(ourValues, ourValuesText);
 
   const sliderContainerParams: ElementParams<'div'> = {
     tag: 'div',
@@ -212,7 +224,8 @@ export function aboutComponent(): HTMLElement {
   addInnerComponent(sliderContainer, swiper);
   addInnerComponent(sliderSection, sliderContainer);
   addInnerComponent(aboutContainer, missionContainer);
-  addInnerComponent(aboutContainer, sliderContainer);
+  addInnerComponent(aboutContainer, ourValues);
+  addInnerComponent(ourValues, sliderContainer);
 
   function initializeSwiper(): Swiper {
     const screenWidth = window.innerWidth;

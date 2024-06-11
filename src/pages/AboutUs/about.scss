@@ -48,7 +48,6 @@ a.no-hash {
 }
 
 .mission_container {
-  margin-bottom: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -65,12 +64,16 @@ a.no-hash {
 .mission_text,
 .building_together_text {
   line-height: 1.6;
-  margin-bottom: 20px;
   &::first-letter {
     font-size: 24rem;
     font-weight: bold;
     color: #333;
   }
+}
+.our_values {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .slider-container {
   width: 100%;
