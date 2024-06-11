@@ -4,7 +4,7 @@ import {
   createElement,
 } from '../../../utils/general/baseComponent';
 import createRemoveIcon from '../../../utils/general/deleteIcon/deleteIcon';
-import { fetchCartItems } from '../../../api/apiService';
+import { fetchCartItems, removeItemFromCart } from '../../../api/apiService';
 import { LineItem } from '@commercetools/platform-sdk';
 import { setupQuantityHandlers } from './quantity-handlers';
 import { formatPrice } from '../../../utils/general/price-formatter';
@@ -157,6 +157,12 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
   addInnerComponent(basketItemPriceContainer, basketItemTotalPrice);
 
   const removeIcon = createRemoveIcon('basket-products');
+    removeIcon.addEventListener('click', async () => {
+    const success = await removeItemFromCart(item.id);
+    if (success) {
+      basketProductsItem.remove();
+    }
+  });
 
   addInnerComponent(basketProductsItem, basketItemWrapper);
   addInnerComponent(basketProductsItem, basketItemDescriptionContainer);
