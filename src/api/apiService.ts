@@ -27,6 +27,7 @@ import {
   CartUpdate,
   LineItem,
   CartChangeLineItemQuantityAction,
+  CartRemoveLineItemAction,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/general/eventEmitter';
@@ -731,4 +732,31 @@ export async function updateQuantity(lineItemId: string, quantity: number): Prom
     console.error('Error updating cart item quantity:', error);
     return null;
   }
+}
+
+export async function removeItemFromCart(itemId: string): Promise<boolean> {
+  const api = getUserApiRoot();
+  try {
+    const cart = await api.me().activeCart().get().execute();
+
+    if (cart.body) {
+      const cartId = cart.body.id;
+      const cartVersion = cart.body.version;
+
+      const cartUpdate: CartUpdate = {
+        version: cartVersion,
+        actions: [{
+          action: 'removeLineItem',
+          lineItemId: itemId,
+        } as CartRemoveLineItemAction],
+      };
+
+      await api.carts().withId({ ID: cartId }).post({ body: cartUpdate }).execute();
+      return true;
+    }
+  } catch (error) {
+    console.error('Error removing item from cart:', error);
+  }
+
+  return false;
 }
