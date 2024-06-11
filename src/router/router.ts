@@ -64,7 +64,10 @@ function createRouter(routes: Routes): Router {
         return;
       }
 
-      if ((path === RoutePaths.Login || path === RoutePaths.Register) && isLoggedIn) {
+      if (
+        (path === RoutePaths.Login || path === RoutePaths.Register) &&
+        isLoggedIn
+      ) {
         this.navigate(RoutePaths.Main);
         return;
       }
