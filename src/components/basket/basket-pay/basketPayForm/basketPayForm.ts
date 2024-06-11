@@ -31,20 +31,15 @@ export default function createBasketPayForm(): HTMLElement {
   basketDiscountInput.setAttribute('placeholder', 'Code');
   basketDiscountLabel.textContent = 'Discount code / Promo code';
 
+  const basketApplyButtonPapams: ElementParams<'button'> = {
+    tag: 'button',
+    classNames: ['basket-form__apply-button'],
+    textContent: 'Apply',
+    attributes: { disabled: '' },
+  };
+  const basketApplyButton = createElement(basketApplyButtonPapams);
   addInnerComponent(basketDiscountLabel, basketDiscountInput);
-
-  const [basketBonusLabel, basketBonusInput] = createInput(
-    'basket-bonus',
-    [
-      ['basket-bonus-label', 'label-basket'],
-      ['basket-bonus-input', 'input-basket'],
-    ],
-    'basket-bonus',
-    'basket-bonus',
-  );
-  basketBonusInput.setAttribute('placeholder', 'Enter Card Number');
-  basketBonusLabel.textContent = 'Your bonus card number';
-
+  addInnerComponent(basketDiscountLabel, basketApplyButton);
   const basketPayInfContainer = createBasketPayInformation();
   const basketPayButtonPapams: ElementParams<'button'> = {
     tag: 'button',
@@ -53,10 +48,8 @@ export default function createBasketPayForm(): HTMLElement {
     attributes: { disabled: '' },
   };
   const basketPayButton = createElement(basketPayButtonPapams);
-  addInnerComponent(basketBonusLabel, basketBonusInput);
   addInnerComponent(basketPayForm, basketPayTitle);
   addInnerComponent(basketPayForm, basketDiscountLabel);
-  addInnerComponent(basketPayForm, basketBonusLabel);
   addInnerComponent(basketPayForm, basketPayInfContainer);
   addInnerComponent(basketPayForm, basketPayButton);
   return basketPayForm;

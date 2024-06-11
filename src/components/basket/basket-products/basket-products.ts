@@ -9,7 +9,6 @@ import { LineItem } from '@commercetools/platform-sdk';
 import { setupQuantityHandlers } from './quantity-handlers';
 import { formatPrice } from '../../../utils/general/price-formatter';
 
-
 interface BasketProductsItem {
   element: HTMLElement;
   countView: HTMLElement;
@@ -44,7 +43,7 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
     });
     addInnerComponent(basketProducts, emptyMessage);
   } else {
-    cartItems.forEach(item => {
+    cartItems.forEach((item) => {
       const productElement = createBasketProductsItem(item);
       addInnerComponent(basketProducts, productElement.element);
       setupQuantityHandlers(
@@ -92,22 +91,19 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
     classNames: ['basket-products-item__item-description-title'],
     textContent: productName,
   };
-  const basketItemDescriptionTitle = createElement(basketItemDescriptionTitleParams);
+  const basketItemDescriptionTitle = createElement(
+    basketItemDescriptionTitleParams,
+  );
 
   addInnerComponent(basketItemWrapper, basketItemImg);
   addInnerComponent(basketItemWrapper, basketItemDescriptionTitle);
-
-  const basketItemDescriptionContainerParams: ElementParams<'div'> = {
-    tag: 'div',
-    classNames: ['basket-products-item__item-description-container'],
-  };
-  const basketItemDescriptionContainer = createElement(basketItemDescriptionContainerParams);
-
   const basketItemCountContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['basket-products-item__item-count-container'],
   };
-  const basketItemCountContainer = createElement(basketItemCountContainerParams);
+  const basketItemCountContainer = createElement(
+    basketItemCountContainerParams,
+  );
 
   const basketItemCountSubtractParams: ElementParams<'div'> = {
     tag: 'div',
@@ -134,15 +130,19 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
     tag: 'div',
     classNames: ['item-count-container__price-container'],
   };
-  const basketItemPriceContainer = createElement(basketItemPriceContainerParams);
+  const basketItemPriceContainer = createElement(
+    basketItemPriceContainerParams,
+  );
 
- const unitPrice = formatPrice(item.price.value.centAmount / 100);
- const totalPrice = formatPrice((item.price.value.centAmount * item.quantity) / 100);
+  const unitPrice = formatPrice(item.price.value.centAmount / 100);
+  const totalPrice = formatPrice(
+    (item.price.value.centAmount * item.quantity) / 100,
+  );
 
   const basketItemUnitPriceParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['item-count-container__unit-price'],
-    textContent: `${unitPrice}`,
+    textContent: `Price: ${unitPrice}`,
   };
   const basketItemUnitPrice = createElement(basketItemUnitPriceParams);
 
@@ -157,7 +157,7 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
   addInnerComponent(basketItemPriceContainer, basketItemTotalPrice);
 
   const removeIcon = createRemoveIcon('basket-products');
-    removeIcon.addEventListener('click', async () => {
+  removeIcon.addEventListener('click', async () => {
     const success = await removeItemFromCart(item.id);
     if (success) {
       basketProductsItem.remove();
@@ -165,13 +165,12 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
   });
 
   addInnerComponent(basketProductsItem, basketItemWrapper);
-  addInnerComponent(basketProductsItem, basketItemDescriptionContainer);
   addInnerComponent(basketProductsItem, basketItemCountContainer);
   addInnerComponent(basketItemCountContainer, basketItemCountSubtract);
   addInnerComponent(basketItemCountContainer, basketItemCountView);
   addInnerComponent(basketItemCountContainer, basketItemCountAdd);
-  addInnerComponent(basketItemCountContainer, basketItemPriceContainer);
-  addInnerComponent(basketItemCountContainer, removeIcon);
+  addInnerComponent(basketProductsItem, basketItemPriceContainer);
+  addInnerComponent(basketProductsItem, removeIcon);
 
   return {
     element: basketProductsItem,
