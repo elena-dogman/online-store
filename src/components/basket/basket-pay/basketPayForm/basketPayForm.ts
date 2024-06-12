@@ -1,13 +1,20 @@
+import { Cart } from '@commercetools/platform-sdk';
+import { getActiveCart } from '../../../../api/apiService';
 import {
   ElementParams,
   addInnerComponent,
   createElement,
 } from '../../../../utils/general/baseComponent';
 import { createInput } from '../../../../utils/general/createInput';
+import { getTotalPrice } from '../getTotalPrice';
 import createBasketPayInformation from './basketPayInformation';
 import { getActiveCart, applyPromoCode } from '../../../../api/apiService';
 
-export default async function createBasketPayForm(): Promise<HTMLElement> {
+
+
+const cart = await getActiveCart();
+const totalPrice = getTotalPrice(cart as Cart);
+export default function createBasketPayForm(): HTMLElement {
   const basketPayFormPapams: ElementParams<'form'> = {
     tag: 'form',
     classNames: ['basket-pay__basket-form'],
@@ -55,10 +62,7 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
 
   addInnerComponent(basketDiscountLabel, basketDiscountInput);
   addInnerComponent(basketDiscountLabel, basketApplyButton);
-  addInnerComponent(basketDiscountLabel, errorSpan);
-  addInnerComponent(basketDiscountLabel, successSpan);
-
-  const basketPayInfContainer = createBasketPayInformation();
+  const basketPayInfContainer = createBasketPayInformation(totalPrice);
   const basketPayButtonPapams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['basket-form__submit-button'],

@@ -46,6 +46,7 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
     cartItems.forEach((item) => {
       const productElement = createBasketProductsItem(item);
       addInnerComponent(basketProducts, productElement.element);
+      const price = getDiscountedPrice(item) / 100;
       setupQuantityHandlers(
         productElement.countView,
         productElement.totalPriceElement,
@@ -53,12 +54,18 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
         productElement.countAdd,
         item.id,
         item.quantity,
-        item.price.value.centAmount / 100,
+        price,
       );
     });
   }
 
   return basketProducts;
+}
+
+function getDiscountedPrice(item: LineItem): number {
+  return item.totalPrice
+    ? item.totalPrice.centAmount
+    : item.price.value.centAmount;
 }
 
 function createBasketProductsItem(item: LineItem): BasketProductsItem {
@@ -134,9 +141,9 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
     basketItemPriceContainerParams,
   );
 
-  const unitPrice = formatPrice(item.price.value.centAmount / 100);
+  const unitPrice = formatPrice(getDiscountedPrice(item) / 100);
   const totalPrice = formatPrice(
-    (item.price.value.centAmount * item.quantity) / 100,
+    (getDiscountedPrice(item) * item.quantity) / 100,
   );
 
   const basketItemUnitPriceParams: ElementParams<'div'> = {

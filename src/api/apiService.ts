@@ -28,7 +28,7 @@ import {
   LineItem,
   CartChangeLineItemQuantityAction,
   CartRemoveLineItemAction,
-  DiscountCodePagedQueryResponse,
+  CartDraft,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/general/eventEmitter';
@@ -629,34 +629,70 @@ export const getUserApiRoot = (): ByProjectKeyRequestBuilder => {
   return anonymousApiRoot;
 };
 
+export async function getOrCreateCart(api: ByProjectKeyRequestBuilder): Promise<string | null> {
+  const isAnonymous = !localStorage.getItem('token');
+
+  if (!isAnonymous) {
+    try {
+      const activeCartResponse: ClientResponse<Cart> = await api.me().activeCart().get().execute();
+      if (activeCartResponse.body && activeCartResponse.body.id) {
+        return activeCartResponse.body.id;
+      }
+    } catch (error) {
+      console.error('Error fetching active cart:', error);
+    }
+  }
+
+  try {
+    const cartListResponse: ClientResponse<{ results: Cart[] }> = await api.me().carts().get().execute();
+    if (cartListResponse.body.results.length > 0) {
+      return cartListResponse.body.results[0].id;
+    } else {
+      const cartDraft: CartDraft = {
+        currency: 'USD',
+      };
+      const newCartResponse: ClientResponse<Cart> = await api.me().carts().post({ body: cartDraft }).execute();
+      if (newCartResponse.body && newCartResponse.body.id) {
+        return newCartResponse.body.id;
+      }
+    }
+  } catch (creationError) {
+    console.error('Error creating or fetching cart:', creationError);
+  }
+
+  return null;
+}
+
 export async function addToCart(
   productId: string,
   variantId: number,
   quantity: number = 1,
 ): Promise<ClientResponse<Cart>> {
   const api = getUserApiRoot();
-  const cart = await getOrCreateCart(api);
+  const cartId = await getOrCreateCart(api);
+
+  if (!cartId) {
+    throw new Error('Failed to get or create cart');
+  }
+
+  const cartResponse = await getCartById(api, cartId);
+
+  if (!cartResponse.body) {
+    throw new Error('Failed to retrieve cart details');
+  }
+
   return addProductToCart(
     api,
-    cart.body.id,
-    cart.body.version,
+    cartResponse.body.id,
+    cartResponse.body.version,
     productId,
     variantId,
     quantity,
   );
 }
 
-async function getOrCreateCart(
-  api: ByProjectKeyRequestBuilder,
-): Promise<ClientResponse<Cart>> {
-  try {
-    return await api.me().activeCart().get().execute();
-  } catch (error) {
-    const cartDraft = {
-      currency: 'USD',
-    };
-    return await api.me().carts().post({ body: cartDraft }).execute();
-  }
+async function getCartById(api: ByProjectKeyRequestBuilder, cartId: string): Promise<ClientResponse<Cart>> {
+  return api.me().carts().withId({ ID: cartId }).get().execute();
 }
 
 async function addProductToCart(
@@ -692,6 +728,24 @@ async function addProductToCart(
     .execute();
 }
 
+export async function getActiveCart(): Promise<Cart | null> {
+  const api = getUserApiRoot();
+  const cartId = await getOrCreateCart(api);
+
+  if (!cartId) {
+    console.error('Failed to get or create cart');
+    return null;
+  }
+
+  try {
+    const response = await getCartById(api, cartId);
+    return response.body;
+  } catch (error) {
+    console.error('Error fetching cart by ID:', error);
+    return null;
+  }
+}
+
 export async function fetchCartItems(): Promise<LineItem[]> {
   const api = getUserApiRoot();
   const response: ClientResponse<Cart> = await api
@@ -702,17 +756,25 @@ export async function fetchCartItems(): Promise<LineItem[]> {
   return response.body.lineItems;
 }
 
-export async function updateQuantity(
-  lineItemId: string,
-  quantity: number,
-): Promise<LineItem | null> {
+async function recalculateCart(cartId: string, cartVersion: number): Promise<ClientResponse<Cart>> {
+  const api = getUserApiRoot();
+  const cartUpdate: CartUpdate = {
+    version: cartVersion,
+    actions: [
+      {
+        action: 'recalculate',
+        updateProductData: true,
+      },
+    ],
+  };
+
+  return api.carts().withId({ ID: cartId }).post({ body: cartUpdate }).execute();
+}
+
+export async function updateQuantity(lineItemId: string, quantity: number): Promise<LineItem | null> {
   const api = getUserApiRoot();
   try {
-    const cartResponse: ClientResponse<Cart> = await api
-      .me()
-      .activeCart()
-      .get()
-      .execute();
+    const cartResponse = await api.me().activeCart().get().execute()
     const cart = cartResponse.body;
 
     const updateAction: CartChangeLineItemQuantityAction = {
@@ -726,22 +788,10 @@ export async function updateQuantity(
       actions: [updateAction],
     };
 
-    const updatedCart: ClientResponse<Cart> = await api
-      .carts()
-      .withId({ ID: cart.id })
-      .post({
-        body: cartUpdate,
-      })
-      .execute();
+    const updatedCart = await api.carts().withId({ ID: cart.id }).post({ body: cartUpdate }).execute();
 
-    const updatedLineItem = updatedCart.body.lineItems.find(
-      (item) => item.id === lineItemId,
-    );
-    if (!updatedLineItem) {
-      return null;
-    }
-
-    return updatedLineItem;
+    await recalculateCart(updatedCart.body.id, updatedCart.body.version);
+    return updatedCart.body.lineItems.find(item => item.id === lineItemId) || null;
   } catch (error) {
     console.error('Error updating cart item quantity:', error);
     return null;
@@ -751,32 +801,27 @@ export async function updateQuantity(
 export async function removeItemFromCart(itemId: string): Promise<boolean> {
   const api = getUserApiRoot();
   try {
-    const cart = await api.me().activeCart().get().execute();
+    const cartResponse = await api.me().activeCart().get().execute();
+    const cart = cartResponse.body;
 
-    if (cart.body) {
-      const cartId = cart.body.id;
-      const cartVersion = cart.body.version;
+    const cartUpdate: CartUpdate = {
+      version: cart.version,
+      actions: [{
+        action: 'removeLineItem',
+        lineItemId: itemId,
+      } as CartRemoveLineItemAction],
+    };
 
-      const cartUpdate: CartUpdate = {
-        version: cartVersion,
-        actions: [
-          {
-            action: 'removeLineItem',
-            lineItemId: itemId,
-          } as CartRemoveLineItemAction,
-        ],
-      };
+    const updatedCart = await api.carts().withId({ ID: cart.id }).post({ body: cartUpdate }).execute();
 
-      await api
-        .carts()
-        .withId({ ID: cartId })
-        .post({ body: cartUpdate })
-        .execute();
-      return true;
-    }
+    await recalculateCart(updatedCart.body.id, updatedCart.body.version);
+
+    return true;
   } catch (error) {
     console.error('Error removing item from cart:', error);
+    return false;
   }
+}
 
   return false;
 }
@@ -823,3 +868,4 @@ export async function applyPromoCode(
     return error as BadRequest;
   }
 }
+

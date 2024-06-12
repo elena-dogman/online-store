@@ -1,5 +1,6 @@
 import { updateQuantity } from '../../../api/apiService';
 import { formatPrice } from '../../../utils/general/price-formatter';
+import { fetchAndPrintTotalPrice } from '../basket-pay/getTotalPrice';
 
 export function setupQuantityHandlers(
   countView: HTMLElement,
@@ -18,6 +19,9 @@ export function setupQuantityHandlers(
       currentCount = updatedItem.quantity;
       countView.textContent = updatedItem.quantity.toString();
       totalPriceElement.textContent = `Total: ${formatPrice(price * updatedItem.quantity)}`;
+
+      const totalPrice = await fetchAndPrintTotalPrice();
+      updateTotalPriceUI(totalPrice);
     }
   };
 
@@ -30,4 +34,16 @@ export function setupQuantityHandlers(
   countAdd.addEventListener('click', () => {
     updateItemQuantity(currentCount + 1);
   });
+}
+
+function updateTotalPriceUI(totalPrice: number): void {
+  const totalPriceElement = document.querySelector('.basket-inf-container__total-price');
+  if (totalPriceElement) {
+    totalPriceElement.textContent = `$${(totalPrice / 100).toFixed(2)}`;
+  }
+
+  const subtotalPriceElement = document.querySelector('.basket-inf-container__subtotal-price');
+  if (subtotalPriceElement) {
+    subtotalPriceElement.textContent = `$${(totalPrice / 100).toFixed(2)}`;
+  }
 }
