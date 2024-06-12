@@ -774,7 +774,7 @@ async function recalculateCart(cartId: string, cartVersion: number): Promise<Cli
 export async function updateQuantity(lineItemId: string, quantity: number): Promise<LineItem | null> {
   const api = getUserApiRoot();
   try {
-    const cartResponse = await api.me().activeCart().get().execute();
+    const cartResponse = await api.me().activeCart().get().execute()
     const cart = cartResponse.body;
 
     const updateAction: CartChangeLineItemQuantityAction = {
@@ -791,7 +791,6 @@ export async function updateQuantity(lineItemId: string, quantity: number): Prom
     const updatedCart = await api.carts().withId({ ID: cart.id }).post({ body: cartUpdate }).execute();
 
     await recalculateCart(updatedCart.body.id, updatedCart.body.version);
-
     return updatedCart.body.lineItems.find(item => item.id === lineItemId) || null;
   } catch (error) {
     console.error('Error updating cart item quantity:', error);
@@ -823,3 +822,50 @@ export async function removeItemFromCart(itemId: string): Promise<boolean> {
     return false;
   }
 }
+
+  return false;
+}
+export async function getDiscountCodes(): Promise<
+  ClientResponse<DiscountCodePagedQueryResponse>
+> {
+  const api = getUserApiRoot();
+  try {
+    const discountCodes = await api.discountCodes().get().execute();
+    return discountCodes;
+  } catch (error) {
+    throw new Error("Couldn't get discount codes");
+  }
+}
+export async function getActiveCart(): Promise<Cart | null> {
+  try {
+    const api = getUserApiRoot();
+    const response = await api.me().activeCart().get().execute();
+    return response.body;
+  } catch (error) {
+    console.error('Error fetching active cart:', error);
+    return null;
+  }
+}
+
+interface BadRequest {
+  code: number;
+  message: string;
+  statusCode: number;
+}
+export async function applyPromoCode(
+  ID: string,
+  body: {
+    version: number;
+    actions: { action: 'addDiscountCode'; code: string }[];
+  },
+): Promise<ClientResponse<Cart> | BadRequest | null> {
+  try {
+    const api = getUserApiRoot();
+    const response = await api.carts().withId({ ID }).post({ body }).execute();
+    return response;
+  } catch (error) {
+    console.error('Error adding promocode', error);
+    return error as BadRequest;
+  }
+}
+

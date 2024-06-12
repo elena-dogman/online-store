@@ -20,7 +20,7 @@ export default async function buildBasketContainer(): Promise<HTMLElement> {
   addInnerComponent(basketContainer, basketWraper);
 
   const basketProducts = await createBasketProductsContainer();
-  const basketPay = createBasketPayContainer();
+  const basketPay = await createBasketPayContainer();
 
   addInnerComponent(basketWraper, basketProducts);
   addInnerComponent(basketWraper, basketPay);

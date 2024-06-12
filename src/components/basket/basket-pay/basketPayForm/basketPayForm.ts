@@ -8,11 +8,12 @@ import {
 import { createInput } from '../../../../utils/general/createInput';
 import { getTotalPrice } from '../getTotalPrice';
 import createBasketPayInformation from './basketPayInformation';
+import { getActiveCart, applyPromoCode } from '../../../../api/apiService';
+
 
 
 const cart = await getActiveCart();
 const totalPrice = getTotalPrice(cart as Cart);
-
 export default function createBasketPayForm(): HTMLElement {
   const basketPayFormPapams: ElementParams<'form'> = {
     tag: 'form',
@@ -42,9 +43,23 @@ export default function createBasketPayForm(): HTMLElement {
     tag: 'button',
     classNames: ['basket-form__apply-button'],
     textContent: 'Apply',
-    attributes: { disabled: '' },
   };
+
   const basketApplyButton = createElement(basketApplyButtonPapams);
+  const errorSpanParams: ElementParams<'span'> = {
+    tag: 'span',
+    classNames: ['error-message'],
+    textContent: '',
+  };
+  const errorSpan = createElement(errorSpanParams);
+
+  const successSpanParams: ElementParams<'span'> = {
+    tag: 'span',
+    classNames: ['success-message'],
+    textContent: '',
+  };
+  const successSpan = createElement(successSpanParams);
+
   addInnerComponent(basketDiscountLabel, basketDiscountInput);
   addInnerComponent(basketDiscountLabel, basketApplyButton);
   const basketPayInfContainer = createBasketPayInformation(totalPrice);
@@ -59,5 +74,54 @@ export default function createBasketPayForm(): HTMLElement {
   addInnerComponent(basketPayForm, basketDiscountLabel);
   addInnerComponent(basketPayForm, basketPayInfContainer);
   addInnerComponent(basketPayForm, basketPayButton);
+
+  basketApplyButton.addEventListener('click', async (event: Event) => {
+    event.preventDefault();
+    errorSpan.style.display = 'none';
+    successSpan.style.display = 'none';
+    const discountCode = basketDiscountInput.value.trim();
+    if (!discountCode) {
+      errorSpan.textContent = 'Please enter a promo code';
+      errorSpan.style.display = 'block';
+      return;
+    }
+    try {
+      const activeCart = await getActiveCart();
+      if (activeCart) {
+        const cartId = activeCart.id;
+        const cartVersion = activeCart.version;
+        if (activeCart.discountCodes && activeCart.discountCodes.length > 0) {
+          errorSpan.textContent = 'Only one promo code allowed!';
+          errorSpan.style.display = 'block';
+          return;
+        }
+        const body = {
+          version: cartVersion,
+          actions: [
+            {
+              action: 'addDiscountCode' as const,
+              code: discountCode,
+            },
+          ],
+        };
+        const response = await applyPromoCode(cartId, body);
+        console.log(response);
+        if (
+          response &&
+          'statusCode' in response &&
+          response.statusCode === 400
+        ) {
+          errorSpan.textContent = 'Invalid promo code';
+          errorSpan.style.display = 'block';
+        } else if (response && 'body' in response) {
+          successSpan.textContent = 'Promo code applied successfully';
+          successSpan.style.display = 'block';
+        }
+      }
+    } catch (error) {
+      throw new Error();
+    }
+  });
+
   return basketPayForm;
 }
