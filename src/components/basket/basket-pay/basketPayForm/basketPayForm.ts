@@ -1,3 +1,4 @@
+import { Cart } from '@commercetools/platform-sdk';
 import { getActiveCart } from '../../../../api/apiService';
 import {
   ElementParams,
@@ -10,7 +11,7 @@ import createBasketPayInformation from './basketPayInformation';
 
 
 const cart = await getActiveCart();
-const totalPrice = getTotalPrice(cart);
+const totalPrice = getTotalPrice(cart as Cart);
 
 export default function createBasketPayForm(): HTMLElement {
   const basketPayFormPapams: ElementParams<'form'> = {
