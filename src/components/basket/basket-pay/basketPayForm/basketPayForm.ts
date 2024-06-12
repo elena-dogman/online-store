@@ -1,10 +1,16 @@
+import { getActiveCart } from '../../../../api/apiService';
 import {
   ElementParams,
   addInnerComponent,
   createElement,
 } from '../../../../utils/general/baseComponent';
 import { createInput } from '../../../../utils/general/createInput';
+import { getTotalPrice } from '../getTotalPrice';
 import createBasketPayInformation from './basketPayInformation';
+
+
+const cart = await getActiveCart();
+const totalPrice = getTotalPrice(cart);
 
 export default function createBasketPayForm(): HTMLElement {
   const basketPayFormPapams: ElementParams<'form'> = {
@@ -40,7 +46,7 @@ export default function createBasketPayForm(): HTMLElement {
   const basketApplyButton = createElement(basketApplyButtonPapams);
   addInnerComponent(basketDiscountLabel, basketDiscountInput);
   addInnerComponent(basketDiscountLabel, basketApplyButton);
-  const basketPayInfContainer = createBasketPayInformation();
+  const basketPayInfContainer = createBasketPayInformation(totalPrice);
   const basketPayButtonPapams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['basket-form__submit-button'],

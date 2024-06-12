@@ -628,33 +628,72 @@ export const getUserApiRoot = (): ByProjectKeyRequestBuilder => {
   return anonymousApiRoot;
 };
 
+export async function getOrCreateCart(
+  api: ByProjectKeyRequestBuilder,
+): Promise<string | null> {
+  try {
+    const activeCartResponse: ClientResponse<Cart> = await api.me().activeCart().get().execute();
+    if (activeCartResponse.body && activeCartResponse.body.id) {
+      return activeCartResponse.body.id;
+    }
+  } catch (error) {
+    console.error('Error fetching active cart:', error);
+  }
+  const cartDraft = {
+    currency: 'USD',
+  };
+  try {
+    const newCartResponse: ClientResponse<Cart> = await api.me().carts().post({ body: cartDraft }).execute();
+    if (newCartResponse.body && newCartResponse.body.id) {
+      return newCartResponse.body.id;
+    }
+  } catch (creationError) {
+    console.error('Error creating new cart:', creationError);
+  }
+
+  return null;
+}
+
+async function getCartById(api: ByProjectKeyRequestBuilder, cartId: string): Promise<ClientResponse<Cart>> {
+  return api.me().carts().withId({ ID: cartId }).get().execute();
+}
+
 export async function addToCart(
   productId: string,
   variantId: number,
   quantity: number = 1,
 ): Promise<ClientResponse<Cart>> {
   const api = getUserApiRoot();
-  const cart = await getOrCreateCart(api);
+  const cartId = await getOrCreateCart(api);
+
+  if (!cartId) {
+    throw new Error('Failed to get or create cart');
+  }
+
+  const cartResponse = await getCartById(api, cartId);
+
+  if (!cartResponse.body) {
+    throw new Error('Failed to retrieve cart details');
+  }
+
   return addProductToCart(
     api,
-    cart.body.id,
-    cart.body.version,
+    cartResponse.body.id,
+    cartResponse.body.version,
     productId,
     variantId,
     quantity,
   );
 }
 
-async function getOrCreateCart(
-  api: ByProjectKeyRequestBuilder,
-): Promise<ClientResponse<Cart>> {
+export async function getActiveCart(): Promise<Cart | null> {
   try {
-    return await api.me().activeCart().get().execute();
+    const api = getUserApiRoot();
+    const response = await api.me().activeCart().get().execute();
+    return response.body;
   } catch (error) {
-    const cartDraft = {
-      currency: 'USD',
-    };
-    return await api.me().carts().post({ body: cartDraft }).execute();
+    console.error('Error fetching active cart:', error);
+    return null;
   }
 }
 
