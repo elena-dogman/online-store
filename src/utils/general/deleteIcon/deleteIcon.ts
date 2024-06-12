@@ -9,19 +9,15 @@ export default function createRemoveIcon(type: string): HTMLElement {
     tag: 'div',
     classNames: [`${type}__remove-icon-container`, 'remove-icon-container'],
   };
+  const removeIconParams: ElementParams<'img'> = {
+    tag: 'img',
+    classNames: ['remove_icon'],
+    attributes: {
+      src: '../assets/basket/bin.png',
+    },
+  };
+  const removeIcon = createElement(removeIconParams);
   const removeIconContainer = createElement(removeIconContainerParams);
-  const removeIconLeftLineParams: ElementParams<'div'> = {
-    tag: 'div',
-    classNames: [`${type}__remove-icon-left-line`, 'remove-icon-left-line'],
-  };
-  const removeIconRightLineParams: ElementParams<'div'> = {
-    tag: 'div',
-    classNames: [`${type}__remove-icon-right-line`, 'remove-icon-right-line'],
-  };
-  const removeIconLeftLine = createElement(removeIconLeftLineParams);
-  const removeIconRightLine = createElement(removeIconRightLineParams);
-
-  addInnerComponent(removeIconContainer, removeIconLeftLine);
-  addInnerComponent(removeIconContainer, removeIconRightLine);
+  addInnerComponent(removeIconContainer, removeIcon);
   return removeIconContainer;
 }

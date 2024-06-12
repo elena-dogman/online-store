@@ -36,13 +36,17 @@ export function setupQuantityHandlers(
   });
 }
 
-function updateTotalPriceUI(totalPrice: number): void {
-  const totalPriceElement = document.querySelector('.basket-inf-container__total-price');
+export function updateTotalPriceUI(totalPrice: number): void {
+  const totalPriceElement = document.querySelector(
+    '.basket-inf-container__total-price',
+  );
   if (totalPriceElement) {
     totalPriceElement.textContent = `$${(totalPrice / 100).toFixed(2)}`;
   }
 
-  const subtotalPriceElement = document.querySelector('.basket-inf-container__subtotal-price');
+  const subtotalPriceElement = document.querySelector(
+    '.basket-inf-container__subtotal-price',
+  );
   if (subtotalPriceElement) {
     subtotalPriceElement.textContent = `$${(totalPrice / 100).toFixed(2)}`;
   }

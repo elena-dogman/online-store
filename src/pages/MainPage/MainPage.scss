@@ -296,7 +296,7 @@
   bottom: 0;
   border-radius: inherit;
   animation: glow 2s infinite alternate;
-  z-index: -1; /* Для размещения под кнопкой */
+  z-index: -1;
 }
 
 .promo-codes-btn::after {
@@ -308,7 +308,7 @@
   bottom: 0;
   border-radius: inherit;
   animation: glow 2s infinite alternate;
-  z-index: -1; /* Для размещения под кнопкой */
+  z-index: -1;
 }
 .promo-modal-container {
   display: none;
@@ -319,7 +319,7 @@
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5); /* Затемненный фон */
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {

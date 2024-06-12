@@ -1,18 +1,5 @@
-.remove-icon-contain{
-    display: flex;
-    position: relative;
-}
-.remove-icon-left-line{
-    position: absolute;
-    width: 12px;
-    height: 1px;
-    background-color: black;
-    transform: rotateZ(45deg);
-}
-.remove-icon-right-line{
-position: absolute;
-width: 12px;
-height: 1px;
-transform: rotateZ(-45deg);
-background-color: black;
+.remove-icon-contain {
+  display: flex;
+  position: relative;
+  align-items: center;
 }
