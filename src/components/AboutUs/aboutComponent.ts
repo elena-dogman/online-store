@@ -455,9 +455,14 @@ export function aboutComponent(): HTMLElement {
     bgAnimation.style.opacity = '1';
   }
 
-  window.addEventListener('load', () => {
+  function makeAboutContainerVisible(): void {
     aboutContainer.classList.add('visible');
-  });
+  }
+  if (document.readyState === 'complete') {
+    setTimeout(makeAboutContainerVisible, 0);
+  } else {
+    window.addEventListener('load', makeAboutContainerVisible);
+  }
 
   window.addEventListener('scroll', () => {
     const teamMemberContainers = document.querySelectorAll('.team-member');
