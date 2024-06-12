@@ -630,12 +630,18 @@ export const getUserApiRoot = (): ByProjectKeyRequestBuilder => {
   return anonymousApiRoot;
 };
 
-export async function getOrCreateCart(api: ByProjectKeyRequestBuilder): Promise<string | null> {
+export async function getOrCreateCart(
+  api: ByProjectKeyRequestBuilder,
+): Promise<string | null> {
   const isAnonymous = !localStorage.getItem('token');
 
   if (!isAnonymous) {
     try {
-      const activeCartResponse: ClientResponse<Cart> = await api.me().activeCart().get().execute();
+      const activeCartResponse: ClientResponse<Cart> = await api
+        .me()
+        .activeCart()
+        .get()
+        .execute();
       if (activeCartResponse.body && activeCartResponse.body.id) {
         return activeCartResponse.body.id;
       }
@@ -645,14 +651,22 @@ export async function getOrCreateCart(api: ByProjectKeyRequestBuilder): Promise<
   }
 
   try {
-    const cartListResponse: ClientResponse<{ results: Cart[] }> = await api.me().carts().get().execute();
+    const cartListResponse: ClientResponse<{ results: Cart[] }> = await api
+      .me()
+      .carts()
+      .get()
+      .execute();
     if (cartListResponse.body.results.length > 0) {
       return cartListResponse.body.results[0].id;
     } else {
       const cartDraft: CartDraft = {
         currency: 'USD',
       };
-      const newCartResponse: ClientResponse<Cart> = await api.me().carts().post({ body: cartDraft }).execute();
+      const newCartResponse: ClientResponse<Cart> = await api
+        .me()
+        .carts()
+        .post({ body: cartDraft })
+        .execute();
       if (newCartResponse.body && newCartResponse.body.id) {
         return newCartResponse.body.id;
       }
@@ -692,7 +706,10 @@ export async function addToCart(
   );
 }
 
-async function getCartById(api: ByProjectKeyRequestBuilder, cartId: string): Promise<ClientResponse<Cart>> {
+async function getCartById(
+  api: ByProjectKeyRequestBuilder,
+  cartId: string,
+): Promise<ClientResponse<Cart>> {
   return api.me().carts().withId({ ID: cartId }).get().execute();
 }
 
@@ -757,7 +774,10 @@ export async function fetchCartItems(): Promise<LineItem[]> {
   return response.body.lineItems;
 }
 
-async function recalculateCart(cartId: string, cartVersion: number): Promise<ClientResponse<Cart>> {
+async function recalculateCart(
+  cartId: string,
+  cartVersion: number,
+): Promise<ClientResponse<Cart>> {
   const api = getUserApiRoot();
   const cartUpdate: CartUpdate = {
     version: cartVersion,
@@ -769,10 +789,17 @@ async function recalculateCart(cartId: string, cartVersion: number): Promise<Cli
     ],
   };
 
-  return api.carts().withId({ ID: cartId }).post({ body: cartUpdate }).execute();
+  return api
+    .carts()
+    .withId({ ID: cartId })
+    .post({ body: cartUpdate })
+    .execute();
 }
 
-export async function updateQuantity(lineItemId: string, quantity: number): Promise<LineItem | null> {
+export async function updateQuantity(
+  lineItemId: string,
+  quantity: number,
+): Promise<LineItem | null> {
   const api = getUserApiRoot();
   try {
     const cartResponse = await api.me().activeCart().get().execute();
@@ -789,10 +816,16 @@ export async function updateQuantity(lineItemId: string, quantity: number): Prom
       actions: [updateAction],
     };
 
-    const updatedCart = await api.carts().withId({ ID: cart.id }).post({ body: cartUpdate }).execute();
+    const updatedCart = await api
+      .carts()
+      .withId({ ID: cart.id })
+      .post({ body: cartUpdate })
+      .execute();
 
     await recalculateCart(updatedCart.body.id, updatedCart.body.version);
-    return updatedCart.body.lineItems.find(item => item.id === lineItemId) || null;
+    return (
+      updatedCart.body.lineItems.find((item) => item.id === lineItemId) || null
+    );
   } catch (error) {
     console.error('Error updating cart item quantity:', error);
     return null;
@@ -807,13 +840,19 @@ export async function removeItemFromCart(itemId: string): Promise<boolean> {
 
     const cartUpdate: CartUpdate = {
       version: cart.version,
-      actions: [{
-        action: 'removeLineItem',
-        lineItemId: itemId,
-      } as CartRemoveLineItemAction],
+      actions: [
+        {
+          action: 'removeLineItem',
+          lineItemId: itemId,
+        } as CartRemoveLineItemAction,
+      ],
     };
 
-    const updatedCart = await api.carts().withId({ ID: cart.id }).post({ body: cartUpdate }).execute();
+    const updatedCart = await api
+      .carts()
+      .withId({ ID: cart.id })
+      .post({ body: cartUpdate })
+      .execute();
 
     await recalculateCart(updatedCart.body.id, updatedCart.body.version);
 

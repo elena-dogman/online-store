@@ -59,6 +59,9 @@ export default function createBasketPayForm(): HTMLElement {
 
   addInnerComponent(basketDiscountLabel, basketDiscountInput);
   addInnerComponent(basketDiscountLabel, basketApplyButton);
+  addInnerComponent(basketDiscountLabel, errorSpan);
+  addInnerComponent(basketDiscountLabel, successSpan);
+
   const basketPayInfContainer = createBasketPayInformation(totalPrice);
   const basketPayButtonPapams: ElementParams<'button'> = {
     tag: 'button',
