@@ -29,6 +29,7 @@ import {
   CartChangeLineItemQuantityAction,
   CartRemoveLineItemAction,
   CartDraft,
+  DiscountCodePagedQueryResponse,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/general/eventEmitter';
@@ -774,7 +775,7 @@ async function recalculateCart(cartId: string, cartVersion: number): Promise<Cli
 export async function updateQuantity(lineItemId: string, quantity: number): Promise<LineItem | null> {
   const api = getUserApiRoot();
   try {
-    const cartResponse = await api.me().activeCart().get().execute()
+    const cartResponse = await api.me().activeCart().get().execute();
     const cart = cartResponse.body;
 
     const updateAction: CartChangeLineItemQuantityAction = {
@@ -823,8 +824,6 @@ export async function removeItemFromCart(itemId: string): Promise<boolean> {
   }
 }
 
-  return false;
-}
 export async function getDiscountCodes(): Promise<
   ClientResponse<DiscountCodePagedQueryResponse>
 > {
@@ -834,16 +833,6 @@ export async function getDiscountCodes(): Promise<
     return discountCodes;
   } catch (error) {
     throw new Error("Couldn't get discount codes");
-  }
-}
-export async function getActiveCart(): Promise<Cart | null> {
-  try {
-    const api = getUserApiRoot();
-    const response = await api.me().activeCart().get().execute();
-    return response.body;
-  } catch (error) {
-    console.error('Error fetching active cart:', error);
-    return null;
   }
 }
 

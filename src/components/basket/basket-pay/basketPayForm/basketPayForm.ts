@@ -1,5 +1,5 @@
 import { Cart } from '@commercetools/platform-sdk';
-import { getActiveCart } from '../../../../api/apiService';
+import { getActiveCart, applyPromoCode } from '../../../../api/apiService';
 import {
   ElementParams,
   addInnerComponent,
@@ -8,7 +8,6 @@ import {
 import { createInput } from '../../../../utils/general/createInput';
 import { getTotalPrice } from '../getTotalPrice';
 import createBasketPayInformation from './basketPayInformation';
-import { getActiveCart, applyPromoCode } from '../../../../api/apiService';
 
 
 
