@@ -23,8 +23,10 @@ export async function fetchAndPrintTotalPrice(): Promise<number> {
   }
 }
 
-fetchAndPrintTotalPrice().then(totalPrice => {
-  console.log(`Total Price (then): ${totalPrice}`);
-}).catch(error => {
-  console.error('Error in fetchAndPrintTotalPrice:', error);
-});
+fetchAndPrintTotalPrice()
+  .then((totalPrice) => {
+    console.log(`Total Price (then): ${totalPrice}`);
+  })
+  .catch((error) => {
+    console.error('Error in fetchAndPrintTotalPrice:', error);
+  });

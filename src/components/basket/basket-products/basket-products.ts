@@ -6,8 +6,9 @@ import {
 import createRemoveIcon from '../../../utils/general/deleteIcon/deleteIcon';
 import { fetchCartItems, removeItemFromCart } from '../../../api/apiService';
 import { LineItem } from '@commercetools/platform-sdk';
-import { setupQuantityHandlers } from './quantity-handlers';
+import { setupQuantityHandlers, updateTotalPriceUI } from './quantity-handlers';
 import { formatPrice } from '../../../utils/general/price-formatter';
+import { showToast } from '../../toast/toast';
 
 interface BasketProductsItem {
   element: HTMLElement;
@@ -164,10 +165,24 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
   addInnerComponent(basketItemPriceContainer, basketItemTotalPrice);
 
   const removeIcon = createRemoveIcon('basket-products');
+
   removeIcon.addEventListener('click', async () => {
     const success = await removeItemFromCart(item.id);
     if (success) {
       basketProductsItem.remove();
+      try {
+        const newItems = await fetchCartItems();
+        let newTotalPrice = 0;
+        newItems.forEach((price) => {
+          if (price.totalPrice && price.totalPrice.centAmount) {
+            newTotalPrice += price.totalPrice.centAmount;
+          }
+        });
+
+        updateTotalPriceUI(newTotalPrice);
+      } catch (error) {
+        showToast(error);
+      }
     }
   });
 
