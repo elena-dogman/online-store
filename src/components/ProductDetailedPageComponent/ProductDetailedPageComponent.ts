@@ -10,6 +10,7 @@ import { generateBreadcrumbLinks } from '../breadcrumbs/breadcrumbs';
 import { isCustomError } from '../../utils/general/customError';
 import { showToast } from '../toast/toast';
 import { RoutePaths } from '../../types/types';
+import { addToCart } from '../../api/apiService';
 export function productDetailedPageComponent(ID: string): HTMLElement {
   const detailedProductContainerParams: ElementParams<'section'> = {
     tag: 'section',
@@ -206,20 +207,76 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
           },
         };
         const errorMessage = createElement(errorMessageParams);
-        const addToCartBtn = createElement(addToCartBtnParams);
+        const addToCartBtn = createElement(
+          addToCartBtnParams,
+        ) as HTMLButtonElement;
         const iconsContainerParams: ElementParams<'div'> = {
           tag: 'div',
           classNames: ['icons_container'],
         };
-        addToCartBtn.addEventListener('click', () => {
+        addToCartBtn.addEventListener('click', async () => {
           const selectedSizeButton = sizeContainer.querySelector(
             '.size_button.__selected',
           );
+          const selectedSize = Number(selectedSizeButton?.innerHTML);
+
           if (!selectedSizeButton) {
+            errorMessage.textContent = 'Please select a size.';
             errorMessage.style.visibility = 'visible';
+            return;
           } else {
             errorMessage.style.visibility = 'hidden';
-            ///zdes' budet dobavlenie v korzinu po idee
+          }
+          addToCartBtn.disabled = true;
+          errorMessage.textContent = 'Adding to cart, please wait...';
+          errorMessage.style.visibility = 'visible';
+
+          try {
+            const variants = response.body.masterData.current.masterVariant;
+            let variantId = null;
+
+            if (
+              variants.attributes?.some(
+                (attr) =>
+                  attr.name === 'size' && attr.value.includes(selectedSize),
+              )
+            ) {
+              variantId = variants.id;
+            }
+            if (!variantId && response.body.masterData.current.variants) {
+              for (const variant of response.body.masterData.current.variants) {
+                if (variant.attributes) {
+                  if (
+                    variant.attributes.some(
+                      (attr) =>
+                        attr.name === 'size' &&
+                        attr.value.includes(selectedSize),
+                    )
+                  ) {
+                    variantId = variant.id;
+                    break;
+                  }
+                }
+              }
+            }
+            if (variantId) {
+              const cartResponse = await addToCart(response.body.id, variantId);
+
+              if (
+                cartResponse.statusCode === 200 ||
+                cartResponse.statusCode === 201
+              ) {
+                errorMessage.textContent = 'Successfully added!';
+                addToCartBtn.disabled = false;
+                errorMessage.style.visibility = 'hidden';
+              } else {
+                throw new Error('Could not add to cart.');
+              }
+            } else {
+              throw new Error('Size not found in any variant');
+            }
+          } catch (error) {
+            showToast(error);
           }
         });
         const deliveryIconContainer = createIconContainer(
