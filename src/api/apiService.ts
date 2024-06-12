@@ -857,4 +857,3 @@ export async function applyPromoCode(
     return error as BadRequest;
   }
 }
-

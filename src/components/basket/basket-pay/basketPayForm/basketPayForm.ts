@@ -9,8 +9,6 @@ import { createInput } from '../../../../utils/general/createInput';
 import { getTotalPrice } from '../getTotalPrice';
 import createBasketPayInformation from './basketPayInformation';
 
-
-
 const cart = await getActiveCart();
 const totalPrice = getTotalPrice(cart as Cart);
 export default function createBasketPayForm(): HTMLElement {
