@@ -1,5 +1,6 @@
 import { updateQuantity } from '../../../api/apiService';
 import { formatPrice } from '../../../utils/general/price-formatter';
+import { updateBasketCounter } from '../../header/header';
 import { fetchAndPrintTotalPrice } from '../basket-pay/getTotalPrice';
 
 export function setupQuantityHandlers(
@@ -19,7 +20,6 @@ export function setupQuantityHandlers(
       currentCount = updatedItem.quantity;
       countView.textContent = updatedItem.quantity.toString();
       totalPriceElement.textContent = `Total: ${formatPrice(price * updatedItem.quantity)}`;
-
       const totalPrice = await fetchAndPrintTotalPrice();
       updateTotalPriceUI(totalPrice);
     }
@@ -29,10 +29,16 @@ export function setupQuantityHandlers(
     if (currentCount > 1) {
       updateItemQuantity(currentCount - 1);
     }
+    if (currentCount - 1 === 1) {
+      countSubtract.classList.add('hidden');
+    }
+    updateBasketCounter();
   });
 
   countAdd.addEventListener('click', () => {
     updateItemQuantity(currentCount + 1);
+    countSubtract.classList.remove('hidden');
+    updateBasketCounter();
   });
 }
 

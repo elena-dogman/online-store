@@ -9,6 +9,7 @@ import { LineItem } from '@commercetools/platform-sdk';
 import { setupQuantityHandlers, updateTotalPriceUI } from './quantity-handlers';
 import { formatPrice } from '../../../utils/general/price-formatter';
 import { showToast } from '../../toast/toast';
+import { updateBasketCounter } from '../../header/header';
 
 interface BasketProductsItem {
   element: HTMLElement;
@@ -47,7 +48,7 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
     cartItems.forEach((item) => {
       const productElement = createBasketProductsItem(item);
       addInnerComponent(basketProducts, productElement.element);
-      const price = getDiscountedPrice(item) / 100;
+      const price = getSingleItemPrice(item) / 100;
       setupQuantityHandlers(
         productElement.countView,
         productElement.totalPriceElement,
@@ -57,6 +58,11 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
         item.quantity,
         price,
       );
+      if (item.quantity === 1) {
+        productElement.countSubtract.classList.add('hidden');
+      } else {
+        productElement.countSubtract.classList.remove('hidden');
+      }
     });
   }
 
@@ -68,7 +74,11 @@ function getDiscountedPrice(item: LineItem): number {
     ? item.totalPrice.centAmount
     : item.price.value.centAmount;
 }
-
+function getSingleItemPrice(item: LineItem): number {
+  return item.price.discounted?.value.centAmount
+    ? item.price.discounted?.value.centAmount
+    : item.price.value.centAmount;
+}
 function createBasketProductsItem(item: LineItem): BasketProductsItem {
   const basketProductsItemParams: ElementParams<'div'> = {
     tag: 'div',
@@ -142,10 +152,8 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
     basketItemPriceContainerParams,
   );
 
-  const unitPrice = formatPrice(getDiscountedPrice(item) / 100);
-  const totalPrice = formatPrice(
-    (getDiscountedPrice(item) * item.quantity) / 100,
-  );
+  const unitPrice = formatPrice(getSingleItemPrice(item) / 100);
+  const totalPrice = formatPrice(getDiscountedPrice(item) / 100);
 
   const basketItemUnitPriceParams: ElementParams<'div'> = {
     tag: 'div',
@@ -172,6 +180,7 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
       basketProductsItem.remove();
       try {
         const newItems = await fetchCartItems();
+        updateBasketCounter();
         let newTotalPrice = 0;
         newItems.forEach((price) => {
           if (price.totalPrice && price.totalPrice.centAmount) {

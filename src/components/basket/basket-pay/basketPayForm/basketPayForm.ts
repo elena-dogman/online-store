@@ -10,6 +10,7 @@ import { getTotalPrice } from '../getTotalPrice';
 import createBasketPayInformation from './basketPayInformation';
 
 const cart = await getActiveCart();
+console.log(cart);
 const totalPrice = getTotalPrice(cart as Cart);
 export default function createBasketPayForm(): HTMLElement {
   const basketPayFormPapams: ElementParams<'form'> = {
