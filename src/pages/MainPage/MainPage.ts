@@ -7,8 +7,7 @@ import { createHeader } from '../../components/header/header';
 import { createHero } from '../../components/mainPageComponents/hero';
 import { createSaleCards } from '../../components/mainPageComponents/sale';
 import { createReviewCards } from '../../components/mainPageComponents/reviews';
-
-export function createMainPage(): HTMLElement {
+export async function createMainPage(): Promise<HTMLElement> {
   const pageContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['main-page-wrapper'],
@@ -18,7 +17,7 @@ export function createMainPage(): HTMLElement {
   const header = createHeader();
   addInnerComponent(container, header);
 
-  const hero = createHero();
+  const hero = await createHero();
   addInnerComponent(container, hero);
 
   const saleHeadingParams: ElementParams<'div'> = {
@@ -42,6 +41,5 @@ export function createMainPage(): HTMLElement {
 
   const reviewCards = createReviewCards();
   addInnerComponent(container, reviewCards);
-
   return container;
 }
