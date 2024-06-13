@@ -21,7 +21,7 @@ export default function createBasketPayInformation(totalPrice: number, subtotal:
   };
   const basketPayInfSubtotalDescription = createElement(basketPayInfSubtotalDescriptionParams);
 
-  const formattedSubtotalPrice = formatPrice(subtotal / 10);
+  const formattedSubtotalPrice = formatPrice(subtotal / 100);
 
   const basketPayInfSubtotalPriceParams: ElementParams<'div'> = {
     tag: 'div',

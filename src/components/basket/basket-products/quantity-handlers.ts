@@ -63,6 +63,6 @@ export function updateSubtotalPriceUI(subtotalPrice: number): void {
     '.basket-inf-container__subtotal-price',
   );
   if (subtotalPriceElement) {
-    subtotalPriceElement.textContent = `$${(subtotalPrice / 10).toFixed(2)}`;
+    subtotalPriceElement.textContent = `$${(subtotalPrice / 100).toFixed(2)}`;
   }
 }
