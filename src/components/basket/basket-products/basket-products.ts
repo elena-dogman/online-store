@@ -49,14 +49,17 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
       'basket-products__basket-products-item',
       true,
     ) as HTMLElement[];
-    console.log(items);
     const onlineItems = await fetchCartItems();
-    await onlineItems.reduce(async (previousPromise, cartItem, i) => {
-      await previousPromise;
-      await removeItemFromCart(cartItem.id);
-      updateBasketCounter();
-      items[i].remove();
-    }, Promise.resolve());
+    try {
+      await onlineItems.reduce(async (previousPromise, cartItem, i) => {
+        await previousPromise;
+        await removeItemFromCart(cartItem.id);
+        updateBasketCounter();
+        items[i].remove();
+      }, Promise.resolve());
+    } catch (error) {
+      showToast(error);
+    }
     const emptyMessage = createEmptyMessage();
     addInnerComponent(basketProducts, emptyMessage);
     updateTotalPriceUI(0);
@@ -210,7 +213,6 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
     if (success) {
       basketProductsItem.remove();
       if (items.length === 1) {
-        console.log(1);
         const emptyMessage = createEmptyMessage();
         addInnerComponent(parent, emptyMessage);
       }
