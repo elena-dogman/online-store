@@ -54,6 +54,7 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
     await onlineItems.reduce(async (previousPromise, cartItem, i) => {
       await previousPromise;
       await removeItemFromCart(cartItem.id);
+      updateBasketCounter();
       items[i].remove();
     }, Promise.resolve());
     const emptyMessage = createEmptyMessage();
