@@ -182,6 +182,7 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
 
   const unitPrice = formatPrice(getSingleItemPrice(item) / 100);
   const totalItemPrice = formatPrice(getDiscountedPrice(item) / 100);
+
   const basketItemUnitPriceParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['item-count-container__unit-price'],
