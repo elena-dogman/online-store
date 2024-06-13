@@ -862,7 +862,19 @@ export async function removeItemFromCart(itemId: string): Promise<boolean> {
   }
 }
 
-export async function getDiscountCodes(): Promise<Record<string, string>> {
+export async function getDiscountCodes(): Promise<
+  ClientResponse<DiscountCodePagedQueryResponse>
+> {
+  const api = getUserApiRoot();
+  try {
+    const discountCodes = await api.discountCodes().get().execute();
+    return discountCodes;
+  } catch (error) {
+    throw new Error("Couldn't get discount codes");
+  }
+}
+
+export async function getMappedDiscountCodes(): Promise<Record<string, string>> {
   const api = getUserApiRoot();
   try {
     const response: ClientResponse<DiscountCodePagedQueryResponse> = await api.discountCodes().get().execute();

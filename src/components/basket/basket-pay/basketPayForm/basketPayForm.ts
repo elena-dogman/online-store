@@ -1,5 +1,5 @@
 import { Cart } from '@commercetools/platform-sdk';
-import { getActiveCart, applyPromoCode, getDiscountCodes } from '../../../../api/apiService';
+import { getActiveCart, applyPromoCode, getMappedDiscountCodes } from '../../../../api/apiService';
 import { ElementParams, addInnerComponent, createElement } from '../../../../utils/general/baseComponent';
 import { createInput } from '../../../../utils/general/createInput';
 import createBasketPayInformation from './basketPayInformation';
@@ -68,7 +68,7 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
 
       subtotal = cart.discountOnTotalPrice?.discountedAmount?.centAmount ?? totalPrice;
 
-      const discountCodesMap = await getDiscountCodes();
+      const discountCodesMap = await getMappedDiscountCodes();
       const discountCodeId = cart.discountCodes?.[0]?.discountCode?.id;
 
       if (discountCodeId) {
@@ -126,7 +126,7 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
         if (response && 'body' in response) {
           successSpan.textContent = 'Promo code applied successfully';
           successSpan.style.display = 'block';
-          
+
           const appliedDiscountCode = discountCode;
           const discountCodeElement = basketPayInfContainer.querySelector('.basket-inf-container__discount-code') as HTMLElement;
           if (discountCodeElement) {
