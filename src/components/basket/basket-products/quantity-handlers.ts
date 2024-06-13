@@ -26,7 +26,9 @@ export function setupQuantityHandlers(
 
       const activeCart = await getActiveCart();
       if (activeCart) {
-        const subtotal = activeCart.discountOnTotalPrice?.discountedAmount?.centAmount ?? totalPrice;
+        const subtotal =
+          activeCart.discountOnTotalPrice?.discountedAmount?.centAmount ??
+          totalPrice;
         updateSubtotalPriceUI(subtotal);
       }
     }
@@ -63,6 +65,6 @@ export function updateSubtotalPriceUI(subtotalPrice: number): void {
     '.basket-inf-container__subtotal-price',
   );
   if (subtotalPriceElement) {
-    subtotalPriceElement.textContent = `$${(subtotalPrice / 10).toFixed(2)}`;
+    subtotalPriceElement.textContent = `$${(subtotalPrice / 100).toFixed(2)}`;
   }
 }
