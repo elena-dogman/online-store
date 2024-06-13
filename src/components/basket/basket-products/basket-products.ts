@@ -10,6 +10,8 @@ import { setupQuantityHandlers, updateTotalPriceUI } from './quantity-handlers';
 import { formatPrice } from '../../../utils/general/price-formatter';
 import { showToast } from '../../toast/toast';
 import { updateBasketCounter } from '../../header/header';
+import { findElement } from '../../../utils/general/searchElem';
+import { createEmptyMessage } from '../../../utils/general/createEmptyMessage';
 
 interface BasketProductsItem {
   element: HTMLElement;
@@ -34,15 +36,40 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
   const basketProductsTitle = createElement(basketProductsTitleParams);
 
   const cartItems = await fetchCartItems();
+  const clearBasketBtnParams: ElementParams<'button'> = {
+    tag: 'button',
+    classNames: ['basket-products__clear-basket-btn'],
+    textContent: 'CLEAR BASKET',
+  };
+  const clearBasketBtn = createElement(clearBasketBtnParams);
+  clearBasketBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const items = findElement(
+      basketProducts,
+      'basket-products__basket-products-item',
+      true,
+    ) as HTMLElement[];
+    const onlineItems = await fetchCartItems();
+    try {
+      await onlineItems.reduce(async (previousPromise, cartItem, i) => {
+        await previousPromise;
+        await removeItemFromCart(cartItem.id);
+        updateBasketCounter();
+        items[i].remove();
+      }, Promise.resolve());
+    } catch (error) {
+      showToast(error);
+    }
+    const emptyMessage = createEmptyMessage();
+    addInnerComponent(basketProducts, emptyMessage);
+    updateTotalPriceUI(0);
+  });
 
   addInnerComponent(basketProducts, basketProductsTitle);
+  addInnerComponent(basketProducts, clearBasketBtn);
 
   if (cartItems.length === 0) {
-    const emptyMessage = createElement({
-      tag: 'p',
-      classNames: ['basket-products__empty-message'],
-      textContent: 'Your cart is empty.',
-    });
+    const emptyMessage = createEmptyMessage();
     addInnerComponent(basketProducts, emptyMessage);
   } else {
     cartItems.forEach((item) => {
@@ -176,8 +203,19 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
 
   removeIcon.addEventListener('click', async () => {
     const success = await removeItemFromCart(item.id);
+    const parent = basketProductsItem.parentElement as HTMLElement;
+    const items = findElement(
+      parent,
+      'basket-products__basket-products-item',
+      true,
+    ) as HTMLElement[];
+
     if (success) {
       basketProductsItem.remove();
+      if (items.length === 1) {
+        const emptyMessage = createEmptyMessage();
+        addInnerComponent(parent, emptyMessage);
+      }
       try {
         const newItems = await fetchCartItems();
         updateBasketCounter();
@@ -187,7 +225,6 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
             newTotalPrice += price.totalPrice.centAmount;
           }
         });
-
         updateTotalPriceUI(newTotalPrice);
       } catch (error) {
         showToast(error);
