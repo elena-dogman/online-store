@@ -4,6 +4,8 @@ import { ElementParams, addInnerComponent, createElement } from '../../../../uti
 import { createInput } from '../../../../utils/general/createInput';
 import createBasketPayInformation from './basketPayInformation';
 import { getTotalPrice } from '../getTotalPrice';
+import { updateSubtotalPriceUI } from '../../basket-products/quantity-handlers';
+
 
 export default async function createBasketPayForm(): Promise<HTMLElement> {
   const basketPayFormParams: ElementParams<'form'> = {
@@ -124,6 +126,7 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
         if (response && 'body' in response) {
           successSpan.textContent = 'Promo code applied successfully';
           successSpan.style.display = 'block';
+          
           const appliedDiscountCode = discountCode;
           const discountCodeElement = basketPayInfContainer.querySelector('.basket-inf-container__discount-code') as HTMLElement;
           if (discountCodeElement) {
@@ -136,6 +139,15 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
             });
             addInnerComponent(basketPayInfContainer, newDiscountCodeElement);
           }
+
+          const updatedCart = await getActiveCart();
+          if (updatedCart) {
+            const updatedSubtotal = updatedCart.discountOnTotalPrice?.discountedAmount?.centAmount ?? totalPrice;
+            updateSubtotalPriceUI(updatedSubtotal);
+          }
+        } else if (response && 'statusCode' in response && response.statusCode === 400) {
+          errorSpan.textContent = 'Invalid promo code';
+          errorSpan.style.display = 'block';
         }
       }
     } catch (error) {
