@@ -73,7 +73,6 @@ export function fillObjectWithUniqueKeys(
     }
     if (key.includes('')) {
       obj[key] = false;
-      console.log(e);
     }
     if (!obj[key]) {
       obj[key] = value;

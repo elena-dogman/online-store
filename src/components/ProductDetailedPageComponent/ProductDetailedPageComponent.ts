@@ -11,6 +11,7 @@ import { isCustomError } from '../../utils/general/customError';
 import { showToast } from '../toast/toast';
 import { RoutePaths } from '../../types/types';
 import { addToCart } from '../../api/apiService';
+import { updateBasketCounter } from '../header/header';
 export function productDetailedPageComponent(ID: string): HTMLElement {
   const detailedProductContainerParams: ElementParams<'section'> = {
     tag: 'section',
@@ -266,6 +267,7 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
                 cartResponse.statusCode === 200 ||
                 cartResponse.statusCode === 201
               ) {
+                updateBasketCounter();
                 errorMessage.textContent = 'Successfully added!';
                 addToCartBtn.disabled = false;
                 errorMessage.style.visibility = 'hidden';

@@ -264,52 +264,7 @@
     }
   }
 }
-@keyframes glow {
-  0% {
-    box-shadow:
-      0 0 10px rgba(255, 0, 0, 0.7),
-      0 0 20px rgba(255, 165, 0, 0.7),
-      0 0 30px rgba(255, 255, 0, 0.7),
-      0 0 40px rgba(0, 128, 0, 0.7),
-      0 0 50px rgba(0, 0, 255, 0.7),
-      0 0 60px rgba(75, 0, 130, 0.7),
-      0 0 70px rgba(238, 130, 238, 0.7);
-  }
-  100% {
-    box-shadow:
-      0 0 20px rgba(255, 0, 0, 0.7),
-      0 0 30px rgba(255, 165, 0, 0.7),
-      0 0 40px rgba(255, 255, 0, 0.7),
-      0 0 50px rgba(0, 128, 0, 0.7),
-      0 0 60px rgba(0, 0, 255, 0.7),
-      0 0 70px rgba(75, 0, 130, 0.7),
-      0 0 80px rgba(238, 130, 238, 0.7);
-  }
-}
 
-.promo-codes-btn::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: inherit;
-  animation: glow 2s infinite alternate;
-  z-index: -1;
-}
-
-.promo-codes-btn::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: inherit;
-  animation: glow 2s infinite alternate;
-  z-index: -1;
-}
 .promo-modal-container {
   display: none;
   position: fixed;

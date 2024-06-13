@@ -4,7 +4,11 @@ import {
   ElementParams,
 } from '../../utils/general/baseComponent';
 import { appEvents } from '../../utils/general/eventEmitter';
-import { checkLoginStatus, logoutUser } from '../../api/apiService';
+import {
+  checkLoginStatus,
+  getActiveCart,
+  logoutUser,
+} from '../../api/apiService';
 import { createSearchComponent } from './search/productSearch';
 import router from '../../router/router';
 import { RoutePaths } from '../../types/types';
@@ -47,27 +51,27 @@ export function createHeader(): HTMLElement {
     classNames: ['header__nav-links'],
   });
 
-    const homeLink = createElement({
-      tag: 'a',
-      attributes: { href: RoutePaths.Main },
-      classNames: ['header__nav-link'],
-      textContent: 'Home',
-    });
-    const catalogLink = createElement({
-      tag: 'a',
-      attributes: { href: RoutePaths.Catalog },
-      classNames: ['header__nav-link'],
-      textContent: 'Catalog',
-    });
-    const aboutLink = createElement({
-      tag: 'a',
-      attributes: { href: RoutePaths.AboutUs },
-      classNames: ['header__nav-link'],
-      textContent: 'About us',
-    });
-    addInnerComponent(navContainer, homeLink);
-    addInnerComponent(navContainer, catalogLink);
-    addInnerComponent(navContainer, aboutLink);
+  const homeLink = createElement({
+    tag: 'a',
+    attributes: { href: RoutePaths.Main },
+    classNames: ['header__nav-link'],
+    textContent: 'Home',
+  });
+  const catalogLink = createElement({
+    tag: 'a',
+    attributes: { href: RoutePaths.Catalog },
+    classNames: ['header__nav-link'],
+    textContent: 'Catalog',
+  });
+  const aboutLink = createElement({
+    tag: 'a',
+    attributes: { href: RoutePaths.AboutUs },
+    classNames: ['header__nav-link'],
+    textContent: 'About us',
+  });
+  addInnerComponent(navContainer, homeLink);
+  addInnerComponent(navContainer, catalogLink);
+  addInnerComponent(navContainer, aboutLink);
 
   const rightContainer = createElement({
     tag: 'div',
@@ -90,6 +94,11 @@ export function createHeader(): HTMLElement {
       alt: 'Basket',
     },
   });
+  const basketCounter = createElement({
+    tag: 'span',
+    classNames: ['basket__counter'],
+  });
+  basketCounter.style.display = 'none';
   const userIcon = createElement({
     tag: 'a',
     classNames: ['header__icon', 'header__user-icon'],
@@ -111,6 +120,7 @@ export function createHeader(): HTMLElement {
   };
   addInnerComponent(iconsContainer, basketIcon);
   addInnerComponent(iconsContainer, userIcon);
+  addInnerComponent(basketIcon, basketCounter);
   addInnerComponent(basketIcon, basketImage);
   addInnerComponent(userIcon, userImage);
   addInnerComponent(iconsContainer, basketIcon);
@@ -223,6 +233,37 @@ export function createHeader(): HTMLElement {
 
   appEvents.on('login', () => updateAuthButton(true));
   appEvents.on('logout', () => updateAuthButton(false));
-
+  updateBasketCounter();
   return header;
+}
+
+export async function updateBasketCounter(): Promise<void> {
+  try {
+    const activeCart = await getActiveCart();
+    let totalQuantity = 0;
+    if (activeCart) {
+      activeCart.lineItems.forEach((item) => {
+        totalQuantity += item.quantity;
+      });
+    }
+    setTimeout(() => {
+      const basketCounter = document.querySelector(
+        '.basket__counter',
+      ) as HTMLElement;
+      if (basketCounter) {
+        if (totalQuantity > 0) {
+          basketCounter.style.display = 'flex';
+          if (totalQuantity > 99) {
+            basketCounter.textContent = '99+';
+          } else {
+            basketCounter.textContent = totalQuantity.toString();
+          }
+        } else {
+          basketCounter.style.display = 'none';
+        }
+      }
+    }, 500);
+  } catch (error) {
+    throw new Error();
+  }
 }

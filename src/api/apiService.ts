@@ -685,7 +685,6 @@ export async function addToCart(
 ): Promise<ClientResponse<Cart>> {
   const api = getUserApiRoot();
   const cartId = await getOrCreateCart(api);
-
   if (!cartId) {
     throw new Error('Failed to get or create cart');
   }
