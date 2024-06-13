@@ -27,7 +27,7 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
     classNames: ['basket-wrapper__basket-products'],
   };
   const basketProducts = createElement(basketProductsParams);
-
+  const emptyMessage = createEmptyMessage();
   const basketProductsTitleParams: ElementParams<'h2'> = {
     tag: 'h2',
     classNames: ['basket-products__products-title'],
@@ -60,7 +60,7 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
     } catch (error) {
       showToast(error);
     }
-    const emptyMessage = createEmptyMessage();
+
     addInnerComponent(basketProducts, emptyMessage);
     updateTotalPriceUI(0);
   });
@@ -69,11 +69,10 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
   addInnerComponent(basketProducts, clearBasketBtn);
 
   if (cartItems.length === 0) {
-    const emptyMessage = createEmptyMessage();
     addInnerComponent(basketProducts, emptyMessage);
   } else {
     cartItems.forEach((item) => {
-      const productElement = createBasketProductsItem(item);
+      const productElement = createBasketProductsItem(item, emptyMessage);
       addInnerComponent(basketProducts, productElement.element);
       const price = getSingleItemPrice(item) / 100;
       setupQuantityHandlers(
@@ -106,7 +105,10 @@ function getSingleItemPrice(item: LineItem): number {
     ? item.price.discounted?.value.centAmount
     : item.price.value.centAmount;
 }
-function createBasketProductsItem(item: LineItem): BasketProductsItem {
+function createBasketProductsItem(
+  item: LineItem,
+  emptyMessage: HTMLElement,
+): BasketProductsItem {
   const basketProductsItemParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['basket-products__basket-products-item'],
@@ -200,7 +202,6 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
   addInnerComponent(basketItemPriceContainer, basketItemTotalPrice);
 
   const removeIcon = createRemoveIcon('basket-products');
-
   removeIcon.addEventListener('click', async () => {
     const success = await removeItemFromCart(item.id);
     const parent = basketProductsItem.parentElement as HTMLElement;
@@ -213,7 +214,6 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
     if (success) {
       basketProductsItem.remove();
       if (items.length === 1) {
-        const emptyMessage = createEmptyMessage();
         addInnerComponent(parent, emptyMessage);
       }
       try {
