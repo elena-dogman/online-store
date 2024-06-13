@@ -4,9 +4,9 @@ import {
   createElement,
 } from '../../../utils/general/baseComponent';
 import createRemoveIcon from '../../../utils/general/deleteIcon/deleteIcon';
-import { fetchCartItems, removeItemFromCart } from '../../../api/apiService';
+import { fetchCartItems, removeItemFromCart, getActiveCart } from '../../../api/apiService';
 import { LineItem } from '@commercetools/platform-sdk';
-import { setupQuantityHandlers, updateTotalPriceUI } from './quantity-handlers';
+import { setupQuantityHandlers, updateTotalPriceUI, updateSubtotalPriceUI } from './quantity-handlers';
 import { formatPrice } from '../../../utils/general/price-formatter';
 import { showToast } from '../../toast/toast';
 import { updateBasketCounter } from '../../header/header';
@@ -63,6 +63,7 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
 
     addInnerComponent(basketProducts, emptyMessage);
     updateTotalPriceUI(0);
+    updateSubtotalPriceUI(0);
   });
 
   addInnerComponent(basketProducts, basketProductsTitle);
@@ -182,7 +183,7 @@ function createBasketProductsItem(
   );
 
   const unitPrice = formatPrice(getSingleItemPrice(item) / 100);
-  const totalPrice = formatPrice(getDiscountedPrice(item) / 100);
+  const totalItemPrice = formatPrice(getDiscountedPrice(item) / 100);
 
   const basketItemUnitPriceParams: ElementParams<'div'> = {
     tag: 'div',
@@ -194,7 +195,7 @@ function createBasketProductsItem(
   const basketItemTotalPriceParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['item-count-container__total-price'],
-    textContent: `Total: ${totalPrice}`,
+    textContent: `Total: ${totalItemPrice}`,
   };
   const basketItemTotalPrice = createElement(basketItemTotalPriceParams);
 
@@ -217,15 +218,16 @@ function createBasketProductsItem(
         addInnerComponent(parent, emptyMessage);
       }
       try {
-        const newItems = await fetchCartItems();
         updateBasketCounter();
-        let newTotalPrice = 0;
-        newItems.forEach((price) => {
-          if (price.totalPrice && price.totalPrice.centAmount) {
-            newTotalPrice += price.totalPrice.centAmount;
-          }
-        });
-        updateTotalPriceUI(newTotalPrice);
+
+        const activeCart = await getActiveCart();
+        if (activeCart) {
+          const totalCartPrice = activeCart.totalPrice?.centAmount ?? 0;
+          const subtotal = activeCart.discountOnTotalPrice?.discountedAmount?.centAmount ?? totalCartPrice;
+
+          updateTotalPriceUI(totalCartPrice);
+          updateSubtotalPriceUI(subtotal);
+        }
       } catch (error) {
         showToast(error);
       }
