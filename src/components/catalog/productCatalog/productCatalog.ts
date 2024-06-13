@@ -100,38 +100,36 @@ export function createProductCatalog(
       callbacks: [
         {
           eventType: 'click',
-          callback: (event: Event): void => {
-            const mouseEvent = event as MouseEvent;
-            (async (): Promise<void> => {
-              mouseEvent.stopPropagation();
+          callback: async (event: Event): Promise<void> => {
+            event.stopPropagation();
+            const button = event.currentTarget as HTMLButtonElement;
 
-              const button = mouseEvent.currentTarget as HTMLButtonElement;
-              button.disabled = true;
-              button.textContent = 'Adding...';
+            button.disabled = true;
+            button.textContent = 'Adding...';
+            try {
+              const productId = product.id;
+              const variantId = product.masterVariant.id;
+              await addToCart(productId, variantId, 1);
               updateBasketCounter();
-              try {
-                const productId = product.id;
-                const variantId = product.masterVariant.id;
-                await addToCart(productId, variantId, 1);
 
-                button.textContent = 'Added!';
-                setTimeout(() => {
-                  button.textContent = 'ADD TO CART';
-                  button.disabled = false;
-                }, 2000);
-              } catch (error) {
-                console.error('Error adding to cart:', error);
-                button.textContent = 'Error!';
-                setTimeout(() => {
-                  button.textContent = 'ADD TO CART';
-                  button.disabled = false;
-                }, 2000);
-              }
-            })();
+              button.textContent = 'IN CART';
+              setTimeout(() => {
+                button.textContent = 'ADD TO CART';
+                button.disabled = false;
+              }, 2000);
+            } catch (error) {
+              console.error('Error adding to cart:', error);
+              button.textContent = 'Error!';
+              setTimeout(() => {
+                button.textContent = 'ADD TO CART';
+                button.disabled = false;
+              }, 2000);
+            }
           },
         },
       ],
     });
+
     addInnerComponent(contentWrapper, imageElement);
     addInnerComponent(contentWrapper, nameElement);
     addInnerComponent(contentWrapper, descriptionElement);
