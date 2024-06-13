@@ -1,5 +1,5 @@
 import { Cart } from '@commercetools/platform-sdk';
-import { getActiveCart, applyPromoCode } from '../../../../api/apiService';
+import { getActiveCart, applyPromoCode, getDiscountCodes } from '../../../../api/apiService';
 import {
   ElementParams,
   addInnerComponent,
@@ -9,21 +9,19 @@ import { createInput } from '../../../../utils/general/createInput';
 import { getTotalPrice } from '../getTotalPrice';
 import createBasketPayInformation from './basketPayInformation';
 
-const cart = await getActiveCart();
-console.log(cart);
-const totalPrice = getTotalPrice(cart as Cart);
-export default function createBasketPayForm(): HTMLElement {
-  const basketPayFormPapams: ElementParams<'form'> = {
+export default async function createBasketPayForm(): Promise<HTMLElement> {
+  const basketPayFormParams: ElementParams<'form'> = {
     tag: 'form',
     classNames: ['basket-pay__basket-form'],
   };
-  const basketPayForm = createElement(basketPayFormPapams);
-  const basketPayTitlePapams: ElementParams<'h2'> = {
+  const basketPayForm = createElement(basketPayFormParams);
+
+  const basketPayTitleParams: ElementParams<'h2'> = {
     tag: 'h2',
     classNames: ['basket-pay__basket-title'],
     textContent: 'Order Summary',
   };
-  const basketPayTitle = createElement(basketPayTitlePapams);
+  const basketPayTitle = createElement(basketPayTitleParams);
 
   const [basketDiscountLabel, basketDiscountInput] = createInput(
     'basket-discount',
@@ -37,20 +35,18 @@ export default function createBasketPayForm(): HTMLElement {
   basketDiscountInput.setAttribute('placeholder', 'Code');
   basketDiscountLabel.textContent = 'Discount code / Promo code';
 
-  const basketApplyButtonPapams: ElementParams<'button'> = {
+  const basketApplyButtonParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['basket-form__apply-button'],
     textContent: 'Apply',
   };
-
-  const basketApplyButton = createElement(basketApplyButtonPapams);
+  const basketApplyButton = createElement(basketApplyButtonParams);
   const errorSpanParams: ElementParams<'span'> = {
     tag: 'span',
     classNames: ['error-message'],
     textContent: '',
   };
   const errorSpan = createElement(errorSpanParams);
-
   const successSpanParams: ElementParams<'span'> = {
     tag: 'span',
     classNames: ['success-message'],
@@ -63,14 +59,34 @@ export default function createBasketPayForm(): HTMLElement {
   addInnerComponent(basketDiscountLabel, errorSpan);
   addInnerComponent(basketDiscountLabel, successSpan);
 
-  const basketPayInfContainer = createBasketPayInformation(totalPrice);
-  const basketPayButtonPapams: ElementParams<'button'> = {
+  let discountCodeText = '';
+  let totalPrice = 0;
+
+  try {
+    const cart = await getActiveCart();
+    if (cart) {
+      totalPrice = getTotalPrice(cart as Cart);
+
+      const discountCodesMap = await getDiscountCodes();
+      const discountCodeId = cart.discountCodes?.[0]?.discountCode?.id;
+
+      if (discountCodeId) {
+        discountCodeText = discountCodesMap[discountCodeId] ?? 'Unknown promo code';
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching cart data:', error);
+  }
+
+  const basketPayInfContainer = createBasketPayInformation(totalPrice, discountCodeText);
+  const basketPayButtonParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['basket-form__submit-button'],
     textContent: 'Checkout',
     attributes: { disabled: '' },
   };
-  const basketPayButton = createElement(basketPayButtonPapams);
+  const basketPayButton = createElement(basketPayButtonParams);
+
   addInnerComponent(basketPayForm, basketPayTitle);
   addInnerComponent(basketPayForm, basketDiscountLabel);
   addInnerComponent(basketPayForm, basketPayInfContainer);
@@ -106,21 +122,27 @@ export default function createBasketPayForm(): HTMLElement {
           ],
         };
         const response = await applyPromoCode(cartId, body);
-        console.log(response);
-        if (
-          response &&
-          'statusCode' in response &&
-          response.statusCode === 400
-        ) {
-          errorSpan.textContent = 'Invalid promo code';
-          errorSpan.style.display = 'block';
-        } else if (response && 'body' in response) {
+        if (response && 'body' in response) {
           successSpan.textContent = 'Promo code applied successfully';
           successSpan.style.display = 'block';
+          const appliedDiscountCode = discountCode;
+          const discountCodeElement = basketPayInfContainer.querySelector('.basket-inf-container__discount-code') as HTMLElement;
+          if (discountCodeElement) {
+            discountCodeElement.textContent = `Applied Promo Code: ${appliedDiscountCode}`;
+          } else {
+            const newDiscountCodeElement = createElement({
+              tag: 'div',
+              classNames: ['basket-inf-container__discount-code'],
+              textContent: `Applied Promo Code: ${appliedDiscountCode}`,
+            });
+            addInnerComponent(basketPayInfContainer, newDiscountCodeElement);
+          }
         }
       }
     } catch (error) {
-      throw new Error();
+      console.error('Error applying promo code:', error);
+      errorSpan.textContent = 'Failed to apply promo code';
+      errorSpan.style.display = 'block';
     }
   });
 
