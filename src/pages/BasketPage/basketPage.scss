@@ -136,6 +136,20 @@
 .item-count-container__count-subtract {
   opacity: 1;
 }
+.basket-products__clear-basket-btn{
+  position: absolute;
+  top: 25px;
+  transform: translateY(-50%);
+  right: 10px;
+  color: $text-color-base;
+  background-color: white;
+  padding: 8px;
+  border: 1px solid $text-color-base;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  z-index: 2;
+  cursor: pointer;
+}
 .basket-products__remove-icon-container {
   position: relative;
   height: 40px;

@@ -34,8 +34,14 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
   const basketProductsTitle = createElement(basketProductsTitleParams);
 
   const cartItems = await fetchCartItems();
-
+  const clearBasketBtnParams: ElementParams<'button'> = {
+    tag: 'button',
+    classNames: ['basket-products__clear-basket-btn'],
+    textContent: 'CLEAR BASKET',
+  };
+  const clearBasketBtn = createElement(clearBasketBtnParams);
   addInnerComponent(basketProducts, basketProductsTitle);
+  addInnerComponent(basketProducts, clearBasketBtn);
 
   if (cartItems.length === 0) {
     const emptyMessage = createElement({
