@@ -11,6 +11,7 @@ import { formatPrice } from '../../../utils/general/price-formatter';
 import { showToast } from '../../toast/toast';
 import { updateBasketCounter } from '../../header/header';
 import { findElement } from '../../../utils/general/searchElem';
+import { createEmptyMessage } from '../../../utils/general/createEmptyMessage';
 
 interface BasketProductsItem {
   element: HTMLElement;
@@ -55,16 +56,15 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
       await removeItemFromCart(cartItem.id);
       items[i].remove();
     }, Promise.resolve());
+    const emptyMessage = createEmptyMessage();
+    addInnerComponent(parent, emptyMessage);
   });
+
   addInnerComponent(basketProducts, basketProductsTitle);
   addInnerComponent(basketProducts, clearBasketBtn);
 
   if (cartItems.length === 0) {
-    const emptyMessage = createElement({
-      tag: 'p',
-      classNames: ['basket-products__empty-message'],
-      textContent: 'Your cart is empty.',
-    });
+    const emptyMessage = createEmptyMessage();
     addInnerComponent(basketProducts, emptyMessage);
   } else {
     cartItems.forEach((item) => {
@@ -204,16 +204,14 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
       'basket-products__basket-products-item',
       true,
     ) as HTMLElement[];
-    if (items.length === 0) {
-      const emptyMessage = createElement({
-        tag: 'p',
-        classNames: ['basket-products__empty-message'],
-        textContent: 'Your cart is empty.',
-      });
-      addInnerComponent(parent, emptyMessage);
-    }
+
     if (success) {
       basketProductsItem.remove();
+      if (items.length === 1) {
+        console.log(1);
+        const emptyMessage = createEmptyMessage();
+        addInnerComponent(parent, emptyMessage);
+      }
       try {
         const newItems = await fetchCartItems();
         updateBasketCounter();
@@ -223,7 +221,6 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
             newTotalPrice += price.totalPrice.centAmount;
           }
         });
-
         updateTotalPriceUI(newTotalPrice);
       } catch (error) {
         showToast(error);
