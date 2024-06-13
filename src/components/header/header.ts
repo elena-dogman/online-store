@@ -96,7 +96,7 @@ export function createHeader(): HTMLElement {
   });
   const basketCounter = createElement({
     tag: 'span',
-    classNames: ['basket__counter'],
+    classNames: ['header__basket-counter'],
   });
   basketCounter.style.display = 'none';
   const userIcon = createElement({
@@ -248,7 +248,7 @@ export async function updateBasketCounter(): Promise<void> {
     }
     setTimeout(() => {
       const basketCounter = document.querySelector(
-        '.basket__counter',
+        '.header__basket-counter',
       ) as HTMLElement;
       if (basketCounter) {
         if (totalQuantity > 0) {

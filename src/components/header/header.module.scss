@@ -51,17 +51,18 @@ header__about-us-link {
 .header__basket-icon {
   position: relative;
 }
-.basket__counter {
+.header__basket-counter{
   position: absolute;
-  top: 15px;
-  right: 20px;
-  width: 30px;
-  height: 20px;
+  bottom: 20px;
+  left: 20px;
+  width: 22px;
+  height: 22px;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
-  background: red;
+  font-size: $font-size-small;
+  background: #F34235;
   border-radius: 50%;
 }
 
