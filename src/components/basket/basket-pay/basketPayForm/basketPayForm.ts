@@ -1,13 +1,9 @@
 import { Cart } from '@commercetools/platform-sdk';
 import { getActiveCart, applyPromoCode, getDiscountCodes } from '../../../../api/apiService';
-import {
-  ElementParams,
-  addInnerComponent,
-  createElement,
-} from '../../../../utils/general/baseComponent';
+import { ElementParams, addInnerComponent, createElement } from '../../../../utils/general/baseComponent';
 import { createInput } from '../../../../utils/general/createInput';
-import { getTotalPrice } from '../getTotalPrice';
 import createBasketPayInformation from './basketPayInformation';
+import { getTotalPrice } from '../getTotalPrice';
 
 export default async function createBasketPayForm(): Promise<HTMLElement> {
   const basketPayFormParams: ElementParams<'form'> = {
@@ -61,11 +57,14 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
 
   let discountCodeText = '';
   let totalPrice = 0;
+  let subtotal = 0;
 
   try {
     const cart = await getActiveCart();
     if (cart) {
       totalPrice = getTotalPrice(cart as Cart);
+
+      subtotal = cart.discountOnTotalPrice?.discountedAmount?.centAmount ?? totalPrice;
 
       const discountCodesMap = await getDiscountCodes();
       const discountCodeId = cart.discountCodes?.[0]?.discountCode?.id;
@@ -78,7 +77,7 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
     console.error('Error fetching cart data:', error);
   }
 
-  const basketPayInfContainer = createBasketPayInformation(totalPrice, discountCodeText);
+  const basketPayInfContainer = createBasketPayInformation(totalPrice, subtotal, discountCodeText);
   const basketPayButtonParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['basket-form__submit-button'],

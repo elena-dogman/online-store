@@ -1,4 +1,4 @@
-import { updateQuantity } from '../../../api/apiService';
+import { updateQuantity, getActiveCart } from '../../../api/apiService';
 import { formatPrice } from '../../../utils/general/price-formatter';
 import { updateBasketCounter } from '../../header/header';
 import { fetchAndPrintTotalPrice } from '../basket-pay/getTotalPrice';
@@ -20,8 +20,15 @@ export function setupQuantityHandlers(
       currentCount = updatedItem.quantity;
       countView.textContent = updatedItem.quantity.toString();
       totalPriceElement.textContent = `Total: ${formatPrice(price * updatedItem.quantity)}`;
+
       const totalPrice = await fetchAndPrintTotalPrice();
       updateTotalPriceUI(totalPrice);
+
+      const activeCart = await getActiveCart();
+      if (activeCart) {
+        const subtotal = activeCart.discountOnTotalPrice?.discountedAmount?.centAmount ?? totalPrice;
+        updateSubtotalPriceUI(subtotal);
+      }
     }
   };
 
@@ -49,11 +56,13 @@ export function updateTotalPriceUI(totalPrice: number): void {
   if (totalPriceElement) {
     totalPriceElement.textContent = `$${(totalPrice / 100).toFixed(2)}`;
   }
+}
 
+export function updateSubtotalPriceUI(subtotalPrice: number): void {
   const subtotalPriceElement = document.querySelector(
     '.basket-inf-container__subtotal-price',
   );
   if (subtotalPriceElement) {
-    subtotalPriceElement.textContent = `$${(totalPrice / 100).toFixed(2)}`;
+    subtotalPriceElement.textContent = `$${(subtotalPrice / 10).toFixed(2)}`;
   }
 }

@@ -1,6 +1,7 @@
 import { createElement, ElementParams, addInnerComponent } from '../../../../utils/general/baseComponent';
+import { formatPrice } from '../../../../utils/general/price-formatter';
 
-export default function createBasketPayInformation(totalPrice: number, discountCodeText: string): HTMLElement {
+export default function createBasketPayInformation(totalPrice: number, subtotal: number, discountCodeText: string): HTMLElement {
   const basketPayInfContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['basket-pay__basket-inf-container'],
@@ -20,7 +21,7 @@ export default function createBasketPayInformation(totalPrice: number, discountC
   };
   const basketPayInfSubtotalDescription = createElement(basketPayInfSubtotalDescriptionParams);
 
-  const formattedSubtotalPrice = isNaN(totalPrice) ? '$0.00' : `$${(totalPrice / 100).toFixed(2)}`;
+  const formattedSubtotalPrice = formatPrice(subtotal / 10);
 
   const basketPayInfSubtotalPriceParams: ElementParams<'div'> = {
     tag: 'div',
@@ -31,32 +32,6 @@ export default function createBasketPayInformation(totalPrice: number, discountC
 
   addInnerComponent(basketPayInfSubtotalContainer, basketPayInfSubtotalDescription);
   addInnerComponent(basketPayInfSubtotalContainer, basketPayInfSubtotalPrice);
-
-  if (discountCodeText) {
-    const basketPayInfDiscountCodeParams: ElementParams<'div'> = {
-      tag: 'div',
-      classNames: ['basket-inf-container__discount-code'],
-    };
-    const basketPayInfDiscountCode = createElement(basketPayInfDiscountCodeParams);
-
-    const discountCodeLabelParams: ElementParams<'span'> = {
-      tag: 'span',
-      classNames: ['basket-inf-container__discount-code-label'],
-      textContent: 'Applied Promo Code: ',
-    };
-    const discountCodeLabel = createElement(discountCodeLabelParams);
-
-    const discountCodeTextElementParams: ElementParams<'em'> = {
-      tag: 'em',
-      classNames: ['basket-inf-container__discount-code-text'],
-      textContent: discountCodeText,
-    };
-    const discountCodeTextElement = createElement(discountCodeTextElementParams);
-
-    addInnerComponent(basketPayInfDiscountCode, discountCodeLabel);
-    addInnerComponent(basketPayInfDiscountCode, discountCodeTextElement);
-    addInnerComponent(basketPayInfSubtotalContainer, basketPayInfDiscountCode);
-  }
 
   const basketPayInfTotalContainerParams: ElementParams<'div'> = {
     tag: 'div',
@@ -71,7 +46,7 @@ export default function createBasketPayInformation(totalPrice: number, discountC
   };
   const basketPayInfTotalDescription = createElement(basketPayInfTotalDescriptionParams);
 
-  const formattedTotalPrice = isNaN(totalPrice) ? '$0.00' : `$${(totalPrice / 100).toFixed(2)}`;
+  const formattedTotalPrice = formatPrice(totalPrice / 100);
 
   const basketPayInfTotalPriceParams: ElementParams<'div'> = {
     tag: 'div',
@@ -82,6 +57,32 @@ export default function createBasketPayInformation(totalPrice: number, discountC
 
   addInnerComponent(basketPayInfTotalContainer, basketPayInfTotalDescription);
   addInnerComponent(basketPayInfTotalContainer, basketPayInfTotalPrice);
+
+  if (discountCodeText) {
+    const discountCodeContainerParams: ElementParams<'div'> = {
+      tag: 'div',
+      classNames: ['basket-inf-container__discount-code'],
+    };
+    const discountCodeContainer = createElement(discountCodeContainerParams);
+
+    const discountCodeDescriptionParams: ElementParams<'span'> = {
+      tag: 'span',
+      classNames: ['discount-code-description'],
+      textContent: 'Applied Promo Code: ',
+    };
+    const discountCodeDescription = createElement(discountCodeDescriptionParams);
+
+    const discountCodeNameParams: ElementParams<'span'> = {
+      tag: 'span',
+      classNames: ['discount-code-name'],
+      textContent: discountCodeText,
+    };
+    const discountCodeName = createElement(discountCodeNameParams);
+
+    addInnerComponent(discountCodeDescription, discountCodeName);
+    addInnerComponent(discountCodeContainer, discountCodeDescription);
+    addInnerComponent(basketPayInfContainer, discountCodeContainer);
+  }
 
   addInnerComponent(basketPayInfContainer, basketPayInfSubtotalContainer);
   addInnerComponent(basketPayInfContainer, basketPayInfTotalContainer);

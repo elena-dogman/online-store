@@ -200,6 +200,10 @@
 .basket-discount-input {
   height: 64px;
 }
+.discount-code-name {
+ font-style: italic;
+ font-weight: bold;
+}
 .basket-form__apply-button {
   position: absolute;
   top: 40%;
@@ -246,6 +250,10 @@
   display: none;
   color: red;
   margin-top: 5px;
+}
+.basket-inf-container__total-description,
+.basket-inf-container__total-price {
+  font-size: 22rem;
 }
 .basket-form__submit-button {
   position: relative;
