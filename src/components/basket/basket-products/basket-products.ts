@@ -44,20 +44,21 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
   const clearBasketBtn = createElement(clearBasketBtnParams);
   clearBasketBtn.addEventListener('click', async (e) => {
     e.preventDefault();
-    const element = e.target as HTMLElement;
-    const parent = element.parentElement as HTMLElement;
     const items = findElement(
-      parent,
+      basketProducts,
       'basket-products__basket-products-item',
       true,
     ) as HTMLElement[];
-    await cartItems.reduce(async (previousPromise, cartItem, i) => {
+    console.log(items);
+    const onlineItems = await fetchCartItems();
+    await onlineItems.reduce(async (previousPromise, cartItem, i) => {
       await previousPromise;
       await removeItemFromCart(cartItem.id);
       items[i].remove();
     }, Promise.resolve());
     const emptyMessage = createEmptyMessage();
-    addInnerComponent(parent, emptyMessage);
+    addInnerComponent(basketProducts, emptyMessage);
+    updateTotalPriceUI(0);
   });
 
   addInnerComponent(basketProducts, basketProductsTitle);
