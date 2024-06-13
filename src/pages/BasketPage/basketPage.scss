@@ -137,8 +137,10 @@
   opacity: 1;
 }
 .basket-products__clear-basket-btn{
-  position: absolute;
+  position: sticky;
   top: 25px;
+  align-self:self-end;
+  width: 100px;
   transform: translateY(-50%);
   right: 10px;
   color: $text-color-base;

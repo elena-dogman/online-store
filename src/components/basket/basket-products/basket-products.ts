@@ -10,6 +10,7 @@ import { setupQuantityHandlers, updateTotalPriceUI } from './quantity-handlers';
 import { formatPrice } from '../../../utils/general/price-formatter';
 import { showToast } from '../../toast/toast';
 import { updateBasketCounter } from '../../header/header';
+import { findElement } from '../../../utils/general/searchElem';
 
 interface BasketProductsItem {
   element: HTMLElement;
@@ -40,6 +41,21 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
     textContent: 'CLEAR BASKET',
   };
   const clearBasketBtn = createElement(clearBasketBtnParams);
+  clearBasketBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const element = e.target as HTMLElement;
+    const parent = element.parentElement as HTMLElement;
+    const items = findElement(
+      parent,
+      'basket-products__basket-products-item',
+      true,
+    ) as HTMLElement[];
+    await cartItems.reduce(async (previousPromise, cartItem, i) => {
+      await previousPromise;
+      await removeItemFromCart(cartItem.id);
+      items[i].remove();
+    }, Promise.resolve());
+  });
   addInnerComponent(basketProducts, basketProductsTitle);
   addInnerComponent(basketProducts, clearBasketBtn);
 
@@ -182,6 +198,20 @@ function createBasketProductsItem(item: LineItem): BasketProductsItem {
 
   removeIcon.addEventListener('click', async () => {
     const success = await removeItemFromCart(item.id);
+    const parent = basketProductsItem.parentElement as HTMLElement;
+    const items = findElement(
+      parent,
+      'basket-products__basket-products-item',
+      true,
+    ) as HTMLElement[];
+    if (items.length === 0) {
+      const emptyMessage = createElement({
+        tag: 'p',
+        classNames: ['basket-products__empty-message'],
+        textContent: 'Your cart is empty.',
+      });
+      addInnerComponent(parent, emptyMessage);
+    }
     if (success) {
       basketProductsItem.remove();
       try {
