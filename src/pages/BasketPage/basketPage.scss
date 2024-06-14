@@ -135,11 +135,13 @@
 .item-count-container__count-subtract {
   opacity: 1;
 }
-.basket-products__clear-basket-btn{
-  
+.basket-products-item__item-description-size {
+  margin-top: 20%;
+}
+.basket-products__clear-basket-btn {
   position: sticky;
-  top: 25px;
-  align-self:self-end;
+  top: 30px;
+  align-self: self-end;
   width: 100px;
   transform: translateY(-50%);
   right: 10px;
@@ -234,8 +236,8 @@
   height: 64px;
 }
 .discount-code-name {
- font-style: italic;
- font-weight: bold;
+  font-style: italic;
+  font-weight: bold;
 }
 .basket-form__apply-button {
   position: absolute;
@@ -268,7 +270,7 @@
   }
 }
 .basket-products__empty-message {
-  padding:0 116px;
+  padding: 0 116px;
   font-size: 32rem;
   text-align: center;
   margin: auto 0;
@@ -330,7 +332,7 @@
   .basket-container__basket-wrapper {
     flex-direction: column;
   }
-  .basket-products__clear-basket-btn{
+  .basket-products__clear-basket-btn {
     transform: translateY(-5px);
   }
   .basket-products-item__item-count-container {
@@ -358,20 +360,20 @@
   }
   .basket-wrapper__basket-products {
     min-height: 600px;
-    margin-top:40px ;
+    margin-top: 40px;
     width: 100%;
   }
   .basket-wrapper__basket-products {
     border-bottom: 1px solid black;
   }
-  .basket-page__basket-container{
+  .basket-page__basket-container {
     display: block;
     overflow: auto;
   }
-    .basket-container__basket-wrapper {
+  .basket-container__basket-wrapper {
     width: auto;
     height: auto;
-    max-height:max-content;
+    max-height: max-content;
     margin-top: 20px;
   }
   .basket-products-item__item-description-title {
@@ -379,19 +381,31 @@
   }
 }
 @media (max-width: 570px) {
+  .basket-wrapper__basket-products {
+    margin-top: 0px;
+  }
+  .basket-container__basket-wrapper {
+    margin-top: 10%;
+    margin-bottom: 0%;
+  }
   .basket-products-item__item-wrapper {
     justify-content: space-between;
     gap: 20px;
+  }
+  .basket-products__products-title {
+    padding-top: 0px;
   }
   .basket-products__basket-products-item {
     flex-direction: column;
     align-items: center;
     font-size: 20rem;
+    padding: 10px 0;
   }
   .basket-products-item__item-img {
     width: 200px;
     height: 200px;
   }
+
   .basket-products-item__item-description-title {
     max-width: 100%;
     width: auto;
@@ -422,5 +436,13 @@
   .item-count-container__total-price {
     text-align: center;
     padding: 20px;
+  }
+}
+@media (max-width: 400px) {
+  .basket-products-item__item-description-title {
+    font-size: $font-size-base;
+  }
+  .basket-products__products-title {
+    font-size: $font-size-large-text;
   }
 }

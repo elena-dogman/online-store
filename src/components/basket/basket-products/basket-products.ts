@@ -4,9 +4,17 @@ import {
   createElement,
 } from '../../../utils/general/baseComponent';
 import createRemoveIcon from '../../../utils/general/deleteIcon/deleteIcon';
-import { fetchCartItems, removeItemFromCart, getActiveCart } from '../../../api/apiService';
+import {
+  fetchCartItems,
+  removeItemFromCart,
+  getActiveCart,
+} from '../../../api/apiService';
 import { LineItem } from '@commercetools/platform-sdk';
-import { setupQuantityHandlers, updateTotalPriceUI, updateSubtotalPriceUI } from './quantity-handlers';
+import {
+  setupQuantityHandlers,
+  updateTotalPriceUI,
+  updateSubtotalPriceUI,
+} from './quantity-handlers';
 import { formatPrice } from '../../../utils/general/price-formatter';
 import { showToast } from '../../toast/toast';
 import { updateBasketCounter } from '../../header/header';
@@ -116,6 +124,15 @@ function createBasketProductsItem(
   };
   const basketProductsItem = createElement(basketProductsItemParams);
 
+  let size = '';
+  if (item.variant.attributes) {
+    item.variant.attributes.forEach((attribute) => {
+      if (attribute.name === 'size' && Array.isArray(attribute.value)) {
+        size = attribute.value[0];
+      }
+    });
+  }
+
   const basketItemWrapperParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['basket-products-item__item-wrapper'],
@@ -142,7 +159,13 @@ function createBasketProductsItem(
   const basketItemDescriptionTitle = createElement(
     basketItemDescriptionTitleParams,
   );
-
+  const basketItemSizeParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['basket-products-item__item-description-size'],
+    textContent: `Size: ${size.toString()}`,
+  };
+  const basketItemSize = createElement(basketItemSizeParams);
+  addInnerComponent(basketItemDescriptionTitle, basketItemSize);
   addInnerComponent(basketItemWrapper, basketItemImg);
   addInnerComponent(basketItemWrapper, basketItemDescriptionTitle);
   const basketItemCountContainerParams: ElementParams<'div'> = {
@@ -223,7 +246,9 @@ function createBasketProductsItem(
         const activeCart = await getActiveCart();
         if (activeCart) {
           const totalCartPrice = activeCart.totalPrice?.centAmount ?? 0;
-          const subtotal = activeCart.discountOnTotalPrice?.discountedAmount?.centAmount ?? totalCartPrice;
+          const subtotal =
+            activeCart.discountOnTotalPrice?.discountedAmount?.centAmount ??
+            totalCartPrice;
 
           updateTotalPriceUI(totalCartPrice);
           updateSubtotalPriceUI(subtotal);

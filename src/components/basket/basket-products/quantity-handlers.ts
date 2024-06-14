@@ -26,7 +26,9 @@ export function setupQuantityHandlers(
 
       const activeCart = await getActiveCart();
       if (activeCart) {
-        const subtotal = activeCart.discountOnTotalPrice?.discountedAmount?.centAmount ?? totalPrice;
+        const subtotal =
+          activeCart.discountOnTotalPrice?.discountedAmount?.centAmount ??
+          totalPrice;
         updateSubtotalPriceUI(subtotal);
       }
     }

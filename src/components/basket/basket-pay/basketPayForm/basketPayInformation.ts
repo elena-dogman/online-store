@@ -1,7 +1,15 @@
-import { createElement, ElementParams, addInnerComponent } from '../../../../utils/general/baseComponent';
+import {
+  createElement,
+  ElementParams,
+  addInnerComponent,
+} from '../../../../utils/general/baseComponent';
 import { formatPrice } from '../../../../utils/general/price-formatter';
 
-export default function createBasketPayInformation(totalPrice: number, subtotal: number, discountCodeText: string): HTMLElement {
+export default function createBasketPayInformation(
+  totalPrice: number,
+  subtotal: number,
+  discountCodeText: string,
+): HTMLElement {
   const basketPayInfContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['basket-pay__basket-inf-container'],
@@ -12,14 +20,18 @@ export default function createBasketPayInformation(totalPrice: number, subtotal:
     tag: 'div',
     classNames: ['basket-inf-container__subtotal-container', 'inf-container'],
   };
-  const basketPayInfSubtotalContainer = createElement(basketPayInfSubtotalContainerParams);
+  const basketPayInfSubtotalContainer = createElement(
+    basketPayInfSubtotalContainerParams,
+  );
 
   const basketPayInfSubtotalDescriptionParams: ElementParams<'h3'> = {
     tag: 'h3',
     classNames: ['basket-inf-container__subtotal-description'],
     textContent: 'Subtotal',
   };
-  const basketPayInfSubtotalDescription = createElement(basketPayInfSubtotalDescriptionParams);
+  const basketPayInfSubtotalDescription = createElement(
+    basketPayInfSubtotalDescriptionParams,
+  );
 
   const formattedSubtotalPrice = formatPrice(subtotal / 10);
 
@@ -28,23 +40,32 @@ export default function createBasketPayInformation(totalPrice: number, subtotal:
     classNames: ['basket-inf-container__subtotal-price'],
     textContent: formattedSubtotalPrice,
   };
-  const basketPayInfSubtotalPrice = createElement(basketPayInfSubtotalPriceParams);
+  const basketPayInfSubtotalPrice = createElement(
+    basketPayInfSubtotalPriceParams,
+  );
 
-  addInnerComponent(basketPayInfSubtotalContainer, basketPayInfSubtotalDescription);
+  addInnerComponent(
+    basketPayInfSubtotalContainer,
+    basketPayInfSubtotalDescription,
+  );
   addInnerComponent(basketPayInfSubtotalContainer, basketPayInfSubtotalPrice);
 
   const basketPayInfTotalContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['tax-container__shipping-container', 'inf-container'],
   };
-  const basketPayInfTotalContainer = createElement(basketPayInfTotalContainerParams);
+  const basketPayInfTotalContainer = createElement(
+    basketPayInfTotalContainerParams,
+  );
 
   const basketPayInfTotalDescriptionParams: ElementParams<'h3'> = {
     tag: 'h3',
     classNames: ['basket-inf-container__total-description'],
     textContent: 'Total',
   };
-  const basketPayInfTotalDescription = createElement(basketPayInfTotalDescriptionParams);
+  const basketPayInfTotalDescription = createElement(
+    basketPayInfTotalDescriptionParams,
+  );
 
   const formattedTotalPrice = formatPrice(totalPrice / 100);
 
@@ -70,7 +91,9 @@ export default function createBasketPayInformation(totalPrice: number, subtotal:
       classNames: ['discount-code-description'],
       textContent: 'Applied Promo Code: ',
     };
-    const discountCodeDescription = createElement(discountCodeDescriptionParams);
+    const discountCodeDescription = createElement(
+      discountCodeDescriptionParams,
+    );
 
     const discountCodeNameParams: ElementParams<'span'> = {
       tag: 'span',
