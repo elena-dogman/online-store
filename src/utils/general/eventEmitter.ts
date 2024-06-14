@@ -1,6 +1,7 @@
 export type EventTypes = {
   login: undefined;
   logout: undefined;
+  displayProducts: undefined;
 };
 
 export class EventEmitter<T> {
