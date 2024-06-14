@@ -627,55 +627,99 @@ export const getUserApiRoot = (): ByProjectKeyRequestBuilder => {
       projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
     });
   }
-  return anonymousApiRoot;
+  return createApiBuilderFromCtpClient(anonymousCtpClient).withProjectKey({
+    projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
+  });
 };
 
 export async function getOrCreateCart(
   api: ByProjectKeyRequestBuilder,
 ): Promise<string | null> {
-  const isAnonymous = !localStorage.getItem('token');
+  const token = localStorage.getItem('token');
+  const isAnonymous = !token;
+  const userId = localStorage.getItem('userId') || undefined;
+  const anonymousId = localStorage.getItem('anonymousId') || undefined;
+  let cartId = isAnonymous ? localStorage.getItem('anonymousCartId') : localStorage.getItem('cartId');
 
-  if (!isAnonymous) {
+  console.log(`Creating or retrieving cart. Anonymous user: ${isAnonymous}, saved cartId: ${cartId}`);
+
+  if (cartId) {
     try {
-      const activeCartResponse: ClientResponse<Cart> = await api
-        .me()
-        .activeCart()
-        .get()
-        .execute();
-      if (activeCartResponse.body && activeCartResponse.body.id) {
-        return activeCartResponse.body.id;
-      }
+      const cartResponse = await getCartById(api, cartId);
+      console.log('Using saved cart:', cartResponse.body);
+      return cartId;
     } catch (error) {
-      console.error('Error fetching active cart:', error);
+      if (error instanceof Error && error.name === 'NotFound') {
+        console.error('Saved cart not found, need to create new:', error);
+        if (isAnonymous) {
+          localStorage.removeItem('anonymousCartId');
+        } else {
+          localStorage.removeItem('cartId');
+        }
+        cartId = null;
+      } else {
+        throw error;
+      }
     }
   }
 
   try {
-    const cartListResponse: ClientResponse<{ results: Cart[] }> = await api
-      .me()
-      .carts()
-      .get()
-      .execute();
-    if (cartListResponse.body.results.length > 0) {
-      return cartListResponse.body.results[0].id;
-    } else {
-      const cartDraft: CartDraft = {
-        currency: 'USD',
-      };
-      const newCartResponse: ClientResponse<Cart> = await api
-        .me()
-        .carts()
-        .post({ body: cartDraft })
-        .execute();
-      if (newCartResponse.body && newCartResponse.body.id) {
-        return newCartResponse.body.id;
+    const cartDraft: CartDraft = {
+      currency: 'USD',
+      anonymousId: isAnonymous ? anonymousId : undefined,
+      customerId: isAnonymous ? undefined : userId,
+    };
+    const newCartResponse: ClientResponse<Cart> = await (isAnonymous
+      ? api.carts().post({ body: cartDraft })
+      : api.me().carts().post({ body: cartDraft })
+    ).execute();
+
+    console.log('Created new cart:', newCartResponse.body);
+
+    if (newCartResponse.body && newCartResponse.body.id) {
+      if (isAnonymous) {
+        localStorage.setItem('anonymousCartId', newCartResponse.body.id);
+      } else {
+        localStorage.setItem('cartId', newCartResponse.body.id);
       }
+      return newCartResponse.body.id;
     }
-  } catch (creationError) {
-    console.error('Error creating or fetching cart:', creationError);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(`Error handling cart for ${isAnonymous ? 'anonymous' : 'authorized'} user:`, error.message);
+    } else {
+      console.error('Unknown error:', error);
+    }
+    return null;
   }
 
   return null;
+}
+
+export async function getActiveCart(): Promise<Cart | null> {
+  const api = getUserApiRoot();
+  const cartId = await getOrCreateCart(api);
+
+  if (!cartId) {
+    console.error('Failed to get or create cart');
+    return null;
+  }
+
+  try {
+    const response = await getCartById(api, cartId);
+    return response.body;
+  } catch (error) {
+    console.error('Error fetching cart by ID:', error);
+    return null;
+  }
+}
+
+
+async function getCartById(
+  api: ByProjectKeyRequestBuilder,
+  cartId: string,
+): Promise<ClientResponse<Cart>> {
+  return api.carts().withId({ ID: cartId }).get().execute();
 }
 
 export async function addToCart(
@@ -703,13 +747,6 @@ export async function addToCart(
     variantId,
     quantity,
   );
-}
-
-async function getCartById(
-  api: ByProjectKeyRequestBuilder,
-  cartId: string,
-): Promise<ClientResponse<Cart>> {
-  return api.me().carts().withId({ ID: cartId }).get().execute();
 }
 
 async function addProductToCart(
@@ -745,32 +782,30 @@ async function addProductToCart(
     .execute();
 }
 
-export async function getActiveCart(): Promise<Cart | null> {
+export async function fetchCartItems(): Promise<LineItem[]> {
   const api = getUserApiRoot();
-  const cartId = await getOrCreateCart(api);
+  const isAnonymous = !localStorage.getItem('token');
+  let cartId = isAnonymous ? localStorage.getItem('anonymousCartId') : localStorage.getItem('cartId');
 
   if (!cartId) {
-    console.error('Failed to get or create cart');
-    return null;
+    cartId = await getOrCreateCart(api);
+    if (!cartId) {
+      throw new Error('Failed to create or retrieve cart');
+    }
   }
 
   try {
-    const response = await getCartById(api, cartId);
-    return response.body;
-  } catch (error) {
-    console.error('Error fetching cart by ID:', error);
-    return null;
-  }
-}
+    const response: ClientResponse<Cart> = await api
+      .carts()
+      .withId({ ID: cartId })
+      .get()
+      .execute();
 
-export async function fetchCartItems(): Promise<LineItem[]> {
-  const api = getUserApiRoot();
-  const response: ClientResponse<Cart> = await api
-    .me()
-    .activeCart()
-    .get()
-    .execute();
-  return response.body.lineItems;
+    return response.body.lineItems;
+  } catch (error) {
+    console.error(`Error fetching cart items for ${isAnonymous ? 'anonymous' : 'authorized'} user:`, error);
+    return [];
+  }
 }
 
 async function recalculateCart(
@@ -800,9 +835,25 @@ export async function updateQuantity(
   quantity: number,
 ): Promise<LineItem | null> {
   const api = getUserApiRoot();
+  const isAnonymous = !localStorage.getItem('token');
+  const cartId = isAnonymous ? localStorage.getItem('anonymousCartId') : localStorage.getItem('cartId');
+
+  if (!cartId) {
+    throw new Error('Cart not found');
+  }
+
   try {
-    const cartResponse = await api.me().activeCart().get().execute();
+    const cartResponse: ClientResponse<Cart> = await api
+      .carts()
+      .withId({ ID: cartId })
+      .get()
+      .execute();
+
     const cart = cartResponse.body;
+
+    if (!cart) {
+      throw new Error('Failed to retrieve cart details');
+    }
 
     const updateAction: CartChangeLineItemQuantityAction = {
       action: 'changeLineItemQuantity',
@@ -822,6 +873,7 @@ export async function updateQuantity(
       .execute();
 
     await recalculateCart(updatedCart.body.id, updatedCart.body.version);
+
     return (
       updatedCart.body.lineItems.find((item) => item.id === lineItemId) || null
     );
@@ -833,9 +885,25 @@ export async function updateQuantity(
 
 export async function removeItemFromCart(itemId: string): Promise<boolean> {
   const api = getUserApiRoot();
+  const isAnonymous = !localStorage.getItem('token');
+  const cartId = isAnonymous ? localStorage.getItem('anonymousCartId') : localStorage.getItem('cartId');
+
+  if (!cartId) {
+    throw new Error('Cart not found');
+  }
+
   try {
-    const cartResponse = await api.me().activeCart().get().execute();
+    const cartResponse: ClientResponse<Cart> = await api
+      .carts()
+      .withId({ ID: cartId })
+      .get()
+      .execute();
+
     const cart = cartResponse.body;
+
+    if (!cart) {
+      throw new Error('Failed to retrieve cart details');
+    }
 
     const cartUpdate: CartUpdate = {
       version: cart.version,
