@@ -25,7 +25,7 @@ import {
   createFilterComponent,
   updateSizeFilterForCategory,
 } from '../../components/catalog/filter/productFilter';
-import { createLoadingOverlay } from '../../components/catalog/overlay/loadingOverlay';
+import { createLoadingOverlay } from '../../components/overlay/loadingOverlay';
 import { generateBreadcrumbLinks } from '../../components/breadcrumbs/breadcrumbs';
 import { RoutePaths } from '../../types/types';
 
@@ -145,7 +145,6 @@ export async function createCatalogPage(): Promise<HTMLElement> {
       pageContainer.appendChild(filterIconContainer);
     }
   };
-
 
   updateSortAndFilterContainer();
   window.addEventListener('resize', updateSortAndFilterContainer);

@@ -20,6 +20,7 @@ import { showToast } from '../../toast/toast';
 import { updateBasketCounter } from '../../header/header';
 import { findElement } from '../../../utils/general/searchElem';
 import { createEmptyMessage } from '../../../utils/general/createEmptyMessage';
+import { createLoadingOverlay } from '../../overlay/loadingOverlay';
 
 interface BasketProductsItem {
   element: HTMLElement;
@@ -34,6 +35,7 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
     tag: 'div',
     classNames: ['basket-wrapper__basket-products'],
   };
+  const overlay = createLoadingOverlay();
   const basketProducts = createElement(basketProductsParams);
   const emptyMessage = createEmptyMessage();
   const basketProductsTitleParams: ElementParams<'h2'> = {
@@ -60,11 +62,13 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
     const onlineItems = await fetchCartItems();
     try {
       await onlineItems.reduce(async (previousPromise, cartItem, i) => {
+        overlay.style.display = 'flex';
         await previousPromise;
         await removeItemFromCart(cartItem.id);
         updateBasketCounter();
         items[i].remove();
       }, Promise.resolve());
+      overlay.style.display = 'none';
     } catch (error) {
       showToast(error);
     }
@@ -100,7 +104,7 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
       }
     });
   }
-
+  addInnerComponent(basketProducts, overlay);
   return basketProducts;
 }
 
