@@ -269,7 +269,7 @@
     }
   }
 }
-.basket-products__empty-message {
+.empty-message {
   padding: 0 116px;
   font-size: 32rem;
   text-align: center;
@@ -289,6 +289,49 @@
 .basket-inf-container__total-description,
 .basket-inf-container__total-price {
   font-size: 22rem;
+}
+.empty-message__link {
+  position: relative;
+  color: $text-color-accent;
+  text-decoration: none;
+}
+.empty-message__link::before {
+  content: '';
+  position: absolute;
+  width: 0%;
+  right: 50%;
+  height: 2px;
+  background: $text-color-accent;
+  bottom: 0;
+  transition: all 0.7s ease;
+}
+.empty-message__link:hover::before {
+  content: '';
+  position: absolute;
+  width: 50%;
+  right: 1%;
+  height: 2px;
+  background: $text-color-accent;
+  bottom: 0;
+}
+.empty-message__link::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 0%;
+  height: 2px;
+  background: $text-color-accent;
+  bottom: 0;
+  transition: all 0.7s ease;
+}
+.empty-message__link:hover::after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  left: 1%;
+  height: 2px;
+  background: $text-color-accent;
+  bottom: 0;
 }
 .basket-form__submit-button {
   position: relative;
