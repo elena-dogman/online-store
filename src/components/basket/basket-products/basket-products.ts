@@ -47,7 +47,7 @@ export default async function createBasketProductsContainer(): Promise<HTMLEleme
   const clearBasketBtnParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['basket-products__clear-basket-btn'],
-    textContent: 'CLEAR BASKET',
+    textContent: 'CLEAR CARDS',
   };
   const clearBasketBtn = createElement(clearBasketBtnParams);
   clearBasketBtn.addEventListener('click', async (e) => {
