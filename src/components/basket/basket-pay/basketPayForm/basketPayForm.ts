@@ -1,11 +1,18 @@
 import { Cart } from '@commercetools/platform-sdk';
-import { getActiveCart, applyPromoCode, getMappedDiscountCodes } from '../../../../api/apiService';
-import { ElementParams, addInnerComponent, createElement } from '../../../../utils/general/baseComponent';
+import {
+  getActiveCart,
+  applyPromoCode,
+  getMappedDiscountCodes,
+} from '../../../../api/apiService';
+import {
+  ElementParams,
+  addInnerComponent,
+  createElement,
+} from '../../../../utils/general/baseComponent';
 import { createInput } from '../../../../utils/general/createInput';
 import createBasketPayInformation from './basketPayInformation';
 import { getTotalPrice } from '../getTotalPrice';
 import { updateSubtotalPriceUI } from '../../basket-products/quantity-handlers';
-
 
 export default async function createBasketPayForm(): Promise<HTMLElement> {
   const basketPayFormParams: ElementParams<'form'> = {
@@ -66,20 +73,26 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
     if (cart) {
       totalPrice = getTotalPrice(cart as Cart);
 
-      subtotal = cart.discountOnTotalPrice?.discountedAmount?.centAmount ?? totalPrice;
+      subtotal =
+        cart.discountOnTotalPrice?.discountedAmount?.centAmount ?? totalPrice;
 
       const discountCodesMap = await getMappedDiscountCodes();
       const discountCodeId = cart.discountCodes?.[0]?.discountCode?.id;
 
       if (discountCodeId) {
-        discountCodeText = discountCodesMap[discountCodeId] ?? 'Unknown promo code';
+        discountCodeText =
+          discountCodesMap[discountCodeId] ?? 'Unknown promo code';
       }
     }
   } catch (error) {
     console.error('Error fetching cart data:', error);
   }
 
-  const basketPayInfContainer = createBasketPayInformation(totalPrice, subtotal, discountCodeText);
+  const basketPayInfContainer = createBasketPayInformation(
+    totalPrice,
+    subtotal,
+    discountCodeText,
+  );
   const basketPayButtonParams: ElementParams<'button'> = {
     tag: 'button',
     classNames: ['basket-form__submit-button'],
@@ -128,7 +141,9 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
           successSpan.style.display = 'block';
 
           const appliedDiscountCode = discountCode;
-          const discountCodeElement = basketPayInfContainer.querySelector('.basket-inf-container__discount-code') as HTMLElement;
+          const discountCodeElement = basketPayInfContainer.querySelector(
+            '.basket-inf-container__discount-code',
+          ) as HTMLElement;
           if (discountCodeElement) {
             discountCodeElement.textContent = `Applied Promo Code: ${appliedDiscountCode}`;
           } else {
@@ -142,10 +157,16 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
 
           const updatedCart = await getActiveCart();
           if (updatedCart) {
-            const updatedSubtotal = updatedCart.discountOnTotalPrice?.discountedAmount?.centAmount ?? totalPrice;
+            const updatedSubtotal =
+              updatedCart.discountOnTotalPrice?.discountedAmount?.centAmount ??
+              totalPrice;
             updateSubtotalPriceUI(updatedSubtotal);
           }
-        } else if (response && 'statusCode' in response && response.statusCode === 400) {
+        } else if (
+          response &&
+          'statusCode' in response &&
+          response.statusCode === 400
+        ) {
           errorSpan.textContent = 'Invalid promo code';
           errorSpan.style.display = 'block';
         }

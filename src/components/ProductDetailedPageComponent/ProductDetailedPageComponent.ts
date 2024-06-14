@@ -90,7 +90,7 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
           textContent:
             productData.masterVariant?.prices &&
             productData.masterVariant.prices[0]
-              ? `$${(productData.masterVariant.prices[0].value.centAmount / 10).toFixed(2)}`
+              ? `$${(productData.masterVariant.prices[0].value.centAmount / 100).toFixed(2)}`
               : 'Price not available',
         };
 
@@ -100,7 +100,7 @@ export function productDetailedPageComponent(ID: string): HTMLElement {
           textContent: hasDiscount
             ? `$${(
                 (productData.masterVariant.prices[0]?.discounted?.value
-                  .centAmount ?? 0) / 10
+                  .centAmount ?? 0) / 100
               ).toFixed(2)}`
             : '',
         };
