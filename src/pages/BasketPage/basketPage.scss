@@ -376,7 +376,7 @@
     flex-direction: column;
   }
   .basket-products__clear-basket-btn {
-    transform: translateY(-5px);
+    transform: translateY(-7px);
   }
   .basket-products-item__item-count-container {
     flex-direction: row;
@@ -386,6 +386,7 @@
     width: 100%;
     top: 50px;
     font-size: 30rem;
+    padding-bottom: 7px;
     border-bottom: 1px solid;
   }
   .basket-pay__basket-title {
