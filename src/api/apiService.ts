@@ -637,8 +637,8 @@ export async function getOrCreateCart(
 ): Promise<string | null> {
   const token = localStorage.getItem('token');
   const isAnonymous = !token;
-  const userId = localStorage.getItem('userId') || undefined; // Убедитесь, что `userId` не null
-  const anonymousId = localStorage.getItem('anonymousId') || undefined; // Убедитесь, что `anonymousId` не null
+  const userId = localStorage.getItem('userId') || undefined;
+  const anonymousId = localStorage.getItem('anonymousId') || undefined;
   let cartId = isAnonymous ? localStorage.getItem('anonymousCartId') : localStorage.getItem('cartId');
 
   console.log(`Creating or retrieving cart. Anonymous user: ${isAnonymous}, saved cartId: ${cartId}`);
