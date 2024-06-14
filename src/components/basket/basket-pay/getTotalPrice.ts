@@ -18,15 +18,11 @@ export async function fetchAndPrintTotalPrice(): Promise<number> {
       return 0;
     }
   } catch (error) {
-    console.error('Error fetching cart:', error);
+    if (error instanceof ReferenceError) {
+      console.error('ReferenceError:', error.message);
+    } else {
+      console.error('Error fetching cart:', error);
+    }
     return 0;
   }
 }
-
-fetchAndPrintTotalPrice()
-  .then((totalPrice) => {
-    console.log(`Total Price (then): ${totalPrice}`);
-  })
-  .catch((error) => {
-    console.error('Error in fetchAndPrintTotalPrice:', error);
-  });
