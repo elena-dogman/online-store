@@ -4,7 +4,7 @@ export function createEmptyMessage(): HTMLElement {
   const emptyMessageLink = createElement({
     tag: 'a',
     classNames: ['basket-products__empty-message', 'empty-message__link'],
-    textContent: 'Go to catalog?',
+    textContent: 'Go to catalog.',
     attributes: { href: '/catalog' },
   });
   const emptyMessageText = createElement({

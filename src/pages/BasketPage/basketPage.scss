@@ -1,3 +1,4 @@
+@import '..//..//styles/variables.scss';
 .basket-page {
   position: relative;
   overflow: hidden;
@@ -291,48 +292,16 @@
   font-size: 22rem;
 }
 .empty-message__link {
-  position: relative;
+  display: block;
   color: $text-color-accent;
+  background: none;
   text-decoration: none;
+  font-size: 22rem;
+  border: none;
+  cursor: pointer;
+  @include hoverLink;
 }
-.empty-message__link::before {
-  content: '';
-  position: absolute;
-  width: 0%;
-  right: 50%;
-  height: 2px;
-  background: $text-color-accent;
-  bottom: 0;
-  transition: all 0.7s ease;
-}
-.empty-message__link:hover::before {
-  content: '';
-  position: absolute;
-  width: 50%;
-  right: 1%;
-  height: 2px;
-  background: $text-color-accent;
-  bottom: 0;
-}
-.empty-message__link::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  width: 0%;
-  height: 2px;
-  background: $text-color-accent;
-  bottom: 0;
-  transition: all 0.7s ease;
-}
-.empty-message__link:hover::after {
-  content: '';
-  position: absolute;
-  width: 50%;
-  left: 1%;
-  height: 2px;
-  background: $text-color-accent;
-  bottom: 0;
-}
+
 .basket-form__submit-button {
   position: relative;
   top: 0;
