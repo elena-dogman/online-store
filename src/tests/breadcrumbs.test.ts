@@ -1,4 +1,3 @@
-// tests/buildBreadcrumbsFromUrl.test.ts
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { categoriesMap } from '../components/catalog/filter/filters';
 import { buildBreadcrumbsFromUrl } from '../components/breadcrumbs/breadcrumbs';
