@@ -11,7 +11,6 @@ import {
 } from '../../../../utils/general/baseComponent';
 import { createInput } from '../../../../utils/general/createInput';
 import createBasketPayInformation from './basketPayInformation';
-
 import { updateSubtotalPriceUI } from '../../basket-products/quantity-handlers';
 import { getTotalPrice } from '../prices/getTotalPrice';
 import { calculateSubtotal } from '../prices/getSubtotalPrice';

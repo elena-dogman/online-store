@@ -21,6 +21,7 @@ import { updateBasketCounter } from '../../header/header';
 import { findElement } from '../../../utils/general/searchElem';
 import { createEmptyMessage } from '../../../utils/general/createEmptyMessage';
 import { createLoadingOverlay } from '../../overlay/loadingOverlay';
+import { calculateSubtotal } from '../basket-pay/prices/getSubtotalPrice';
 
 interface BasketProductsItem {
   element: HTMLElement;
@@ -250,9 +251,7 @@ function createBasketProductsItem(
         const activeCart = await getActiveCart();
         if (activeCart) {
           const totalCartPrice = activeCart.totalPrice?.centAmount ?? 0;
-          const subtotal =
-            activeCart.discountOnTotalPrice?.discountedAmount?.centAmount ??
-            totalCartPrice;
+          const subtotal = calculateSubtotal(activeCart);
 
           updateTotalPriceUI(totalCartPrice);
           updateSubtotalPriceUI(subtotal);

@@ -58,7 +58,6 @@ export default function createBasketPayInformation(totalPrice: number, subtotal:
   addInnerComponent(basketPayInfTotalContainer, basketPayInfTotalDescription);
   addInnerComponent(basketPayInfTotalContainer, basketPayInfTotalPrice);
 
-  // Добавление блока промокода между Subtotal и Total
   addInnerComponent(basketPayInfContainer, basketPayInfSubtotalContainer);
 
   if (discountCodeText) {
