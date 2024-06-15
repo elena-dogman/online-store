@@ -11,8 +11,10 @@ import {
 } from '../../../../utils/general/baseComponent';
 import { createInput } from '../../../../utils/general/createInput';
 import createBasketPayInformation from './basketPayInformation';
-import { getTotalPrice } from '../getTotalPrice';
+
 import { updateSubtotalPriceUI } from '../../basket-products/quantity-handlers';
+import { getTotalPrice } from '../prices/getTotalPrice';
+import { calculateSubtotal } from '../prices/getSubtotalPrice';
 
 export default async function createBasketPayForm(): Promise<HTMLElement> {
   const basketPayFormParams: ElementParams<'form'> = {
@@ -72,16 +74,13 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
     const cart = await getActiveCart();
     if (cart) {
       totalPrice = getTotalPrice(cart as Cart);
-
-      subtotal =
-        cart.discountOnTotalPrice?.discountedAmount?.centAmount ?? totalPrice;
+      subtotal = calculateSubtotal(cart);
 
       const discountCodesMap = await getMappedDiscountCodes();
       const discountCodeId = cart.discountCodes?.[0]?.discountCode?.id;
 
       if (discountCodeId) {
-        discountCodeText =
-          discountCodesMap[discountCodeId] ?? 'Unknown promo code';
+        discountCodeText = discountCodesMap[discountCodeId] ?? 'Unknown promo code';
       }
     }
   } catch (error) {
@@ -157,16 +156,10 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
 
           const updatedCart = await getActiveCart();
           if (updatedCart) {
-            const updatedSubtotal =
-              updatedCart.discountOnTotalPrice?.discountedAmount?.centAmount ??
-              totalPrice;
+            const updatedSubtotal = calculateSubtotal(updatedCart);
             updateSubtotalPriceUI(updatedSubtotal);
           }
-        } else if (
-          response &&
-          'statusCode' in response &&
-          response.statusCode === 400
-        ) {
+        } else if (response && 'statusCode' in response && response.statusCode === 400) {
           errorSpan.textContent = 'Invalid promo code';
           errorSpan.style.display = 'block';
         }

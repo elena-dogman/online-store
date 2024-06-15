@@ -714,7 +714,6 @@ export async function getActiveCart(): Promise<Cart | null> {
   }
 }
 
-
 async function getCartById(
   api: ByProjectKeyRequestBuilder,
   cartId: string,
@@ -983,3 +982,5 @@ export async function applyPromoCode(
     return error as BadRequest;
   }
 }
+
+
