@@ -1,7 +1,10 @@
 import { createElement, ElementParams, addInnerComponent } from '../../../../utils/general/baseComponent';
 import { formatPrice } from '../../../../utils/general/price-formatter';
+import { appEvents } from '../../../../utils/general/eventEmitter';
 
-export default function createBasketPayInformation(totalPrice: number, subtotal: number, discountCodeText: string): HTMLElement {
+export default function createBasketPayInformation(totalPrice: number,
+  subtotal: number,
+  discountCodeText: string): HTMLElement {
   const basketPayInfContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['basket-pay__basket-inf-container'],
@@ -60,33 +63,37 @@ export default function createBasketPayInformation(totalPrice: number, subtotal:
 
   addInnerComponent(basketPayInfContainer, basketPayInfSubtotalContainer);
 
-  if (discountCodeText) {
-    const discountCodeContainerParams: ElementParams<'div'> = {
-      tag: 'div',
-      classNames: ['basket-inf-container__discount-code'],
-    };
-    const discountCodeContainer = createElement(discountCodeContainerParams);
+  const discountCodeContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['basket-inf-container__discount-code'],
+    attributes: { style: discountCodeText ? '' : 'display: none;' },
+  };
+  const discountCodeContainer = createElement(discountCodeContainerParams);
 
-    const discountCodeDescriptionParams: ElementParams<'span'> = {
-      tag: 'span',
-      classNames: ['discount-code-description'],
-      textContent: 'Applied Promo Code: ',
-    };
-    const discountCodeDescription = createElement(discountCodeDescriptionParams);
+  const discountCodeDescriptionParams: ElementParams<'span'> = {
+    tag: 'span',
+    classNames: ['discount-code-description'],
+    textContent: 'Applied Promo Code: ',
+  };
+  const discountCodeDescription = createElement(discountCodeDescriptionParams);
 
-    const discountCodeNameParams: ElementParams<'span'> = {
-      tag: 'span',
-      classNames: ['discount-code-name'],
-      textContent: discountCodeText,
-    };
-    const discountCodeName = createElement(discountCodeNameParams);
+  const discountCodeNameParams: ElementParams<'span'> = {
+    tag: 'span',
+    classNames: ['discount-code-name'],
+    textContent: discountCodeText,
+  };
+  const discountCodeName = createElement(discountCodeNameParams);
 
-    addInnerComponent(discountCodeDescription, discountCodeName);
-    addInnerComponent(discountCodeContainer, discountCodeDescription);
-    addInnerComponent(basketPayInfContainer, discountCodeContainer);
-  }
+  addInnerComponent(discountCodeDescription, discountCodeName);
+  addInnerComponent(discountCodeContainer, discountCodeDescription);
+  addInnerComponent(basketPayInfContainer, discountCodeContainer);
 
   addInnerComponent(basketPayInfContainer, basketPayInfTotalContainer);
+
+  appEvents.on('promoCodeApplied', ({ discountCode }) => {
+    discountCodeName.textContent = discountCode;
+    discountCodeContainer.style.display = '';
+  });
 
   return basketPayInfContainer;
 }

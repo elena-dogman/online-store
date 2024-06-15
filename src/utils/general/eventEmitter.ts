@@ -2,6 +2,7 @@ export type EventTypes = {
   login: undefined;
   logout: undefined;
   displayProducts: undefined;
+  promoCodeApplied: { discountCode: string };
 };
 
 export class EventEmitter<T> {
