@@ -2,7 +2,9 @@ import { createElement, ElementParams, addInnerComponent } from '../../../../uti
 import { formatPrice } from '../../../../utils/general/price-formatter';
 import { appEvents } from '../../../../utils/general/eventEmitter';
 
-export default function createBasketPayInformation(totalPrice: number, subtotal: number, discountCodeText: string): HTMLElement {
+export default function createBasketPayInformation(totalPrice: number,
+  subtotal: number,
+  discountCodeText: string): HTMLElement {
   const basketPayInfContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['basket-pay__basket-inf-container'],
@@ -64,6 +66,7 @@ export default function createBasketPayInformation(totalPrice: number, subtotal:
   const discountCodeContainerParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['basket-inf-container__discount-code'],
+    attributes: { style: discountCodeText ? '' : 'display: none;' },
   };
   const discountCodeContainer = createElement(discountCodeContainerParams);
 
@@ -81,20 +84,16 @@ export default function createBasketPayInformation(totalPrice: number, subtotal:
   };
   const discountCodeName = createElement(discountCodeNameParams);
 
-  let isDiscountCodeVisible = false;
+  addInnerComponent(discountCodeDescription, discountCodeName);
+  addInnerComponent(discountCodeContainer, discountCodeDescription);
+  addInnerComponent(basketPayInfContainer, discountCodeContainer);
+
+  addInnerComponent(basketPayInfContainer, basketPayInfTotalContainer);
 
   appEvents.on('promoCodeApplied', ({ discountCode }) => {
     discountCodeName.textContent = discountCode;
-
-    if (!isDiscountCodeVisible) {
-      addInnerComponent(discountCodeDescription, discountCodeName);
-      addInnerComponent(discountCodeContainer, discountCodeDescription);
-      addInnerComponent(basketPayInfContainer, discountCodeContainer);
-      isDiscountCodeVisible = true;
-    }
+    discountCodeContainer.style.display = '';
   });
-
-  addInnerComponent(basketPayInfContainer, basketPayInfTotalContainer);
 
   return basketPayInfContainer;
 }
