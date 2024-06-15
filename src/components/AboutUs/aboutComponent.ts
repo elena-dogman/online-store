@@ -17,12 +17,12 @@ const slidesData = [
   {
     imageSrc: '../assets/about/slider/2.png',
     title: 'Team Spirit and Camaraderie',
-    text: 'A strong sense of team spirit and camaraderie is at the heart of our success. We celebrate each other’s achievements, support one another during tough times, and create a positive, collaborative atmosphere that makes our work environment enjoyable and productive.',
+    text: 'A strong sense of team spirit and camaraderie is at the heart of our success. We celebrate each other’s achievements, support one another during tough times, and create a positive, collaborative atmosphere.',
   },
   {
     imageSrc: '../assets/about/slider/3.png',
     title: 'Humor and Positivity',
-    text: 'We believe that humor and a positive attitude are essential ingredients for a healthy and productive work environment. By encouraging laughter and light-hearted moments, we reduce stress, build stronger bonds, and keep our team’s spirits high. A touch of humor helps us navigate challenges with a smile and keeps our creativity flowing.',
+    text: 'We believe that humor and a positive attitude are essential ingredients for a healthy and productive work environment. By encouraging laughter and light-hearted moments, we reduce stress, build stronger bonds, and keep our team’s spirits high.',
   },
   {
     imageSrc: '../assets/about/slider/4.png',
