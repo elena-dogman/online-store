@@ -1,5 +1,5 @@
 import { Cart } from '@commercetools/platform-sdk';
-import { getActiveCart } from '../../../api/apiService';
+import { getActiveCart } from '../../../../api/apiService';
 
 export function getTotalPrice(cart: Cart): number {
   return cart.totalPrice.centAmount;

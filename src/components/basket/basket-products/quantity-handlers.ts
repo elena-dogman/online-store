@@ -1,7 +1,9 @@
 import { updateQuantity, getActiveCart } from '../../../api/apiService';
 import { formatPrice } from '../../../utils/general/price-formatter';
 import { updateBasketCounter } from '../../header/header';
-import { fetchAndPrintTotalPrice } from '../basket-pay/getTotalPrice';
+import { calculateSubtotal } from '../basket-pay/prices/getSubtotalPrice';
+import { fetchAndPrintTotalPrice } from '../basket-pay/prices/getTotalPrice';
+
 
 export function setupQuantityHandlers(
   countView: HTMLElement,
@@ -26,9 +28,7 @@ export function setupQuantityHandlers(
 
       const activeCart = await getActiveCart();
       if (activeCart) {
-        const subtotal =
-          activeCart.discountOnTotalPrice?.discountedAmount?.centAmount ??
-          totalPrice;
+        const subtotal = calculateSubtotal(activeCart);
         updateSubtotalPriceUI(subtotal);
       }
     }
