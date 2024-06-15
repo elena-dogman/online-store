@@ -291,6 +291,10 @@
 .basket-inf-container__total-price {
   font-size: 22rem;
 }
+
+.basket-inf-container__subtotal-price {
+  text-decoration: line-through;
+}
 .empty-message__link {
   display: block;
   color: $text-color-accent;

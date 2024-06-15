@@ -21,7 +21,7 @@ export default function createBasketPayInformation(totalPrice: number, subtotal:
   };
   const basketPayInfSubtotalDescription = createElement(basketPayInfSubtotalDescriptionParams);
 
-  const formattedSubtotalPrice = formatPrice(subtotal / 10);
+  const formattedSubtotalPrice = formatPrice(subtotal / 100);
 
   const basketPayInfSubtotalPriceParams: ElementParams<'div'> = {
     tag: 'div',
@@ -35,7 +35,7 @@ export default function createBasketPayInformation(totalPrice: number, subtotal:
 
   const basketPayInfTotalContainerParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['tax-container__shipping-container', 'inf-container'],
+    classNames: ['basket-inf-container__total-container', 'inf-container'],
   };
   const basketPayInfTotalContainer = createElement(basketPayInfTotalContainerParams);
 
@@ -50,13 +50,16 @@ export default function createBasketPayInformation(totalPrice: number, subtotal:
 
   const basketPayInfTotalPriceParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['basket-inf-container__total-price', 'inf-container'],
+    classNames: ['basket-inf-container__total-price'],
     textContent: formattedTotalPrice,
   };
   const basketPayInfTotalPrice = createElement(basketPayInfTotalPriceParams);
 
   addInnerComponent(basketPayInfTotalContainer, basketPayInfTotalDescription);
   addInnerComponent(basketPayInfTotalContainer, basketPayInfTotalPrice);
+
+  // Добавление блока промокода между Subtotal и Total
+  addInnerComponent(basketPayInfContainer, basketPayInfSubtotalContainer);
 
   if (discountCodeText) {
     const discountCodeContainerParams: ElementParams<'div'> = {
@@ -84,7 +87,6 @@ export default function createBasketPayInformation(totalPrice: number, subtotal:
     addInnerComponent(basketPayInfContainer, discountCodeContainer);
   }
 
-  addInnerComponent(basketPayInfContainer, basketPayInfSubtotalContainer);
   addInnerComponent(basketPayInfContainer, basketPayInfTotalContainer);
 
   return basketPayInfContainer;
