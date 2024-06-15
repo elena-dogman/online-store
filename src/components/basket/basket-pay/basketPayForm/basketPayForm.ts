@@ -14,6 +14,7 @@ import createBasketPayInformation from './basketPayInformation';
 import { updateSubtotalPriceUI } from '../../basket-products/quantity-handlers';
 import { getTotalPrice } from '../prices/getTotalPrice';
 import { calculateSubtotal } from '../prices/getSubtotalPrice';
+import { appEvents } from '../../../../utils/general/eventEmitter';
 
 export default async function createBasketPayForm(): Promise<HTMLElement> {
   const basketPayFormParams: ElementParams<'form'> = {
@@ -138,25 +139,15 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
           successSpan.textContent = 'Promo code applied successfully';
           successSpan.style.display = 'block';
 
-          const appliedDiscountCode = discountCode;
-          const discountCodeElement = basketPayInfContainer.querySelector(
-            '.basket-inf-container__discount-code',
-          ) as HTMLElement;
-          if (discountCodeElement) {
-            discountCodeElement.textContent = `Applied Promo Code: ${appliedDiscountCode}`;
-          } else {
-            const newDiscountCodeElement = createElement({
-              tag: 'div',
-              classNames: ['basket-inf-container__discount-code'],
-              textContent: `Applied Promo Code: ${appliedDiscountCode}`,
-            });
-            addInnerComponent(basketPayInfContainer, newDiscountCodeElement);
-          }
+          const discountCodesMap = await getMappedDiscountCodes();
+          const appliedDiscountCode = discountCodesMap[response.body.discountCodes?.[0]?.discountCode?.id];
 
           const updatedCart = await getActiveCart();
           if (updatedCart) {
-            const updatedSubtotal = calculateSubtotal(updatedCart);
-            updateSubtotalPriceUI(updatedSubtotal);
+            subtotal = calculateSubtotal(updatedCart);
+            updateSubtotalPriceUI(subtotal);
+
+            appEvents.emit('promoCodeApplied', { discountCode: appliedDiscountCode });
           }
         } else if (response && 'statusCode' in response && response.statusCode === 400) {
           errorSpan.textContent = 'Invalid promo code';
