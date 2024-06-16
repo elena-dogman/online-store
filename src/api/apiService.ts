@@ -641,12 +641,8 @@ export async function getOrCreateCart(
   const anonymousId = localStorage.getItem('anonymousId') || undefined;
   let cartId = isAnonymous ? localStorage.getItem('anonymousCartId') : localStorage.getItem('cartId');
 
-  console.log(`Creating or retrieving cart. Anonymous user: ${isAnonymous}, saved cartId: ${cartId}`);
-
   if (cartId) {
     try {
-      const cartResponse = await getCartById(api, cartId);
-      console.log('Using saved cart:', cartResponse.body);
       return cartId;
     } catch (error) {
       if (error instanceof Error && error.name === 'NotFound') {
@@ -832,13 +828,15 @@ async function recalculateCart(
 export async function updateQuantity(
   lineItemId: string,
   quantity: number,
+  retries = 3,
 ): Promise<LineItem | null> {
   const api = getUserApiRoot();
   const isAnonymous = !localStorage.getItem('token');
   const cartId = isAnonymous ? localStorage.getItem('anonymousCartId') : localStorage.getItem('cartId');
 
   if (!cartId) {
-    throw new Error('Cart not found');
+    showToast('Cart not found');
+    return null;
   }
 
   try {
@@ -851,7 +849,8 @@ export async function updateQuantity(
     const cart = cartResponse.body;
 
     if (!cart) {
-      throw new Error('Failed to retrieve cart details');
+      showToast('Failed to retrieve cart details');
+      return null;
     }
 
     const updateAction: CartChangeLineItemQuantityAction = {
@@ -876,8 +875,13 @@ export async function updateQuantity(
     return (
       updatedCart.body.lineItems.find((item) => item.id === lineItemId) || null
     );
-  } catch (error) {
-    console.error('Error updating cart item quantity:', error);
+  } catch (error: unknown) {
+    if (error instanceof Error && 'statusCode' in error && error.statusCode === 409 && retries > 0) {
+      console.warn('Concurrent modification detected, retrying...');
+      return updateQuantity(lineItemId, quantity, retries - 1);
+    }
+
+    showToast('Error updating cart item quantity. Please try again.');
     return null;
   }
 }

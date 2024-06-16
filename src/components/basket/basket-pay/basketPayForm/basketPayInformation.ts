@@ -90,9 +90,15 @@ export default function createBasketPayInformation(totalPrice: number,
 
   addInnerComponent(basketPayInfContainer, basketPayInfTotalContainer);
 
-  appEvents.on('promoCodeApplied', ({ discountCode }) => {
+  appEvents.on('promoCodeApplied', ({ discountCode, totalPrice: newTotalPrice }) => {
     discountCodeName.textContent = discountCode;
     discountCodeContainer.style.display = '';
+
+    const formattedNewTotalPrice = formatPrice(newTotalPrice / 100);
+    const totalPriceElement = basketPayInfContainer.querySelector('.basket-inf-container__total-price');
+    if (totalPriceElement) {
+      totalPriceElement.textContent = formattedNewTotalPrice;
+    }
   });
 
   return basketPayInfContainer;

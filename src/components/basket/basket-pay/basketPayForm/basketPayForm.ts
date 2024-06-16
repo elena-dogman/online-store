@@ -11,7 +11,7 @@ import {
 } from '../../../../utils/general/baseComponent';
 import { createInput } from '../../../../utils/general/createInput';
 import createBasketPayInformation from './basketPayInformation';
-import { updateSubtotalPriceUI } from '../../basket-products/quantity-handlers';
+import { updateSubtotalPriceUI, updateTotalPriceUI } from '../../basket-products/quantity-handlers';
 import { getTotalPrice } from '../prices/getTotalPrice';
 import { calculateSubtotal } from '../prices/getSubtotalPrice';
 import { appEvents } from '../../../../utils/general/eventEmitter';
@@ -145,9 +145,11 @@ export default async function createBasketPayForm(): Promise<HTMLElement> {
           const updatedCart = await getActiveCart();
           if (updatedCart) {
             subtotal = calculateSubtotal(updatedCart);
+            totalPrice = getTotalPrice(updatedCart);
             updateSubtotalPriceUI(subtotal);
+            updateTotalPriceUI(totalPrice);
 
-            appEvents.emit('promoCodeApplied', { discountCode: appliedDiscountCode });
+            appEvents.emit('promoCodeApplied', { discountCode: appliedDiscountCode, totalPrice });
           }
         } else if (response && 'statusCode' in response && response.statusCode === 400) {
           errorSpan.textContent = 'Invalid promo code';

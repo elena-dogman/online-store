@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import createBasketPayInformation from '../components/basket/basket-pay/basketPayForm/basketPayInformation';
 import { appEvents } from '../utils/general/eventEmitter';
 
-
 describe('createBasketPayInformation', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -41,7 +40,7 @@ describe('createBasketPayInformation', () => {
     expect(discountCodeElement).not.toBeNull();
     expect(discountCodeElement?.style.display).toBe('none');
 
-    appEvents.emit('promoCodeApplied', { discountCode: '20% OFF' });
+    appEvents.emit('promoCodeApplied', { discountCode: '20% OFF', totalPrice: 10000 });
 
     expect(discountCodeElement?.style.display).toBe('');
     expect(discountCodeNameElement?.textContent).toBe('20% OFF');
