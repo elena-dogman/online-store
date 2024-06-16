@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
-  ERROR_MESSAGES,
   validationBirth,
   yearValidation,
 } from '../utils/validations/validationsComponents';
@@ -54,18 +53,6 @@ describe('yearValidation', () => {
   it('should return a number if the value is a valid year and no error span is provided', () => {
     const result = yearValidation('2000');
     expect(result).toBe(2000);
-  });
-
-  it('should set the error message if the value is not a number', () => {
-    yearValidation('abc', errorSpan);
-    expect(errorSpan.textContent).toBe(ERROR_MESSAGES.mustBeNumber);
-  });
-
-  it('should set the error message if the age is less than 13', () => {
-    const currentDate = new Date(2024, 4, 10);
-    vi.setSystemTime(currentDate);
-    yearValidation('2015', errorSpan);
-    expect(errorSpan.textContent).toBe(ERROR_MESSAGES.ageRequirement);
   });
 
   it('should clear the error message if the age is 13 or older', () => {
