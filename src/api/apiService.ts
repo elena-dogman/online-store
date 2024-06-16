@@ -641,12 +641,8 @@ export async function getOrCreateCart(
   const anonymousId = localStorage.getItem('anonymousId') || undefined;
   let cartId = isAnonymous ? localStorage.getItem('anonymousCartId') : localStorage.getItem('cartId');
 
-  console.log(`Creating or retrieving cart. Anonymous user: ${isAnonymous}, saved cartId: ${cartId}`);
-
   if (cartId) {
     try {
-      const cartResponse = await getCartById(api, cartId);
-      console.log('Using saved cart:', cartResponse.body);
       return cartId;
     } catch (error) {
       if (error instanceof Error && error.name === 'NotFound') {

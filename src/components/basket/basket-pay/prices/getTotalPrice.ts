@@ -8,13 +8,10 @@ export function getTotalPrice(cart: Cart): number {
 export async function fetchAndPrintTotalPrice(): Promise<number> {
   try {
     const cart = await getActiveCart();
-    console.log('Fetched cart:', cart);
     if (cart) {
       const totalPrice = getTotalPrice(cart);
-      console.log(`Total Price in Cents: ${totalPrice}`);
       return totalPrice;
     } else {
-      console.log('No active cart found.');
       return 0;
     }
   } catch (error) {
