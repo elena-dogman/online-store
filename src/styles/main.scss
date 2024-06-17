@@ -1,0 +1,50 @@
+@import './variables.scss';
+@import '../components/notFoundComponent/notFoundComponent.module.scss';
+@import '../components/header/header.module.scss';
+@import '../pages/AuthPage/authpage.scss';
+@import '../components/toast/toast.scss';
+@import '../pages/AuthPage/authpageResponsive.scss';
+@import '../pages//MainPage/MainPage.scss';
+@import '../pages/CatalogPage/CatalogPage.module.scss';
+@import '../pages/UserProfilePage/userProfilePage.scss';
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+@import 'swiper/scss/autoplay';
+@import 'swiper/css/zoom';
+@import './swiper.scss';
+@import 'swiper/swiper-bundle.css';
+@import '../utils/general/deleteIcon/deleteIcon.scss';
+@import '../pages/ProductDetailedPage/productdetailedpage.scss';
+@import '../components/ProductDetailedPageComponent/swiperModal.scss';
+@import '../components/breadcrumbs/breadcrumbs.module.scss';
+@import '../components/profileComponents/password/passwordModal.scss';
+@import '../pages/BasketPage/basketPage.scss';
+@import '../pages/AboutUs/about.scss';
+@import '../components/overlay/loadingOverlay.module.scss';
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  user-select: none;
+  scrollbar-width: none;
+}
+html,
+body,
+#app {
+  height: 100%;
+  scrollbar-width: none;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+html {
+  scroll-behavior: smooth;
+  width: 100%;
+  font-size: 1px;
+}
+body {
+  font-size: 16rem;
+}
