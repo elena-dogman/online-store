@@ -20,6 +20,16 @@ import {
   ProductProjectionPagedSearchResponse,
   QueryParam,
   CustomerChangePassword,
+  Cart,
+  LineItemDraft,
+  ByProjectKeyRequestBuilder,
+  CartAddLineItemAction,
+  CartUpdate,
+  LineItem,
+  CartChangeLineItemQuantityAction,
+  CartRemoveLineItemAction,
+  CartDraft,
+  DiscountCodePagedQueryResponse,
 } from '@commercetools/platform-sdk';
 import router from '../router/router';
 import { appEvents } from '../utils/general/eventEmitter';
@@ -27,6 +37,7 @@ import { RegistrationData } from '../components/registrationForm/regDataInterfac
 import { showToast } from '../components/toast/toast';
 import { isCustomError } from '../utils/general/customError';
 import { resultPasswordModal } from '../components/profileComponents/password/passwordModalForm';
+import { RoutePaths } from '../types/types';
 
 interface SearchQueryArgs {
   'text.en-US': string;
@@ -122,7 +133,7 @@ export const loginUser = async (body: {
 
     localStorage.setItem('userId', data.body.customer.id);
 
-    router.navigate('/');
+    router.navigate(RoutePaths.Main);
     appEvents.emit('login', undefined);
     return data;
   } catch (error: unknown) {
@@ -157,7 +168,6 @@ export const loginStayUser = async (body: {
     } else {
       showToast('An unknown error occurred');
     }
-    // Rethrow the error to be handled by the caller
     throw error;
   }
 };
@@ -166,7 +176,7 @@ export const logoutUser = async (): Promise<void> => {
   try {
     localStorage.removeItem('token');
     await anonymousApiRoot.get().execute();
-    router.navigate('/login');
+    router.navigate(RoutePaths.Login);
     appEvents.emit('logout', undefined);
   } catch (error) {
     if (isCustomError(error)) {
@@ -204,13 +214,13 @@ export async function isUserLogined(): Promise<ClientResponse<Customer> | void> 
     });
     try {
       const userData = await refreshFlowClient.me().get().execute();
-      if (currentPath === '/' || currentPath === '/login') {
-        router.navigate('/');
+      if (currentPath === RoutePaths.Main || currentPath === RoutePaths.Login) {
+        router.navigate(RoutePaths.Main);
       }
       appEvents.emit('login', undefined);
       return userData;
     } catch (error) {
-      router.navigate('/login');
+      router.navigate(RoutePaths.Login);
     }
   } else {
     await getProject();
@@ -606,3 +616,375 @@ export async function searchProducts(
     throw error;
   }
 }
+
+export const getUserApiRoot = (): ByProjectKeyRequestBuilder => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    const { refreshToken } = JSON.parse(token);
+    return createApiBuilderFromCtpClient(
+      createRefreshTokenClient(refreshToken),
+    ).withProjectKey({
+      projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
+    });
+  }
+  return createApiBuilderFromCtpClient(anonymousCtpClient).withProjectKey({
+    projectKey: import.meta.env.VITE_CTP_PROJECT_KEY,
+  });
+};
+
+export async function getOrCreateCart(
+  api: ByProjectKeyRequestBuilder,
+): Promise<string | null> {
+  const token = localStorage.getItem('token');
+  const isAnonymous = !token;
+  const userId = localStorage.getItem('userId') || undefined;
+  const anonymousId = localStorage.getItem('anonymousId') || undefined;
+  let cartId = isAnonymous ? localStorage.getItem('anonymousCartId') : localStorage.getItem('cartId');
+
+  if (cartId) {
+    try {
+      return cartId;
+    } catch (error) {
+      if (error instanceof Error && error.name === 'NotFound') {
+        console.error('Saved cart not found, need to create new:', error);
+        if (isAnonymous) {
+          localStorage.removeItem('anonymousCartId');
+        } else {
+          localStorage.removeItem('cartId');
+        }
+        cartId = null;
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  try {
+    const cartDraft: CartDraft = {
+      currency: 'USD',
+      anonymousId: isAnonymous ? anonymousId : undefined,
+      customerId: isAnonymous ? undefined : userId,
+    };
+    const newCartResponse: ClientResponse<Cart> = await (isAnonymous
+      ? api.carts().post({ body: cartDraft })
+      : api.me().carts().post({ body: cartDraft })
+    ).execute();
+
+    console.log('Created new cart:', newCartResponse.body);
+
+    if (newCartResponse.body && newCartResponse.body.id) {
+      if (isAnonymous) {
+        localStorage.setItem('anonymousCartId', newCartResponse.body.id);
+      } else {
+        localStorage.setItem('cartId', newCartResponse.body.id);
+      }
+      return newCartResponse.body.id;
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(`Error handling cart for ${isAnonymous ? 'anonymous' : 'authorized'} user:`, error.message);
+    } else {
+      console.error('Unknown error:', error);
+    }
+    return null;
+  }
+
+  return null;
+}
+
+export async function getActiveCart(): Promise<Cart | null> {
+  const api = getUserApiRoot();
+  const cartId = await getOrCreateCart(api);
+
+  if (!cartId) {
+    console.error('Failed to get or create cart');
+    return null;
+  }
+
+  try {
+    const response = await getCartById(api, cartId);
+    return response.body;
+  } catch (error) {
+    console.error('Error fetching cart by ID:', error);
+    return null;
+  }
+}
+
+async function getCartById(
+  api: ByProjectKeyRequestBuilder,
+  cartId: string,
+): Promise<ClientResponse<Cart>> {
+  return api.carts().withId({ ID: cartId }).get().execute();
+}
+
+export async function addToCart(
+  productId: string,
+  variantId: number,
+  quantity: number = 1,
+): Promise<ClientResponse<Cart>> {
+  const api = getUserApiRoot();
+  const cartId = await getOrCreateCart(api);
+  if (!cartId) {
+    throw new Error('Failed to get or create cart');
+  }
+
+  const cartResponse = await getCartById(api, cartId);
+
+  if (!cartResponse.body) {
+    throw new Error('Failed to retrieve cart details');
+  }
+
+  return addProductToCart(
+    api,
+    cartResponse.body.id,
+    cartResponse.body.version,
+    productId,
+    variantId,
+    quantity,
+  );
+}
+
+async function addProductToCart(
+  api: ByProjectKeyRequestBuilder,
+  cartId: string,
+  cartVersion: number,
+  productId: string,
+  variantId: number,
+  quantity: number,
+): Promise<ClientResponse<Cart>> {
+  const lineItemDraft: LineItemDraft = {
+    productId,
+    variantId,
+    quantity,
+  };
+
+  const cartUpdate: CartUpdate = {
+    version: cartVersion,
+    actions: [
+      {
+        action: 'addLineItem',
+        ...lineItemDraft,
+      } as CartAddLineItemAction,
+    ],
+  };
+
+  return api
+    .carts()
+    .withId({ ID: cartId })
+    .post({
+      body: cartUpdate,
+    })
+    .execute();
+}
+
+export async function fetchCartItems(): Promise<LineItem[]> {
+  const api = getUserApiRoot();
+  const isAnonymous = !localStorage.getItem('token');
+  let cartId = isAnonymous ? localStorage.getItem('anonymousCartId') : localStorage.getItem('cartId');
+
+  if (!cartId) {
+    cartId = await getOrCreateCart(api);
+    if (!cartId) {
+      throw new Error('Failed to create or retrieve cart');
+    }
+  }
+
+  try {
+    const response: ClientResponse<Cart> = await api
+      .carts()
+      .withId({ ID: cartId })
+      .get()
+      .execute();
+
+    return response.body.lineItems;
+  } catch (error) {
+    console.error(`Error fetching cart items for ${isAnonymous ? 'anonymous' : 'authorized'} user:`, error);
+    return [];
+  }
+}
+
+async function recalculateCart(
+  cartId: string,
+  cartVersion: number,
+): Promise<ClientResponse<Cart>> {
+  const api = getUserApiRoot();
+  const cartUpdate: CartUpdate = {
+    version: cartVersion,
+    actions: [
+      {
+        action: 'recalculate',
+        updateProductData: true,
+      },
+    ],
+  };
+
+  return api
+    .carts()
+    .withId({ ID: cartId })
+    .post({ body: cartUpdate })
+    .execute();
+}
+
+export async function updateQuantity(
+  lineItemId: string,
+  quantity: number,
+  retries = 3,
+): Promise<LineItem | null> {
+  const api = getUserApiRoot();
+  const isAnonymous = !localStorage.getItem('token');
+  const cartId = isAnonymous ? localStorage.getItem('anonymousCartId') : localStorage.getItem('cartId');
+
+  if (!cartId) {
+    showToast('Cart not found');
+    return null;
+  }
+
+  try {
+    const cartResponse: ClientResponse<Cart> = await api
+      .carts()
+      .withId({ ID: cartId })
+      .get()
+      .execute();
+
+    const cart = cartResponse.body;
+
+    if (!cart) {
+      showToast('Failed to retrieve cart details');
+      return null;
+    }
+
+    const updateAction: CartChangeLineItemQuantityAction = {
+      action: 'changeLineItemQuantity',
+      lineItemId,
+      quantity,
+    };
+
+    const cartUpdate: CartUpdate = {
+      version: cart.version,
+      actions: [updateAction],
+    };
+
+    const updatedCart = await api
+      .carts()
+      .withId({ ID: cart.id })
+      .post({ body: cartUpdate })
+      .execute();
+
+    await recalculateCart(updatedCart.body.id, updatedCart.body.version);
+
+    return (
+      updatedCart.body.lineItems.find((item) => item.id === lineItemId) || null
+    );
+  } catch (error: unknown) {
+    if (error instanceof Error && 'statusCode' in error && error.statusCode === 409 && retries > 0) {
+      console.warn('Concurrent modification detected, retrying...');
+      return updateQuantity(lineItemId, quantity, retries - 1);
+    }
+
+    showToast('Error updating cart item quantity. Please try again.');
+    return null;
+  }
+}
+
+export async function removeItemFromCart(itemId: string): Promise<boolean> {
+  const api = getUserApiRoot();
+  const isAnonymous = !localStorage.getItem('token');
+  const cartId = isAnonymous ? localStorage.getItem('anonymousCartId') : localStorage.getItem('cartId');
+
+  if (!cartId) {
+    throw new Error('Cart not found');
+  }
+
+  try {
+    const cartResponse: ClientResponse<Cart> = await api
+      .carts()
+      .withId({ ID: cartId })
+      .get()
+      .execute();
+
+    const cart = cartResponse.body;
+
+    if (!cart) {
+      throw new Error('Failed to retrieve cart details');
+    }
+
+    const cartUpdate: CartUpdate = {
+      version: cart.version,
+      actions: [
+        {
+          action: 'removeLineItem',
+          lineItemId: itemId,
+        } as CartRemoveLineItemAction,
+      ],
+    };
+
+    const updatedCart = await api
+      .carts()
+      .withId({ ID: cart.id })
+      .post({ body: cartUpdate })
+      .execute();
+
+    await recalculateCart(updatedCart.body.id, updatedCart.body.version);
+
+    return true;
+  } catch (error) {
+    console.error('Error removing item from cart:', error);
+    return false;
+  }
+}
+
+export async function getDiscountCodes(): Promise<
+  ClientResponse<DiscountCodePagedQueryResponse>
+> {
+  const api = getUserApiRoot();
+  try {
+    const discountCodes = await api.discountCodes().get().execute();
+    return discountCodes;
+  } catch (error) {
+    throw new Error("Couldn't get discount codes");
+  }
+}
+
+export async function getMappedDiscountCodes(): Promise<Record<string, string>> {
+  const api = getUserApiRoot();
+  try {
+    const response: ClientResponse<DiscountCodePagedQueryResponse> = await api.discountCodes().get().execute();
+    const discountCodesArray = response.body.results;
+
+    const discountCodesMap: Record<string, string> = discountCodesArray.reduce((map, discountCode) => {
+      const id = discountCode.id;
+      const description = discountCode.description?.['en-US'] ?? discountCode.code;
+      map[id] = description;
+      return map;
+    }, {} as Record<string, string>);
+
+    return discountCodesMap;
+  } catch (error) {
+    console.error('Error fetching discount codes:', error);
+    throw new Error("Couldn't get discount codes");
+  }
+}
+
+interface BadRequest {
+  code: number;
+  message: string;
+  statusCode: number;
+}
+export async function applyPromoCode(
+  ID: string,
+  body: {
+    version: number;
+    actions: { action: 'addDiscountCode'; code: string }[];
+  },
+): Promise<ClientResponse<Cart> | BadRequest | null> {
+  try {
+    const api = getUserApiRoot();
+    const response = await api.carts().withId({ ID }).post({ body }).execute();
+    return response;
+  } catch (error) {
+    console.error('Error adding promocode', error);
+    return error as BadRequest;
+  }
+}
+
+

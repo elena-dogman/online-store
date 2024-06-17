@@ -30390,7 +30390,6 @@ function fillObjectWithUniqueKeys(form, value, existingData, clearPrevious = fal
     }
     if (key.includes("")) {
       obj[key] = false;
-      console.log(e);
     }
     if (!obj[key]) {
       obj[key] = value;
@@ -36464,6 +36463,18 @@ function resultPasswordModal(text) {
     resultPasswordContainer.remove();
   });
 }
+var RoutePaths = /* @__PURE__ */ ((RoutePaths2) => {
+  RoutePaths2["Main"] = "/";
+  RoutePaths2["Login"] = "/login";
+  RoutePaths2["Register"] = "/register";
+  RoutePaths2["NotFound"] = "/404";
+  RoutePaths2["Catalog"] = "/catalog";
+  RoutePaths2["Profile"] = "/profile";
+  RoutePaths2["Product"] = "/product/:id";
+  RoutePaths2["AboutUs"] = "/about-us";
+  RoutePaths2["Basket"] = "/basket";
+  return RoutePaths2;
+})(RoutePaths || {});
 async function updateCustomer(bodya) {
   const unparsedToken = localStorage.getItem("token");
   if (!unparsedToken) {
@@ -36531,7 +36542,7 @@ const loginUser = async (body) => {
     });
     const data = await passFlowClient.login().post({ body }).execute();
     localStorage.setItem("userId", data.body.customer.id);
-    router.navigate("/");
+    router.navigate(RoutePaths.Main);
     appEvents.emit("login", void 0);
     return data;
   } catch (error) {
@@ -36569,7 +36580,7 @@ const logoutUser = async () => {
   try {
     localStorage.removeItem("token");
     await anonymousApiRoot.get().execute();
-    router.navigate("/login");
+    router.navigate(RoutePaths.Login);
     appEvents.emit("logout", void 0);
   } catch (error) {
     if (isCustomError(error)) {
@@ -36593,13 +36604,13 @@ async function isUserLogined() {
     });
     try {
       const userData = await refreshFlowClient.me().get().execute();
-      if (currentPath === "/" || currentPath === "/login") {
-        router.navigate("/");
+      if (currentPath === RoutePaths.Main || currentPath === RoutePaths.Login) {
+        router.navigate(RoutePaths.Main);
       }
       appEvents.emit("login", void 0);
       return userData;
     } catch (error) {
-      router.navigate("/login");
+      router.navigate(RoutePaths.Login);
     }
   } else {
     await getProject();
@@ -36894,6 +36905,259 @@ async function searchProducts(searchText) {
     throw error;
   }
 }
+const getUserApiRoot = () => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    const { refreshToken } = JSON.parse(token);
+    return createApiBuilderFromCtpClient(
+      createRefreshTokenClient(refreshToken)
+    ).withProjectKey({
+      projectKey: "valenki-store"
+    });
+  }
+  return createApiBuilderFromCtpClient(anonymousCtpClient).withProjectKey({
+    projectKey: "valenki-store"
+  });
+};
+async function getOrCreateCart(api) {
+  const token = localStorage.getItem("token");
+  const isAnonymous = !token;
+  const userId = localStorage.getItem("userId") || void 0;
+  const anonymousId = localStorage.getItem("anonymousId") || void 0;
+  let cartId = isAnonymous ? localStorage.getItem("anonymousCartId") : localStorage.getItem("cartId");
+  if (cartId) {
+    try {
+      return cartId;
+    } catch (error) {
+      if (error instanceof Error && error.name === "NotFound") {
+        console.error("Saved cart not found, need to create new:", error);
+        if (isAnonymous) {
+          localStorage.removeItem("anonymousCartId");
+        } else {
+          localStorage.removeItem("cartId");
+        }
+        cartId = null;
+      } else {
+        throw error;
+      }
+    }
+  }
+  try {
+    const cartDraft = {
+      currency: "USD",
+      anonymousId: isAnonymous ? anonymousId : void 0,
+      customerId: isAnonymous ? void 0 : userId
+    };
+    const newCartResponse = await (isAnonymous ? api.carts().post({ body: cartDraft }) : api.me().carts().post({ body: cartDraft })).execute();
+    console.log("Created new cart:", newCartResponse.body);
+    if (newCartResponse.body && newCartResponse.body.id) {
+      if (isAnonymous) {
+        localStorage.setItem("anonymousCartId", newCartResponse.body.id);
+      } else {
+        localStorage.setItem("cartId", newCartResponse.body.id);
+      }
+      return newCartResponse.body.id;
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(`Error handling cart for ${isAnonymous ? "anonymous" : "authorized"} user:`, error.message);
+    } else {
+      console.error("Unknown error:", error);
+    }
+    return null;
+  }
+  return null;
+}
+async function getActiveCart() {
+  const api = getUserApiRoot();
+  const cartId = await getOrCreateCart(api);
+  if (!cartId) {
+    console.error("Failed to get or create cart");
+    return null;
+  }
+  try {
+    const response = await getCartById(api, cartId);
+    return response.body;
+  } catch (error) {
+    console.error("Error fetching cart by ID:", error);
+    return null;
+  }
+}
+async function getCartById(api, cartId) {
+  return api.carts().withId({ ID: cartId }).get().execute();
+}
+async function addToCart(productId, variantId, quantity = 1) {
+  const api = getUserApiRoot();
+  const cartId = await getOrCreateCart(api);
+  if (!cartId) {
+    throw new Error("Failed to get or create cart");
+  }
+  const cartResponse = await getCartById(api, cartId);
+  if (!cartResponse.body) {
+    throw new Error("Failed to retrieve cart details");
+  }
+  return addProductToCart(
+    api,
+    cartResponse.body.id,
+    cartResponse.body.version,
+    productId,
+    variantId,
+    quantity
+  );
+}
+async function addProductToCart(api, cartId, cartVersion, productId, variantId, quantity) {
+  const lineItemDraft = {
+    productId,
+    variantId,
+    quantity
+  };
+  const cartUpdate = {
+    version: cartVersion,
+    actions: [
+      {
+        action: "addLineItem",
+        ...lineItemDraft
+      }
+    ]
+  };
+  return api.carts().withId({ ID: cartId }).post({
+    body: cartUpdate
+  }).execute();
+}
+async function fetchCartItems() {
+  const api = getUserApiRoot();
+  const isAnonymous = !localStorage.getItem("token");
+  let cartId = isAnonymous ? localStorage.getItem("anonymousCartId") : localStorage.getItem("cartId");
+  if (!cartId) {
+    cartId = await getOrCreateCart(api);
+    if (!cartId) {
+      throw new Error("Failed to create or retrieve cart");
+    }
+  }
+  try {
+    const response = await api.carts().withId({ ID: cartId }).get().execute();
+    return response.body.lineItems;
+  } catch (error) {
+    console.error(`Error fetching cart items for ${isAnonymous ? "anonymous" : "authorized"} user:`, error);
+    return [];
+  }
+}
+async function recalculateCart(cartId, cartVersion) {
+  const api = getUserApiRoot();
+  const cartUpdate = {
+    version: cartVersion,
+    actions: [
+      {
+        action: "recalculate",
+        updateProductData: true
+      }
+    ]
+  };
+  return api.carts().withId({ ID: cartId }).post({ body: cartUpdate }).execute();
+}
+async function updateQuantity(lineItemId, quantity, retries = 3) {
+  const api = getUserApiRoot();
+  const isAnonymous = !localStorage.getItem("token");
+  const cartId = isAnonymous ? localStorage.getItem("anonymousCartId") : localStorage.getItem("cartId");
+  if (!cartId) {
+    showToast("Cart not found");
+    return null;
+  }
+  try {
+    const cartResponse = await api.carts().withId({ ID: cartId }).get().execute();
+    const cart = cartResponse.body;
+    if (!cart) {
+      showToast("Failed to retrieve cart details");
+      return null;
+    }
+    const updateAction = {
+      action: "changeLineItemQuantity",
+      lineItemId,
+      quantity
+    };
+    const cartUpdate = {
+      version: cart.version,
+      actions: [updateAction]
+    };
+    const updatedCart = await api.carts().withId({ ID: cart.id }).post({ body: cartUpdate }).execute();
+    await recalculateCart(updatedCart.body.id, updatedCart.body.version);
+    return updatedCart.body.lineItems.find((item) => item.id === lineItemId) || null;
+  } catch (error) {
+    if (error instanceof Error && "statusCode" in error && error.statusCode === 409 && retries > 0) {
+      console.warn("Concurrent modification detected, retrying...");
+      return updateQuantity(lineItemId, quantity, retries - 1);
+    }
+    showToast("Error updating cart item quantity. Please try again.");
+    return null;
+  }
+}
+async function removeItemFromCart(itemId) {
+  const api = getUserApiRoot();
+  const isAnonymous = !localStorage.getItem("token");
+  const cartId = isAnonymous ? localStorage.getItem("anonymousCartId") : localStorage.getItem("cartId");
+  if (!cartId) {
+    throw new Error("Cart not found");
+  }
+  try {
+    const cartResponse = await api.carts().withId({ ID: cartId }).get().execute();
+    const cart = cartResponse.body;
+    if (!cart) {
+      throw new Error("Failed to retrieve cart details");
+    }
+    const cartUpdate = {
+      version: cart.version,
+      actions: [
+        {
+          action: "removeLineItem",
+          lineItemId: itemId
+        }
+      ]
+    };
+    const updatedCart = await api.carts().withId({ ID: cart.id }).post({ body: cartUpdate }).execute();
+    await recalculateCart(updatedCart.body.id, updatedCart.body.version);
+    return true;
+  } catch (error) {
+    console.error("Error removing item from cart:", error);
+    return false;
+  }
+}
+async function getDiscountCodes() {
+  const api = getUserApiRoot();
+  try {
+    const discountCodes = await api.discountCodes().get().execute();
+    return discountCodes;
+  } catch (error) {
+    throw new Error("Couldn't get discount codes");
+  }
+}
+async function getMappedDiscountCodes() {
+  const api = getUserApiRoot();
+  try {
+    const response = await api.discountCodes().get().execute();
+    const discountCodesArray = response.body.results;
+    const discountCodesMap = discountCodesArray.reduce((map, discountCode) => {
+      var _a;
+      const id = discountCode.id;
+      const description = ((_a = discountCode.description) == null ? void 0 : _a["en-US"]) ?? discountCode.code;
+      map[id] = description;
+      return map;
+    }, {});
+    return discountCodesMap;
+  } catch (error) {
+    console.error("Error fetching discount codes:", error);
+    throw new Error("Couldn't get discount codes");
+  }
+}
+async function applyPromoCode(ID2, body) {
+  try {
+    const api = getUserApiRoot();
+    const response = await api.carts().withId({ ID: ID2 }).post({ body }).execute();
+    return response;
+  } catch (error) {
+    console.error("Error adding promocode", error);
+    return error;
+  }
+}
 function createSearchComponent() {
   const searchWrapperParams = {
     tag: "div",
@@ -36953,7 +37217,7 @@ function createHeader() {
   const header = createElement$1(headerParams);
   const logoLink = createElement$1({
     tag: "a",
-    attributes: { href: "/" },
+    attributes: { href: RoutePaths.Main },
     classNames: ["header__logo-link"]
   });
   const logo = createElement$1({
@@ -36976,22 +37240,27 @@ function createHeader() {
     tag: "div",
     classNames: ["header__nav-links"]
   });
-  if (!isCatalogPage) {
-    const homeLink = createElement$1({
-      tag: "a",
-      attributes: { href: "/" },
-      classNames: ["header__nav-link"],
-      textContent: "Home"
-    });
-    const aboutLink = createElement$1({
-      tag: "a",
-      attributes: { href: "/catalog" },
-      classNames: ["header__nav-link"],
-      textContent: "Catalog"
-    });
-    addInnerComponent(navContainer, homeLink);
-    addInnerComponent(navContainer, aboutLink);
-  }
+  const homeLink = createElement$1({
+    tag: "a",
+    attributes: { href: RoutePaths.Main },
+    classNames: ["header__nav-link"],
+    textContent: "Home"
+  });
+  const catalogLink = createElement$1({
+    tag: "a",
+    attributes: { href: RoutePaths.Catalog },
+    classNames: ["header__nav-link"],
+    textContent: "Catalog"
+  });
+  const aboutLink = createElement$1({
+    tag: "a",
+    attributes: { href: RoutePaths.AboutUs },
+    classNames: ["header__nav-link"],
+    textContent: "About us"
+  });
+  addInnerComponent(navContainer, homeLink);
+  addInnerComponent(navContainer, catalogLink);
+  addInnerComponent(navContainer, aboutLink);
   const rightContainer = createElement$1({
     tag: "div",
     classNames: ["header__right-container"]
@@ -37002,7 +37271,7 @@ function createHeader() {
   });
   const basketIcon = createElement$1({
     tag: "a",
-    attributes: { href: "/basket" },
+    attributes: { href: RoutePaths.Basket },
     classNames: ["header__icon", "header__basket-icon"]
   });
   const basketImage = createElement$1({
@@ -37012,6 +37281,11 @@ function createHeader() {
       alt: "Basket"
     }
   });
+  const basketCounter = createElement$1({
+    tag: "span",
+    classNames: ["header__basket-counter"]
+  });
+  basketCounter.style.display = "none";
   const userIcon = createElement$1({
     tag: "a",
     classNames: ["header__icon", "header__user-icon"]
@@ -37025,15 +37299,15 @@ function createHeader() {
   });
   addInnerComponent(userIcon, userImage);
   userIcon.onclick = () => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      navigateToProfile(userId);
+    if (checkLoginStatus()) {
+      router.navigate(RoutePaths.Profile);
     } else {
-      router.navigate("/login");
+      router.navigate(RoutePaths.Login);
     }
   };
   addInnerComponent(iconsContainer, basketIcon);
   addInnerComponent(iconsContainer, userIcon);
+  addInnerComponent(basketIcon, basketCounter);
   addInnerComponent(basketIcon, basketImage);
   addInnerComponent(userIcon, userImage);
   addInnerComponent(iconsContainer, basketIcon);
@@ -37048,13 +37322,13 @@ function createHeader() {
   });
   const registerButton = createElement$1({
     tag: "a",
-    attributes: { href: "/register" },
+    attributes: { href: RoutePaths.Register },
     classNames: ["header__auth-button", "register-button"],
     textContent: "Register"
   });
   const authButton = createElement$1({
     tag: "a",
-    attributes: { href: "/login" },
+    attributes: { href: RoutePaths.Login },
     classNames: ["header__auth-button", "login-button"],
     textContent: "Log In"
   });
@@ -37064,9 +37338,7 @@ function createHeader() {
   addInnerComponent(rightContainer, iconsContainer);
   addInnerComponent(rightContainer, authNavContainer);
   addInnerComponent(header, logoSearchContainer);
-  if (!isCatalogPage) {
-    addInnerComponent(header, navContainer);
-  }
+  addInnerComponent(header, navContainer);
   addInnerComponent(header, rightContainer);
   const burgerMenu = createElement$1({
     tag: "div",
@@ -37093,9 +37365,9 @@ function createHeader() {
   const tabletScreenWidthInPx = 870;
   const moveNavLinks = () => {
     const isMobile = window.innerWidth <= tabletScreenWidthInPx;
-    if (isMobile && !isCatalogPage) {
+    if (isMobile) {
       addInnerComponent(authNavContainer, navContainer);
-    } else if (!isCatalogPage) {
+    } else {
       if (authNavContainer.classList.contains("open")) {
         authNavContainer.classList.remove("open");
         burgerMenu.classList.remove("change");
@@ -37114,7 +37386,7 @@ function createHeader() {
   async function updateAuthButton(isLoggedIn) {
     registerButton.style.display = isLoggedIn ? "none" : "block";
     authButton.textContent = isLoggedIn ? "Log Out" : "Log In";
-    authButton.setAttribute("href", isLoggedIn ? "#" : "/login");
+    authButton.setAttribute("href", isLoggedIn ? "#" : RoutePaths.Login);
     authButton.onclick = isLoggedIn ? async () => {
       await handleLogout();
       appEvents.emit("logout", void 0);
@@ -37128,9 +37400,148 @@ function createHeader() {
   initializeAuthButtons();
   appEvents.on("login", () => updateAuthButton(true));
   appEvents.on("logout", () => updateAuthButton(false));
+  updateBasketCounter();
   return header;
 }
-function createHero() {
+async function updateBasketCounter() {
+  try {
+    const activeCart = await getActiveCart();
+    let totalQuantity = 0;
+    if (activeCart) {
+      activeCart.lineItems.forEach((item) => {
+        totalQuantity += item.quantity;
+      });
+    }
+    setTimeout(() => {
+      const basketCounter = document.querySelector(
+        ".header__basket-counter"
+      );
+      if (basketCounter) {
+        if (totalQuantity > 0) {
+          basketCounter.style.display = "flex";
+          if (totalQuantity > 99) {
+            basketCounter.textContent = "99+";
+          } else {
+            basketCounter.textContent = totalQuantity.toString();
+          }
+        } else {
+          basketCounter.style.display = "none";
+        }
+      }
+    }, 500);
+  } catch (error) {
+    throw new Error();
+  }
+}
+async function createPromoCodesModal() {
+  const modalContainerParams = {
+    tag: "div",
+    classNames: ["promo-modal-container"],
+    textContent: ""
+  };
+  const modalContainer = createElement$1(modalContainerParams);
+  const modalContentParams = {
+    tag: "div",
+    classNames: ["modal-content"],
+    textContent: ""
+  };
+  const modalContent = createElement$1(modalContentParams);
+  const modalHeaderParams = {
+    tag: "h2",
+    classNames: ["modal-header"],
+    textContent: "Available Promo Codes"
+  };
+  const modalHeader = createElement$1(modalHeaderParams);
+  const promoCodes = await getDiscountCodes();
+  const promoListParams = {
+    tag: "ul",
+    classNames: ["promo-list"],
+    textContent: ""
+  };
+  const promoList = createElement$1(promoListParams);
+  promoCodes.body.results.forEach((promo) => {
+    const promoCodeContainerParams = {
+      tag: "div",
+      classNames: ["promo-code-container"]
+    };
+    const promoCodeContainer = createElement$1(promoCodeContainerParams);
+    const promoCodeParams = {
+      tag: "span",
+      classNames: ["promo-code"],
+      textContent: promo.code
+    };
+    const promoCode = createElement$1(promoCodeParams);
+    const copyIconParams = {
+      tag: "img",
+      classNames: ["copy-icon"],
+      attributes: {
+        src: "../assets/mainPage/copy.png",
+        alt: "copy to clipboard icon"
+      }
+    };
+    const copyIcon = createElement$1(copyIconParams);
+    copyIcon.addEventListener("click", () => {
+      navigator.clipboard.writeText(promo.code).then(() => {
+        showSnackbar("Promo code copied!");
+      }).catch((error) => {
+        console.error("Failed to copy promo code: ", error);
+      });
+    });
+    function showSnackbar(message) {
+      const snackbar = document.createElement("div");
+      snackbar.className = "snackbar";
+      snackbar.textContent = message;
+      document.body.appendChild(snackbar);
+      snackbar.classList.add("show");
+      setTimeout(() => {
+        snackbar.classList.remove("show");
+        setTimeout(() => {
+          snackbar.remove();
+        }, 500);
+      }, 3e3);
+    }
+    addInnerComponent(promoCodeContainer, promoCode);
+    addInnerComponent(promoCodeContainer, copyIcon);
+    const promoDescriptionContainerParams = {
+      tag: "div",
+      classNames: ["promo-description-container"]
+    };
+    const promoDescriptionContainer = createElement$1(
+      promoDescriptionContainerParams
+    );
+    const promoDescriptionParams = {
+      tag: "p",
+      classNames: ["promo-description"],
+      textContent: promo.description ? promo.description["en-US"] : ""
+    };
+    const promoDescription = createElement$1(promoDescriptionParams);
+    addInnerComponent(promoDescriptionContainer, promoDescription);
+    const promoListItemParams = {
+      tag: "div",
+      classNames: ["promo-item"]
+    };
+    const promoListItem = createElement$1(promoListItemParams);
+    addInnerComponent(promoListItem, promoCodeContainer);
+    addInnerComponent(promoListItem, promoDescriptionContainer);
+    addInnerComponent(promoList, promoListItem);
+  });
+  const closeIconParams = {
+    tag: "span",
+    classNames: ["close-icon"],
+    textContent: "×"
+  };
+  const closeIcon = createElement$1(closeIconParams);
+  closeIcon.addEventListener("click", () => {
+    modalContainer.remove();
+    document.body.style.overflow = "";
+  });
+  addInnerComponent(modalContent, closeIcon);
+  addInnerComponent(modalContent, modalHeader);
+  addInnerComponent(modalContent, promoList);
+  addInnerComponent(modalContainer, modalContent);
+  return modalContainer;
+}
+async function createHero() {
   const containerParams = {
     tag: "div",
     classNames: ["hero-container"],
@@ -37146,10 +37557,215 @@ function createHero() {
     }
   };
   const heroImg = createElement$1(imageParams);
+  const promoCodesBtnParams = {
+    tag: "button",
+    classNames: ["promo-codes-btn"],
+    textContent: "Promo Codes"
+  };
+  const promoCodesBtn = createElement$1(promoCodesBtnParams);
+  promoCodesBtn.addEventListener("click", async () => {
+    const modal = await createPromoCodesModal();
+    modal.style.display = "block";
+    document.body.appendChild(modal);
+    document.body.style.overflow = "hidden";
+    const handleClickOutside = (event2) => {
+      const modalContent = modal.querySelector(".modal-content");
+      if (modalContent && !modalContent.contains(event2.target)) {
+        modal.remove();
+        modal.style.display = "none";
+        document.body.style.overflow = "";
+        document.removeEventListener("click", handleClickOutside);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+  });
   addInnerComponent(heroContainer, heroImg);
+  addInnerComponent(heroContainer, promoCodesBtn);
   return heroContainer;
 }
-function createMainPage() {
+function createSaleCard(params) {
+  const { saleImageSrc, saleStickerText, cardLink } = params;
+  const containerParams = {
+    tag: "div",
+    classNames: ["sale-card-container"]
+  };
+  const saleCardContainer = createElement$1(containerParams);
+  const imageParams = {
+    tag: "img",
+    classNames: ["sale-image"],
+    attributes: {
+      src: saleImageSrc,
+      alt: "Product on sale image"
+    }
+  };
+  const saleImage = createElement$1(imageParams);
+  const saleStickerParams = {
+    tag: "div",
+    classNames: ["sale-sticker"],
+    textContent: saleStickerText
+  };
+  const saleSticker = createElement$1(saleStickerParams);
+  const saleButtonParams = {
+    tag: "button",
+    classNames: ["sale-button"],
+    textContent: "Shop now",
+    attributes: {
+      type: "button"
+    }
+  };
+  const saleButton = createElement$1(saleButtonParams);
+  saleCardContainer.addEventListener("click", () => {
+    window.location.href = cardLink;
+  });
+  saleButton.addEventListener("click", (event2) => {
+    event2.stopPropagation();
+    window.location.href = cardLink;
+  });
+  addInnerComponent(saleCardContainer, saleSticker);
+  addInnerComponent(saleCardContainer, saleImage);
+  addInnerComponent(saleCardContainer, saleButton);
+  return saleCardContainer;
+}
+function createSaleCards() {
+  const saleCardsWrapperParams = {
+    tag: "div",
+    classNames: ["sale-cards-wrapper"]
+  };
+  const saleCardsWrapper = createElement$1(saleCardsWrapperParams);
+  const saleCardsContainerParams = {
+    tag: "div",
+    classNames: ["sale-cards-container"]
+  };
+  const saleCardsContainer = createElement$1(saleCardsContainerParams);
+  const saleCards = [
+    {
+      saleImageSrc: "/assets/mainPage/genshin.png",
+      saleStickerText: "20% Off Gamer Boots",
+      cardLink: RoutePaths.Catalog
+    },
+    {
+      saleImageSrc: "/assets/mainPage/recording.png",
+      saleStickerText: "5% Off RSS Collection",
+      cardLink: "/catalog?category=RSS+inspired"
+    },
+    {
+      saleImageSrc: "/assets/mainPage/ktty.png",
+      saleStickerText: "10% Off Kids Boots",
+      cardLink: "/catalog?category=kids"
+    }
+  ];
+  saleCards.forEach((cardParams) => {
+    const saleCard = createSaleCard(cardParams);
+    addInnerComponent(saleCardsContainer, saleCard);
+  });
+  addInnerComponent(saleCardsWrapper, saleCardsContainer);
+  return saleCardsWrapper;
+}
+function createReviewCard(params) {
+  const { reviewImageSrc, reviewContent, reviewName } = params;
+  const containerParams = {
+    tag: "div",
+    classNames: ["review-card-container"]
+  };
+  const reviewCardContainer = createElement$1(containerParams);
+  const imageWrapperParams = {
+    tag: "div",
+    classNames: ["review-image-wrapper"]
+  };
+  const reviewImageWrapper = createElement$1(imageWrapperParams);
+  const imageParams = {
+    tag: "img",
+    classNames: ["review-image"],
+    attributes: {
+      src: reviewImageSrc,
+      alt: "reviewer image"
+    }
+  };
+  const reviewImage = createElement$1(imageParams);
+  const heartIconParams = {
+    tag: "img",
+    classNames: ["heart-icon"],
+    attributes: {
+      src: "/assets/mainPage/heart.png",
+      alt: "heart icon"
+    }
+  };
+  const heartIcon = createElement$1(heartIconParams);
+  addInnerComponent(reviewImageWrapper, reviewImage);
+  addInnerComponent(reviewImageWrapper, heartIcon);
+  const contentContainer = createElement$1({
+    tag: "div",
+    classNames: ["review-content"]
+  });
+  const textContainer = createElement$1({
+    tag: "div",
+    classNames: ["review-text-container"]
+  });
+  const descriptionParams = {
+    tag: "p",
+    classNames: ["review-description"],
+    textContent: reviewContent
+  };
+  const reviewDescription = createElement$1(descriptionParams);
+  const nameParams = {
+    tag: "p",
+    classNames: ["review-name"],
+    textContent: reviewName
+  };
+  const reviewNameElement = createElement$1(nameParams);
+  const iconParams = {
+    tag: "img",
+    classNames: ["review-icon"],
+    attributes: {
+      src: "/assets/mainPage/stars.png",
+      alt: "five stars"
+    }
+  };
+  const reviewIcon = createElement$1(iconParams);
+  addInnerComponent(textContainer, reviewDescription);
+  addInnerComponent(textContainer, reviewNameElement);
+  addInnerComponent(contentContainer, textContainer);
+  addInnerComponent(contentContainer, reviewIcon);
+  addInnerComponent(reviewCardContainer, reviewImageWrapper);
+  addInnerComponent(reviewCardContainer, contentContainer);
+  return reviewCardContainer;
+}
+function createReviewCards() {
+  const reviewCardsContainerParams = {
+    tag: "div",
+    classNames: ["review-cards-container"]
+  };
+  const reviewCardsContainer = createElement$1(reviewCardsContainerParams);
+  const reviewCards = [
+    {
+      reviewImageSrc: "/assets/mainPage/jason.png",
+      reviewContent: `These are boots for real men.
+    For those who know the price of success.
+    For those who have fallen and risen.
+    It doesn't matter how much money you have, what matters is the boots you wear.`,
+      reviewName: "Jason S."
+    },
+    {
+      reviewImageSrc: "/assets/mainPage/donald.png",
+      reviewContent: `When I put on boots from Valenki Store,
+      all the women flying with me on a private jet to the beach were simply delighted.
+      I charmed them; they couldn't take their eyes off me!`,
+      reviewName: "Donald T."
+    },
+    {
+      reviewImageSrc: "/assets/mainPage/pavel.png",
+      reviewContent: `Simply the best. These boots go perfectly with Stone Island and Burberry.
+      They are comfortable to walk in on stage and you look cool.`,
+      reviewName: "Pavel T."
+    }
+  ];
+  reviewCards.forEach((cardParams) => {
+    const reviewCard = createReviewCard(cardParams);
+    addInnerComponent(reviewCardsContainer, reviewCard);
+  });
+  return reviewCardsContainer;
+}
+async function createMainPage() {
   const pageContainerParams = {
     tag: "div",
     classNames: ["main-page-wrapper"]
@@ -37157,8 +37773,26 @@ function createMainPage() {
   const container = createElement$1(pageContainerParams);
   const header = createHeader();
   addInnerComponent(container, header);
-  const hero = createHero();
+  const hero = await createHero();
   addInnerComponent(container, hero);
+  const saleHeadingParams = {
+    tag: "div",
+    classNames: ["sale-heading"],
+    textContent: "Special Offers"
+  };
+  const saleHeading = createElement$1(saleHeadingParams);
+  addInnerComponent(container, saleHeading);
+  const saleCards = createSaleCards();
+  addInnerComponent(container, saleCards);
+  const reviewHeadingParams = {
+    tag: "div",
+    classNames: ["review-heading"],
+    textContent: "Our Happy Customers"
+  };
+  const reviewHeading = createElement$1(reviewHeadingParams);
+  addInnerComponent(container, reviewHeading);
+  const reviewCards = createReviewCards();
+  addInnerComponent(container, reviewCards);
   return container;
 }
 function createNotFoundPage() {
@@ -37195,7 +37829,7 @@ function createNotFoundPage() {
   const description = createElement$1(descriptionParams);
   const backHomeCallback = {
     eventType: "click",
-    callback: () => window.location.href = "/"
+    callback: () => window.location.href = RoutePaths.Main
   };
   const buttonParams = {
     tag: "button",
@@ -37242,7 +37876,7 @@ function createAuthForm() {
   const authFormFooterSpanParams = {
     tag: "a",
     attributes: {
-      href: "/register"
+      href: RoutePaths.Register
     },
     textContent: "Register",
     classNames: ["auth_form_footer_link-to-registration"]
@@ -37412,7 +38046,7 @@ function createRegistrationComponent() {
     textContent: "Sign in"
   });
   signInButton.addEventListener("click", () => {
-    router.navigate("/login");
+    router.navigate(RoutePaths.Login);
   });
   addInnerComponent(wrapper, authSide);
   addInnerComponent(authSide, authSideTitle);
@@ -37472,6 +38106,10 @@ function createProductCatalog(products) {
         }
       ]
     });
+    const contentWrapper = createElement$1({
+      tag: "div",
+      classNames: ["product-content-wrapper"]
+    });
     const imageElement = createElement$1({
       tag: "img",
       classNames: ["product-image"],
@@ -37512,10 +38150,46 @@ function createProductCatalog(products) {
       });
       addInnerComponent(priceContainer, priceElement);
     }
-    addInnerComponent(productCard, imageElement);
-    addInnerComponent(productCard, nameElement);
-    addInnerComponent(productCard, descriptionElement);
-    addInnerComponent(productCard, priceContainer);
+    const addToCartButton = createElement$1({
+      tag: "button",
+      classNames: ["add-to-cart-button"],
+      textContent: "ADD TO CART",
+      callbacks: [
+        {
+          eventType: "click",
+          callback: async (event2) => {
+            event2.stopPropagation();
+            const button = event2.currentTarget;
+            button.disabled = true;
+            button.textContent = "Adding...";
+            try {
+              const productId = product.id;
+              const variantId = product.masterVariant.id;
+              await addToCart(productId, variantId, 1);
+              updateBasketCounter();
+              button.textContent = "IN CART";
+              setTimeout(() => {
+                button.textContent = "ADD TO CART";
+                button.disabled = false;
+              }, 2e3);
+            } catch (error) {
+              console.error("Error adding to cart:", error);
+              button.textContent = "Error!";
+              setTimeout(() => {
+                button.textContent = "ADD TO CART";
+                button.disabled = false;
+              }, 2e3);
+            }
+          }
+        }
+      ]
+    });
+    addInnerComponent(contentWrapper, imageElement);
+    addInnerComponent(contentWrapper, nameElement);
+    addInnerComponent(contentWrapper, descriptionElement);
+    addInnerComponent(contentWrapper, priceContainer);
+    addInnerComponent(productCard, contentWrapper);
+    addInnerComponent(productCard, addToCartButton);
     addInnerComponent(catalogContainer, productCard);
   });
   return catalogContainer;
@@ -37921,6 +38595,11 @@ function clearAllFilters() {
   document.querySelectorAll(".filter-group input").forEach((input) => {
     input.checked = false;
   });
+  const catalogContainer = document.querySelector(".catalog-container");
+  if (catalogContainer) {
+    clear(catalogContainer);
+  }
+  appEvents.emit("displayProducts", void 0);
 }
 function createLoadingOverlay() {
   const overlay = createElement$1({
@@ -37969,7 +38648,7 @@ async function buildBreadcrumbsFromUrl() {
   const categoryName = url.searchParams.get("category");
   const breadcrumbs = [
     { name: "home", url: "/" },
-    { name: "catalog", url: "/catalog" }
+    { name: "catalog", url: RoutePaths.Catalog }
   ];
   if (!categoryName) {
     return breadcrumbs;
@@ -37998,7 +38677,7 @@ async function createCatalogPage() {
   const pageContainer = createElement$1(pageContainerParams);
   const breadcrumbContainerParams = {
     tag: "div",
-    classNames: ["breadcrumb-container"]
+    classNames: ["breadcrumb-wrapper"]
   };
   const breadcrumbContainer = createElement$1(breadcrumbContainerParams);
   const filterWrapperParams = {
@@ -38039,10 +38718,37 @@ async function createCatalogPage() {
   const header = createHeader();
   const filterComponent = await createFilterComponent();
   const loadingOverlay = createLoadingOverlay();
+  const sortComponent = createSortComponent(async (sort) => {
+    currentSort = sort;
+    await renderProducts(1, itemsPerPage, currentSort);
+  });
+  const sortContainerParams = {
+    tag: "div",
+    classNames: ["sort-container"]
+  };
+  const sortContainer = createElement$1(sortContainerParams);
+  addInnerComponent(sortContainer, sortComponent);
   let currentPage = 1;
   const itemsPerPage = 8;
   let currentSort = "price asc";
   let filters = getFiltersFromURL();
+  const updateSortAndFilterContainer = () => {
+    if (window.innerWidth <= 800) {
+      sortContainer.appendChild(filterIconContainer);
+    } else {
+      pageContainer.appendChild(filterIconContainer);
+    }
+  };
+  updateSortAndFilterContainer();
+  window.addEventListener("resize", updateSortAndFilterContainer);
+  appEvents.on("displayProducts", async () => {
+    filters = {
+      audience: /* @__PURE__ */ new Set(),
+      category: "",
+      size: /* @__PURE__ */ new Set()
+    };
+    await renderProducts(1, itemsPerPage, currentSort);
+  });
   const updateBreadcrumbs = async () => {
     const breadcrumbs = await buildBreadcrumbsFromUrl();
     const breadcrumbLinks = generateBreadcrumbLinks(breadcrumbs);
@@ -38164,10 +38870,6 @@ async function createCatalogPage() {
     clear(catalogContainer);
     await renderProducts(1, itemsPerPage, currentSort);
   });
-  const sortComponent = createSortComponent(async (sort) => {
-    currentSort = sort;
-    await renderProducts(1, itemsPerPage, currentSort);
-  });
   const initialBreadcrumbs = await buildBreadcrumbsFromUrl();
   const initialBreadcrumbLinks = generateBreadcrumbLinks(initialBreadcrumbs);
   addInnerComponent(breadcrumbContainer, initialBreadcrumbLinks);
@@ -38198,10 +38900,9 @@ async function createCatalogPage() {
   pageContainer.prepend(header);
   addInnerComponent(pageContainer, breadcrumbContainer);
   addInnerComponent(pageContainer, filterWrapper);
-  addInnerComponent(filterWrapper, filterIconContainer);
   addInnerComponent(filterWrapper, filterComponent);
   addInnerComponent(pageContainer, catalogContainerWrapper);
-  addInnerComponent(catalogContainerWrapper, sortComponent);
+  addInnerComponent(catalogContainerWrapper, sortContainer);
   addInnerComponent(catalogContainerWrapper, catalogContainer);
   addInnerComponent(catalogContainerWrapper, paginationContainer);
   pageContainer.append(loadingOverlay);
@@ -45603,7 +46304,7 @@ function productDetailedPageComponent(ID2) {
       var _a, _b, _c, _d, _e, _f;
       const replaceDashWithPlus = (text) => text.replace(/-/g, "+");
       const breadcrumbs = [
-        { name: "home", url: "/" },
+        { name: "home", url: RoutePaths.Main },
         { name: "catalog", url: "/catalog" }
       ];
       if (categoryResponses.length > 0) {
@@ -45740,19 +46441,85 @@ function productDetailedPageComponent(ID2) {
         }
       };
       const errorMessage = createElement$1(errorMessageParams);
-      const addToCartBtn = createElement$1(addToCartBtnParams);
+      const addToCartBtn = createElement$1(
+        addToCartBtnParams
+      );
       const iconsContainerParams = {
         tag: "div",
         classNames: ["icons_container"]
       };
-      addToCartBtn.addEventListener("click", () => {
+      let currentLineItemId = null;
+      addToCartBtn.addEventListener("click", async () => {
+        var _a2, _b2;
         const selectedSizeButton = sizeContainer.querySelector(
           ".size_button.__selected"
         );
+        const selectedSize = Number(selectedSizeButton == null ? void 0 : selectedSizeButton.innerHTML);
         if (!selectedSizeButton) {
+          errorMessage.textContent = "Please select a size.";
           errorMessage.style.visibility = "visible";
+          return;
         } else {
           errorMessage.style.visibility = "hidden";
+        }
+        addToCartBtn.disabled = true;
+        errorMessage.textContent = "Processing...";
+        errorMessage.style.visibility = "visible";
+        try {
+          if (addToCartBtn.textContent === "Add to Cart") {
+            const variants = response.body.masterData.current.masterVariant;
+            let variantId = null;
+            if ((_a2 = variants.attributes) == null ? void 0 : _a2.some(
+              (attr) => attr.name === "size" && attr.value.includes(selectedSize)
+            )) {
+              variantId = variants.id;
+            }
+            if (!variantId && response.body.masterData.current.variants) {
+              for (const variant of response.body.masterData.current.variants) {
+                if (variant.attributes) {
+                  if (variant.attributes.some(
+                    (attr) => attr.name === "size" && attr.value.includes(selectedSize)
+                  )) {
+                    variantId = variant.id;
+                    break;
+                  }
+                }
+              }
+            }
+            if (variantId) {
+              const cartResponse = await addToCart(response.body.id, variantId);
+              if (cartResponse.statusCode === 200 || cartResponse.statusCode === 201) {
+                currentLineItemId = ((_b2 = cartResponse.body.lineItems.find(
+                  (item) => item.productId === response.body.id && item.variant.id === variantId
+                )) == null ? void 0 : _b2.id) || null;
+                updateBasketCounter();
+                addToCartBtn.textContent = "Remove from Cart";
+                errorMessage.style.visibility = "hidden";
+              } else {
+                throw new Error("Could not add to cart.");
+              }
+            } else {
+              throw new Error("Size not found in any variant");
+            }
+          } else {
+            if (currentLineItemId) {
+              const removed = await removeItemFromCart(currentLineItemId);
+              if (removed) {
+                currentLineItemId = null;
+                updateBasketCounter();
+                addToCartBtn.textContent = "Add to Cart";
+                errorMessage.style.visibility = "hidden";
+              } else {
+                throw new Error("Could not remove from cart.");
+              }
+            } else {
+              throw new Error("No item to remove.");
+            }
+          }
+        } catch (error) {
+          showToast(error);
+        } finally {
+          addToCartBtn.disabled = false;
         }
       });
       const deliveryIconContainer = createIconContainer(
@@ -46920,6 +47687,1068 @@ async function buildUserProfilePage() {
   }
   return userProfilePage;
 }
+Swiper.use([Autoplay, Mousewheel, Keyboard, Navigation]);
+const slidesData = [
+  {
+    imageSrc: "../assets/about/slider/1.png",
+    title: "Effective communication",
+    text: "Clear and open communication is essential for successful teamwork. We prioritize regular check-ins, active listening, and transparent discussions to ensure that everyone is on the same page."
+  },
+  {
+    imageSrc: "../assets/about/slider/2.png",
+    title: "Team Spirit and Camaraderie",
+    text: "A strong sense of team spirit and camaraderie is at the heart of our success. We celebrate each other’s achievements, support one another during tough times, and create a positive, collaborative atmosphere."
+  },
+  {
+    imageSrc: "../assets/about/slider/3.png",
+    title: "Humor and Positivity",
+    text: "We believe that humor and a positive attitude are essential ingredients for a healthy and productive work environment. By encouraging laughter and light-hearted moments, we reduce stress, build stronger bonds, and keep our team’s spirits high."
+  },
+  {
+    imageSrc: "../assets/about/slider/4.png",
+    title: "Never Say Never",
+    text: "We don’t believe in giving up. When faced with a challenge, our default response is, “Never say never.” We keep pushing, learning, and adapting until we succeed."
+  },
+  {
+    imageSrc: "../assets/about/slider/5.png",
+    title: "Embrace the Chaos",
+    text: "We thrive on chaos! If something can go wrong, we find a way to make it fun. After all, what's a project without a few (hundred) unexpected twists?"
+  },
+  {
+    imageSrc: "../assets/about/slider/6.png",
+    title: "Code Until You’re Cross-eyed",
+    text: "We believe that true dedication shows when you’re staring at code so long it looks like abstract art. Coffee and code marathons are our specialty!"
+  }
+];
+const teamMembers = [
+  {
+    name: "Ivan",
+    role: "team spirit",
+    details: ["style master", "ex marine engineer", "friendly toxic"],
+    imageSrc: "../assets/about/members/ivan.jpg",
+    github: "https://github.com/dropthedead"
+  },
+  {
+    name: "Elena",
+    role: "team lead",
+    details: ["agile guru", "does kickboxing", "lactose intolerant"],
+    imageSrc: "../assets/about/members/elena.jpg",
+    github: "https://github.com/elena-dogman"
+  },
+  {
+    name: "Leonid",
+    role: "team engine",
+    details: ["meeting maestro", "bibliophile", "banana hater"],
+    imageSrc: "../assets/about/members/leonid.jpg",
+    github: "https://github.com/nesmeian"
+  }
+];
+function aboutComponent() {
+  const aboutContainerParams = {
+    tag: "div",
+    classNames: ["about_us_container"]
+  };
+  const aboutContainer = createElement$1(aboutContainerParams);
+  const missionParams = {
+    tag: "section",
+    classNames: ["mission_container"]
+  };
+  const missionHeaderParams = {
+    tag: "h2",
+    classNames: ["mission_header"],
+    textContent: "Our Mission"
+  };
+  const missionTextParams = {
+    tag: "p",
+    classNames: ["mission_text"],
+    textContent: `
+      We were never the best. None of us were at the top of RSS scoreboard. None of us had prior experience in web development.
+      But we had a vision - to come together as a team of three underdogs and, through shared learning, create something truly unique. 
+      We harnessed each of our strengths and worked together to overcome our weaknesses through collaboration and support.
+      Our mission is to demonstrate that anything is possible if you don’t give up, no matter how challenging it gets.
+      We believe in ourselves - believe in yourself, too.
+    `
+  };
+  const missionContainer = createElement$1(missionParams);
+  const missionHeader = createElement$1(missionHeaderParams);
+  const missionText = createElement$1(missionTextParams);
+  addInnerComponent(missionContainer, missionHeader);
+  addInnerComponent(missionContainer, missionText);
+  const buildingTogetherHeaderParams = {
+    tag: "h2",
+    classNames: ["mission_header"],
+    textContent: "Building Together"
+  };
+  const buildingTogetherTextParams = {
+    tag: "p",
+    classNames: ["building_together_text"]
+  };
+  const buildingTogetherHeader = createElement$1(buildingTogetherHeaderParams);
+  const buildingTogetherText = createElement$1(buildingTogetherTextParams);
+  buildingTogetherText.innerHTML = `
+  In this journey, <a class="no-hash" data-target="our_team">Elena</a> took on the role of team lead, handling the catalog, various project components, 
+  and managing agile practices with meticulous updates to the Kanban board.
+  <a class="no-hash" data-target="our_team">Ivan</a> developed the detailed page and authentication page, playing a crucial role in ensuring the responsiveness 
+  of the project's pages. Meanwhile, <a class="no-hash" data-target="our_team">Leonid</a> developed the profile and registration pages, sparking many of the team's 
+  crucial discussions and meetings.
+`;
+  addInnerComponent(missionContainer, buildingTogetherHeader);
+  addInnerComponent(missionContainer, buildingTogetherText);
+  const ourValuesContainer = {
+    tag: "section",
+    classNames: ["our_values"]
+  };
+  const ourValuesTextParams = {
+    tag: "h2",
+    classNames: ["mission_header"],
+    textContent: "Our Values"
+  };
+  const ourValuesText = createElement$1(ourValuesTextParams);
+  const ourValues = createElement$1(ourValuesContainer);
+  addInnerComponent(ourValues, ourValuesText);
+  const sliderContainerParams = {
+    tag: "div",
+    classNames: ["slider-container"]
+  };
+  const sliderContainer = createElement$1(sliderContainerParams);
+  const swiperParams = {
+    tag: "div",
+    classNames: ["swiper"]
+  };
+  const swiperWrapperParams = {
+    tag: "div",
+    classNames: ["swiper-wrapper"]
+  };
+  const swiper = createElement$1(swiperParams);
+  const swiperWrapper = createElement$1(swiperWrapperParams);
+  const swiperNavigationPrevParams = {
+    tag: "div",
+    classNames: ["swiper-button-prev"]
+  };
+  const swiperNavigationNextParams = {
+    tag: "div",
+    classNames: ["swiper-button-next"]
+  };
+  const swiperNavigationPrevContainerParams = {
+    tag: "div",
+    classNames: ["swiper-button-prev-container"]
+  };
+  const swiperNavigationNextContainerParams = {
+    tag: "div",
+    classNames: ["swiper-button-next-container"]
+  };
+  const swiperNavigationPrev = createElement$1(swiperNavigationPrevParams);
+  const swiperNavigationNext = createElement$1(swiperNavigationNextParams);
+  const swiperNavigationPrevContainer = createElement$1(
+    swiperNavigationPrevContainerParams
+  );
+  const swiperNavigationNextContainer = createElement$1(
+    swiperNavigationNextContainerParams
+  );
+  slidesData.forEach((slideData) => {
+    const slideParams = {
+      tag: "div",
+      classNames: ["swiper-slide"]
+    };
+    const slide2 = createElement$1(slideParams);
+    const imgParams = {
+      tag: "img",
+      attributes: {
+        src: slideData.imageSrc,
+        alt: "Slide Image"
+      },
+      classNames: ["slide-image"]
+    };
+    const imgSlide = createElement$1(imgParams);
+    const titleParams = {
+      tag: "h2",
+      textContent: slideData.title,
+      classNames: ["slide-title"]
+    };
+    const titleSlide = createElement$1(titleParams);
+    const textParams = {
+      tag: "p",
+      textContent: slideData.text,
+      classNames: ["slide-text"]
+    };
+    const textSlide = createElement$1(textParams);
+    addInnerComponent(slide2, imgSlide);
+    addInnerComponent(slide2, titleSlide);
+    addInnerComponent(slide2, textSlide);
+    addInnerComponent(swiperWrapper, slide2);
+  });
+  const sliderSectionParams = {
+    tag: "section",
+    classNames: ["slider"]
+  };
+  const sliderSection = createElement$1(sliderSectionParams);
+  addInnerComponent(swiper, swiperWrapper);
+  addInnerComponent(swiperNavigationNextContainer, swiperNavigationNext);
+  addInnerComponent(swiperNavigationPrevContainer, swiperNavigationPrev);
+  addInnerComponent(swiper, swiperNavigationPrevContainer);
+  addInnerComponent(swiper, swiperNavigationNextContainer);
+  addInnerComponent(sliderContainer, swiper);
+  addInnerComponent(sliderSection, sliderContainer);
+  addInnerComponent(aboutContainer, missionContainer);
+  addInnerComponent(aboutContainer, ourValues);
+  addInnerComponent(ourValues, sliderContainer);
+  function initializeSwiper() {
+    const screenWidth = window.innerWidth;
+    const slidesPerView = screenWidth <= 768 ? 1 : 3;
+    const slider = new Swiper(".swiper", {
+      direction: "horizontal",
+      loop: true,
+      slidesPerView,
+      spaceBetween: 30,
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev"
+      },
+      updateOnWindowResize: true
+    });
+    return slider;
+  }
+  setTimeout(() => {
+    const slider = initializeSwiper();
+    window.addEventListener("resize", () => {
+      slider.params.slidesPerView = window.innerWidth <= 768 ? 1 : 3;
+      slider.update();
+    });
+  }, 0);
+  const ourTeamParams = {
+    tag: "section",
+    classNames: ["our_team"],
+    textContent: "Our Team",
+    attributes: {
+      id: "our_team"
+    }
+  };
+  const ourTeamContainer = createElement$1(ourTeamParams);
+  const teamMembersParams = {
+    tag: "div",
+    classNames: ["team_members"]
+  };
+  const teamMembersContainer = createElement$1(teamMembersParams);
+  addInnerComponent(aboutContainer, ourTeamContainer);
+  addInnerComponent(ourTeamContainer, teamMembersContainer);
+  teamMembers.forEach((member, index) => {
+    const classNames = ["team-member"];
+    if (index === 0) {
+      classNames.push("left");
+    } else if (index === 1) {
+      classNames.push("top");
+    } else if (index === 2) {
+      classNames.push("right");
+    }
+    const memberContainerParams = {
+      tag: "div",
+      classNames
+    };
+    const memberContainer = createElement$1(memberContainerParams);
+    const memberImageParams = {
+      tag: "img",
+      attributes: {
+        src: member.imageSrc,
+        alt: member.name
+      },
+      classNames: ["team-member-image"]
+    };
+    const memberImage = createElement$1(memberImageParams);
+    const memberTextContainerParams = {
+      tag: "div",
+      classNames: ["text_container"]
+    };
+    const memberTextContainer = createElement$1(memberTextContainerParams);
+    const memberNameParams = {
+      tag: "h3",
+      classNames: ["member_name"],
+      textContent: member.name
+    };
+    const memberName = createElement$1(memberNameParams);
+    const githubLogoParams = {
+      tag: "img",
+      attributes: {
+        src: "../assets/about/git.png",
+        alt: "GitHub Logo",
+        title: "GitHub Profile"
+      },
+      classNames: ["github-logo"]
+    };
+    const githubLogo = createElement$1(githubLogoParams);
+    const githubLinkParams = {
+      tag: "a",
+      attributes: {
+        href: member.github,
+        target: "_blank"
+      }
+    };
+    const githubLink = createElement$1(githubLinkParams);
+    addInnerComponent(githubLink, githubLogo);
+    addInnerComponent(memberName, githubLink);
+    const memberRoleParams = {
+      tag: "p",
+      classNames: ["member_role"],
+      textContent: member.role
+    };
+    const memberRole = createElement$1(memberRoleParams);
+    const memberDetailsParams = {
+      tag: "ul",
+      classNames: ["member_details"]
+    };
+    const memberDetails = createElement$1(memberDetailsParams);
+    member.details.forEach((detail) => {
+      const detailItemParams = {
+        tag: "li",
+        textContent: detail
+      };
+      const detailItem = createElement$1(detailItemParams);
+      addInnerComponent(memberDetails, detailItem);
+    });
+    addInnerComponent(memberContainer, memberImage);
+    addInnerComponent(memberContainer, memberTextContainer);
+    addInnerComponent(memberTextContainer, memberName);
+    addInnerComponent(memberTextContainer, memberRole);
+    addInnerComponent(memberTextContainer, memberDetails);
+    addInnerComponent(teamMembersContainer, memberContainer);
+  });
+  const bgAnimation = createElement$1({
+    tag: "div",
+    classNames: ["bg-animation"]
+  });
+  const stars = createElement$1({ tag: "div", attributes: { id: "stars" } });
+  const stars2 = createElement$1({ tag: "div", attributes: { id: "stars2" } });
+  const stars3 = createElement$1({ tag: "div", attributes: { id: "stars3" } });
+  const stars4 = createElement$1({ tag: "div", attributes: { id: "stars4" } });
+  addInnerComponent(bgAnimation, stars);
+  addInnerComponent(bgAnimation, stars2);
+  addInnerComponent(bgAnimation, stars3);
+  addInnerComponent(bgAnimation, stars4);
+  document.body.appendChild(bgAnimation);
+  const makeMagicButtonParams = {
+    tag: "button",
+    classNames: ["make-magic-button"]
+  };
+  const magicWandImageParams = {
+    tag: "img",
+    attributes: {
+      src: "../assets/about/magic-wand.png",
+      alt: "Magic Wand"
+    },
+    classNames: ["magic-wand-image"]
+  };
+  const magicWandImage = createElement$1(magicWandImageParams);
+  const makeMagicButton = createElement$1(makeMagicButtonParams);
+  addInnerComponent(makeMagicButton, magicWandImage);
+  makeMagicButton.addEventListener("click", toggleMagic);
+  document.body.appendChild(makeMagicButton);
+  const schoolLogoContainerParams = {
+    tag: "div",
+    classNames: ["school-logo_container"]
+  };
+  const schoolLogoContainer = createElement$1(schoolLogoContainerParams);
+  const schoolLogoLinkParams = {
+    tag: "a",
+    classNames: ["school-logo_link"],
+    attributes: {
+      href: "https://rs.school/",
+      target: "_blank"
+    }
+  };
+  const schoolLogoLink = createElement$1(schoolLogoLinkParams);
+  const schoolLogoIconParams = {
+    tag: "img",
+    classNames: ["school-logo_icon"],
+    attributes: {
+      src: "../assets/about/school_logo.svg"
+    }
+  };
+  const schoolLogoIcon = createElement$1(schoolLogoIconParams);
+  addInnerComponent(schoolLogoLink, schoolLogoIcon);
+  addInnerComponent(schoolLogoContainer, schoolLogoLink);
+  addInnerComponent(aboutContainer, schoolLogoContainer);
+  function toggleMagic() {
+    const aboutUs = document.querySelector(".about_us");
+    if (aboutUs == null ? void 0 : aboutUs.classList.contains("magic-active")) {
+      aboutUs.classList.remove("magic-active");
+      makeMagicButton.style.background = "#ead1eb";
+      schoolLogoIcon.style.fill = "white";
+      stopAnimation();
+      resetTextColors();
+    } else {
+      aboutUs == null ? void 0 : aboutUs.classList.add("magic-active");
+      makeMagicButton.style.background = "white";
+      showAnimation();
+      changeTextColors();
+    }
+  }
+  function changeTextColors() {
+    const textElements = document.querySelectorAll(".magic-text");
+    textElements.forEach((element) => {
+      element.classList.add("magic-text-white");
+    });
+  }
+  function resetTextColors() {
+    const textElements = document.querySelectorAll(".magic-text");
+    textElements.forEach((element) => {
+      element.classList.remove("magic-text-white");
+    });
+  }
+  function stopAnimation() {
+    bgAnimation.style.opacity = "0";
+  }
+  function showAnimation() {
+    bgAnimation.style.opacity = "1";
+  }
+  function makeAboutContainerVisible() {
+    aboutContainer.classList.add("visible");
+  }
+  if (document.readyState === "complete") {
+    setTimeout(makeAboutContainerVisible, 0);
+  } else {
+    window.addEventListener("load", makeAboutContainerVisible);
+  }
+  window.addEventListener("scroll", () => {
+    const teamMemberContainers = document.querySelectorAll(".team-member");
+    const ourTeamPosition = ourTeamContainer == null ? void 0 : ourTeamContainer.getBoundingClientRect().top;
+    const screenPosition = window.innerHeight / 1.2;
+    if (ourTeamPosition && ourTeamPosition < screenPosition) {
+      ourTeamContainer.classList.add("visible");
+      teamMemberContainers.forEach((container, index) => {
+        setTimeout(() => {
+          container.classList.add("visible");
+        }, 100 * index);
+      });
+    }
+  });
+  return aboutContainer;
+}
+function createAboutUsPage() {
+  const aboutPageParams = {
+    tag: "div",
+    classNames: ["about_us"]
+  };
+  const aboutPageContainer = createElement$1(aboutPageParams);
+  const header = createHeader();
+  const aboutPageComponent = aboutComponent();
+  aboutPageContainer.prepend(header);
+  addInnerComponent(aboutPageContainer, aboutPageComponent);
+  document.addEventListener("DOMContentLoaded", (e) => {
+    e.preventDefault();
+    function scrollToElement(targetId) {
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+    document.querySelectorAll(".no-hash").forEach((link) => {
+      link.addEventListener("click", (event2) => {
+        event2.preventDefault();
+        const targetId = event2.currentTarget.getAttribute(
+          "data-target"
+        );
+        if (targetId) {
+          scrollToElement(targetId);
+        }
+      });
+    });
+  });
+  return aboutPageContainer;
+}
+function formatPrice(amount, currency2 = "USD") {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency2
+  }).format(amount);
+}
+function createBasketPayInformation(totalPrice, subtotal, discountCodeText) {
+  const basketPayInfContainerParams = {
+    tag: "div",
+    classNames: ["basket-pay__basket-inf-container"]
+  };
+  const basketPayInfContainer = createElement$1(basketPayInfContainerParams);
+  const basketPayInfSubtotalContainerParams = {
+    tag: "div",
+    classNames: ["basket-inf-container__subtotal-container", "inf-container"]
+  };
+  const basketPayInfSubtotalContainer = createElement$1(basketPayInfSubtotalContainerParams);
+  const basketPayInfSubtotalDescriptionParams = {
+    tag: "h3",
+    classNames: ["basket-inf-container__subtotal-description"],
+    textContent: "Subtotal"
+  };
+  const basketPayInfSubtotalDescription = createElement$1(basketPayInfSubtotalDescriptionParams);
+  const formattedSubtotalPrice = formatPrice(subtotal / 100);
+  const basketPayInfSubtotalPriceParams = {
+    tag: "div",
+    classNames: ["basket-inf-container__subtotal-price"],
+    textContent: formattedSubtotalPrice
+  };
+  const basketPayInfSubtotalPrice = createElement$1(basketPayInfSubtotalPriceParams);
+  addInnerComponent(basketPayInfSubtotalContainer, basketPayInfSubtotalDescription);
+  addInnerComponent(basketPayInfSubtotalContainer, basketPayInfSubtotalPrice);
+  const basketPayInfTotalContainerParams = {
+    tag: "div",
+    classNames: ["basket-inf-container__total-container", "inf-container"]
+  };
+  const basketPayInfTotalContainer = createElement$1(basketPayInfTotalContainerParams);
+  const basketPayInfTotalDescriptionParams = {
+    tag: "h3",
+    classNames: ["basket-inf-container__total-description"],
+    textContent: "Total"
+  };
+  const basketPayInfTotalDescription = createElement$1(basketPayInfTotalDescriptionParams);
+  const formattedTotalPrice = formatPrice(totalPrice / 100);
+  const basketPayInfTotalPriceParams = {
+    tag: "div",
+    classNames: ["basket-inf-container__total-price"],
+    textContent: formattedTotalPrice
+  };
+  const basketPayInfTotalPrice = createElement$1(basketPayInfTotalPriceParams);
+  addInnerComponent(basketPayInfTotalContainer, basketPayInfTotalDescription);
+  addInnerComponent(basketPayInfTotalContainer, basketPayInfTotalPrice);
+  addInnerComponent(basketPayInfContainer, basketPayInfSubtotalContainer);
+  const discountCodeContainerParams = {
+    tag: "div",
+    classNames: ["basket-inf-container__discount-code"],
+    attributes: { style: discountCodeText ? "" : "display: none;" }
+  };
+  const discountCodeContainer = createElement$1(discountCodeContainerParams);
+  const discountCodeDescriptionParams = {
+    tag: "span",
+    classNames: ["discount-code-description"],
+    textContent: "Applied Promo Code: "
+  };
+  const discountCodeDescription = createElement$1(discountCodeDescriptionParams);
+  const discountCodeNameParams = {
+    tag: "span",
+    classNames: ["discount-code-name"],
+    textContent: discountCodeText
+  };
+  const discountCodeName = createElement$1(discountCodeNameParams);
+  addInnerComponent(discountCodeDescription, discountCodeName);
+  addInnerComponent(discountCodeContainer, discountCodeDescription);
+  addInnerComponent(basketPayInfContainer, discountCodeContainer);
+  addInnerComponent(basketPayInfContainer, basketPayInfTotalContainer);
+  appEvents.on("promoCodeApplied", ({ discountCode, totalPrice: newTotalPrice }) => {
+    discountCodeName.textContent = discountCode;
+    discountCodeContainer.style.display = "";
+    const formattedNewTotalPrice = formatPrice(newTotalPrice / 100);
+    const totalPriceElement = basketPayInfContainer.querySelector(".basket-inf-container__total-price");
+    if (totalPriceElement) {
+      totalPriceElement.textContent = formattedNewTotalPrice;
+    }
+  });
+  return basketPayInfContainer;
+}
+function calculateSubtotal(cart) {
+  return cart.lineItems.reduce((sum, lineItem) => {
+    const itemPrice = lineItem.price.discounted ? lineItem.price.discounted.value.centAmount : lineItem.price.value.centAmount;
+    return sum + itemPrice * lineItem.quantity;
+  }, 0);
+}
+function getTotalPrice(cart) {
+  return cart.totalPrice.centAmount;
+}
+async function fetchAndPrintTotalPrice() {
+  try {
+    const cart = await getActiveCart();
+    if (cart) {
+      const totalPrice = getTotalPrice(cart);
+      return totalPrice;
+    } else {
+      return 0;
+    }
+  } catch (error) {
+    if (error instanceof ReferenceError) {
+      console.error("ReferenceError:", error.message);
+    } else {
+      console.error("Error fetching cart:", error);
+    }
+    return 0;
+  }
+}
+function setupQuantityHandlers(countView, totalPriceElement, countSubtract, countAdd, itemId, initialCount, price) {
+  let currentCount = initialCount;
+  const updateItemQuantity = async (newCount) => {
+    const updatedItem = await updateQuantity(itemId, newCount);
+    if (updatedItem) {
+      currentCount = updatedItem.quantity;
+      countView.textContent = updatedItem.quantity.toString();
+      totalPriceElement.textContent = `Total: ${formatPrice(price * updatedItem.quantity)}`;
+      const totalPrice = await fetchAndPrintTotalPrice();
+      updateTotalPriceUI(totalPrice);
+      const activeCart = await getActiveCart();
+      if (activeCart) {
+        const subtotal = calculateSubtotal(activeCart);
+        updateSubtotalPriceUI(subtotal);
+      }
+    }
+  };
+  countSubtract.addEventListener("click", () => {
+    if (currentCount > 1) {
+      updateItemQuantity(currentCount - 1);
+    }
+    if (currentCount - 1 === 1) {
+      countSubtract.classList.add("hidden");
+    }
+    updateBasketCounter();
+  });
+  countAdd.addEventListener("click", () => {
+    updateItemQuantity(currentCount + 1);
+    countSubtract.classList.remove("hidden");
+    updateBasketCounter();
+  });
+}
+function updateTotalPriceUI(totalPrice) {
+  const totalPriceElement = document.querySelector(
+    ".basket-inf-container__total-price"
+  );
+  if (totalPriceElement) {
+    totalPriceElement.textContent = `$${(totalPrice / 100).toFixed(2)}`;
+  }
+}
+function updateSubtotalPriceUI(subtotalPrice) {
+  const subtotalPriceElement = document.querySelector(
+    ".basket-inf-container__subtotal-price"
+  );
+  if (subtotalPriceElement) {
+    subtotalPriceElement.textContent = `$${(subtotalPrice / 100).toFixed(2)}`;
+  }
+}
+async function createBasketPayForm() {
+  var _a, _b, _c;
+  const basketPayFormParams = {
+    tag: "form",
+    classNames: ["basket-pay__basket-form"]
+  };
+  const basketPayForm = createElement$1(basketPayFormParams);
+  const basketPayTitleParams = {
+    tag: "h2",
+    classNames: ["basket-pay__basket-title"],
+    textContent: "Order Summary"
+  };
+  const basketPayTitle = createElement$1(basketPayTitleParams);
+  const [basketDiscountLabel, basketDiscountInput] = createInput(
+    "basket-discount",
+    [
+      ["basket-discount-label", "label-basket"],
+      ["basket-discount-input", "input-basket"]
+    ],
+    "basket-discount",
+    "basket-discount"
+  );
+  basketDiscountInput.setAttribute("placeholder", "Code");
+  basketDiscountLabel.textContent = "Discount code / Promo code";
+  const basketApplyButtonParams = {
+    tag: "button",
+    classNames: ["basket-form__apply-button"],
+    textContent: "Apply"
+  };
+  const basketApplyButton = createElement$1(basketApplyButtonParams);
+  const errorSpanParams = {
+    tag: "span",
+    classNames: ["error-message"],
+    textContent: ""
+  };
+  const errorSpan = createElement$1(errorSpanParams);
+  const successSpanParams = {
+    tag: "span",
+    classNames: ["success-message"],
+    textContent: ""
+  };
+  const successSpan = createElement$1(successSpanParams);
+  addInnerComponent(basketDiscountLabel, basketDiscountInput);
+  addInnerComponent(basketDiscountLabel, basketApplyButton);
+  addInnerComponent(basketDiscountLabel, errorSpan);
+  addInnerComponent(basketDiscountLabel, successSpan);
+  let discountCodeText = "";
+  let totalPrice = 0;
+  let subtotal = 0;
+  try {
+    const cart = await getActiveCart();
+    if (cart) {
+      totalPrice = getTotalPrice(cart);
+      subtotal = calculateSubtotal(cart);
+      const discountCodesMap = await getMappedDiscountCodes();
+      const discountCodeId = (_c = (_b = (_a = cart.discountCodes) == null ? void 0 : _a[0]) == null ? void 0 : _b.discountCode) == null ? void 0 : _c.id;
+      if (discountCodeId) {
+        discountCodeText = discountCodesMap[discountCodeId] ?? "Unknown promo code";
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching cart data:", error);
+  }
+  const basketPayInfContainer = createBasketPayInformation(
+    totalPrice,
+    subtotal,
+    discountCodeText
+  );
+  const basketPayButtonParams = {
+    tag: "button",
+    classNames: ["basket-form__submit-button"],
+    textContent: "Checkout",
+    attributes: { disabled: "" }
+  };
+  const basketPayButton = createElement$1(basketPayButtonParams);
+  addInnerComponent(basketPayForm, basketPayTitle);
+  addInnerComponent(basketPayForm, basketDiscountLabel);
+  addInnerComponent(basketPayForm, basketPayInfContainer);
+  addInnerComponent(basketPayForm, basketPayButton);
+  basketApplyButton.addEventListener("click", async (event2) => {
+    var _a2, _b2, _c2;
+    event2.preventDefault();
+    errorSpan.style.display = "none";
+    successSpan.style.display = "none";
+    const discountCode = basketDiscountInput.value.trim();
+    if (!discountCode) {
+      errorSpan.textContent = "Please enter a promo code";
+      errorSpan.style.display = "block";
+      return;
+    }
+    try {
+      const activeCart = await getActiveCart();
+      if (activeCart) {
+        const cartId = activeCart.id;
+        const cartVersion = activeCart.version;
+        if (activeCart.discountCodes && activeCart.discountCodes.length > 0) {
+          errorSpan.textContent = "Only one promo code allowed!";
+          errorSpan.style.display = "block";
+          return;
+        }
+        const body = {
+          version: cartVersion,
+          actions: [
+            {
+              action: "addDiscountCode",
+              code: discountCode
+            }
+          ]
+        };
+        const response = await applyPromoCode(cartId, body);
+        if (response && "body" in response) {
+          successSpan.textContent = "Promo code applied successfully";
+          successSpan.style.display = "block";
+          const discountCodesMap = await getMappedDiscountCodes();
+          const appliedDiscountCode = discountCodesMap[(_c2 = (_b2 = (_a2 = response.body.discountCodes) == null ? void 0 : _a2[0]) == null ? void 0 : _b2.discountCode) == null ? void 0 : _c2.id];
+          const updatedCart = await getActiveCart();
+          if (updatedCart) {
+            subtotal = calculateSubtotal(updatedCart);
+            totalPrice = getTotalPrice(updatedCart);
+            updateSubtotalPriceUI(subtotal);
+            updateTotalPriceUI(totalPrice);
+            appEvents.emit("promoCodeApplied", { discountCode: appliedDiscountCode, totalPrice });
+          }
+        } else if (response && "statusCode" in response && response.statusCode === 400) {
+          errorSpan.textContent = "Invalid promo code";
+          errorSpan.style.display = "block";
+        }
+      }
+    } catch (error) {
+      console.error("Error applying promo code:", error);
+      errorSpan.textContent = "Failed to apply promo code";
+      errorSpan.style.display = "block";
+    }
+  });
+  return basketPayForm;
+}
+async function createBasketPayContainer() {
+  const basketPayPapams = {
+    tag: "div",
+    classNames: ["basket-wrapper__basket-pay"]
+  };
+  const basketPay = createElement$1(basketPayPapams);
+  const basketPayForm = await createBasketPayForm();
+  addInnerComponent(basketPay, basketPayForm);
+  return basketPay;
+}
+function createRemoveIcon(type) {
+  const removeIconContainerParams = {
+    tag: "div",
+    classNames: [`${type}__remove-icon-container`, "remove-icon-container"]
+  };
+  const removeIconParams = {
+    tag: "img",
+    classNames: ["remove_icon"],
+    attributes: {
+      src: "../assets/basket/bin.png"
+    }
+  };
+  const removeIcon = createElement$1(removeIconParams);
+  const removeIconContainer = createElement$1(removeIconContainerParams);
+  addInnerComponent(removeIconContainer, removeIcon);
+  return removeIconContainer;
+}
+function createEmptyMessage() {
+  const emptyMessageLink = createElement$1({
+    tag: "a",
+    classNames: ["basket-products__empty-message", "empty-message__link"],
+    textContent: "Go to catalog",
+    attributes: { href: "/catalog" }
+  });
+  const emptyMessageText = createElement$1({
+    tag: "p",
+    classNames: ["basket-products__empty-message"],
+    textContent: "Your cart is empty"
+  });
+  const lineBreak = createElement$1({ tag: "br" });
+  const emptyMessage = createElement$1({
+    tag: "div",
+    classNames: ["empty-message"]
+  });
+  addInnerComponent(emptyMessage, emptyMessageText);
+  addInnerComponent(emptyMessage, lineBreak);
+  addInnerComponent(emptyMessage, emptyMessageLink);
+  return emptyMessage;
+}
+async function createBasketProductsContainer() {
+  const basketProductsParams = {
+    tag: "div",
+    classNames: ["basket-wrapper__basket-products"]
+  };
+  const overlay = createLoadingOverlay();
+  const basketProducts = createElement$1(basketProductsParams);
+  const emptyMessage = createEmptyMessage();
+  const basketProductsTitleParams = {
+    tag: "h2",
+    classNames: ["basket-products__products-title"],
+    textContent: "Shopping Cart"
+  };
+  const basketProductsTitle = createElement$1(basketProductsTitleParams);
+  const cartItems = await fetchCartItems();
+  const clearBasketBtnParams = {
+    tag: "button",
+    classNames: ["basket-products__clear-basket-btn"],
+    textContent: "Clear cart"
+  };
+  const clearBasketBtn = createElement$1(clearBasketBtnParams);
+  clearBasketBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const items = findElement(
+      basketProducts,
+      "basket-products__basket-products-item",
+      true
+    );
+    const onlineItems = await fetchCartItems();
+    try {
+      await onlineItems.reduce(async (previousPromise, cartItem, i) => {
+        overlay.style.display = "flex";
+        await previousPromise;
+        await removeItemFromCart(cartItem.id);
+        updateBasketCounter();
+        items[i].remove();
+      }, Promise.resolve());
+      overlay.style.display = "none";
+    } catch (error) {
+      showToast(error);
+    }
+    addInnerComponent(basketProducts, emptyMessage);
+    updateTotalPriceUI(0);
+    updateSubtotalPriceUI(0);
+  });
+  addInnerComponent(basketProducts, basketProductsTitle);
+  addInnerComponent(basketProducts, clearBasketBtn);
+  if (cartItems.length === 0) {
+    addInnerComponent(basketProducts, emptyMessage);
+  } else {
+    cartItems.forEach((item) => {
+      const productElement = createBasketProductsItem(item, emptyMessage);
+      addInnerComponent(basketProducts, productElement.element);
+      const price = getSingleItemPrice(item) / 100;
+      setupQuantityHandlers(
+        productElement.countView,
+        productElement.totalPriceElement,
+        productElement.countSubtract,
+        productElement.countAdd,
+        item.id,
+        item.quantity,
+        price
+      );
+      if (item.quantity === 1) {
+        productElement.countSubtract.classList.add("hidden");
+      } else {
+        productElement.countSubtract.classList.remove("hidden");
+      }
+    });
+  }
+  addInnerComponent(basketProducts, overlay);
+  return basketProducts;
+}
+function getDiscountedPrice(item) {
+  return item.totalPrice ? item.totalPrice.centAmount : item.price.value.centAmount;
+}
+function getSingleItemPrice(item) {
+  var _a, _b;
+  return ((_a = item.price.discounted) == null ? void 0 : _a.value.centAmount) ? (_b = item.price.discounted) == null ? void 0 : _b.value.centAmount : item.price.value.centAmount;
+}
+function createBasketProductsItem(item, emptyMessage) {
+  var _a, _b;
+  const basketProductsItemParams = {
+    tag: "div",
+    classNames: ["basket-products__basket-products-item"]
+  };
+  const basketProductsItem = createElement$1(basketProductsItemParams);
+  let size = "";
+  if (item.variant.attributes) {
+    item.variant.attributes.forEach((attribute) => {
+      if (attribute.name === "size" && Array.isArray(attribute.value)) {
+        size = attribute.value[0];
+      }
+    });
+  }
+  const basketItemWrapperParams = {
+    tag: "div",
+    classNames: ["basket-products-item__item-wrapper"]
+  };
+  const basketItemWrapper = createElement$1(basketItemWrapperParams);
+  const basketItemImgParams = {
+    tag: "img",
+    classNames: ["basket-products-item__item-img"],
+    attributes: {
+      alt: "basket product image",
+      src: ((_b = (_a = item.variant.images) == null ? void 0 : _a[0]) == null ? void 0 : _b.url) || "assets/basket/default.jpg"
+    }
+  };
+  const basketItemImg = createElement$1(basketItemImgParams);
+  const productName = item.name["en-US"] || "No name available";
+  const basketItemDescriptionTitleParams = {
+    tag: "div",
+    classNames: ["basket-products-item__item-description-title"],
+    textContent: productName
+  };
+  const basketItemDescriptionTitle = createElement$1(
+    basketItemDescriptionTitleParams
+  );
+  const basketItemSizeParams = {
+    tag: "div",
+    classNames: ["basket-products-item__item-description-size"],
+    textContent: `Size: ${size.toString()}`
+  };
+  const basketItemSize = createElement$1(basketItemSizeParams);
+  addInnerComponent(basketItemDescriptionTitle, basketItemSize);
+  addInnerComponent(basketItemWrapper, basketItemImg);
+  addInnerComponent(basketItemWrapper, basketItemDescriptionTitle);
+  const basketItemCountContainerParams = {
+    tag: "div",
+    classNames: ["basket-products-item__item-count-container"]
+  };
+  const basketItemCountContainer = createElement$1(
+    basketItemCountContainerParams
+  );
+  const basketItemCountSubtractParams = {
+    tag: "div",
+    classNames: ["item-count-container__count-subtract"],
+    textContent: "-"
+  };
+  const basketItemCountSubtract = createElement$1(basketItemCountSubtractParams);
+  const basketItemCountAddParams = {
+    tag: "div",
+    classNames: ["item-count-container__count-add"],
+    textContent: "+"
+  };
+  const basketItemCountAdd = createElement$1(basketItemCountAddParams);
+  const basketItemCountViewParams = {
+    tag: "div",
+    classNames: ["item-count-container__count-view"],
+    textContent: item.quantity.toString()
+  };
+  const basketItemCountView = createElement$1(basketItemCountViewParams);
+  const basketItemPriceContainerParams = {
+    tag: "div",
+    classNames: ["item-count-container__price-container"]
+  };
+  const basketItemPriceContainer = createElement$1(
+    basketItemPriceContainerParams
+  );
+  const unitPrice = formatPrice(getSingleItemPrice(item) / 100);
+  const totalItemPrice = formatPrice(getDiscountedPrice(item) / 100);
+  const basketItemUnitPriceParams = {
+    tag: "div",
+    classNames: ["item-count-container__unit-price"],
+    textContent: `Price: ${unitPrice}`
+  };
+  const basketItemUnitPrice = createElement$1(basketItemUnitPriceParams);
+  const basketItemTotalPriceParams = {
+    tag: "div",
+    classNames: ["item-count-container__total-price"],
+    textContent: `Total: ${totalItemPrice}`
+  };
+  const basketItemTotalPrice = createElement$1(basketItemTotalPriceParams);
+  addInnerComponent(basketItemPriceContainer, basketItemUnitPrice);
+  addInnerComponent(basketItemPriceContainer, basketItemTotalPrice);
+  const removeIcon = createRemoveIcon("basket-products");
+  removeIcon.addEventListener("click", async () => {
+    var _a2;
+    const success = await removeItemFromCart(item.id);
+    const parent = basketProductsItem.parentElement;
+    const items = findElement(
+      parent,
+      "basket-products__basket-products-item",
+      true
+    );
+    if (success) {
+      basketProductsItem.remove();
+      if (items.length === 1) {
+        addInnerComponent(parent, emptyMessage);
+      }
+      try {
+        updateBasketCounter();
+        const activeCart = await getActiveCart();
+        if (activeCart) {
+          const totalCartPrice = ((_a2 = activeCart.totalPrice) == null ? void 0 : _a2.centAmount) ?? 0;
+          const subtotal = calculateSubtotal(activeCart);
+          updateTotalPriceUI(totalCartPrice);
+          updateSubtotalPriceUI(subtotal);
+        }
+      } catch (error) {
+        showToast(error);
+      }
+    }
+  });
+  addInnerComponent(basketProductsItem, basketItemWrapper);
+  addInnerComponent(basketProductsItem, basketItemCountContainer);
+  addInnerComponent(basketItemCountContainer, basketItemCountSubtract);
+  addInnerComponent(basketItemCountContainer, basketItemCountView);
+  addInnerComponent(basketItemCountContainer, basketItemCountAdd);
+  addInnerComponent(basketProductsItem, basketItemPriceContainer);
+  addInnerComponent(basketProductsItem, removeIcon);
+  return {
+    element: basketProductsItem,
+    countView: basketItemCountView,
+    totalPriceElement: basketItemTotalPrice,
+    countSubtract: basketItemCountSubtract,
+    countAdd: basketItemCountAdd
+  };
+}
+async function buildBasketContainer() {
+  const basketContainerParams = {
+    tag: "div",
+    classNames: ["basket-page__basket-container"]
+  };
+  const basketWrapperParams = {
+    tag: "div",
+    classNames: ["basket-container__basket-wrapper"]
+  };
+  const basketContainer = createElement$1(basketContainerParams);
+  const basketWraper = createElement$1(basketWrapperParams);
+  addInnerComponent(basketContainer, basketWraper);
+  const basketProducts = await createBasketProductsContainer();
+  const basketPay = await createBasketPayContainer();
+  addInnerComponent(basketWraper, basketProducts);
+  addInnerComponent(basketWraper, basketPay);
+  return basketContainer;
+}
+async function createBasketPage() {
+  const basketParams = {
+    tag: "div",
+    classNames: ["basket-page"]
+  };
+  const basket = createElement$1(basketParams);
+  const header = createHeader();
+  const basketContainer = await buildBasketContainer();
+  addInnerComponent(basket, header);
+  addInnerComponent(basket, basketContainer);
+  return basket;
+}
 function matchPath(route, path) {
   const routeSegments = route.split("/").filter(Boolean);
   const pathSegments = path.split("/").filter(Boolean);
@@ -46946,12 +48775,12 @@ function createRouter(routes2) {
       const appElement = document.getElementById("app");
       const path = window.location.pathname;
       const isLoggedIn = Boolean(localStorage.getItem("token"));
-      if (path.startsWith("/profile") && !isLoggedIn) {
-        this.navigate("/login");
+      if (path === RoutePaths.Profile && !isLoggedIn) {
+        this.navigate(RoutePaths.Login);
         return;
       }
-      if ((path === "/login" || path === "/register") && isLoggedIn) {
-        this.navigate("/");
+      if ((path === RoutePaths.Login || path === RoutePaths.Register) && isLoggedIn) {
+        this.navigate(RoutePaths.Main);
         return;
       }
       const routeKeys = Object.keys(this.routes);
@@ -46987,21 +48816,20 @@ function createRouter(routes2) {
   return router2;
 }
 const routes = {
-  "/": createMainPage,
-  "/login": createAuthPage,
-  "/register": buildRegistrationPage,
-  "/404": notFoundPage,
-  "/catalog": createCatalogPage,
-  "/profile/:id": buildUserProfilePage,
-  "/product/:id": createDetailedProductPage
+  [RoutePaths.Main]: createMainPage,
+  [RoutePaths.Login]: createAuthPage,
+  [RoutePaths.Register]: buildRegistrationPage,
+  [RoutePaths.NotFound]: notFoundPage,
+  [RoutePaths.Catalog]: createCatalogPage,
+  [RoutePaths.Profile]: buildUserProfilePage,
+  [RoutePaths.Product]: createDetailedProductPage,
+  [RoutePaths.AboutUs]: createAboutUsPage,
+  [RoutePaths.Basket]: createBasketPage
 };
 const router = createRouter(routes);
 function navigateTo(path) {
   window.history.pushState({}, "", path);
   router.handleLocationChange();
-}
-function navigateToProfile(userId) {
-  router.navigate(`/profile/${userId}`);
 }
 isUserLogined();
 router.handleLocationChange();

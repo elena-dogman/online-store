@@ -25,8 +25,10 @@ import {
   createFilterComponent,
   updateSizeFilterForCategory,
 } from '../../components/catalog/filter/productFilter';
-import { createLoadingOverlay } from '../../components/catalog/overlay/loadingOverlay';
+import { createLoadingOverlay } from '../../components/overlay/loadingOverlay';
 import { generateBreadcrumbLinks } from '../../components/breadcrumbs/breadcrumbs';
+import { RoutePaths } from '../../types/types';
+import { appEvents } from '../../utils/general/eventEmitter';
 
 export async function buildBreadcrumbsFromUrl(): Promise<
   { name: string; url: string }[]
@@ -36,7 +38,7 @@ export async function buildBreadcrumbsFromUrl(): Promise<
 
   const breadcrumbs = [
     { name: 'home', url: '/' },
-    { name: 'catalog', url: '/catalog' },
+    { name: 'catalog', url: RoutePaths.Catalog },
   ];
   if (!categoryName) {
     return breadcrumbs;
@@ -71,7 +73,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
   const breadcrumbContainerParams: ElementParams<'div'> = {
     tag: 'div',
-    classNames: ['breadcrumb-container'],
+    classNames: ['breadcrumb-wrapper'],
   };
   const breadcrumbContainer = createElement(breadcrumbContainerParams);
 
@@ -96,6 +98,7 @@ export async function createCatalogPage(): Promise<HTMLElement> {
 
   const filterIcon = createElement(filterIconParams);
   addInnerComponent(filterIconContainer, filterIcon);
+
   const catalogContainerWrapperParams: ElementParams<'div'> = {
     tag: 'div',
     classNames: ['catalog-container-wrapper'],
@@ -118,11 +121,43 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   const filterComponent = await createFilterComponent();
   const loadingOverlay = createLoadingOverlay();
 
+  const sortComponent = createSortComponent(async (sort: string) => {
+    currentSort = sort;
+    await renderProducts(1, itemsPerPage, currentSort);
+  });
+
+  const sortContainerParams: ElementParams<'div'> = {
+    tag: 'div',
+    classNames: ['sort-container'],
+  };
+  const sortContainer = createElement(sortContainerParams);
+  addInnerComponent(sortContainer, sortComponent);
+
   let currentPage = 1;
   const itemsPerPage = 8;
   let currentSort = 'price asc';
 
   let filters = getFiltersFromURL();
+
+  const updateSortAndFilterContainer = (): void => {
+    if (window.innerWidth <= 800) {
+      sortContainer.appendChild(filterIconContainer);
+    } else {
+      pageContainer.appendChild(filterIconContainer);
+    }
+  };
+
+  updateSortAndFilterContainer();
+  window.addEventListener('resize', updateSortAndFilterContainer);
+
+  appEvents.on('displayProducts', async () => {
+    filters = {
+      audience: new Set(),
+      category: '',
+      size: new Set(),
+    };
+    await renderProducts(1, itemsPerPage, currentSort);
+  });
 
   const updateBreadcrumbs = async (): Promise<void> => {
     const breadcrumbs = await buildBreadcrumbsFromUrl();
@@ -274,11 +309,6 @@ export async function createCatalogPage(): Promise<HTMLElement> {
     await renderProducts(1, itemsPerPage, currentSort);
   });
 
-  const sortComponent = createSortComponent(async (sort: string) => {
-    currentSort = sort;
-    await renderProducts(1, itemsPerPage, currentSort);
-  });
-
   const initialBreadcrumbs = await buildBreadcrumbsFromUrl();
   const initialBreadcrumbLinks = generateBreadcrumbLinks(initialBreadcrumbs);
   addInnerComponent(breadcrumbContainer, initialBreadcrumbLinks);
@@ -311,10 +341,9 @@ export async function createCatalogPage(): Promise<HTMLElement> {
   pageContainer.prepend(header);
   addInnerComponent(pageContainer, breadcrumbContainer);
   addInnerComponent(pageContainer, filterWrapper);
-  addInnerComponent(filterWrapper, filterIconContainer);
   addInnerComponent(filterWrapper, filterComponent);
   addInnerComponent(pageContainer, catalogContainerWrapper);
-  addInnerComponent(catalogContainerWrapper, sortComponent);
+  addInnerComponent(catalogContainerWrapper, sortContainer);
   addInnerComponent(catalogContainerWrapper, catalogContainer);
   addInnerComponent(catalogContainerWrapper, paginationContainer);
   pageContainer.append(loadingOverlay);

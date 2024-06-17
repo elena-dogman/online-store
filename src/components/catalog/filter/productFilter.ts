@@ -3,6 +3,7 @@ import {
   createElement,
   addInnerComponent,
   ElementParams,
+  clear,
 } from '../../../utils/general/baseComponent';
 import {
   fetchProductAttributes,
@@ -10,6 +11,7 @@ import {
   fetchSizesForCategory,
 } from '../../../api/apiService';
 import { Filters, updateURLWithFilters } from './filters';
+import { appEvents } from '../../../utils/general/eventEmitter';
 
 export async function createFilterComponent(): Promise<HTMLElement> {
   const filterContainerParams: ElementParams<'div'> = {
@@ -265,4 +267,9 @@ function clearAllFilters(): void {
   document.querySelectorAll('.filter-group input').forEach((input) => {
     (input as HTMLInputElement).checked = false;
   });
+  const catalogContainer = document.querySelector('.catalog-container') as HTMLElement;
+  if (catalogContainer) {
+    clear(catalogContainer);
+  }
+   appEvents.emit('displayProducts', undefined);
 }

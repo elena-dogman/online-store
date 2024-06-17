@@ -74,3 +74,4 @@ export function createSortComponent(
 
   return sortContainer;
 }
+

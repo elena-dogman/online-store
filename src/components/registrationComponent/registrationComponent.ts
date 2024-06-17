@@ -5,6 +5,7 @@ import {
 import '../../utils/validations/validation';
 import * as formComponent from '../../components/registrationForm/registrationForm';
 import router from '../../router/router';
+import { RoutePaths } from '../../types/types';
 
 export function createRegistrationComponent(): HTMLElement {
   const wrapper = createElement({
@@ -44,7 +45,7 @@ export function createRegistrationComponent(): HTMLElement {
   });
 
   signInButton.addEventListener('click', () => {
-    router.navigate('/login');
+    router.navigate(RoutePaths.Login);
   });
 
   addInnerComponent(wrapper, authSide);

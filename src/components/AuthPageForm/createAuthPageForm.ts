@@ -1,3 +1,4 @@
+import { RoutePaths } from '../../types/types';
 import {
   createElement,
   ElementParams,
@@ -37,7 +38,7 @@ export function createAuthForm(): HTMLElement[] {
   const authFormFooterSpanParams: ElementParams<'a'> = {
     tag: 'a',
     attributes: {
-      href: '/register',
+      href: RoutePaths.Register,
     },
     textContent: 'Register',
     classNames: ['auth_form_footer_link-to-registration'],

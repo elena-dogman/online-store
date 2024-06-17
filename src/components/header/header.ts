@@ -4,9 +4,14 @@ import {
   ElementParams,
 } from '../../utils/general/baseComponent';
 import { appEvents } from '../../utils/general/eventEmitter';
-import { checkLoginStatus, logoutUser } from '../../api/apiService';
+import {
+  checkLoginStatus,
+  getActiveCart,
+  logoutUser,
+} from '../../api/apiService';
 import { createSearchComponent } from './search/productSearch';
-import router, { navigateToProfile } from '../../router/router';
+import router from '../../router/router';
+import { RoutePaths } from '../../types/types';
 
 export function createHeader(): HTMLElement {
   const headerParams: ElementParams<'div'> = {
@@ -17,7 +22,7 @@ export function createHeader(): HTMLElement {
 
   const logoLink = createElement({
     tag: 'a',
-    attributes: { href: '/' },
+    attributes: { href: RoutePaths.Main },
     classNames: ['header__logo-link'],
   });
   const logo = createElement({
@@ -46,22 +51,27 @@ export function createHeader(): HTMLElement {
     classNames: ['header__nav-links'],
   });
 
-  if (!isCatalogPage) {
-    const homeLink = createElement({
-      tag: 'a',
-      attributes: { href: '/' },
-      classNames: ['header__nav-link'],
-      textContent: 'Home',
-    });
-    const aboutLink = createElement({
-      tag: 'a',
-      attributes: { href: '/catalog' },
-      classNames: ['header__nav-link'],
-      textContent: 'Catalog',
-    });
-    addInnerComponent(navContainer, homeLink);
-    addInnerComponent(navContainer, aboutLink);
-  }
+  const homeLink = createElement({
+    tag: 'a',
+    attributes: { href: RoutePaths.Main },
+    classNames: ['header__nav-link'],
+    textContent: 'Home',
+  });
+  const catalogLink = createElement({
+    tag: 'a',
+    attributes: { href: RoutePaths.Catalog },
+    classNames: ['header__nav-link'],
+    textContent: 'Catalog',
+  });
+  const aboutLink = createElement({
+    tag: 'a',
+    attributes: { href: RoutePaths.AboutUs },
+    classNames: ['header__nav-link'],
+    textContent: 'About us',
+  });
+  addInnerComponent(navContainer, homeLink);
+  addInnerComponent(navContainer, catalogLink);
+  addInnerComponent(navContainer, aboutLink);
 
   const rightContainer = createElement({
     tag: 'div',
@@ -74,7 +84,7 @@ export function createHeader(): HTMLElement {
   });
   const basketIcon = createElement({
     tag: 'a',
-    attributes: { href: '/basket' },
+    attributes: { href: RoutePaths.Basket },
     classNames: ['header__icon', 'header__basket-icon'],
   });
   const basketImage = createElement({
@@ -84,9 +94,13 @@ export function createHeader(): HTMLElement {
       alt: 'Basket',
     },
   });
+  const basketCounter = createElement({
+    tag: 'span',
+    classNames: ['header__basket-counter'],
+  });
+  basketCounter.style.display = 'none';
   const userIcon = createElement({
     tag: 'a',
-
     classNames: ['header__icon', 'header__user-icon'],
   });
   const userImage = createElement({
@@ -98,15 +112,15 @@ export function createHeader(): HTMLElement {
   });
   addInnerComponent(userIcon, userImage);
   userIcon.onclick = (): void => {
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      navigateToProfile(userId);
+    if (checkLoginStatus()) {
+      router.navigate(RoutePaths.Profile);
     } else {
-      router.navigate('/login');
+      router.navigate(RoutePaths.Login);
     }
   };
   addInnerComponent(iconsContainer, basketIcon);
   addInnerComponent(iconsContainer, userIcon);
+  addInnerComponent(basketIcon, basketCounter);
   addInnerComponent(basketIcon, basketImage);
   addInnerComponent(userIcon, userImage);
   addInnerComponent(iconsContainer, basketIcon);
@@ -123,13 +137,13 @@ export function createHeader(): HTMLElement {
   });
   const registerButton = createElement({
     tag: 'a',
-    attributes: { href: '/register' },
+    attributes: { href: RoutePaths.Register },
     classNames: ['header__auth-button', 'register-button'],
     textContent: 'Register',
   });
   const authButton = createElement({
     tag: 'a',
-    attributes: { href: '/login' },
+    attributes: { href: RoutePaths.Login },
     classNames: ['header__auth-button', 'login-button'],
     textContent: 'Log In',
   });
@@ -142,9 +156,7 @@ export function createHeader(): HTMLElement {
   addInnerComponent(rightContainer, authNavContainer);
 
   addInnerComponent(header, logoSearchContainer);
-  if (!isCatalogPage) {
-    addInnerComponent(header, navContainer);
-  }
+  addInnerComponent(header, navContainer);
   addInnerComponent(header, rightContainer);
 
   const burgerMenu = createElement({
@@ -179,9 +191,9 @@ export function createHeader(): HTMLElement {
   const tabletScreenWidthInPx = 870;
   const moveNavLinks = (): void => {
     const isMobile = window.innerWidth <= tabletScreenWidthInPx;
-    if (isMobile && !isCatalogPage) {
+    if (isMobile) {
       addInnerComponent(authNavContainer, navContainer);
-    } else if (!isCatalogPage) {
+    } else {
       if (authNavContainer.classList.contains('open')) {
         authNavContainer.classList.remove('open');
         burgerMenu.classList.remove('change');
@@ -203,7 +215,7 @@ export function createHeader(): HTMLElement {
   async function updateAuthButton(isLoggedIn: boolean): Promise<void> {
     registerButton.style.display = isLoggedIn ? 'none' : 'block';
     authButton.textContent = isLoggedIn ? 'Log Out' : 'Log In';
-    authButton.setAttribute('href', isLoggedIn ? '#' : '/login');
+    authButton.setAttribute('href', isLoggedIn ? '#' : RoutePaths.Login);
     authButton.onclick = isLoggedIn
       ? async (): Promise<void> => {
           await handleLogout();
@@ -221,6 +233,37 @@ export function createHeader(): HTMLElement {
 
   appEvents.on('login', () => updateAuthButton(true));
   appEvents.on('logout', () => updateAuthButton(false));
-
+  updateBasketCounter();
   return header;
+}
+
+export async function updateBasketCounter(): Promise<void> {
+  try {
+    const activeCart = await getActiveCart();
+    let totalQuantity = 0;
+    if (activeCart) {
+      activeCart.lineItems.forEach((item) => {
+        totalQuantity += item.quantity;
+      });
+    }
+    setTimeout(() => {
+      const basketCounter = document.querySelector(
+        '.header__basket-counter',
+      ) as HTMLElement;
+      if (basketCounter) {
+        if (totalQuantity > 0) {
+          basketCounter.style.display = 'flex';
+          if (totalQuantity > 99) {
+            basketCounter.textContent = '99+';
+          } else {
+            basketCounter.textContent = totalQuantity.toString();
+          }
+        } else {
+          basketCounter.style.display = 'none';
+        }
+      }
+    }, 500);
+  } catch (error) {
+    throw new Error();
+  }
 }

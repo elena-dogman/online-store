@@ -1,9 +1,11 @@
+import { addToCart } from '../../../api/apiService';
 import { navigateTo } from '../../../router/router';
 import {
   createElement,
   addInnerComponent,
 } from '../../../utils/general/baseComponent';
 import { ProductProjection } from '@commercetools/platform-sdk';
+import { updateBasketCounter } from '../../header/header';
 
 export function createProductCatalog(
   products: ProductProjection[],
@@ -39,6 +41,11 @@ export function createProductCatalog(
           callback: (): void => navigateTo(`/product/${product.id}`),
         },
       ],
+    });
+
+    const contentWrapper = createElement({
+      tag: 'div',
+      classNames: ['product-content-wrapper'],
     });
 
     const imageElement = createElement({
@@ -86,10 +93,49 @@ export function createProductCatalog(
       addInnerComponent(priceContainer, priceElement);
     }
 
-    addInnerComponent(productCard, imageElement);
-    addInnerComponent(productCard, nameElement);
-    addInnerComponent(productCard, descriptionElement);
-    addInnerComponent(productCard, priceContainer);
+    const addToCartButton = createElement({
+      tag: 'button',
+      classNames: ['add-to-cart-button'],
+      textContent: 'ADD TO CART',
+      callbacks: [
+        {
+          eventType: 'click',
+          callback: async (event: Event): Promise<void> => {
+            event.stopPropagation();
+            const button = event.currentTarget as HTMLButtonElement;
+
+            button.disabled = true;
+            button.textContent = 'Adding...';
+            try {
+              const productId = product.id;
+              const variantId = product.masterVariant.id;
+              await addToCart(productId, variantId, 1);
+              updateBasketCounter();
+
+              button.textContent = 'IN CART';
+              setTimeout(() => {
+                button.textContent = 'ADD TO CART';
+                button.disabled = false;
+              }, 2000);
+            } catch (error) {
+              console.error('Error adding to cart:', error);
+              button.textContent = 'Error!';
+              setTimeout(() => {
+                button.textContent = 'ADD TO CART';
+                button.disabled = false;
+              }, 2000);
+            }
+          },
+        },
+      ],
+    });
+
+    addInnerComponent(contentWrapper, imageElement);
+    addInnerComponent(contentWrapper, nameElement);
+    addInnerComponent(contentWrapper, descriptionElement);
+    addInnerComponent(contentWrapper, priceContainer);
+    addInnerComponent(productCard, contentWrapper);
+    addInnerComponent(productCard, addToCartButton);
 
     addInnerComponent(catalogContainer, productCard);
   });

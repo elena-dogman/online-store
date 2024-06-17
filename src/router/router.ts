@@ -5,6 +5,9 @@ import { buildRegistrationPage } from '../pages/RegistrationPage/registrationPag
 import { createCatalogPage } from '../pages/CatalogPage/CatalogPage';
 import { createDetailedProductPage } from '../pages/ProductDetailedPage/ProductDetailedPage';
 import { buildUserProfilePage } from '../pages/UserProfilePage/userProfilePage';
+import { createAboutUsPage } from '../pages/AboutUs/about';
+import createBasketPage from '../pages/BasketPage/basketPage';
+import { RoutePaths } from '../types/types';
 
 type RouteHandler = (
   params?: Record<string, string>,
@@ -56,13 +59,16 @@ function createRouter(routes: Routes): Router {
 
       const isLoggedIn = Boolean(localStorage.getItem('token'));
 
-      if (path.startsWith('/profile') && !isLoggedIn) {
-        this.navigate('/login');
+      if (path === RoutePaths.Profile && !isLoggedIn) {
+        this.navigate(RoutePaths.Login);
         return;
       }
 
-      if ((path === '/login' || path === '/register') && isLoggedIn) {
-        this.navigate('/');
+      if (
+        (path === RoutePaths.Login || path === RoutePaths.Register) &&
+        isLoggedIn
+      ) {
+        this.navigate(RoutePaths.Main);
         return;
       }
 
@@ -105,13 +111,15 @@ function createRouter(routes: Routes): Router {
 }
 
 const routes = {
-  '/': createMainPage,
-  '/login': createAuthPage,
-  '/register': buildRegistrationPage,
-  '/404': notFoundPage,
-  '/catalog': createCatalogPage,
-  '/profile/:id': buildUserProfilePage,
-  '/product/:id': createDetailedProductPage,
+  [RoutePaths.Main]: createMainPage,
+  [RoutePaths.Login]: createAuthPage,
+  [RoutePaths.Register]: buildRegistrationPage,
+  [RoutePaths.NotFound]: notFoundPage,
+  [RoutePaths.Catalog]: createCatalogPage,
+  [RoutePaths.Profile]: buildUserProfilePage,
+  [RoutePaths.Product]: createDetailedProductPage,
+  [RoutePaths.AboutUs]: createAboutUsPage,
+  [RoutePaths.Basket]: createBasketPage,
 };
 
 const router = createRouter(routes);
@@ -121,9 +129,4 @@ export function navigateTo(path: string): void {
   router.handleLocationChange();
 }
 
-export function navigateToProfile(userId: string): void {
-  router.navigate(`/profile/${userId}`);
-}
-
 export default router;
-

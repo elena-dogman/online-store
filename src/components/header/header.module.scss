@@ -19,7 +19,8 @@
 .header__logo-link,
 .header__nav-link,
 .header__icon,
-.header__auth-button {
+.header__auth-button,
+header__about-us-link {
   text-decoration: none;
 }
 
@@ -46,6 +47,23 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+.header__basket-icon {
+  position: relative;
+}
+.header__basket-counter{
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: $font-size-small;
+  background: #F34235;
+  border-radius: 50%;
 }
 
 .header__icons {
@@ -138,7 +156,6 @@
 .header__auth-nav-container.open .header__nav-links {
   display: flex;
   flex-direction: column;
-
 }
 
 .header__auth-nav-container.open .header__nav-link,
@@ -179,7 +196,6 @@
 }
 
 @media (max-width: 870px) {
-
   .header__auth-buttons,
   .header__nav-links {
     display: none;
@@ -224,18 +240,17 @@
 
 @media (max-width: 575px) {
   .header__logo {
-      display: none;
-    }
+    display: none;
   }
+}
 
-    @media (max-width: 390px) {
-      .header {
-        padding: 10px;
-      }
-    }
+@media (max-width: 390px) {
+  .header {
+    padding: 10px;
+  }
+}
 
 @media (hover: hover) and (pointer: fine) {
-
   .header__logo-link:hover,
   .header__nav-link:hover,
   .header__icon:hover {
