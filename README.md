@@ -16,7 +16,7 @@ The purpose of this project is to provide an online platform for customers to pu
 
 - Prettier :scissors:
 
-- Jest :microscope:
+- Vitest :microscope:
 
 - Husky :dog2:
 
@@ -26,7 +26,7 @@ The purpose of this project is to provide an online platform for customers to pu
 
 ### Running Tests
 
-- To run Jest tests:
+- To run Vitest tests:
 
 ```
 
