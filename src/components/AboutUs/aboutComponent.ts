@@ -89,7 +89,7 @@ export function aboutComponent(): HTMLElement {
       But we had a vision - to come together as a team of three underdogs and, through shared learning, create something truly unique. 
       We harnessed each of our strengths and worked together to overcome our weaknesses through collaboration and support.
       Our mission is to demonstrate that anything is possible if you don’t give up, no matter how challenging it gets.
-      We believe in ourselves - believe in yourself, too.
+      We believe in ourselves - believe in yourself, too!
     `,
   };
   const missionContainer = createElement(missionParams);
